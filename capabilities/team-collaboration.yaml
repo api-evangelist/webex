@@ -1,0 +1,303 @@
+naftiko: "1.0.0-alpha1"
+
+info:
+  label: "Webex Team Collaboration"
+  description: >-
+    Unified capability for team collaboration workflows combining Webex Messaging
+    and Webex Meetings APIs. Enables teams to communicate via rooms and messages,
+    schedule and manage video meetings, and automate collaboration workflows. Used
+    by development teams, remote workers, and enterprise communication administrators.
+  tags:
+    - Webex
+    - Collaboration
+    - Communication
+    - Meetings
+    - Messaging
+    - Team Productivity
+  created: "2026-05-03"
+  modified: "2026-05-03"
+
+binds:
+  - namespace: env
+    keys:
+      WEBEX_ACCESS_TOKEN: WEBEX_ACCESS_TOKEN
+
+capability:
+  consumes:
+    - import: webex-messaging
+      location: ./shared/messaging.yaml
+    - import: webex-meetings
+      location: ./shared/meetings.yaml
+
+  exposes:
+    - type: rest
+      port: 8080
+      namespace: webex-collaboration-api
+      description: "Unified REST API for Webex team collaboration workflows."
+      resources:
+        - path: /v1/rooms
+          name: rooms
+          description: "Manage Webex collaboration rooms"
+          operations:
+            - method: GET
+              name: list-rooms
+              description: "List all Webex rooms available to the authenticated user"
+              call: "webex-messaging.list-rooms"
+              outputParameters:
+                - type: object
+                  mapping: "$."
+            - method: POST
+              name: create-room
+              description: "Create a new Webex collaboration room"
+              call: "webex-messaging.create-room"
+              outputParameters:
+                - type: object
+                  mapping: "$."
+        - path: /v1/rooms/{roomId}
+          name: room
+          description: "Single room operations"
+          operations:
+            - method: GET
+              name: get-room
+              description: "Get details of a specific room"
+              call: "webex-messaging.get-room"
+              with:
+                roomId: "rest.roomId"
+              outputParameters:
+                - type: object
+                  mapping: "$."
+            - method: DELETE
+              name: delete-room
+              description: "Delete a Webex room"
+              call: "webex-messaging.delete-room"
+              with:
+                roomId: "rest.roomId"
+              outputParameters:
+                - type: object
+                  mapping: "$."
+        - path: /v1/messages
+          name: messages
+          description: "Post and retrieve messages in Webex rooms"
+          operations:
+            - method: GET
+              name: list-messages
+              description: "List messages in a room"
+              call: "webex-messaging.list-messages"
+              with:
+                roomId: "rest.roomId"
+              outputParameters:
+                - type: object
+                  mapping: "$."
+            - method: POST
+              name: send-message
+              description: "Post a message to a Webex room"
+              call: "webex-messaging.create-message"
+              outputParameters:
+                - type: object
+                  mapping: "$."
+        - path: /v1/meetings
+          name: meetings
+          description: "Schedule and manage Webex meetings"
+          operations:
+            - method: GET
+              name: list-meetings
+              description: "List scheduled Webex meetings"
+              call: "webex-meetings.list-meetings"
+              outputParameters:
+                - type: object
+                  mapping: "$."
+            - method: POST
+              name: schedule-meeting
+              description: "Schedule a new Webex video meeting"
+              call: "webex-meetings.create-meeting"
+              outputParameters:
+                - type: object
+                  mapping: "$."
+        - path: /v1/meetings/{meetingId}
+          name: meeting
+          description: "Single meeting operations"
+          operations:
+            - method: GET
+              name: get-meeting
+              description: "Get meeting details"
+              call: "webex-meetings.get-meeting"
+              with:
+                meetingId: "rest.meetingId"
+              outputParameters:
+                - type: object
+                  mapping: "$."
+            - method: DELETE
+              name: delete-meeting
+              description: "Cancel a scheduled meeting"
+              call: "webex-meetings.delete-meeting"
+              with:
+                meetingId: "rest.meetingId"
+              outputParameters:
+                - type: object
+                  mapping: "$."
+        - path: /v1/people
+          name: people
+          description: "Look up Webex users"
+          operations:
+            - method: GET
+              name: list-people
+              description: "Search Webex users by email or name"
+              call: "webex-messaging.list-people"
+              outputParameters:
+                - type: object
+                  mapping: "$."
+        - path: /v1/recordings
+          name: recordings
+          description: "Access Webex meeting recordings"
+          operations:
+            - method: GET
+              name: list-recordings
+              description: "List available Webex recordings"
+              call: "webex-meetings.list-recordings"
+              outputParameters:
+                - type: object
+                  mapping: "$."
+        - path: /v1/webhooks
+          name: webhooks
+          description: "Manage Webex event webhooks"
+          operations:
+            - method: GET
+              name: list-webhooks
+              description: "List registered webhooks"
+              call: "webex-messaging.list-webhooks"
+              outputParameters:
+                - type: object
+                  mapping: "$."
+            - method: POST
+              name: create-webhook
+              description: "Create a new Webex event webhook"
+              call: "webex-messaging.create-webhook"
+              outputParameters:
+                - type: object
+                  mapping: "$."
+
+    - type: mcp
+      port: 9080
+      namespace: webex-collaboration-mcp
+      transport: http
+      description: "MCP server for AI-assisted Webex team collaboration workflows."
+      tools:
+        - name: list-rooms
+          description: "List Webex collaboration rooms available to the user"
+          hints:
+            readOnly: true
+            openWorld: true
+          call: "webex-messaging.list-rooms"
+          outputParameters:
+            - type: object
+              mapping: "$."
+        - name: create-room
+          description: "Create a new Webex collaboration room for team communication"
+          hints:
+            readOnly: false
+            destructive: false
+          call: "webex-messaging.create-room"
+          with:
+            title: "tools.title"
+          outputParameters:
+            - type: object
+              mapping: "$."
+        - name: list-messages
+          description: "List messages in a Webex room"
+          hints:
+            readOnly: true
+            openWorld: true
+          call: "webex-messaging.list-messages"
+          with:
+            roomId: "tools.roomId"
+          outputParameters:
+            - type: object
+              mapping: "$."
+        - name: send-message
+          description: "Send a message to a Webex room"
+          hints:
+            readOnly: false
+            destructive: false
+          call: "webex-messaging.create-message"
+          with:
+            roomId: "tools.roomId"
+            text: "tools.text"
+          outputParameters:
+            - type: object
+              mapping: "$."
+        - name: search-people
+          description: "Search for Webex users by email or display name"
+          hints:
+            readOnly: true
+            openWorld: true
+          call: "webex-messaging.list-people"
+          with:
+            email: "tools.email"
+          outputParameters:
+            - type: object
+              mapping: "$."
+        - name: list-meetings
+          description: "List upcoming Webex meetings"
+          hints:
+            readOnly: true
+            openWorld: true
+          call: "webex-meetings.list-meetings"
+          outputParameters:
+            - type: object
+              mapping: "$."
+        - name: schedule-meeting
+          description: "Schedule a new Webex video meeting with participants"
+          hints:
+            readOnly: false
+            destructive: false
+          call: "webex-meetings.create-meeting"
+          with:
+            title: "tools.title"
+            start: "tools.start"
+            end: "tools.end"
+          outputParameters:
+            - type: object
+              mapping: "$."
+        - name: get-meeting-participants
+          description: "Get the list of participants who joined a Webex meeting"
+          hints:
+            readOnly: true
+            openWorld: false
+          call: "webex-meetings.list-participants"
+          with:
+            meetingId: "tools.meetingId"
+          outputParameters:
+            - type: object
+              mapping: "$."
+        - name: list-recordings
+          description: "List available Webex meeting recordings"
+          hints:
+            readOnly: true
+            openWorld: true
+          call: "webex-meetings.list-recordings"
+          outputParameters:
+            - type: object
+              mapping: "$."
+        - name: list-webhooks
+          description: "List registered Webex event webhooks"
+          hints:
+            readOnly: true
+            openWorld: false
+          call: "webex-messaging.list-webhooks"
+          outputParameters:
+            - type: object
+              mapping: "$."
+        - name: create-webhook
+          description: "Register a webhook to receive Webex event notifications"
+          hints:
+            readOnly: false
+            destructive: false
+          call: "webex-messaging.create-webhook"
+          with:
+            name: "tools.name"
+            targetUrl: "tools.targetUrl"
+            resource: "tools.resource"
+            event: "tools.event"
+          outputParameters:
+            - type: object
+              mapping: "$."

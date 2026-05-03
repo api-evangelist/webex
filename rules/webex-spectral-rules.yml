@@ -1,0 +1,308 @@
+rules:
+  # INFO / METADATA
+  info-title-required:
+    description: API title must be present and follow "Webex {Product}" naming convention.
+    message: "{{property}} must be present and start with 'Webex'"
+    severity: error
+    given: "$.info"
+    then:
+      - field: title
+        function: truthy
+      - field: title
+        function: pattern
+        functionOptions:
+          match: "^Webex"
+
+  info-description-required:
+    description: API must have a non-empty description of at least 20 characters.
+    message: "{{property}} description is required and must be at least 20 characters"
+    severity: warn
+    given: "$.info"
+    then:
+      field: description
+      function: minLength
+      functionOptions:
+        value: 20
+
+  info-version-required:
+    description: API info must include a version field.
+    message: "{{property}} must have a version"
+    severity: error
+    given: "$.info"
+    then:
+      field: version
+      function: truthy
+
+  # OPENAPI VERSION
+  openapi-version-3:
+    description: All Webex API specs must use OpenAPI 3.0.x or 3.1.x.
+    message: "{{property}} must be OpenAPI 3.x"
+    severity: error
+    given: "$"
+    then:
+      field: openapi
+      function: pattern
+      functionOptions:
+        match: "^3\\."
+
+  # SERVERS
+  servers-defined:
+    description: At least one server must be defined.
+    message: "{{property}} servers array must be defined and non-empty"
+    severity: warn
+    given: "$"
+    then:
+      field: servers
+      function: truthy
+
+  servers-https-only:
+    description: Server URLs must use HTTPS.
+    message: "{{value}} server URL must use HTTPS"
+    severity: error
+    given: "$.servers[*]"
+    then:
+      field: url
+      function: pattern
+      functionOptions:
+        match: "^https://"
+
+  # PATHS — NAMING CONVENTIONS
+  paths-no-trailing-slash:
+    description: Path must not end with a trailing slash.
+    message: "{{property}} path must not have a trailing slash"
+    severity: warn
+    given: "$.paths[*]~"
+    then:
+      function: pattern
+      functionOptions:
+        notMatch: "/$"
+
+  paths-kebab-case:
+    description: Path segments must use camelCase or kebab-case (no underscores or uppercase).
+    message: "{{property}} path segment must use camelCase or kebab-case"
+    severity: info
+    given: "$.paths[*]~"
+    then:
+      function: pattern
+      functionOptions:
+        notMatch: "_"
+
+  # OPERATIONS
+  operation-summary-required:
+    description: Every operation must have a summary.
+    message: "{{property}} operation must have a summary"
+    severity: error
+    given: "$.paths[*][get,post,put,patch,delete,options,head]"
+    then:
+      field: summary
+      function: truthy
+
+  operation-summary-title-case:
+    description: Operation summaries must use Title Case.
+    message: "{{property}} summary must start with an uppercase letter"
+    severity: warn
+    given: "$.paths[*][get,post,put,patch,delete].summary"
+    then:
+      function: pattern
+      functionOptions:
+        match: "^[A-Z]"
+
+  operation-description-required:
+    description: Every operation must have a description.
+    message: "{{property}} operation must have a description"
+    severity: warn
+    given: "$.paths[*][get,post,put,patch,delete,options,head]"
+    then:
+      field: description
+      function: truthy
+
+  operation-id-required:
+    description: Every operation must have an operationId.
+    message: "{{property}} operation must have an operationId"
+    severity: error
+    given: "$.paths[*][get,post,put,patch,delete,options,head]"
+    then:
+      field: operationId
+      function: truthy
+
+  operation-tags-required:
+    description: Every operation must have at least one tag.
+    message: "{{property}} operation must have at least one tag"
+    severity: warn
+    given: "$.paths[*][get,post,put,patch,delete]"
+    then:
+      field: tags
+      function: truthy
+
+  # TAGS
+  tags-title-case:
+    description: Tag names must use Title Case (e.g., "Attachment Actions", "Room Types").
+    message: "{{value}} tag name must use Title Case"
+    severity: warn
+    given: "$.tags[*].name"
+    then:
+      function: pattern
+      functionOptions:
+        match: "^[A-Z]"
+
+  tags-description-required:
+    description: Global tags should have descriptions.
+    message: "{{property}} tag should have a description"
+    severity: info
+    given: "$.tags[*]"
+    then:
+      field: description
+      function: truthy
+
+  # PARAMETERS
+  parameter-description-required:
+    description: Every parameter must have a description.
+    message: "{{property}} parameter must have a description"
+    severity: warn
+    given: "$.paths[*][get,post,put,patch,delete].parameters[*]"
+    then:
+      field: description
+      function: truthy
+
+  parameter-schema-type-required:
+    description: Every parameter schema must have a type.
+    message: "{{property}} parameter schema must define a type"
+    severity: warn
+    given: "$.paths[*][get,post,put,patch,delete].parameters[*].schema"
+    then:
+      field: type
+      function: truthy
+
+  # REQUEST BODIES
+  request-body-json-content-type:
+    description: Request bodies must include an application/json content type.
+    message: "{{property}} request body should define application/json content"
+    severity: warn
+    given: "$.paths[*][post,put,patch].requestBody.content"
+    then:
+      field: application/json
+      function: truthy
+
+  # RESPONSES
+  response-success-required:
+    description: Every operation must define at least one 2xx response.
+    message: "{{property}} operation must have a 2xx success response"
+    severity: error
+    given: "$.paths[*][get,post,put,patch,delete].responses"
+    then:
+      function: schema
+      functionOptions:
+        schema:
+          oneOf:
+            - required: ["200"]
+            - required: ["201"]
+            - required: ["204"]
+
+  response-4xx-required:
+    description: Operations should define 400 or 401 error responses.
+    message: "{{property}} operation should include error response codes"
+    severity: info
+    given: "$.paths[*][get,post,put,patch,delete].responses"
+    then:
+      function: schema
+      functionOptions:
+        schema:
+          anyOf:
+            - required: ["400"]
+            - required: ["401"]
+            - required: ["403"]
+            - required: ["404"]
+
+  response-description-required:
+    description: Every response must have a description.
+    message: "{{property}} response must have a description"
+    severity: warn
+    given: "$.paths[*][get,post,put,patch,delete].responses[*]"
+    then:
+      field: description
+      function: truthy
+
+  # SCHEMAS — PROPERTY NAMING
+  schema-description-required:
+    description: Top-level component schemas should have descriptions.
+    message: "{{property}} schema should have a description"
+    severity: info
+    given: "$.components.schemas[*]"
+    then:
+      field: description
+      function: truthy
+
+  schema-properties-type-defined:
+    description: Schema properties should have a type defined.
+    message: "{{property}} schema property should define a type"
+    severity: info
+    given: "$.components.schemas[*].properties[*]"
+    then:
+      field: type
+      function: truthy
+
+  # SECURITY
+  security-schemes-defined:
+    description: Security schemes must be defined in components.
+    message: "{{property}} components must define security schemes"
+    severity: warn
+    given: "$.components"
+    then:
+      field: securitySchemes
+      function: truthy
+
+  security-bearer-or-oauth2:
+    description: Webex APIs use Bearer token or OAuth2 authentication.
+    message: "{{property}} security scheme must be bearer or oauth2"
+    severity: warn
+    given: "$.components.securitySchemes[*]"
+    then:
+      function: schema
+      functionOptions:
+        schema:
+          oneOf:
+            - properties:
+                type:
+                  const: http
+              required: [type]
+            - properties:
+                type:
+                  const: oauth2
+              required: [type]
+
+  # HTTP METHOD CONVENTIONS
+  get-no-request-body:
+    description: GET operations must not have a request body.
+    message: "{{property}} GET operation must not have a requestBody"
+    severity: error
+    given: "$.paths[*].get"
+    then:
+      field: requestBody
+      function: falsy
+
+  delete-no-request-body:
+    description: DELETE operations should not have a request body.
+    message: "{{property}} DELETE operation should not have a requestBody"
+    severity: warn
+    given: "$.paths[*].delete"
+    then:
+      field: requestBody
+      function: falsy
+
+  # GENERAL QUALITY
+  no-empty-descriptions:
+    description: No descriptions should be empty strings.
+    message: "{{property}} description must not be an empty string"
+    severity: error
+    given: "$..description"
+    then:
+      function: truthy
+
+  operation-examples-encouraged:
+    description: Operations should include request/response examples.
+    message: "{{property}} operation should include examples for documentation"
+    severity: info
+    given: "$.paths[*][post,put,patch].requestBody.content.application/json"
+    then:
+      field: example
+      function: truthy

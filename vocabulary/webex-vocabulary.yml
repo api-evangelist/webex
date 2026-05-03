@@ -1,0 +1,331 @@
+vocabulary: "1.0.0"
+
+info:
+  provider: "Webex"
+  description: >-
+    Unified vocabulary for Webex APIs, mapping resources, actions, schemas, and
+    enums from OpenAPI specifications to Naftiko capability workflows and personas.
+  created: "2026-05-03"
+  modified: "2026-05-03"
+
+operational:
+  apis:
+    - name: Webex Messaging
+      namespace: webex-messaging
+      version: "v1"
+      baseUrl: https://webexapis.com/v1
+      status: active
+    - name: Webex Meetings
+      namespace: webex-meetings
+      version: "v1"
+      baseUrl: https://webexapis.com/v1
+      status: active
+    - name: Webex Admin
+      namespace: webex-admin
+      version: "v1"
+      baseUrl: https://webexapis.com/v1
+      status: active
+    - name: Webex Cloud Calling
+      namespace: webex-cloud-calling
+      version: "v1"
+      baseUrl: https://webexapis.com/v1
+      status: active
+    - name: Webex Contact Center
+      namespace: webex-contact-center
+      version: "v1"
+      baseUrl: https://webexapis.com/v1
+      status: active
+    - name: Webex Device
+      namespace: webex-device
+      version: "v1"
+      baseUrl: https://webexapis.com/v1
+      status: active
+    - name: Webex Broadworks Calling
+      namespace: webex-broadworks
+      version: "v1"
+      baseUrl: https://webexapis.com/v1
+      status: active
+    - name: Webex UCM
+      namespace: webex-ucm
+      version: "v1"
+      baseUrl: https://webexapis.com/v1
+      status: active
+    - name: Webex Wholesale
+      namespace: webex-wholesale
+      version: "v1"
+      baseUrl: https://webexapis.com/v1
+      status: active
+
+  resources:
+    - name: rooms
+      description: Virtual meeting places where people collaborate and post messages
+      apis: [webex-messaging]
+      actions: [list, create, get, update, delete]
+    - name: messages
+      description: Communications posted within rooms, including text, markdown, and files
+      apis: [webex-messaging]
+      actions: [list, create, get, delete]
+    - name: teams
+      description: Groups of people with a shared set of rooms
+      apis: [webex-messaging]
+      actions: [list, create, get, update, delete]
+    - name: people
+      description: Registered Webex users and their profile information
+      apis: [webex-messaging]
+      actions: [list, get, create, update, delete]
+    - name: memberships
+      description: Team and room membership relationships for access control
+      apis: [webex-messaging]
+      actions: [list, create, get, update, delete]
+    - name: webhooks
+      description: HTTP callbacks for real-time Webex event notifications
+      apis: [webex-messaging]
+      actions: [list, create, get, update, delete]
+    - name: meetings
+      description: Webex video meetings including scheduled and personal room meetings
+      apis: [webex-meetings]
+      actions: [list, create, get, update, delete]
+    - name: meeting-participants
+      description: People who joined a Webex meeting
+      apis: [webex-meetings]
+      actions: [list, get]
+    - name: recordings
+      description: Video recordings of Webex meetings
+      apis: [webex-meetings]
+      actions: [list, get, delete]
+    - name: devices
+      description: Webex hardware devices registered to an organization
+      apis: [webex-device]
+      actions: [list, get, create, update, delete]
+    - name: organizations
+      description: Webex organizations and their settings
+      apis: [webex-admin]
+      actions: [list, get, update]
+    - name: licenses
+      description: Webex feature licenses assigned to users
+      apis: [webex-admin]
+      actions: [list, get, assign]
+
+  actions:
+    - name: list
+      description: Retrieve a collection of resources
+      pattern: read
+      methods: [GET]
+    - name: get
+      description: Retrieve details of a single resource
+      pattern: read
+      methods: [GET]
+    - name: create
+      description: Create a new resource instance
+      pattern: write
+      methods: [POST]
+    - name: update
+      description: Modify an existing resource
+      pattern: write
+      methods: [PUT, PATCH]
+    - name: delete
+      description: Remove a resource
+      pattern: destructive
+      methods: [DELETE]
+    - name: search
+      description: Search and filter resources by criteria
+      pattern: read
+      methods: [GET]
+    - name: assign
+      description: Assign a resource to an entity
+      pattern: write
+      methods: [POST]
+
+  schemas:
+    core:
+      - name: Room
+        properties: [id, title, type, isLocked, teamId, creatorId, created]
+      - name: Message
+        properties: [id, roomId, roomType, text, personId, personEmail, created]
+      - name: Team
+        properties: [id, name, creatorId, created]
+      - name: Person
+        properties: [id, emails, displayName, firstName, lastName, orgId, status, type]
+    meetings:
+      - name: Meeting
+        properties: [id, title, start, end, hostEmail, meetingNumber, webLink, state]
+      - name: MeetingParticipant
+        properties: [id, meetingId, email, displayName, joinedTime, leftTime]
+      - name: Recording
+        properties: [id, meetingId, topic, createTime, timeRecorded, downloadUrl]
+    devices:
+      - name: Device
+        properties: [id, displayName, workspaceId, personId, orgId, type, mac, ip]
+    admin:
+      - name: Organization
+        properties: [id, displayName, created]
+      - name: License
+        properties: [id, name, totalUnits, consumedUnits]
+
+  parameters:
+    pagination:
+      - name: max
+        description: Maximum number of items to return
+      - name: cursor
+        description: Cursor for pagination through large result sets
+    identifiers:
+      - name: roomId
+        description: Unique identifier for a Webex room
+      - name: meetingId
+        description: Unique identifier for a Webex meeting
+      - name: personId
+        description: Unique identifier for a Webex user
+      - name: teamId
+        description: Unique identifier for a Webex team
+      - name: webhookId
+        description: Unique identifier for a webhook
+    filters:
+      - name: type
+        description: Filter by resource type
+      - name: state
+        description: Filter meetings by state (scheduled, in-progress, ended)
+      - name: email
+        description: Filter people by email address
+      - name: from
+        description: Filter events by start time
+      - name: to
+        description: Filter events by end time
+
+  enums:
+    roomTypes:
+      - direct
+      - group
+    meetingStates:
+      - active
+      - scheduled
+      - ready
+      - lobby
+      - inProgress
+      - ended
+      - missed
+      - expired
+    webhookResources:
+      - messages
+      - memberships
+      - rooms
+      - teams
+      - teamMemberships
+      - meetings
+      - recordings
+    webhookEvents:
+      - created
+      - updated
+      - deleted
+      - started
+      - ended
+    personTypes:
+      - person
+      - bot
+    personStatuses:
+      - active
+      - inactive
+      - OutOfOffice
+      - DoNotDisturb
+      - Busy
+      - call
+      - meeting
+      - presenting
+
+  authentication:
+    - type: bearer
+      description: OAuth 2.0 Bearer token obtained via Webex OAuth flow
+      headerName: Authorization
+      format: "Bearer {access_token}"
+    - type: apikey
+      description: Personal access token from developer.webex.com for development use
+      headerName: Authorization
+      format: "Bearer {personal_access_token}"
+
+capability:
+  workflows:
+    - name: Team Collaboration
+      file: capabilities/team-collaboration.yaml
+      description: Combined messaging and meetings for team collaboration
+      apis: [webex-messaging, webex-meetings]
+      toolCount: 11
+      personas: [collaboration-admin, developer, team-lead]
+      domains: [Messaging, Meetings, Collaboration]
+
+  personas:
+    - id: collaboration-admin
+      name: Collaboration Administrator
+      description: Manages Webex rooms, teams, and permissions for an organization
+      workflows: [Team Collaboration]
+    - id: developer
+      name: Developer
+      description: Builds integrations and bots using Webex APIs and webhooks
+      workflows: [Team Collaboration]
+    - id: team-lead
+      name: Team Lead
+      description: Schedules meetings, manages room communications, and tracks participation
+      workflows: [Team Collaboration]
+    - id: it-admin
+      name: IT Administrator
+      description: Manages devices, licenses, and organizational settings
+      workflows: []
+    - id: contact-center-agent
+      name: Contact Center Agent
+      description: Handles customer interactions through Webex Contact Center
+      workflows: []
+
+  domains:
+    - name: Messaging
+      description: Real-time messaging and collaboration via rooms and teams
+    - name: Meetings
+      description: Video and audio conferencing, scheduling, and recordings
+    - name: Calling
+      description: Cloud calling, PSTN integration, and call management
+    - name: Devices
+      description: Webex hardware devices and workspace management
+    - name: Administration
+      description: User provisioning, license management, and organizational settings
+    - name: Contact Center
+      description: Customer service and contact center workflows
+
+  namespaces:
+    - namespace: webex-messaging
+      type: consumed
+      baseUri: https://webexapis.com/v1
+    - namespace: webex-meetings
+      type: consumed
+      baseUri: https://webexapis.com/v1
+    - namespace: webex-collaboration-api
+      type: rest-exposed
+      port: 8080
+    - namespace: webex-collaboration-mcp
+      type: mcp-exposed
+      port: 9080
+
+  binds:
+    - WEBEX_ACCESS_TOKEN: "OAuth 2.0 bearer token or personal access token from developer.webex.com"
+
+crossReference:
+  - resource: rooms
+    operations: [list-rooms, create-room, get-room, update-room, delete-room]
+    workflows: [Team Collaboration]
+    personas: [collaboration-admin, team-lead, developer]
+  - resource: messages
+    operations: [list-messages, send-message, get-message, delete-message]
+    workflows: [Team Collaboration]
+    personas: [team-lead, developer]
+  - resource: people
+    operations: [list-people, get-person]
+    workflows: [Team Collaboration]
+    personas: [collaboration-admin, developer]
+  - resource: meetings
+    operations: [list-meetings, schedule-meeting, get-meeting, delete-meeting]
+    workflows: [Team Collaboration]
+    personas: [team-lead, collaboration-admin]
+  - resource: recordings
+    operations: [list-recordings, get-recording]
+    workflows: [Team Collaboration]
+    personas: [team-lead, collaboration-admin]
+  - resource: webhooks
+    operations: [list-webhooks, create-webhook, delete-webhook]
+    workflows: [Team Collaboration]
+    personas: [developer]
