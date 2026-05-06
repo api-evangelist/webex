@@ -1,303 +1,778 @@
-naftiko: "1.0.0-alpha1"
-
+naftiko: 1.0.0-alpha2
 info:
-  label: "Webex Team Collaboration"
-  description: >-
-    Unified capability for team collaboration workflows combining Webex Messaging
-    and Webex Meetings APIs. Enables teams to communicate via rooms and messages,
-    schedule and manage video meetings, and automate collaboration workflows. Used
-    by development teams, remote workers, and enterprise communication administrators.
+  label: Webex Team Collaboration
+  description: Unified capability for team collaboration workflows combining Webex Messaging and Webex Meetings APIs. Enables
+    teams to communicate via rooms and messages, schedule and manage video meetings, and automate collaboration workflows.
+    Used by development teams, remote workers, and enterprise communication administrators.
   tags:
-    - Webex
-    - Collaboration
-    - Communication
-    - Meetings
-    - Messaging
-    - Team Productivity
-  created: "2026-05-03"
-  modified: "2026-05-03"
-
+  - Webex
+  - Collaboration
+  - Communication
+  - Meetings
+  - Messaging
+  - Team Productivity
+  created: '2026-05-03'
+  modified: '2026-05-06'
 binds:
-  - namespace: env
-    keys:
-      WEBEX_ACCESS_TOKEN: WEBEX_ACCESS_TOKEN
-
+- namespace: env
+  keys:
+    WEBEX_ACCESS_TOKEN: WEBEX_ACCESS_TOKEN
 capability:
   consumes:
-    - import: webex-messaging
-      location: ./shared/messaging.yaml
-    - import: webex-meetings
-      location: ./shared/meetings.yaml
-
+  - type: http
+    namespace: webex-messaging
+    baseUri: https://webexapis.com/v1
+    description: Webex Messaging REST API for rooms, messages, teams, and memberships.
+    authentication:
+      type: bearer
+      token: '{{WEBEX_ACCESS_TOKEN}}'
+    resources:
+    - name: rooms
+      path: /rooms
+      description: Cisco Webex rooms (formerly known as spaces) are virtual meeting places where people post messages and
+        collaborate.
+      operations:
+      - name: list-rooms
+        method: GET
+        description: List Rooms
+        inputParameters:
+        - name: teamId
+          in: query
+          type: string
+          required: false
+          description: List rooms associated with a team.
+        - name: type
+          in: query
+          type: string
+          required: false
+          description: direct or group. Group rooms are conversations between two or more people.
+        - name: max
+          in: query
+          type: integer
+          required: false
+          description: Limit the maximum number of rooms in the response.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: create-room
+        method: POST
+        description: Create a Room
+        inputParameters: []
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        body:
+          type: json
+          data:
+            title: '{{tools.title}}'
+            teamId: '{{tools.teamId}}'
+      - name: get-room
+        method: GET
+        description: Get Room Details
+        inputParameters:
+        - name: roomId
+          in: path
+          type: string
+          required: true
+          description: The unique identifier for the room.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: update-room
+        method: PUT
+        description: Update a Room
+        inputParameters:
+        - name: roomId
+          in: path
+          type: string
+          required: true
+          description: The unique identifier for the room.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        body:
+          type: json
+          data:
+            title: '{{tools.title}}'
+      - name: delete-room
+        method: DELETE
+        description: Delete a Room
+        inputParameters:
+        - name: roomId
+          in: path
+          type: string
+          required: true
+          description: The unique identifier for the room.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: messages
+      path: /messages
+      description: Messages are how you communicate in a room. In Webex, each message is displayed on its own line along with
+        a timestamp and sender information.
+      operations:
+      - name: list-messages
+        method: GET
+        description: List Messages
+        inputParameters:
+        - name: roomId
+          in: query
+          type: string
+          required: true
+          description: List messages in a room, by ID.
+        - name: max
+          in: query
+          type: integer
+          required: false
+          description: Limit the maximum number of messages in the response.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: create-message
+        method: POST
+        description: Create a Message
+        inputParameters: []
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        body:
+          type: json
+          data:
+            roomId: '{{tools.roomId}}'
+            text: '{{tools.text}}'
+            markdown: '{{tools.markdown}}'
+      - name: get-message
+        method: GET
+        description: Get Message Details
+        inputParameters:
+        - name: messageId
+          in: path
+          type: string
+          required: true
+          description: The unique identifier for the message.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: delete-message
+        method: DELETE
+        description: Delete a Message
+        inputParameters:
+        - name: messageId
+          in: path
+          type: string
+          required: true
+          description: The unique identifier for the message.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: teams
+      path: /teams
+      description: Teams are groups of people with a set of rooms that are visible to all members.
+      operations:
+      - name: list-teams
+        method: GET
+        description: List Teams
+        inputParameters:
+        - name: max
+          in: query
+          type: integer
+          required: false
+          description: Limit the maximum number of teams in the response.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: create-team
+        method: POST
+        description: Create a Team
+        inputParameters: []
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        body:
+          type: json
+          data:
+            name: '{{tools.name}}'
+      - name: get-team
+        method: GET
+        description: Get Team Details
+        inputParameters:
+        - name: teamId
+          in: path
+          type: string
+          required: true
+          description: The unique identifier for the team.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: people
+      path: /people
+      description: People are registered users of Webex. Searching and viewing People requires an auth token.
+      operations:
+      - name: list-people
+        method: GET
+        description: List People
+        inputParameters:
+        - name: email
+          in: query
+          type: string
+          required: false
+          description: List people with this email address.
+        - name: displayName
+          in: query
+          type: string
+          required: false
+          description: List people whose name starts with the provided string.
+        - name: max
+          in: query
+          type: integer
+          required: false
+          description: Limit the number of people in the response.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: get-person
+        method: GET
+        description: Get Person Details
+        inputParameters:
+        - name: personId
+          in: path
+          type: string
+          required: true
+          description: A unique identifier for the person.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: webhooks
+      path: /webhooks
+      description: Webhooks allow your app to be notified via HTTP when a specific event occurs in Webex.
+      operations:
+      - name: list-webhooks
+        method: GET
+        description: List Webhooks
+        inputParameters:
+        - name: max
+          in: query
+          type: integer
+          required: false
+          description: Limit the number of webhooks in the response.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: create-webhook
+        method: POST
+        description: Create a Webhook
+        inputParameters: []
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        body:
+          type: json
+          data:
+            name: '{{tools.name}}'
+            targetUrl: '{{tools.targetUrl}}'
+            resource: '{{tools.resource}}'
+            event: '{{tools.event}}'
+      - name: delete-webhook
+        method: DELETE
+        description: Delete a Webhook
+        inputParameters:
+        - name: webhookId
+          in: path
+          type: string
+          required: true
+          description: The unique identifier for the webhook.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+  - type: http
+    namespace: webex-meetings
+    baseUri: https://webexapis.com/v1
+    description: Webex Meetings REST API for scheduling, managing, and reporting on meetings.
+    authentication:
+      type: bearer
+      token: '{{WEBEX_ACCESS_TOKEN}}'
+    resources:
+    - name: meetings
+      path: /meetings
+      description: Webex meetings for scheduling and managing video conferences.
+      operations:
+      - name: list-meetings
+        method: GET
+        description: List Meetings
+        inputParameters:
+        - name: meetingType
+          in: query
+          type: string
+          required: false
+          description: Scheduled meeting, personal room meeting, or webinar.
+        - name: state
+          in: query
+          type: string
+          required: false
+          description: Active, scheduled, ready, lobby, in-progress, ended, missed, or expired.
+        - name: max
+          in: query
+          type: integer
+          required: false
+          description: Limit the number of meetings in the response.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: create-meeting
+        method: POST
+        description: Create a Meeting
+        inputParameters: []
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        body:
+          type: json
+          data:
+            title: '{{tools.title}}'
+            start: '{{tools.start}}'
+            end: '{{tools.end}}'
+            invitees: '{{tools.invitees}}'
+      - name: get-meeting
+        method: GET
+        description: Get Meeting Details
+        inputParameters:
+        - name: meetingId
+          in: path
+          type: string
+          required: true
+          description: The unique identifier for the meeting.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: update-meeting
+        method: PUT
+        description: Update a Meeting
+        inputParameters:
+        - name: meetingId
+          in: path
+          type: string
+          required: true
+          description: The unique identifier for the meeting.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        body:
+          type: json
+          data:
+            title: '{{tools.title}}'
+            start: '{{tools.start}}'
+            end: '{{tools.end}}'
+      - name: delete-meeting
+        method: DELETE
+        description: Delete a Meeting
+        inputParameters:
+        - name: meetingId
+          in: path
+          type: string
+          required: true
+          description: The unique identifier for the meeting.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: meeting-participants
+      path: /meetingParticipants
+      description: Participants who joined Webex meetings.
+      operations:
+      - name: list-participants
+        method: GET
+        description: List Meeting Participants
+        inputParameters:
+        - name: meetingId
+          in: query
+          type: string
+          required: true
+          description: The unique identifier for the meeting.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: meeting-invitees
+      path: /meetingInvitees
+      description: People invited to Webex meetings.
+      operations:
+      - name: list-invitees
+        method: GET
+        description: List Meeting Invitees
+        inputParameters:
+        - name: meetingId
+          in: query
+          type: string
+          required: true
+          description: The unique identifier for the meeting.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: create-invitee
+        method: POST
+        description: Invite Someone to a Meeting
+        inputParameters: []
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        body:
+          type: json
+          data:
+            meetingId: '{{tools.meetingId}}'
+            email: '{{tools.email}}'
+    - name: meeting-recordings
+      path: /recordings
+      description: Webex meeting recordings.
+      operations:
+      - name: list-recordings
+        method: GET
+        description: List Recordings
+        inputParameters:
+        - name: meetingId
+          in: query
+          type: string
+          required: false
+          description: The unique identifier for the meeting.
+        - name: max
+          in: query
+          type: integer
+          required: false
+          description: Limit the number of recordings in the response.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: get-recording
+        method: GET
+        description: Get Recording Details
+        inputParameters:
+        - name: recordingId
+          in: path
+          type: string
+          required: true
+          description: The unique identifier for the recording.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
   exposes:
-    - type: rest
-      port: 8080
-      namespace: webex-collaboration-api
-      description: "Unified REST API for Webex team collaboration workflows."
-      resources:
-        - path: /v1/rooms
-          name: rooms
-          description: "Manage Webex collaboration rooms"
-          operations:
-            - method: GET
-              name: list-rooms
-              description: "List all Webex rooms available to the authenticated user"
-              call: "webex-messaging.list-rooms"
-              outputParameters:
-                - type: object
-                  mapping: "$."
-            - method: POST
-              name: create-room
-              description: "Create a new Webex collaboration room"
-              call: "webex-messaging.create-room"
-              outputParameters:
-                - type: object
-                  mapping: "$."
-        - path: /v1/rooms/{roomId}
-          name: room
-          description: "Single room operations"
-          operations:
-            - method: GET
-              name: get-room
-              description: "Get details of a specific room"
-              call: "webex-messaging.get-room"
-              with:
-                roomId: "rest.roomId"
-              outputParameters:
-                - type: object
-                  mapping: "$."
-            - method: DELETE
-              name: delete-room
-              description: "Delete a Webex room"
-              call: "webex-messaging.delete-room"
-              with:
-                roomId: "rest.roomId"
-              outputParameters:
-                - type: object
-                  mapping: "$."
-        - path: /v1/messages
-          name: messages
-          description: "Post and retrieve messages in Webex rooms"
-          operations:
-            - method: GET
-              name: list-messages
-              description: "List messages in a room"
-              call: "webex-messaging.list-messages"
-              with:
-                roomId: "rest.roomId"
-              outputParameters:
-                - type: object
-                  mapping: "$."
-            - method: POST
-              name: send-message
-              description: "Post a message to a Webex room"
-              call: "webex-messaging.create-message"
-              outputParameters:
-                - type: object
-                  mapping: "$."
-        - path: /v1/meetings
-          name: meetings
-          description: "Schedule and manage Webex meetings"
-          operations:
-            - method: GET
-              name: list-meetings
-              description: "List scheduled Webex meetings"
-              call: "webex-meetings.list-meetings"
-              outputParameters:
-                - type: object
-                  mapping: "$."
-            - method: POST
-              name: schedule-meeting
-              description: "Schedule a new Webex video meeting"
-              call: "webex-meetings.create-meeting"
-              outputParameters:
-                - type: object
-                  mapping: "$."
-        - path: /v1/meetings/{meetingId}
-          name: meeting
-          description: "Single meeting operations"
-          operations:
-            - method: GET
-              name: get-meeting
-              description: "Get meeting details"
-              call: "webex-meetings.get-meeting"
-              with:
-                meetingId: "rest.meetingId"
-              outputParameters:
-                - type: object
-                  mapping: "$."
-            - method: DELETE
-              name: delete-meeting
-              description: "Cancel a scheduled meeting"
-              call: "webex-meetings.delete-meeting"
-              with:
-                meetingId: "rest.meetingId"
-              outputParameters:
-                - type: object
-                  mapping: "$."
-        - path: /v1/people
-          name: people
-          description: "Look up Webex users"
-          operations:
-            - method: GET
-              name: list-people
-              description: "Search Webex users by email or name"
-              call: "webex-messaging.list-people"
-              outputParameters:
-                - type: object
-                  mapping: "$."
-        - path: /v1/recordings
-          name: recordings
-          description: "Access Webex meeting recordings"
-          operations:
-            - method: GET
-              name: list-recordings
-              description: "List available Webex recordings"
-              call: "webex-meetings.list-recordings"
-              outputParameters:
-                - type: object
-                  mapping: "$."
-        - path: /v1/webhooks
-          name: webhooks
-          description: "Manage Webex event webhooks"
-          operations:
-            - method: GET
-              name: list-webhooks
-              description: "List registered webhooks"
-              call: "webex-messaging.list-webhooks"
-              outputParameters:
-                - type: object
-                  mapping: "$."
-            - method: POST
-              name: create-webhook
-              description: "Create a new Webex event webhook"
-              call: "webex-messaging.create-webhook"
-              outputParameters:
-                - type: object
-                  mapping: "$."
-
-    - type: mcp
-      port: 9080
-      namespace: webex-collaboration-mcp
-      transport: http
-      description: "MCP server for AI-assisted Webex team collaboration workflows."
-      tools:
-        - name: list-rooms
-          description: "List Webex collaboration rooms available to the user"
-          hints:
-            readOnly: true
-            openWorld: true
-          call: "webex-messaging.list-rooms"
-          outputParameters:
-            - type: object
-              mapping: "$."
-        - name: create-room
-          description: "Create a new Webex collaboration room for team communication"
-          hints:
-            readOnly: false
-            destructive: false
-          call: "webex-messaging.create-room"
-          with:
-            title: "tools.title"
-          outputParameters:
-            - type: object
-              mapping: "$."
-        - name: list-messages
-          description: "List messages in a Webex room"
-          hints:
-            readOnly: true
-            openWorld: true
-          call: "webex-messaging.list-messages"
-          with:
-            roomId: "tools.roomId"
-          outputParameters:
-            - type: object
-              mapping: "$."
-        - name: send-message
-          description: "Send a message to a Webex room"
-          hints:
-            readOnly: false
-            destructive: false
-          call: "webex-messaging.create-message"
-          with:
-            roomId: "tools.roomId"
-            text: "tools.text"
-          outputParameters:
-            - type: object
-              mapping: "$."
-        - name: search-people
-          description: "Search for Webex users by email or display name"
-          hints:
-            readOnly: true
-            openWorld: true
-          call: "webex-messaging.list-people"
-          with:
-            email: "tools.email"
-          outputParameters:
-            - type: object
-              mapping: "$."
-        - name: list-meetings
-          description: "List upcoming Webex meetings"
-          hints:
-            readOnly: true
-            openWorld: true
-          call: "webex-meetings.list-meetings"
-          outputParameters:
-            - type: object
-              mapping: "$."
-        - name: schedule-meeting
-          description: "Schedule a new Webex video meeting with participants"
-          hints:
-            readOnly: false
-            destructive: false
-          call: "webex-meetings.create-meeting"
-          with:
-            title: "tools.title"
-            start: "tools.start"
-            end: "tools.end"
-          outputParameters:
-            - type: object
-              mapping: "$."
-        - name: get-meeting-participants
-          description: "Get the list of participants who joined a Webex meeting"
-          hints:
-            readOnly: true
-            openWorld: false
-          call: "webex-meetings.list-participants"
-          with:
-            meetingId: "tools.meetingId"
-          outputParameters:
-            - type: object
-              mapping: "$."
-        - name: list-recordings
-          description: "List available Webex meeting recordings"
-          hints:
-            readOnly: true
-            openWorld: true
-          call: "webex-meetings.list-recordings"
-          outputParameters:
-            - type: object
-              mapping: "$."
-        - name: list-webhooks
-          description: "List registered Webex event webhooks"
-          hints:
-            readOnly: true
-            openWorld: false
-          call: "webex-messaging.list-webhooks"
-          outputParameters:
-            - type: object
-              mapping: "$."
-        - name: create-webhook
-          description: "Register a webhook to receive Webex event notifications"
-          hints:
-            readOnly: false
-            destructive: false
-          call: "webex-messaging.create-webhook"
-          with:
-            name: "tools.name"
-            targetUrl: "tools.targetUrl"
-            resource: "tools.resource"
-            event: "tools.event"
-          outputParameters:
-            - type: object
-              mapping: "$."
+  - type: rest
+    port: 8080
+    namespace: webex-collaboration-api
+    description: Unified REST API for Webex team collaboration workflows.
+    resources:
+    - path: /v1/rooms
+      name: rooms
+      description: Manage Webex collaboration rooms
+      operations:
+      - method: GET
+        name: list-rooms
+        description: List all Webex rooms available to the authenticated user
+        call: webex-messaging.list-rooms
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: create-room
+        description: Create a new Webex collaboration room
+        call: webex-messaging.create-room
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/rooms/{roomId}
+      name: room
+      description: Single room operations
+      operations:
+      - method: GET
+        name: get-room
+        description: Get details of a specific room
+        call: webex-messaging.get-room
+        with:
+          roomId: rest.roomId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: delete-room
+        description: Delete a Webex room
+        call: webex-messaging.delete-room
+        with:
+          roomId: rest.roomId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/messages
+      name: messages
+      description: Post and retrieve messages in Webex rooms
+      operations:
+      - method: GET
+        name: list-messages
+        description: List messages in a room
+        call: webex-messaging.list-messages
+        with:
+          roomId: rest.roomId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: send-message
+        description: Post a message to a Webex room
+        call: webex-messaging.create-message
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/meetings
+      name: meetings
+      description: Schedule and manage Webex meetings
+      operations:
+      - method: GET
+        name: list-meetings
+        description: List scheduled Webex meetings
+        call: webex-meetings.list-meetings
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: schedule-meeting
+        description: Schedule a new Webex video meeting
+        call: webex-meetings.create-meeting
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/meetings/{meetingId}
+      name: meeting
+      description: Single meeting operations
+      operations:
+      - method: GET
+        name: get-meeting
+        description: Get meeting details
+        call: webex-meetings.get-meeting
+        with:
+          meetingId: rest.meetingId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: delete-meeting
+        description: Cancel a scheduled meeting
+        call: webex-meetings.delete-meeting
+        with:
+          meetingId: rest.meetingId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/people
+      name: people
+      description: Look up Webex users
+      operations:
+      - method: GET
+        name: list-people
+        description: Search Webex users by email or name
+        call: webex-messaging.list-people
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/recordings
+      name: recordings
+      description: Access Webex meeting recordings
+      operations:
+      - method: GET
+        name: list-recordings
+        description: List available Webex recordings
+        call: webex-meetings.list-recordings
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/webhooks
+      name: webhooks
+      description: Manage Webex event webhooks
+      operations:
+      - method: GET
+        name: list-webhooks
+        description: List registered webhooks
+        call: webex-messaging.list-webhooks
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: create-webhook
+        description: Create a new Webex event webhook
+        call: webex-messaging.create-webhook
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    port: 9080
+    namespace: webex-collaboration-mcp
+    transport: http
+    description: MCP server for AI-assisted Webex team collaboration workflows.
+    tools:
+    - name: list-rooms
+      description: List Webex collaboration rooms available to the user
+      hints:
+        readOnly: true
+        openWorld: true
+      call: webex-messaging.list-rooms
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-room
+      description: Create a new Webex collaboration room for team communication
+      hints:
+        readOnly: false
+        destructive: false
+      call: webex-messaging.create-room
+      with:
+        title: tools.title
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-messages
+      description: List messages in a Webex room
+      hints:
+        readOnly: true
+        openWorld: true
+      call: webex-messaging.list-messages
+      with:
+        roomId: tools.roomId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: send-message
+      description: Send a message to a Webex room
+      hints:
+        readOnly: false
+        destructive: false
+      call: webex-messaging.create-message
+      with:
+        roomId: tools.roomId
+        text: tools.text
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: search-people
+      description: Search for Webex users by email or display name
+      hints:
+        readOnly: true
+        openWorld: true
+      call: webex-messaging.list-people
+      with:
+        email: tools.email
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-meetings
+      description: List upcoming Webex meetings
+      hints:
+        readOnly: true
+        openWorld: true
+      call: webex-meetings.list-meetings
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: schedule-meeting
+      description: Schedule a new Webex video meeting with participants
+      hints:
+        readOnly: false
+        destructive: false
+      call: webex-meetings.create-meeting
+      with:
+        title: tools.title
+        start: tools.start
+        end: tools.end
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-meeting-participants
+      description: Get the list of participants who joined a Webex meeting
+      hints:
+        readOnly: true
+        openWorld: false
+      call: webex-meetings.list-participants
+      with:
+        meetingId: tools.meetingId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-recordings
+      description: List available Webex meeting recordings
+      hints:
+        readOnly: true
+        openWorld: true
+      call: webex-meetings.list-recordings
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-webhooks
+      description: List registered Webex event webhooks
+      hints:
+        readOnly: true
+        openWorld: false
+      call: webex-messaging.list-webhooks
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-webhook
+      description: Register a webhook to receive Webex event notifications
+      hints:
+        readOnly: false
+        destructive: false
+      call: webex-messaging.create-webhook
+      with:
+        name: tools.name
+        targetUrl: tools.targetUrl
+        resource: tools.resource
+        event: tools.event
+      outputParameters:
+      - type: object
+        mapping: $.
