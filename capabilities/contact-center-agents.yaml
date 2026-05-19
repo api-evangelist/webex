@@ -1,0 +1,412 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Webex Contact Center — Agents
+  description: 'Webex Contact Center — Agents. 7 operations. Lead operation: Get Agent Activities. Self-contained Naftiko
+    capability covering one Webex business surface.'
+  tags:
+  - Webex
+  - Agents
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WEBEX_API_KEY: WEBEX_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: contact-center-agents
+    baseUri: ''
+    description: Webex Contact Center — Agents business capability. Self-contained, no shared references.
+    resources:
+    - name: v1-agents-activities
+      path: /v1/agents/activities
+      operations:
+      - name: getagentactivities
+        method: GET
+        description: Get Agent Activities
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: agentIds
+          in: query
+          type: array
+          description: Filter agent activities by agent ids separated with commas if more than one value (max 100). By default,
+            there is no agent filtering.
+        - name: teamIds
+          in: query
+          type: array
+          description: Filter agent activities by team ids separated with commas if more than one value (max 100). By default,
+            there is no team filtering.
+        - name: channelTypes
+          in: query
+          type: array
+          description: Channel type(s) permitted in response. Separate values with commas. Must be lowercase. By default,
+            there is no channelType filtering.
+        - name: from
+          in: query
+          type: integer
+          description: Filter agent activities created after given epoch timestamp in UTC (in milliseconds).
+          required: true
+        - name: to
+          in: query
+          type: integer
+          description: Filter agent activities created before given epoch timestamp in UTC (in milliseconds). If unspecified,
+            queries up to the present.
+        - name: pageSize
+          in: query
+          type: integer
+          description: Maximum page size in response. Maximum allowed value is 1000. Defaults to 100 items per page.
+        - name: page
+          in: query
+          type: integer
+          description: Page number to be passed. Maximum number of records that can be fetched for the given from and to is
+            10,000. So maximum page number allowed is based on it. Defa
+        - name: orgId
+          in: query
+          type: string
+          description: Organization ID to use for this operation. If unspecified, inferred from token. Token must have permission
+            to interact with this organization.
+        - name: TrackingId
+          in: header
+          type: string
+          description: Tracking ID to use for this operation, for traceability, debugging, and error reporting purposes.
+    - name: v1-agents-buddyList
+      path: /v1/agents/buddyList
+      operations:
+      - name: buddyagentsroute
+        method: POST
+        description: Buddy Agents List
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: v1-agents-login
+      path: /v1/agents/login
+      operations:
+      - name: loginroute
+        method: POST
+        description: Login
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: v1-agents-logout
+      path: /v1/agents/logout
+      operations:
+      - name: logoutroute
+        method: PUT
+        description: Logout
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: v1-agents-reload
+      path: /v1/agents/reload
+      operations:
+      - name: reloadroute
+        method: POST
+        description: Reload
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: v1-agents-session-state
+      path: /v1/agents/session/state
+      operations:
+      - name: stateroute
+        method: PUT
+        description: State Change
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: v1-agents-statistics
+      path: /v1/agents/statistics
+      operations:
+      - name: getdocumentbyqueryparam
+        method: GET
+        description: Get Agent Statistics
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: from
+          in: query
+          type: integer
+          description: Start time for the query (in epoch milliseconds). Any epoch time can be passed in the input, from date
+            will be rounded down to nearest 15 minute window. For exa
+          required: true
+        - name: to
+          in: query
+          type: integer
+          description: End time for the query (in epoch milliseconds). Any epoch time can be passed in the input, from date
+            will be rounded down to nearest 15 minute window. For examp
+          required: true
+        - name: interval
+          in: query
+          type: integer
+          description: Time interval (in minutes) to chunk statistics by i.e. break up the entire from-to timeframe by this
+            interval amount so that statistics can be viewed incrementa
+        - name: agentIds
+          in: query
+          type: array
+          description: Comma-separated list of agent IDs. A maximum of 100 values is permitted. If values are not provided,
+            all agents of an organization are returned.
+        - name: orgId
+          in: query
+          type: string
+          description: Organization ID to use for this operation. If unspecified, inferred from token. Token must have permission
+            to interact with this organization.
+        - name: TrackingId
+          in: header
+          type: string
+          description: Tracking ID to use for this operation, for traceability, debugging, and error reporting purposes.
+    authentication:
+      type: bearer
+      token: '{{env.WEBEX_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: contact-center-agents-rest
+    port: 8080
+    description: REST adapter for Webex Contact Center — Agents. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/v1/agents/activities
+      name: v1-agents-activities
+      description: REST surface for v1-agents-activities.
+      operations:
+      - method: GET
+        name: getagentactivities
+        description: Get Agent Activities
+        call: contact-center-agents.getagentactivities
+        with:
+          agentIds: rest.agentIds
+          teamIds: rest.teamIds
+          channelTypes: rest.channelTypes
+          from: rest.from
+          to: rest.to
+          pageSize: rest.pageSize
+          page: rest.page
+          orgId: rest.orgId
+          TrackingId: rest.TrackingId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v1/agents/buddylist
+      name: v1-agents-buddylist
+      description: REST surface for v1-agents-buddyList.
+      operations:
+      - method: POST
+        name: buddyagentsroute
+        description: Buddy Agents List
+        call: contact-center-agents.buddyagentsroute
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v1/agents/login
+      name: v1-agents-login
+      description: REST surface for v1-agents-login.
+      operations:
+      - method: POST
+        name: loginroute
+        description: Login
+        call: contact-center-agents.loginroute
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v1/agents/logout
+      name: v1-agents-logout
+      description: REST surface for v1-agents-logout.
+      operations:
+      - method: PUT
+        name: logoutroute
+        description: Logout
+        call: contact-center-agents.logoutroute
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v1/agents/reload
+      name: v1-agents-reload
+      description: REST surface for v1-agents-reload.
+      operations:
+      - method: POST
+        name: reloadroute
+        description: Reload
+        call: contact-center-agents.reloadroute
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v1/agents/session/state
+      name: v1-agents-session-state
+      description: REST surface for v1-agents-session-state.
+      operations:
+      - method: PUT
+        name: stateroute
+        description: State Change
+        call: contact-center-agents.stateroute
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v1/agents/statistics
+      name: v1-agents-statistics
+      description: REST surface for v1-agents-statistics.
+      operations:
+      - method: GET
+        name: getdocumentbyqueryparam
+        description: Get Agent Statistics
+        call: contact-center-agents.getdocumentbyqueryparam
+        with:
+          from: rest.from
+          to: rest.to
+          interval: rest.interval
+          agentIds: rest.agentIds
+          orgId: rest.orgId
+          TrackingId: rest.TrackingId
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: contact-center-agents-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Webex Contact Center — Agents. One tool per consumed operation, routed inline through this
+      capability's consumes block.
+    tools:
+    - name: get-agent-activities
+      description: Get Agent Activities
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: contact-center-agents.getagentactivities
+      with:
+        agentIds: tools.agentIds
+        teamIds: tools.teamIds
+        channelTypes: tools.channelTypes
+        from: tools.from
+        to: tools.to
+        pageSize: tools.pageSize
+        page: tools.page
+        orgId: tools.orgId
+        TrackingId: tools.TrackingId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: buddy-agents-list
+      description: Buddy Agents List
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: contact-center-agents.buddyagentsroute
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: login
+      description: Login
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: contact-center-agents.loginroute
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: logout
+      description: Logout
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: contact-center-agents.logoutroute
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: reload
+      description: Reload
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: contact-center-agents.reloadroute
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: state-change
+      description: State Change
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: contact-center-agents.stateroute
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-agent-statistics
+      description: Get Agent Statistics
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: contact-center-agents.getdocumentbyqueryparam
+      with:
+        from: tools.from
+        to: tools.to
+        interval: tools.interval
+        agentIds: tools.agentIds
+        orgId: tools.orgId
+        TrackingId: tools.TrackingId
+      outputParameters:
+      - type: object
+        mapping: $.

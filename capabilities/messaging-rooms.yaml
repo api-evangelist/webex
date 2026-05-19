@@ -1,0 +1,312 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Webex Messaging — Rooms
+  description: 'Webex Messaging — Rooms. 6 operations. Lead operation: List Rooms. Self-contained Naftiko capability covering
+    one Webex business surface.'
+  tags:
+  - Webex
+  - Rooms
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WEBEX_API_KEY: WEBEX_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: messaging-rooms
+    baseUri: ''
+    description: Webex Messaging — Rooms business capability. Self-contained, no shared references.
+    resources:
+    - name: rooms
+      path: /rooms
+      operations:
+      - name: listrooms
+        method: GET
+        description: List Rooms
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: teamId
+          in: query
+          type: string
+          description: List rooms associated with a team, by ID. Cannot be set in combination with `orgPublicSpaces`.
+        - name: type
+          in: query
+          type: string
+          description: List rooms by type. Cannot be set in combination with `orgPublicSpaces`.
+        - name: orgPublicSpaces
+          in: query
+          type: boolean
+          description: Shows the org's public spaces joined and unjoined. When set the result list is sorted by the `madePublic`
+            timestamp.
+        - name: from
+          in: query
+          type: string
+          description: Filters rooms, that were made public after this time. See `madePublic` timestamp
+        - name: to
+          in: query
+          type: string
+          description: Filters rooms, that were made public before this time. See `maePublic` timestamp
+        - name: sortBy
+          in: query
+          type: string
+          description: Sort results. Cannot be set in combination with `orgPublicSpaces`.
+        - name: max
+          in: query
+          type: number
+          description: Limit the maximum number of rooms in the response. Value must be between 1 and 1000, inclusive.
+      - name: createaroom
+        method: POST
+        description: Create a Room
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    - name: rooms-roomId
+      path: /rooms/{roomId}
+      operations:
+      - name: getroomdetails
+        method: GET
+        description: Get Room Details
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: roomId
+          in: path
+          type: string
+          description: The unique identifier for the room.
+          required: true
+      - name: updatearoom
+        method: PUT
+        description: Update a Room
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: roomId
+          in: path
+          type: string
+          description: The unique identifier for the room.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+      - name: deletearoom
+        method: DELETE
+        description: Delete a Room
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: roomId
+          in: path
+          type: string
+          description: The unique identifier for the room.
+          required: true
+    - name: rooms-roomId-meetingInfo
+      path: /rooms/{roomId}/meetingInfo
+      operations:
+      - name: getroommeetingdetails
+        method: GET
+        description: Get Room Meeting Details
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: roomId
+          in: path
+          type: string
+          description: The unique identifier for the room.
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.WEBEX_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: messaging-rooms-rest
+    port: 8080
+    description: REST adapter for Webex Messaging — Rooms. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/rooms
+      name: rooms
+      description: REST surface for rooms.
+      operations:
+      - method: GET
+        name: listrooms
+        description: List Rooms
+        call: messaging-rooms.listrooms
+        with:
+          teamId: rest.teamId
+          type: rest.type
+          orgPublicSpaces: rest.orgPublicSpaces
+          from: rest.from
+          to: rest.to
+          sortBy: rest.sortBy
+          max: rest.max
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: createaroom
+        description: Create a Room
+        call: messaging-rooms.createaroom
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/rooms/{roomid}
+      name: rooms-roomid
+      description: REST surface for rooms-roomId.
+      operations:
+      - method: GET
+        name: getroomdetails
+        description: Get Room Details
+        call: messaging-rooms.getroomdetails
+        with:
+          roomId: rest.roomId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: updatearoom
+        description: Update a Room
+        call: messaging-rooms.updatearoom
+        with:
+          roomId: rest.roomId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deletearoom
+        description: Delete a Room
+        call: messaging-rooms.deletearoom
+        with:
+          roomId: rest.roomId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/rooms/{roomid}/meetinginfo
+      name: rooms-roomid-meetinginfo
+      description: REST surface for rooms-roomId-meetingInfo.
+      operations:
+      - method: GET
+        name: getroommeetingdetails
+        description: Get Room Meeting Details
+        call: messaging-rooms.getroommeetingdetails
+        with:
+          roomId: rest.roomId
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: messaging-rooms-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Webex Messaging — Rooms. One tool per consumed operation, routed inline through this capability's
+      consumes block.
+    tools:
+    - name: list-rooms
+      description: List Rooms
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: messaging-rooms.listrooms
+      with:
+        teamId: tools.teamId
+        type: tools.type
+        orgPublicSpaces: tools.orgPublicSpaces
+        from: tools.from
+        to: tools.to
+        sortBy: tools.sortBy
+        max: tools.max
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-room
+      description: Create a Room
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: messaging-rooms.createaroom
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-room-details
+      description: Get Room Details
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: messaging-rooms.getroomdetails
+      with:
+        roomId: tools.roomId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-room
+      description: Update a Room
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: messaging-rooms.updatearoom
+      with:
+        roomId: tools.roomId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-room
+      description: Delete a Room
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: messaging-rooms.deletearoom
+      with:
+        roomId: tools.roomId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-room-meeting-details
+      description: Get Room Meeting Details
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: messaging-rooms.getroommeetingdetails
+      with:
+        roomId: tools.roomId
+      outputParameters:
+      - type: object
+        mapping: $.

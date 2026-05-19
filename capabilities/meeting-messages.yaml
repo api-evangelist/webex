@@ -1,0 +1,80 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Webex Meetings — Messages
+  description: 'Webex Meetings — Messages. 1 operations. Lead operation: Delete a Meeting Message. Self-contained Naftiko
+    capability covering one Webex business surface.'
+  tags:
+  - Webex
+  - Messages
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WEBEX_API_KEY: WEBEX_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: meeting-messages
+    baseUri: ''
+    description: Webex Meetings — Messages business capability. Self-contained, no shared references.
+    resources:
+    - name: meeting-messages-meetingMessageId
+      path: /meeting/messages/{meetingMessageId}
+      operations:
+      - name: deleteameetingmessage
+        method: DELETE
+        description: Delete a Meeting Message
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: meetingMessageId
+          in: path
+          type: string
+          description: The unique identifier for the message.
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.WEBEX_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: meeting-messages-rest
+    port: 8080
+    description: REST adapter for Webex Meetings — Messages. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/meeting/messages/{meetingmessageid}
+      name: meeting-messages-meetingmessageid
+      description: REST surface for meeting-messages-meetingMessageId.
+      operations:
+      - method: DELETE
+        name: deleteameetingmessage
+        description: Delete a Meeting Message
+        call: meeting-messages.deleteameetingmessage
+        with:
+          meetingMessageId: rest.meetingMessageId
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: meeting-messages-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Webex Meetings — Messages. One tool per consumed operation, routed inline through this capability's
+      consumes block.
+    tools:
+    - name: delete-meeting-message
+      description: Delete a Meeting Message
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: meeting-messages.deleteameetingmessage
+      with:
+        meetingMessageId: tools.meetingMessageId
+      outputParameters:
+      - type: object
+        mapping: $.

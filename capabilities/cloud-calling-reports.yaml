@@ -1,0 +1,215 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Webex Cloud Calling — Reports
+  description: 'Webex Cloud Calling — Reports. 4 operations. Lead operation: List Reports. Self-contained Naftiko capability
+    covering one Webex business surface.'
+  tags:
+  - Webex
+  - Reports
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WEBEX_API_KEY: WEBEX_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: cloud-calling-reports
+    baseUri: ''
+    description: Webex Cloud Calling — Reports business capability. Self-contained, no shared references.
+    resources:
+    - name: reports
+      path: /reports
+      operations:
+      - name: listreports
+        method: GET
+        description: List Reports
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: reportId
+          in: query
+          type: string
+          description: List reports by ID.
+        - name: service
+          in: query
+          type: string
+          description: List reports which use this service.
+        - name: templateId
+          in: query
+          type: number
+          description: List reports with this report template ID.
+        - name: from
+          in: query
+          type: string
+          description: List reports that were created on or after this date.
+        - name: to
+          in: query
+          type: string
+          description: List reports that were created before this date.
+      - name: createareport
+        method: POST
+        description: Create a Report
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    - name: reports-reportId
+      path: /reports/{reportId}
+      operations:
+      - name: getreportdetails
+        method: GET
+        description: Get Report Details
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: reportId
+          in: path
+          type: string
+          description: The unique identifier for the report.
+          required: true
+      - name: deleteareport
+        method: DELETE
+        description: Delete a Report
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: reportId
+          in: path
+          type: string
+          description: The unique identifier for the report.
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.WEBEX_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: cloud-calling-reports-rest
+    port: 8080
+    description: REST adapter for Webex Cloud Calling — Reports. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/reports
+      name: reports
+      description: REST surface for reports.
+      operations:
+      - method: GET
+        name: listreports
+        description: List Reports
+        call: cloud-calling-reports.listreports
+        with:
+          reportId: rest.reportId
+          service: rest.service
+          templateId: rest.templateId
+          from: rest.from
+          to: rest.to
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: createareport
+        description: Create a Report
+        call: cloud-calling-reports.createareport
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/reports/{reportid}
+      name: reports-reportid
+      description: REST surface for reports-reportId.
+      operations:
+      - method: GET
+        name: getreportdetails
+        description: Get Report Details
+        call: cloud-calling-reports.getreportdetails
+        with:
+          reportId: rest.reportId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deleteareport
+        description: Delete a Report
+        call: cloud-calling-reports.deleteareport
+        with:
+          reportId: rest.reportId
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: cloud-calling-reports-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Webex Cloud Calling — Reports. One tool per consumed operation, routed inline through this
+      capability's consumes block.
+    tools:
+    - name: list-reports
+      description: List Reports
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: cloud-calling-reports.listreports
+      with:
+        reportId: tools.reportId
+        service: tools.service
+        templateId: tools.templateId
+        from: tools.from
+        to: tools.to
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-report
+      description: Create a Report
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: cloud-calling-reports.createareport
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-report-details
+      description: Get Report Details
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: cloud-calling-reports.getreportdetails
+      with:
+        reportId: tools.reportId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-report
+      description: Delete a Report
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: cloud-calling-reports.deleteareport
+      with:
+        reportId: tools.reportId
+      outputParameters:
+      - type: object
+        mapping: $.

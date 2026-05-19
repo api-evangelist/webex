@@ -1,0 +1,201 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Webex Admin — Authorizations
+  description: 'Webex Admin — Authorizations. 4 operations. Lead operation: List authorizations for a user. Self-contained
+    Naftiko capability covering one Webex business surface.'
+  tags:
+  - Webex
+  - Authorizations
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WEBEX_API_KEY: WEBEX_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: admin-authorizations
+    baseUri: ''
+    description: Webex Admin — Authorizations business capability. Self-contained, no shared references.
+    resources:
+    - name: authorizations
+      path: /authorizations
+      operations:
+      - name: listauthorizationsforuser
+        method: GET
+        description: List authorizations for a user
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: personId
+          in: query
+          type: string
+          description: List authorizations for this user id.
+        - name: personEmail
+          in: query
+          type: string
+          description: List authorizations for this user email.
+      - name: deleteauthorizationoforgandclientid
+        method: DELETE
+        description: Delete authorization of org and client ID
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: clientId
+          in: query
+          type: string
+          description: The unique oAuth client id.
+          required: true
+        - name: orgId
+          in: query
+          type: string
+          description: The ID of the organization to which this person belongs.  If no orgId is specified, use orgId from
+            the OAuth token.
+    - name: authorizations-tokenExpiry
+      path: /authorizations/tokenExpiry
+      operations:
+      - name: gettokenexpirationstatus
+        method: GET
+        description: Get expiration status for a token
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: authorizations-authorizationId
+      path: /authorizations/{authorizationId}
+      operations:
+      - name: deleteauthorization
+        method: DELETE
+        description: Delete authorization
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: authorizationId
+          in: path
+          type: string
+          description: The unique identifier for the message.
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.WEBEX_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: admin-authorizations-rest
+    port: 8080
+    description: REST adapter for Webex Admin — Authorizations. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/authorizations
+      name: authorizations
+      description: REST surface for authorizations.
+      operations:
+      - method: GET
+        name: listauthorizationsforuser
+        description: List authorizations for a user
+        call: admin-authorizations.listauthorizationsforuser
+        with:
+          personId: rest.personId
+          personEmail: rest.personEmail
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deleteauthorizationoforgandclientid
+        description: Delete authorization of org and client ID
+        call: admin-authorizations.deleteauthorizationoforgandclientid
+        with:
+          clientId: rest.clientId
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/authorizations/tokenexpiry
+      name: authorizations-tokenexpiry
+      description: REST surface for authorizations-tokenExpiry.
+      operations:
+      - method: GET
+        name: gettokenexpirationstatus
+        description: Get expiration status for a token
+        call: admin-authorizations.gettokenexpirationstatus
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/authorizations/{authorizationid}
+      name: authorizations-authorizationid
+      description: REST surface for authorizations-authorizationId.
+      operations:
+      - method: DELETE
+        name: deleteauthorization
+        description: Delete authorization
+        call: admin-authorizations.deleteauthorization
+        with:
+          authorizationId: rest.authorizationId
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: admin-authorizations-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Webex Admin — Authorizations. One tool per consumed operation, routed inline through this
+      capability's consumes block.
+    tools:
+    - name: list-authorizations-user
+      description: List authorizations for a user
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: admin-authorizations.listauthorizationsforuser
+      with:
+        personId: tools.personId
+        personEmail: tools.personEmail
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-authorization-org-and-client
+      description: Delete authorization of org and client ID
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: admin-authorizations.deleteauthorizationoforgandclientid
+      with:
+        clientId: tools.clientId
+        orgId: tools.orgId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-expiration-status-token
+      description: Get expiration status for a token
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: admin-authorizations.gettokenexpirationstatus
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-authorization
+      description: Delete authorization
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: admin-authorizations.deleteauthorization
+      with:
+        authorizationId: tools.authorizationId
+      outputParameters:
+      - type: object
+        mapping: $.

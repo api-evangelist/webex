@@ -1,0 +1,280 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Webex Admin — Partner Reports/Templates
+  description: 'Webex Admin — Partner Reports/Templates. 5 operations. Lead operation: List Reports. Self-contained Naftiko
+    capability covering one Webex business surface.'
+  tags:
+  - Webex
+  - Partner Reports/Templates
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WEBEX_API_KEY: WEBEX_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: admin-partner-reports-templates
+    baseUri: ''
+    description: Webex Admin — Partner Reports/Templates business capability. Self-contained, no shared references.
+    resources:
+    - name: partner-reports
+      path: /partner/reports
+      operations:
+      - name: listreports
+        method: GET
+        description: List Reports
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: service
+          in: query
+          type: string
+          description: List reports which use this service.
+        - name: templateId
+          in: query
+          type: number
+          description: List reports with this report template ID.
+        - name: from
+          in: query
+          type: string
+          description: List reports that were created on or after this date.
+        - name: to
+          in: query
+          type: string
+          description: List reports that were created before this date.
+        - name: regionId
+          in: query
+          type: string
+          description: Data in the report will be from organizations in this region, for example, US, CA, or EU.
+        - name: onBehalfOfSubPartnerOrgId
+          in: query
+          type: string
+          description: The encoded organization ID for the sub partner.
+      - name: createareport
+        method: POST
+        description: Create a Report
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: onBehalfOfSubPartnerOrgId
+          in: query
+          type: string
+          description: The encoded organization ID for the sub partner.
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    - name: partner-reports-templates
+      path: /partner/reports/templates
+      operations:
+      - name: listreporttemplates
+        method: GET
+        description: List Report Templates
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: onBehalfOfSubPartnerOrgId
+          in: query
+          type: string
+          description: The encoded organization ID for the sub partner.
+    - name: partner-reports-reportId
+      path: /partner/reports/{reportId}
+      operations:
+      - name: getreportdetails
+        method: GET
+        description: Get Report Details
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: reportId
+          in: path
+          type: string
+          description: The unique identifier for the report.
+          required: true
+        - name: onBehalfOfSubPartnerOrgId
+          in: query
+          type: string
+          description: The encoded organization ID for the sub partner.
+      - name: deleteareport
+        method: DELETE
+        description: Delete a Report
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: reportId
+          in: path
+          type: string
+          description: The unique identifier for the report.
+          required: true
+        - name: onBehalfOfSubPartnerOrgId
+          in: query
+          type: string
+          description: The encoded organization ID for the sub partner.
+    authentication:
+      type: bearer
+      token: '{{env.WEBEX_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: admin-partner-reports-templates-rest
+    port: 8080
+    description: REST adapter for Webex Admin — Partner Reports/Templates. One Spectral-compliant resource per consumed operation,
+      prefixed with /v1.
+    resources:
+    - path: /v1/partner/reports
+      name: partner-reports
+      description: REST surface for partner-reports.
+      operations:
+      - method: GET
+        name: listreports
+        description: List Reports
+        call: admin-partner-reports-templates.listreports
+        with:
+          service: rest.service
+          templateId: rest.templateId
+          from: rest.from
+          to: rest.to
+          regionId: rest.regionId
+          onBehalfOfSubPartnerOrgId: rest.onBehalfOfSubPartnerOrgId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: createareport
+        description: Create a Report
+        call: admin-partner-reports-templates.createareport
+        with:
+          onBehalfOfSubPartnerOrgId: rest.onBehalfOfSubPartnerOrgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/partner/reports/templates
+      name: partner-reports-templates
+      description: REST surface for partner-reports-templates.
+      operations:
+      - method: GET
+        name: listreporttemplates
+        description: List Report Templates
+        call: admin-partner-reports-templates.listreporttemplates
+        with:
+          onBehalfOfSubPartnerOrgId: rest.onBehalfOfSubPartnerOrgId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/partner/reports/{reportid}
+      name: partner-reports-reportid
+      description: REST surface for partner-reports-reportId.
+      operations:
+      - method: GET
+        name: getreportdetails
+        description: Get Report Details
+        call: admin-partner-reports-templates.getreportdetails
+        with:
+          reportId: rest.reportId
+          onBehalfOfSubPartnerOrgId: rest.onBehalfOfSubPartnerOrgId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deleteareport
+        description: Delete a Report
+        call: admin-partner-reports-templates.deleteareport
+        with:
+          reportId: rest.reportId
+          onBehalfOfSubPartnerOrgId: rest.onBehalfOfSubPartnerOrgId
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: admin-partner-reports-templates-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Webex Admin — Partner Reports/Templates. One tool per consumed operation, routed inline through
+      this capability's consumes block.
+    tools:
+    - name: list-reports
+      description: List Reports
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: admin-partner-reports-templates.listreports
+      with:
+        service: tools.service
+        templateId: tools.templateId
+        from: tools.from
+        to: tools.to
+        regionId: tools.regionId
+        onBehalfOfSubPartnerOrgId: tools.onBehalfOfSubPartnerOrgId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-report
+      description: Create a Report
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: admin-partner-reports-templates.createareport
+      with:
+        onBehalfOfSubPartnerOrgId: tools.onBehalfOfSubPartnerOrgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-report-templates
+      description: List Report Templates
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: admin-partner-reports-templates.listreporttemplates
+      with:
+        onBehalfOfSubPartnerOrgId: tools.onBehalfOfSubPartnerOrgId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-report-details
+      description: Get Report Details
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: admin-partner-reports-templates.getreportdetails
+      with:
+        reportId: tools.reportId
+        onBehalfOfSubPartnerOrgId: tools.onBehalfOfSubPartnerOrgId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-report
+      description: Delete a Report
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: admin-partner-reports-templates.deleteareport
+      with:
+        reportId: tools.reportId
+        onBehalfOfSubPartnerOrgId: tools.onBehalfOfSubPartnerOrgId
+      outputParameters:
+      - type: object
+        mapping: $.

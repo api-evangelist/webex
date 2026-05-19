@@ -1,0 +1,70 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Webex Admin — Report Templates
+  description: 'Webex Admin — Report Templates. 1 operations. Lead operation: List Report Templates. Self-contained Naftiko
+    capability covering one Webex business surface.'
+  tags:
+  - Webex
+  - Report Templates
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WEBEX_API_KEY: WEBEX_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: admin-report-templates
+    baseUri: ''
+    description: Webex Admin — Report Templates business capability. Self-contained, no shared references.
+    resources:
+    - name: report-templates
+      path: /report/templates
+      operations:
+      - name: listreporttemplates
+        method: GET
+        description: List Report Templates
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    authentication:
+      type: bearer
+      token: '{{env.WEBEX_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: admin-report-templates-rest
+    port: 8080
+    description: REST adapter for Webex Admin — Report Templates. One Spectral-compliant resource per consumed operation,
+      prefixed with /v1.
+    resources:
+    - path: /v1/report/templates
+      name: report-templates
+      description: REST surface for report-templates.
+      operations:
+      - method: GET
+        name: listreporttemplates
+        description: List Report Templates
+        call: admin-report-templates.listreporttemplates
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: admin-report-templates-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Webex Admin — Report Templates. One tool per consumed operation, routed inline through this
+      capability's consumes block.
+    tools:
+    - name: list-report-templates
+      description: List Report Templates
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: admin-report-templates.listreporttemplates
+      outputParameters:
+      - type: object
+        mapping: $.

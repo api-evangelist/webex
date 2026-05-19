@@ -1,0 +1,432 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Webex Device — Devices
+  description: 'Webex Device — Devices. 6 operations. Lead operation: List Devices. Self-contained Naftiko capability covering
+    one Webex business surface.'
+  tags:
+  - Webex
+  - Devices
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WEBEX_API_KEY: WEBEX_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: device-devices
+    baseUri: ''
+    description: Webex Device — Devices business capability. Self-contained, no shared references.
+    resources:
+    - name: devices
+      path: /devices
+      operations:
+      - name: listdevices
+        method: GET
+        description: List Devices
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: max
+          in: query
+          type: number
+          description: Limit the maximum number of devices in the response.
+        - name: start
+          in: query
+          type: number
+          description: Offset. Default is 0.
+        - name: displayName
+          in: query
+          type: string
+          description: List devices with this display name.
+        - name: personId
+          in: query
+          type: string
+          description: List devices by person ID.
+        - name: workspaceId
+          in: query
+          type: string
+          description: List devices by workspace ID.
+        - name: orgId
+          in: query
+          type: string
+          description: List devices in this organization. Only admin users of another organization (such as partners) may
+            use this parameter.
+        - name: connectionStatus
+          in: query
+          type: string
+          description: List devices with this connection status.
+        - name: product
+          in: query
+          type: string
+          description: List devices with this product name.
+        - name: type
+          in: query
+          type: string
+          description: List devices with this type.
+        - name: serial
+          in: query
+          type: string
+          description: List devices with this serial number.
+        - name: tag
+          in: query
+          type: string
+          description: List devices which have a tag. Searching for multiple tags (logical AND) can be done by comma separating
+            the `tag` values or adding several `tag` parameters.
+        - name: software
+          in: query
+          type: string
+          description: List devices with this software version.
+        - name: upgradeChannel
+          in: query
+          type: string
+          description: List devices with this upgrade channel.
+        - name: errorCode
+          in: query
+          type: string
+          description: List devices with this error code.
+        - name: capability
+          in: query
+          type: string
+          description: List devices with this capability.
+        - name: permission
+          in: query
+          type: string
+          description: List devices with this permission.
+        - name: locationId
+          in: query
+          type: string
+          description: List devices by location ID.
+        - name: workspaceLocationId
+          in: query
+          type: string
+          description: List devices by workspace location ID. Deprecated, prefer `locationId`.
+        - name: mac
+          in: query
+          type: string
+          description: List devices with this MAC address.
+        - name: devicePlatform
+          in: query
+          type: string
+          description: List devices with this device platform.
+        - name: plannedMaintenance
+          in: query
+          type: string
+          description: List devices with this planned maintenance.
+      - name: createadevicebymacaddress
+        method: POST
+        description: Create a Device by MAC Address
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: query
+          type: string
+          description: The organization associated with the device. If left empty, the organization associated with the caller
+            will be used.
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    - name: devices-activationCode
+      path: /devices/activationCode
+      operations:
+      - name: createadeviceactivationcode
+        method: POST
+        description: Create a Device Activation Code
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: query
+          type: string
+          description: The organization associated with the activation code generated. If left empty, the organization associated
+            with the caller will be used.
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    - name: devices-deviceId
+      path: /devices/{deviceId}
+      operations:
+      - name: getdevicedetails
+        method: GET
+        description: Get Device Details
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: deviceId
+          in: path
+          type: string
+          description: A unique identifier for the device.
+          required: true
+        - name: orgId
+          in: query
+          type: string
+          description: The organization associated with the device. If left empty, the organization associated with the caller
+            will be used.
+      - name: deleteadevice
+        method: DELETE
+        description: Delete a Device
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: deviceId
+          in: path
+          type: string
+          description: A unique identifier for the device.
+          required: true
+        - name: orgId
+          in: query
+          type: string
+          description: The organization associated with the device. If left empty, the organization associated with the caller
+            will be used.
+      - name: modifydevicetags
+        method: PATCH
+        description: Modify Device Tags
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: deviceId
+          in: path
+          type: string
+          description: Unique identifier for the device.
+          required: true
+        - name: orgId
+          in: query
+          type: string
+          description: The organization associated with the device. If left empty, the organization associated with the caller
+            will be used.
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    authentication:
+      type: bearer
+      token: '{{env.WEBEX_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: device-devices-rest
+    port: 8080
+    description: REST adapter for Webex Device — Devices. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/devices
+      name: devices
+      description: REST surface for devices.
+      operations:
+      - method: GET
+        name: listdevices
+        description: List Devices
+        call: device-devices.listdevices
+        with:
+          max: rest.max
+          start: rest.start
+          displayName: rest.displayName
+          personId: rest.personId
+          workspaceId: rest.workspaceId
+          orgId: rest.orgId
+          connectionStatus: rest.connectionStatus
+          product: rest.product
+          type: rest.type
+          serial: rest.serial
+          tag: rest.tag
+          software: rest.software
+          upgradeChannel: rest.upgradeChannel
+          errorCode: rest.errorCode
+          capability: rest.capability
+          permission: rest.permission
+          locationId: rest.locationId
+          workspaceLocationId: rest.workspaceLocationId
+          mac: rest.mac
+          devicePlatform: rest.devicePlatform
+          plannedMaintenance: rest.plannedMaintenance
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: createadevicebymacaddress
+        description: Create a Device by MAC Address
+        call: device-devices.createadevicebymacaddress
+        with:
+          orgId: rest.orgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/devices/activationcode
+      name: devices-activationcode
+      description: REST surface for devices-activationCode.
+      operations:
+      - method: POST
+        name: createadeviceactivationcode
+        description: Create a Device Activation Code
+        call: device-devices.createadeviceactivationcode
+        with:
+          orgId: rest.orgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/devices/{deviceid}
+      name: devices-deviceid
+      description: REST surface for devices-deviceId.
+      operations:
+      - method: GET
+        name: getdevicedetails
+        description: Get Device Details
+        call: device-devices.getdevicedetails
+        with:
+          deviceId: rest.deviceId
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deleteadevice
+        description: Delete a Device
+        call: device-devices.deleteadevice
+        with:
+          deviceId: rest.deviceId
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PATCH
+        name: modifydevicetags
+        description: Modify Device Tags
+        call: device-devices.modifydevicetags
+        with:
+          deviceId: rest.deviceId
+          orgId: rest.orgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: device-devices-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Webex Device — Devices. One tool per consumed operation, routed inline through this capability's
+      consumes block.
+    tools:
+    - name: list-devices
+      description: List Devices
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: device-devices.listdevices
+      with:
+        max: tools.max
+        start: tools.start
+        displayName: tools.displayName
+        personId: tools.personId
+        workspaceId: tools.workspaceId
+        orgId: tools.orgId
+        connectionStatus: tools.connectionStatus
+        product: tools.product
+        type: tools.type
+        serial: tools.serial
+        tag: tools.tag
+        software: tools.software
+        upgradeChannel: tools.upgradeChannel
+        errorCode: tools.errorCode
+        capability: tools.capability
+        permission: tools.permission
+        locationId: tools.locationId
+        workspaceLocationId: tools.workspaceLocationId
+        mac: tools.mac
+        devicePlatform: tools.devicePlatform
+        plannedMaintenance: tools.plannedMaintenance
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-device-mac-address
+      description: Create a Device by MAC Address
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: device-devices.createadevicebymacaddress
+      with:
+        orgId: tools.orgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-device-activation-code
+      description: Create a Device Activation Code
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: device-devices.createadeviceactivationcode
+      with:
+        orgId: tools.orgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-device-details
+      description: Get Device Details
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: device-devices.getdevicedetails
+      with:
+        deviceId: tools.deviceId
+        orgId: tools.orgId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-device
+      description: Delete a Device
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: device-devices.deleteadevice
+      with:
+        deviceId: tools.deviceId
+        orgId: tools.orgId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: modify-device-tags
+      description: Modify Device Tags
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: device-devices.modifydevicetags
+      with:
+        deviceId: tools.deviceId
+        orgId: tools.orgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.

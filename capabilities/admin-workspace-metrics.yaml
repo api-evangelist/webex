@@ -1,0 +1,183 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Webex Admin — Workspace Metrics
+  description: 'Webex Admin — Workspace Metrics. 2 operations. Lead operation: Workspace Duration Metrics. Self-contained
+    Naftiko capability covering one Webex business surface.'
+  tags:
+  - Webex
+  - Workspace Metrics
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WEBEX_API_KEY: WEBEX_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: admin-workspace-metrics
+    baseUri: ''
+    description: Webex Admin — Workspace Metrics business capability. Self-contained, no shared references.
+    resources:
+    - name: workspaceDurationMetrics
+      path: /workspaceDurationMetrics
+      operations:
+      - name: workspacedurationmetrics
+        method: GET
+        description: Workspace Duration Metrics
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: workspaceId
+          in: query
+          type: string
+          description: ID of the workspace to get metrics for.
+          required: true
+        - name: aggregation
+          in: query
+          type: string
+          description: Unit of time over which to aggregate measurements.
+        - name: measurement
+          in: query
+          type: string
+          description: The measurement to return duration for.
+        - name: from
+          in: query
+          type: string
+          description: Include data points after a specific date and time (ISO 8601 timestamp).
+        - name: to
+          in: query
+          type: string
+          description: Include data points before a specific date and time (ISO 8601 timestamp).
+    - name: workspaceMetrics
+      path: /workspaceMetrics
+      operations:
+      - name: workspacemetrics
+        method: GET
+        description: Workspace Metrics
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: workspaceId
+          in: query
+          type: string
+          description: ID of the workspace to get metrics for.
+          required: true
+        - name: metricName
+          in: query
+          type: string
+          description: The type of data to extract.
+          required: true
+        - name: aggregation
+          in: query
+          type: string
+          description: Time unit over which to aggregate measurements.
+        - name: from
+          in: query
+          type: string
+          description: List only data points after a specific date and time (ISO 8601 timestamp)
+        - name: to
+          in: query
+          type: string
+          description: List data points before a specific date and time (ISO 8601 timestamp)
+        - name: unit
+          in: query
+          type: string
+          description: Output data unit (only a valid parameter if `metricName` is `temperature`).
+        - name: sortBy
+          in: query
+          type: string
+          description: Sort results.
+    authentication:
+      type: bearer
+      token: '{{env.WEBEX_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: admin-workspace-metrics-rest
+    port: 8080
+    description: REST adapter for Webex Admin — Workspace Metrics. One Spectral-compliant resource per consumed operation,
+      prefixed with /v1.
+    resources:
+    - path: /v1/workspacedurationmetrics
+      name: workspacedurationmetrics
+      description: REST surface for workspaceDurationMetrics.
+      operations:
+      - method: GET
+        name: workspacedurationmetrics
+        description: Workspace Duration Metrics
+        call: admin-workspace-metrics.workspacedurationmetrics
+        with:
+          workspaceId: rest.workspaceId
+          aggregation: rest.aggregation
+          measurement: rest.measurement
+          from: rest.from
+          to: rest.to
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/workspacemetrics
+      name: workspacemetrics
+      description: REST surface for workspaceMetrics.
+      operations:
+      - method: GET
+        name: workspacemetrics
+        description: Workspace Metrics
+        call: admin-workspace-metrics.workspacemetrics
+        with:
+          workspaceId: rest.workspaceId
+          metricName: rest.metricName
+          aggregation: rest.aggregation
+          from: rest.from
+          to: rest.to
+          unit: rest.unit
+          sortBy: rest.sortBy
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: admin-workspace-metrics-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Webex Admin — Workspace Metrics. One tool per consumed operation, routed inline through this
+      capability's consumes block.
+    tools:
+    - name: workspace-duration-metrics
+      description: Workspace Duration Metrics
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: admin-workspace-metrics.workspacedurationmetrics
+      with:
+        workspaceId: tools.workspaceId
+        aggregation: tools.aggregation
+        measurement: tools.measurement
+        from: tools.from
+        to: tools.to
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: workspace-metrics
+      description: Workspace Metrics
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: admin-workspace-metrics.workspacemetrics
+      with:
+        workspaceId: tools.workspaceId
+        metricName: tools.metricName
+        aggregation: tools.aggregation
+        from: tools.from
+        to: tools.to
+        unit: tools.unit
+        sortBy: tools.sortBy
+      outputParameters:
+      - type: object
+        mapping: $.

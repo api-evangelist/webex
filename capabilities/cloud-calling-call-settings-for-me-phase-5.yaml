@@ -1,0 +1,305 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Webex Cloud Calling — Call Settings For Me Phase 5
+  description: 'Webex Cloud Calling — Call Settings For Me Phase 5. 7 operations. Lead operation: Get Available Hoteling Hosts.
+    Self-contained Naftiko capability covering one Webex business surface.'
+  tags:
+  - Webex
+  - Call Settings For Me Phase 5
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WEBEX_API_KEY: WEBEX_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: cloud-calling-call-settings-for-me-phase-5
+    baseUri: ''
+    description: Webex Cloud Calling — Call Settings For Me Phase 5 business capability. Self-contained, no shared references.
+    resources:
+    - name: telephony-config-people-me-settings-hoteling-availableHosts
+      path: /telephony/config/people/me/settings/hoteling/availableHosts
+      operations:
+      - name: getavailablehotelinghosts
+        method: GET
+        description: Get Available Hoteling Hosts
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: max
+          in: query
+          type: integer
+          description: Limit the maximum number of hosts in the response. Default is 100.
+        - name: start
+          in: query
+          type: integer
+          description: Start index for pagination. Default is 0.
+        - name: name
+          in: query
+          type: string
+          description: Filter hosts by name (first name or last name). Partial match is supported.
+        - name: phoneNumber
+          in: query
+          type: string
+          description: Filter hosts by phone number. Partial match is supported.
+    - name: telephony-config-people-me-settings-hoteling-guest
+      path: /telephony/config/people/me/settings/hoteling/guest
+      operations:
+      - name: gethotelingguestsettings
+        method: GET
+        description: Get Hoteling Guest Settings
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: updatehotelingguestsettings
+        method: PUT
+        description: Update Hoteling Guest Settings
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: telephony-config-people-me-settings-personalAssistant
+      path: /telephony/config/people/me/settings/personalAssistant
+      operations:
+      - name: getpersonalassistantsettings
+        method: GET
+        description: Get Personal Assistant Settings
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: updatepersonalassistantsettings
+        method: PUT
+        description: Update Personal Assistant Settings
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: telephony-config-people-me-voicemail-pin
+      path: /telephony/config/people/me/voicemail/pin
+      operations:
+      - name: updatevoicemailpin
+        method: PUT
+        description: Update Voicemail PIN
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: telephony-config-people-me-voicemail-rules
+      path: /telephony/config/people/me/voicemail/rules
+      operations:
+      - name: getuservoicemailrules
+        method: GET
+        description: Get Person's Voicemail Rules
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    authentication:
+      type: bearer
+      token: '{{env.WEBEX_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: cloud-calling-call-settings-for-me-phase-5-rest
+    port: 8080
+    description: REST adapter for Webex Cloud Calling — Call Settings For Me Phase 5. One Spectral-compliant resource per
+      consumed operation, prefixed with /v1.
+    resources:
+    - path: /v1/telephony/config/people/me/settings/hoteling/availablehosts
+      name: telephony-config-people-me-settings-hoteling-availablehosts
+      description: REST surface for telephony-config-people-me-settings-hoteling-availableHosts.
+      operations:
+      - method: GET
+        name: getavailablehotelinghosts
+        description: Get Available Hoteling Hosts
+        call: cloud-calling-call-settings-for-me-phase-5.getavailablehotelinghosts
+        with:
+          max: rest.max
+          start: rest.start
+          name: rest.name
+          phoneNumber: rest.phoneNumber
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/telephony/config/people/me/settings/hoteling/guest
+      name: telephony-config-people-me-settings-hoteling-guest
+      description: REST surface for telephony-config-people-me-settings-hoteling-guest.
+      operations:
+      - method: GET
+        name: gethotelingguestsettings
+        description: Get Hoteling Guest Settings
+        call: cloud-calling-call-settings-for-me-phase-5.gethotelingguestsettings
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: updatehotelingguestsettings
+        description: Update Hoteling Guest Settings
+        call: cloud-calling-call-settings-for-me-phase-5.updatehotelingguestsettings
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/telephony/config/people/me/settings/personalassistant
+      name: telephony-config-people-me-settings-personalassistant
+      description: REST surface for telephony-config-people-me-settings-personalAssistant.
+      operations:
+      - method: GET
+        name: getpersonalassistantsettings
+        description: Get Personal Assistant Settings
+        call: cloud-calling-call-settings-for-me-phase-5.getpersonalassistantsettings
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: updatepersonalassistantsettings
+        description: Update Personal Assistant Settings
+        call: cloud-calling-call-settings-for-me-phase-5.updatepersonalassistantsettings
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/telephony/config/people/me/voicemail/pin
+      name: telephony-config-people-me-voicemail-pin
+      description: REST surface for telephony-config-people-me-voicemail-pin.
+      operations:
+      - method: PUT
+        name: updatevoicemailpin
+        description: Update Voicemail PIN
+        call: cloud-calling-call-settings-for-me-phase-5.updatevoicemailpin
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/telephony/config/people/me/voicemail/rules
+      name: telephony-config-people-me-voicemail-rules
+      description: REST surface for telephony-config-people-me-voicemail-rules.
+      operations:
+      - method: GET
+        name: getuservoicemailrules
+        description: Get Person's Voicemail Rules
+        call: cloud-calling-call-settings-for-me-phase-5.getuservoicemailrules
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: cloud-calling-call-settings-for-me-phase-5-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Webex Cloud Calling — Call Settings For Me Phase 5. One tool per consumed operation, routed
+      inline through this capability's consumes block.
+    tools:
+    - name: get-available-hoteling-hosts
+      description: Get Available Hoteling Hosts
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: cloud-calling-call-settings-for-me-phase-5.getavailablehotelinghosts
+      with:
+        max: tools.max
+        start: tools.start
+        name: tools.name
+        phoneNumber: tools.phoneNumber
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-hoteling-guest-settings
+      description: Get Hoteling Guest Settings
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: cloud-calling-call-settings-for-me-phase-5.gethotelingguestsettings
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-hoteling-guest-settings
+      description: Update Hoteling Guest Settings
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: cloud-calling-call-settings-for-me-phase-5.updatehotelingguestsettings
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-personal-assistant-settings
+      description: Get Personal Assistant Settings
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: cloud-calling-call-settings-for-me-phase-5.getpersonalassistantsettings
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-personal-assistant-settings
+      description: Update Personal Assistant Settings
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: cloud-calling-call-settings-for-me-phase-5.updatepersonalassistantsettings
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-voicemail-pin
+      description: Update Voicemail PIN
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: cloud-calling-call-settings-for-me-phase-5.updatevoicemailpin
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-person-s-voicemail-rules
+      description: Get Person's Voicemail Rules
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: cloud-calling-call-settings-for-me-phase-5.getuservoicemailrules
+      outputParameters:
+      - type: object
+        mapping: $.

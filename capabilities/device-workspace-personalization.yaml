@@ -1,0 +1,129 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Webex Device — Workspace Personalization
+  description: 'Webex Device — Workspace Personalization. 2 operations. Lead operation: Get Personalization Task. Self-contained
+    Naftiko capability covering one Webex business surface.'
+  tags:
+  - Webex
+  - Workspace Personalization
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WEBEX_API_KEY: WEBEX_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: device-workspace-personalization
+    baseUri: ''
+    description: Webex Device — Workspace Personalization business capability. Self-contained, no shared references.
+    resources:
+    - name: workspaces-workspaceId-personalizationTask
+      path: /workspaces/{workspaceId}/personalizationTask
+      operations:
+      - name: getpersonalizationtask
+        method: GET
+        description: Get Personalization Task
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: workspaceId
+          in: path
+          type: string
+          description: A unique identifier for the workspace.
+          required: true
+    - name: workspaces-workspaceId-personalize
+      path: /workspaces/{workspaceId}/personalize
+      operations:
+      - name: personalizeaworkspace
+        method: POST
+        description: Personalize a Workspace
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: workspaceId
+          in: path
+          type: string
+          description: A unique identifier for the workspace.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    authentication:
+      type: bearer
+      token: '{{env.WEBEX_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: device-workspace-personalization-rest
+    port: 8080
+    description: REST adapter for Webex Device — Workspace Personalization. One Spectral-compliant resource per consumed operation,
+      prefixed with /v1.
+    resources:
+    - path: /v1/workspaces/{workspaceid}/personalizationtask
+      name: workspaces-workspaceid-personalizationtask
+      description: REST surface for workspaces-workspaceId-personalizationTask.
+      operations:
+      - method: GET
+        name: getpersonalizationtask
+        description: Get Personalization Task
+        call: device-workspace-personalization.getpersonalizationtask
+        with:
+          workspaceId: rest.workspaceId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/workspaces/{workspaceid}/personalize
+      name: workspaces-workspaceid-personalize
+      description: REST surface for workspaces-workspaceId-personalize.
+      operations:
+      - method: POST
+        name: personalizeaworkspace
+        description: Personalize a Workspace
+        call: device-workspace-personalization.personalizeaworkspace
+        with:
+          workspaceId: rest.workspaceId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: device-workspace-personalization-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Webex Device — Workspace Personalization. One tool per consumed operation, routed inline
+      through this capability's consumes block.
+    tools:
+    - name: get-personalization-task
+      description: Get Personalization Task
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: device-workspace-personalization.getpersonalizationtask
+      with:
+        workspaceId: tools.workspaceId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: personalize-workspace
+      description: Personalize a Workspace
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: device-workspace-personalization.personalizeaworkspace
+      with:
+        workspaceId: tools.workspaceId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.

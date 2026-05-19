@@ -1,0 +1,427 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Webex Cloud Calling — Mode Management
+  description: 'Webex Cloud Calling — Mode Management. 9 operations. Lead operation: Get Mode Management Features. Self-contained
+    Naftiko capability covering one Webex business surface.'
+  tags:
+  - Webex
+  - Mode Management
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WEBEX_API_KEY: WEBEX_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: cloud-calling-mode-management
+    baseUri: ''
+    description: Webex Cloud Calling — Mode Management business capability. Self-contained, no shared references.
+    resources:
+    - name: telephony-config-people-me-settings-modeManagement-features
+      path: /telephony/config/people/me/settings/modeManagement/features
+      operations:
+      - name: getmodemanagementfeatures
+        method: GET
+        description: Get Mode Management Features
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: telephony-config-people-me-settings-modeManagement-features-actions-switchMode-i
+      path: /telephony/config/people/me/settings/modeManagement/features/actions/switchMode/invoke
+      operations:
+      - name: switchmodemultiplefeatures
+        method: POST
+        description: Switch Mode for Multiple Features
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: telephony-config-people-me-settings-modeManagement-features-commonModes
+      path: /telephony/config/people/me/settings/modeManagement/features/commonModes
+      operations:
+      - name: getcommonmodes
+        method: GET
+        description: Get Common Modes
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: featureIds
+          in: query
+          type: array
+          description: List of feature IDs (comma-separated) for auto attendants, call queues, or hunt groups
+          required: true
+    - name: telephony-config-people-me-settings-modeManagement-features-featureId
+      path: /telephony/config/people/me/settings/modeManagement/features/{featureId}
+      operations:
+      - name: getmodemanagementfeature
+        method: GET
+        description: Get Mode Management Feature
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: featureId
+          in: path
+          type: string
+          description: Unique identifier for the feature.
+          required: true
+    - name: telephony-config-people-me-settings-modeManagement-features-featureId-actions-ex
+      path: /telephony/config/people/me/settings/modeManagement/features/{featureId}/actions/extendMode/invoke
+      operations:
+      - name: extendmode
+        method: POST
+        description: Extend Current Operating Mode Duration
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: featureId
+          in: path
+          type: string
+          description: Unique identifier for the feature.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: telephony-config-people-me-settings-modeManagement-features-featureId-actions-sw
+      path: /telephony/config/people/me/settings/modeManagement/features/{featureId}/actions/switchMode/invoke
+      operations:
+      - name: switchmodeforfeature
+        method: POST
+        description: Switch Mode for Single Feature
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: featureId
+          in: path
+          type: string
+          description: Unique identifier for the feature.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: telephony-config-people-me-settings-modeManagement-features-featureId-actions-sw
+      path: /telephony/config/people/me/settings/modeManagement/features/{featureId}/actions/switchToNormalOperation/invoke
+      operations:
+      - name: switchtonormaloperation
+        method: POST
+        description: Switch to Normal Operation
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: featureId
+          in: path
+          type: string
+          description: Unique identifier for the feature.
+          required: true
+    - name: telephony-config-people-me-settings-modeManagement-features-featureId-modes-mode
+      path: /telephony/config/people/me/settings/modeManagement/features/{featureId}/modes/{modeId}
+      operations:
+      - name: getoperatingmode
+        method: GET
+        description: Get Operating Mode
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: featureId
+          in: path
+          type: string
+          description: Unique identifier for the feature.
+          required: true
+        - name: modeId
+          in: path
+          type: string
+          description: Unique identifier for the operating mode.
+          required: true
+    - name: telephony-config-people-me-settings-modeManagement-features-featureId-normalOper
+      path: /telephony/config/people/me/settings/modeManagement/features/{featureId}/normalOperationMode
+      operations:
+      - name: getnormaloperationmode
+        method: GET
+        description: Get Normal Operation Mode
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: featureId
+          in: path
+          type: string
+          description: Unique identifier for the feature.
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.WEBEX_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: cloud-calling-mode-management-rest
+    port: 8080
+    description: REST adapter for Webex Cloud Calling — Mode Management. One Spectral-compliant resource per consumed operation,
+      prefixed with /v1.
+    resources:
+    - path: /v1/telephony/config/people/me/settings/modemanagement/features
+      name: telephony-config-people-me-settings-modemanagement-features
+      description: REST surface for telephony-config-people-me-settings-modeManagement-features.
+      operations:
+      - method: GET
+        name: getmodemanagementfeatures
+        description: Get Mode Management Features
+        call: cloud-calling-mode-management.getmodemanagementfeatures
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/telephony/config/people/me/settings/modemanagement/features/actions/switchmode/invoke
+      name: telephony-config-people-me-settings-modemanagement-features-actions-switchmode-i
+      description: REST surface for telephony-config-people-me-settings-modeManagement-features-actions-switchMode-i.
+      operations:
+      - method: POST
+        name: switchmodemultiplefeatures
+        description: Switch Mode for Multiple Features
+        call: cloud-calling-mode-management.switchmodemultiplefeatures
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/telephony/config/people/me/settings/modemanagement/features/commonmodes
+      name: telephony-config-people-me-settings-modemanagement-features-commonmodes
+      description: REST surface for telephony-config-people-me-settings-modeManagement-features-commonModes.
+      operations:
+      - method: GET
+        name: getcommonmodes
+        description: Get Common Modes
+        call: cloud-calling-mode-management.getcommonmodes
+        with:
+          featureIds: rest.featureIds
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/telephony/config/people/me/settings/modemanagement/features/{featureid}
+      name: telephony-config-people-me-settings-modemanagement-features-featureid
+      description: REST surface for telephony-config-people-me-settings-modeManagement-features-featureId.
+      operations:
+      - method: GET
+        name: getmodemanagementfeature
+        description: Get Mode Management Feature
+        call: cloud-calling-mode-management.getmodemanagementfeature
+        with:
+          featureId: rest.featureId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/telephony/config/people/me/settings/modemanagement/features/{featureid}/actions/extendmode/invoke
+      name: telephony-config-people-me-settings-modemanagement-features-featureid-actions-ex
+      description: REST surface for telephony-config-people-me-settings-modeManagement-features-featureId-actions-ex.
+      operations:
+      - method: POST
+        name: extendmode
+        description: Extend Current Operating Mode Duration
+        call: cloud-calling-mode-management.extendmode
+        with:
+          featureId: rest.featureId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/telephony/config/people/me/settings/modemanagement/features/{featureid}/actions/switchmode/invoke
+      name: telephony-config-people-me-settings-modemanagement-features-featureid-actions-sw
+      description: REST surface for telephony-config-people-me-settings-modeManagement-features-featureId-actions-sw.
+      operations:
+      - method: POST
+        name: switchmodeforfeature
+        description: Switch Mode for Single Feature
+        call: cloud-calling-mode-management.switchmodeforfeature
+        with:
+          featureId: rest.featureId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/telephony/config/people/me/settings/modemanagement/features/{featureid}/actions/switchtonormaloperation/invoke
+      name: telephony-config-people-me-settings-modemanagement-features-featureid-actions-sw
+      description: REST surface for telephony-config-people-me-settings-modeManagement-features-featureId-actions-sw.
+      operations:
+      - method: POST
+        name: switchtonormaloperation
+        description: Switch to Normal Operation
+        call: cloud-calling-mode-management.switchtonormaloperation
+        with:
+          featureId: rest.featureId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/telephony/config/people/me/settings/modemanagement/features/{featureid}/modes/{modeid}
+      name: telephony-config-people-me-settings-modemanagement-features-featureid-modes-mode
+      description: REST surface for telephony-config-people-me-settings-modeManagement-features-featureId-modes-mode.
+      operations:
+      - method: GET
+        name: getoperatingmode
+        description: Get Operating Mode
+        call: cloud-calling-mode-management.getoperatingmode
+        with:
+          featureId: rest.featureId
+          modeId: rest.modeId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/telephony/config/people/me/settings/modemanagement/features/{featureid}/normaloperationmode
+      name: telephony-config-people-me-settings-modemanagement-features-featureid-normaloper
+      description: REST surface for telephony-config-people-me-settings-modeManagement-features-featureId-normalOper.
+      operations:
+      - method: GET
+        name: getnormaloperationmode
+        description: Get Normal Operation Mode
+        call: cloud-calling-mode-management.getnormaloperationmode
+        with:
+          featureId: rest.featureId
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: cloud-calling-mode-management-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Webex Cloud Calling — Mode Management. One tool per consumed operation, routed inline through
+      this capability's consumes block.
+    tools:
+    - name: get-mode-management-features
+      description: Get Mode Management Features
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: cloud-calling-mode-management.getmodemanagementfeatures
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: switch-mode-multiple-features
+      description: Switch Mode for Multiple Features
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: cloud-calling-mode-management.switchmodemultiplefeatures
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-common-modes
+      description: Get Common Modes
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: cloud-calling-mode-management.getcommonmodes
+      with:
+        featureIds: tools.featureIds
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-mode-management-feature
+      description: Get Mode Management Feature
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: cloud-calling-mode-management.getmodemanagementfeature
+      with:
+        featureId: tools.featureId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: extend-current-operating-mode-duration
+      description: Extend Current Operating Mode Duration
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: cloud-calling-mode-management.extendmode
+      with:
+        featureId: tools.featureId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: switch-mode-single-feature
+      description: Switch Mode for Single Feature
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: cloud-calling-mode-management.switchmodeforfeature
+      with:
+        featureId: tools.featureId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: switch-normal-operation
+      description: Switch to Normal Operation
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: cloud-calling-mode-management.switchtonormaloperation
+      with:
+        featureId: tools.featureId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-operating-mode
+      description: Get Operating Mode
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: cloud-calling-mode-management.getoperatingmode
+      with:
+        featureId: tools.featureId
+        modeId: tools.modeId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-normal-operation-mode
+      description: Get Normal Operation Mode
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: cloud-calling-mode-management.getnormaloperationmode
+      with:
+        featureId: tools.featureId
+      outputParameters:
+      - type: object
+        mapping: $.

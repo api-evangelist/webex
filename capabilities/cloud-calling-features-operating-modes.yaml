@@ -1,0 +1,642 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: 'Webex Cloud Calling — Features: Operating Modes'
+  description: 'Webex Cloud Calling — Features: Operating Modes. 11 operations. Lead operation: Retrieve the List of Available
+    Operating Modes in a Location. Self-contained Naftiko capability covering one Webex business surface.'
+  tags:
+  - Webex
+  - 'Features: Operating Modes'
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WEBEX_API_KEY: WEBEX_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: cloud-calling-features-operating-modes
+    baseUri: ''
+    description: 'Webex Cloud Calling — Features: Operating Modes business capability. Self-contained, no shared references.'
+    resources:
+    - name: telephony-config-locations-locationId-operatingModes-availableOperatingModes
+      path: /telephony/config/locations/{locationId}/operatingModes/availableOperatingModes
+      operations:
+      - name: retrievethelistofavailableoperatingmodesinalocation
+        method: GET
+        description: Retrieve the List of Available Operating Modes in a Location
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: locationId
+          in: path
+          type: string
+          description: Retrieve `operating modes` list from this location.
+          required: true
+        - name: orgId
+          in: query
+          type: string
+          description: Retrieve `operating modes` list from this organization.
+    - name: telephony-config-locations-locationId-operatingModes-callForwarding-availableNum
+      path: /telephony/config/locations/{locationId}/operatingModes/callForwarding/availableNumbers
+      operations:
+      - name: getoperatingmodecallforwardavailablephonenumbers
+        method: GET
+        description: Get Operating Mode Call Forward Available Phone Numbers
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: locationId
+          in: path
+          type: string
+          description: Return the list of phone numbers for this location within the given organization. The maximum length
+            is 36.
+          required: true
+        - name: orgId
+          in: query
+          type: string
+          description: List numbers for this organization.
+        - name: max
+          in: query
+          type: number
+          description: Limit the number of phone numbers returned to this maximum count. The default is 2000.
+        - name: start
+          in: query
+          type: number
+          description: Start at the zero-based offset in the list of matching phone numbers. The default is 0.
+        - name: phoneNumber
+          in: query
+          type: array
+          description: Filter phone numbers based on the comma-separated list provided in the `phoneNumber` array.
+        - name: ownerName
+          in: query
+          type: string
+          description: Return the list of phone numbers that are owned by the given `ownerName`. Maximum length is 255.
+        - name: extension
+          in: query
+          type: string
+          description: Returns the list of PSTN phone numbers with the given `extension`.
+    - name: telephony-config-operatingModes
+      path: /telephony/config/operatingModes
+      operations:
+      - name: readthelistofoperatingmodes
+        method: GET
+        description: Read the List of Operating Modes
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: name
+          in: query
+          type: string
+          description: List `operating modes` whose name contains this string.
+        - name: limitToLocationId
+          in: query
+          type: string
+          description: Location query parameter to filter the `operating modes` from that location only.
+          required: true
+        - name: limitToOrgLevelEnabled
+          in: query
+          type: boolean
+          description: If true, only return `operating modes` defined at the organization level.
+        - name: max
+          in: query
+          type: number
+          description: Maximum number of `operating modes` to return in a single page. `max` must be equal to, or greater
+            than `1`, and equal to or less than `100`.
+        - name: start
+          in: query
+          type: number
+          description: Start at the zero-based offset in the list of matching objects.
+        - name: order
+          in: query
+          type: string
+          description: Sort the list of `operating modes` based on `name`, either asc, or desc.
+        - name: orgId
+          in: query
+          type: string
+          description: Retrieve `operating modes` list from this organization.
+    - name: telephony-config-operatingModes
+      path: /telephony/config/operatingModes/
+      operations:
+      - name: createanoperatingmode
+        method: POST
+        description: Create an Operating Mode
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: query
+          type: string
+          description: Create the `operating mode` for this organization.
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    - name: telephony-config-operatingModes-modeId
+      path: /telephony/config/operatingModes/{modeId}
+      operations:
+      - name: getdetailsforanoperatingmode
+        method: GET
+        description: Get Details for an Operating Mode
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: modeId
+          in: path
+          type: string
+          description: Get the `operating mode` with the matching ID.
+          required: true
+        - name: orgId
+          in: query
+          type: string
+          description: Get the `operating mode` from this organization.
+      - name: modifyanoperatingmode
+        method: PUT
+        description: Modify an Operating Mode
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: modeId
+          in: path
+          type: string
+          description: Modify the `operating mode` with the matching ID.
+          required: true
+        - name: orgId
+          in: query
+          type: string
+          description: Modify the `operating mode` from this organization.
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+      - name: deleteanoperatingmode
+        method: DELETE
+        description: Delete an Operating Mode
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: modeId
+          in: path
+          type: string
+          description: Delete the `operating mode` with the matching ID.
+          required: true
+        - name: orgId
+          in: query
+          type: string
+          description: Delete the `operating mode` from this organization.
+    - name: telephony-config-operatingModes-modeId-holidays
+      path: /telephony/config/operatingModes/{modeId}/holidays
+      operations:
+      - name: createanoperatingmodeholiday
+        method: POST
+        description: Create an Operating Mode Holiday
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: modeId
+          in: path
+          type: string
+          description: Create the holiday for this `operating mode`.
+          required: true
+        - name: orgId
+          in: query
+          type: string
+          description: Create the `operating mode holiday` for this organization.
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    - name: telephony-config-operatingModes-modeId-holidays-holidayId
+      path: /telephony/config/operatingModes/{modeId}/holidays/{holidayId}
+      operations:
+      - name: getdetailsforanoperatingmodeholiday
+        method: GET
+        description: Get details for an Operating Mode Holiday
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: modeId
+          in: path
+          type: string
+          description: Get the holiday from this `operating mode` matching ID.
+          required: true
+        - name: holidayId
+          in: path
+          type: string
+          description: Get the `operating mode Holiday` with the matching ID.
+          required: true
+        - name: orgId
+          in: query
+          type: string
+          description: Get the `operating mode` from this organization.
+      - name: modifyanoperatingmodeholiday
+        method: PUT
+        description: Modify an Operating Mode Holiday
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: modeId
+          in: path
+          type: string
+          description: Modify the holiday from this `operating mode` matching ID.
+          required: true
+        - name: holidayId
+          in: path
+          type: string
+          description: Modify the `Holiday` with the matching ID.
+          required: true
+        - name: orgId
+          in: query
+          type: string
+          description: Modify the `operating mode` from this organization.
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+      - name: deleteanoperatingmodeholiday
+        method: DELETE
+        description: Delete an Operating Mode Holiday
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: modeId
+          in: path
+          type: string
+          description: Delete the holiday from this `operating mode` matching ID.
+          required: true
+        - name: holidayId
+          in: path
+          type: string
+          description: Delete the holiday with the matching ID.
+          required: true
+        - name: orgId
+          in: query
+          type: string
+          description: Delete the `operating mode` from this organization.
+    authentication:
+      type: bearer
+      token: '{{env.WEBEX_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: cloud-calling-features-operating-modes-rest
+    port: 8080
+    description: 'REST adapter for Webex Cloud Calling — Features: Operating Modes. One Spectral-compliant resource per consumed
+      operation, prefixed with /v1.'
+    resources:
+    - path: /v1/telephony/config/locations/{locationid}/operatingmodes/availableoperatingmodes
+      name: telephony-config-locations-locationid-operatingmodes-availableoperatingmodes
+      description: REST surface for telephony-config-locations-locationId-operatingModes-availableOperatingModes.
+      operations:
+      - method: GET
+        name: retrievethelistofavailableoperatingmodesinalocation
+        description: Retrieve the List of Available Operating Modes in a Location
+        call: cloud-calling-features-operating-modes.retrievethelistofavailableoperatingmodesinalocation
+        with:
+          locationId: rest.locationId
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/telephony/config/locations/{locationid}/operatingmodes/callforwarding/availablenumbers
+      name: telephony-config-locations-locationid-operatingmodes-callforwarding-availablenum
+      description: REST surface for telephony-config-locations-locationId-operatingModes-callForwarding-availableNum.
+      operations:
+      - method: GET
+        name: getoperatingmodecallforwardavailablephonenumbers
+        description: Get Operating Mode Call Forward Available Phone Numbers
+        call: cloud-calling-features-operating-modes.getoperatingmodecallforwardavailablephonenumbers
+        with:
+          locationId: rest.locationId
+          orgId: rest.orgId
+          max: rest.max
+          start: rest.start
+          phoneNumber: rest.phoneNumber
+          ownerName: rest.ownerName
+          extension: rest.extension
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/telephony/config/operatingmodes
+      name: telephony-config-operatingmodes
+      description: REST surface for telephony-config-operatingModes.
+      operations:
+      - method: GET
+        name: readthelistofoperatingmodes
+        description: Read the List of Operating Modes
+        call: cloud-calling-features-operating-modes.readthelistofoperatingmodes
+        with:
+          name: rest.name
+          limitToLocationId: rest.limitToLocationId
+          limitToOrgLevelEnabled: rest.limitToOrgLevelEnabled
+          max: rest.max
+          start: rest.start
+          order: rest.order
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/telephony/config/operatingmodes
+      name: telephony-config-operatingmodes
+      description: REST surface for telephony-config-operatingModes.
+      operations:
+      - method: POST
+        name: createanoperatingmode
+        description: Create an Operating Mode
+        call: cloud-calling-features-operating-modes.createanoperatingmode
+        with:
+          orgId: rest.orgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/telephony/config/operatingmodes/{modeid}
+      name: telephony-config-operatingmodes-modeid
+      description: REST surface for telephony-config-operatingModes-modeId.
+      operations:
+      - method: GET
+        name: getdetailsforanoperatingmode
+        description: Get Details for an Operating Mode
+        call: cloud-calling-features-operating-modes.getdetailsforanoperatingmode
+        with:
+          modeId: rest.modeId
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: modifyanoperatingmode
+        description: Modify an Operating Mode
+        call: cloud-calling-features-operating-modes.modifyanoperatingmode
+        with:
+          modeId: rest.modeId
+          orgId: rest.orgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deleteanoperatingmode
+        description: Delete an Operating Mode
+        call: cloud-calling-features-operating-modes.deleteanoperatingmode
+        with:
+          modeId: rest.modeId
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/telephony/config/operatingmodes/{modeid}/holidays
+      name: telephony-config-operatingmodes-modeid-holidays
+      description: REST surface for telephony-config-operatingModes-modeId-holidays.
+      operations:
+      - method: POST
+        name: createanoperatingmodeholiday
+        description: Create an Operating Mode Holiday
+        call: cloud-calling-features-operating-modes.createanoperatingmodeholiday
+        with:
+          modeId: rest.modeId
+          orgId: rest.orgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/telephony/config/operatingmodes/{modeid}/holidays/{holidayid}
+      name: telephony-config-operatingmodes-modeid-holidays-holidayid
+      description: REST surface for telephony-config-operatingModes-modeId-holidays-holidayId.
+      operations:
+      - method: GET
+        name: getdetailsforanoperatingmodeholiday
+        description: Get details for an Operating Mode Holiday
+        call: cloud-calling-features-operating-modes.getdetailsforanoperatingmodeholiday
+        with:
+          modeId: rest.modeId
+          holidayId: rest.holidayId
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: modifyanoperatingmodeholiday
+        description: Modify an Operating Mode Holiday
+        call: cloud-calling-features-operating-modes.modifyanoperatingmodeholiday
+        with:
+          modeId: rest.modeId
+          holidayId: rest.holidayId
+          orgId: rest.orgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deleteanoperatingmodeholiday
+        description: Delete an Operating Mode Holiday
+        call: cloud-calling-features-operating-modes.deleteanoperatingmodeholiday
+        with:
+          modeId: rest.modeId
+          holidayId: rest.holidayId
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: cloud-calling-features-operating-modes-mcp
+    port: 9090
+    transport: http
+    description: 'MCP adapter for Webex Cloud Calling — Features: Operating Modes. One tool per consumed operation, routed
+      inline through this capability''s consumes block.'
+    tools:
+    - name: retrieve-list-available-operating-modes
+      description: Retrieve the List of Available Operating Modes in a Location
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: cloud-calling-features-operating-modes.retrievethelistofavailableoperatingmodesinalocation
+      with:
+        locationId: tools.locationId
+        orgId: tools.orgId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-operating-mode-call-forward
+      description: Get Operating Mode Call Forward Available Phone Numbers
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: cloud-calling-features-operating-modes.getoperatingmodecallforwardavailablephonenumbers
+      with:
+        locationId: tools.locationId
+        orgId: tools.orgId
+        max: tools.max
+        start: tools.start
+        phoneNumber: tools.phoneNumber
+        ownerName: tools.ownerName
+        extension: tools.extension
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: read-list-operating-modes
+      description: Read the List of Operating Modes
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: cloud-calling-features-operating-modes.readthelistofoperatingmodes
+      with:
+        name: tools.name
+        limitToLocationId: tools.limitToLocationId
+        limitToOrgLevelEnabled: tools.limitToOrgLevelEnabled
+        max: tools.max
+        start: tools.start
+        order: tools.order
+        orgId: tools.orgId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-operating-mode
+      description: Create an Operating Mode
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: cloud-calling-features-operating-modes.createanoperatingmode
+      with:
+        orgId: tools.orgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-details-operating-mode
+      description: Get Details for an Operating Mode
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: cloud-calling-features-operating-modes.getdetailsforanoperatingmode
+      with:
+        modeId: tools.modeId
+        orgId: tools.orgId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: modify-operating-mode
+      description: Modify an Operating Mode
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: cloud-calling-features-operating-modes.modifyanoperatingmode
+      with:
+        modeId: tools.modeId
+        orgId: tools.orgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-operating-mode
+      description: Delete an Operating Mode
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: cloud-calling-features-operating-modes.deleteanoperatingmode
+      with:
+        modeId: tools.modeId
+        orgId: tools.orgId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-operating-mode-holiday
+      description: Create an Operating Mode Holiday
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: cloud-calling-features-operating-modes.createanoperatingmodeholiday
+      with:
+        modeId: tools.modeId
+        orgId: tools.orgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-details-operating-mode-holiday
+      description: Get details for an Operating Mode Holiday
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: cloud-calling-features-operating-modes.getdetailsforanoperatingmodeholiday
+      with:
+        modeId: tools.modeId
+        holidayId: tools.holidayId
+        orgId: tools.orgId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: modify-operating-mode-holiday
+      description: Modify an Operating Mode Holiday
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: cloud-calling-features-operating-modes.modifyanoperatingmodeholiday
+      with:
+        modeId: tools.modeId
+        holidayId: tools.holidayId
+        orgId: tools.orgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-operating-mode-holiday
+      description: Delete an Operating Mode Holiday
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: cloud-calling-features-operating-modes.deleteanoperatingmodeholiday
+      with:
+        modeId: tools.modeId
+        holidayId: tools.holidayId
+        orgId: tools.orgId
+      outputParameters:
+      - type: object
+        mapping: $.

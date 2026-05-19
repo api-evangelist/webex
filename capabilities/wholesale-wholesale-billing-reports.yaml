@@ -1,0 +1,228 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Webex Wholesale — Wholesale Billing Reports
+  description: 'Webex Wholesale — Wholesale Billing Reports. 4 operations. Lead operation: List Wholesale Billing Reports.
+    Self-contained Naftiko capability covering one Webex business surface.'
+  tags:
+  - Webex
+  - Wholesale Billing Reports
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WEBEX_API_KEY: WEBEX_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: wholesale-wholesale-billing-reports
+    baseUri: ''
+    description: Webex Wholesale — Wholesale Billing Reports business capability. Self-contained, no shared references.
+    resources:
+    - name: wholesale-billing-reports
+      path: /wholesale/billing/reports
+      operations:
+      - name: listwholesalebillingreports
+        method: GET
+        description: List Wholesale Billing Reports
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: billingStartDate
+          in: query
+          type: string
+          description: Only include billing reports having this billing `startDate`.
+        - name: billingEndDate
+          in: query
+          type: string
+          description: Only include billing reports having this billing `endDate`.
+        - name: type
+          in: query
+          type: string
+          description: Only include reports of this type.
+        - name: sortBy
+          in: query
+          type: string
+          description: Sort the reports.
+        - name: status
+          in: query
+          type: string
+          description: The status of the billing report
+        - name: max
+          in: query
+          type: integer
+          description: 'Limit the maximum number of reports returned in the response, up to 100 per page. Refer to the [Pagination](/docs/basics#pagination)
+            section of [Webex REST API '
+        - name: subPartnerOrgId
+          in: query
+          type: string
+          description: The Organization ID of the sub partner on Cisco Webex.
+      - name: createawholesalebillingreport
+        method: POST
+        description: Create a Wholesale Billing Report
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    - name: wholesale-billing-reports-id
+      path: /wholesale/billing/reports/{id}
+      operations:
+      - name: getawholesalebillingreport
+        method: GET
+        description: Get a Wholesale Billing Report
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: id
+          in: path
+          type: string
+          description: A unique identifier for the report being requested.
+          required: true
+      - name: deleteawholesalebillingreport
+        method: DELETE
+        description: Delete a Wholesale Billing Report
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: id
+          in: path
+          type: string
+          description: A unique report ID that corresponds to a billing report.
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.WEBEX_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: wholesale-wholesale-billing-reports-rest
+    port: 8080
+    description: REST adapter for Webex Wholesale — Wholesale Billing Reports. One Spectral-compliant resource per consumed
+      operation, prefixed with /v1.
+    resources:
+    - path: /v1/wholesale/billing/reports
+      name: wholesale-billing-reports
+      description: REST surface for wholesale-billing-reports.
+      operations:
+      - method: GET
+        name: listwholesalebillingreports
+        description: List Wholesale Billing Reports
+        call: wholesale-wholesale-billing-reports.listwholesalebillingreports
+        with:
+          billingStartDate: rest.billingStartDate
+          billingEndDate: rest.billingEndDate
+          type: rest.type
+          sortBy: rest.sortBy
+          status: rest.status
+          max: rest.max
+          subPartnerOrgId: rest.subPartnerOrgId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: createawholesalebillingreport
+        description: Create a Wholesale Billing Report
+        call: wholesale-wholesale-billing-reports.createawholesalebillingreport
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/wholesale/billing/reports/{id}
+      name: wholesale-billing-reports-id
+      description: REST surface for wholesale-billing-reports-id.
+      operations:
+      - method: GET
+        name: getawholesalebillingreport
+        description: Get a Wholesale Billing Report
+        call: wholesale-wholesale-billing-reports.getawholesalebillingreport
+        with:
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deleteawholesalebillingreport
+        description: Delete a Wholesale Billing Report
+        call: wholesale-wholesale-billing-reports.deleteawholesalebillingreport
+        with:
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: wholesale-wholesale-billing-reports-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Webex Wholesale — Wholesale Billing Reports. One tool per consumed operation, routed inline
+      through this capability's consumes block.
+    tools:
+    - name: list-wholesale-billing-reports
+      description: List Wholesale Billing Reports
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: wholesale-wholesale-billing-reports.listwholesalebillingreports
+      with:
+        billingStartDate: tools.billingStartDate
+        billingEndDate: tools.billingEndDate
+        type: tools.type
+        sortBy: tools.sortBy
+        status: tools.status
+        max: tools.max
+        subPartnerOrgId: tools.subPartnerOrgId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-wholesale-billing-report
+      description: Create a Wholesale Billing Report
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: wholesale-wholesale-billing-reports.createawholesalebillingreport
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-wholesale-billing-report
+      description: Get a Wholesale Billing Report
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: wholesale-wholesale-billing-reports.getawholesalebillingreport
+      with:
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-wholesale-billing-report
+      description: Delete a Wholesale Billing Report
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: wholesale-wholesale-billing-reports.deleteawholesalebillingreport
+      with:
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.

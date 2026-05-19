@@ -1,0 +1,500 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Webex Cloud Calling — Locations
+  description: 'Webex Cloud Calling — Locations. 10 operations. Lead operation: List Locations. Self-contained Naftiko capability
+    covering one Webex business surface.'
+  tags:
+  - Webex
+  - Locations
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WEBEX_API_KEY: WEBEX_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: cloud-calling-locations
+    baseUri: ''
+    description: Webex Cloud Calling — Locations business capability. Self-contained, no shared references.
+    resources:
+    - name: locations
+      path: /locations
+      operations:
+      - name: listlocations
+        method: GET
+        description: List Locations
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: name
+          in: query
+          type: string
+          description: List locations whose name contains this string (case-insensitive).
+        - name: id
+          in: query
+          type: string
+          description: List locations by ID.
+        - name: orgId
+          in: query
+          type: string
+          description: List locations in this organization. Only admin users of another organization (such as partners) may
+            use this parameter.
+        - name: max
+          in: query
+          type: number
+          description: Limit the maximum number of location in the response.
+      - name: createlocation
+        method: POST
+        description: Create a Location
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: query
+          type: string
+          description: Create a location common attribute for this organization.
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    - name: locations-locationId
+      path: /locations/{locationId}
+      operations:
+      - name: getlocationdetails
+        method: GET
+        description: Get Location Details
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: locationId
+          in: path
+          type: string
+          description: A unique identifier for the location.
+          required: true
+        - name: orgId
+          in: query
+          type: string
+          description: Get location common attributes for this organization.
+      - name: updatelocation
+        method: PUT
+        description: Update a Location
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: locationId
+          in: path
+          type: string
+          description: Update location common attributes for this location.
+          required: true
+        - name: orgId
+          in: query
+          type: string
+          description: Update location common attributes for this organization.
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+      - name: deletelocation
+        method: DELETE
+        description: Delete Location
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: locationId
+          in: path
+          type: string
+          description: A unique identifier for the location.
+          required: true
+        - name: orgId
+          in: query
+          type: string
+          description: Specify the organization for the location to be deleted.
+    - name: locations-locationId-floors
+      path: /locations/{locationId}/floors
+      operations:
+      - name: listlocationfloors
+        method: GET
+        description: List Location Floors
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: locationId
+          in: path
+          type: string
+          description: A unique identifier for the location.
+          required: true
+      - name: createlocationfloor
+        method: POST
+        description: Create a Location Floor
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: locationId
+          in: path
+          type: string
+          description: A unique identifier for the location.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    - name: locations-locationId-floors-floorId
+      path: /locations/{locationId}/floors/{floorId}
+      operations:
+      - name: getlocationfloordetails
+        method: GET
+        description: Get Location Floor Details
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: locationId
+          in: path
+          type: string
+          description: A unique identifier for the location.
+          required: true
+        - name: floorId
+          in: path
+          type: string
+          description: A unique identifier for the floor.
+          required: true
+      - name: updatelocationfloor
+        method: PUT
+        description: Update a Location Floor
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: locationId
+          in: path
+          type: string
+          description: A unique identifier for the location.
+          required: true
+        - name: floorId
+          in: path
+          type: string
+          description: A unique identifier for the floor.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+      - name: deletelocationfloor
+        method: DELETE
+        description: Delete a Location Floor
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: locationId
+          in: path
+          type: string
+          description: A unique identifier for the location.
+          required: true
+        - name: floorId
+          in: path
+          type: string
+          description: A unique identifier for the floor.
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.WEBEX_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: cloud-calling-locations-rest
+    port: 8080
+    description: REST adapter for Webex Cloud Calling — Locations. One Spectral-compliant resource per consumed operation,
+      prefixed with /v1.
+    resources:
+    - path: /v1/locations
+      name: locations
+      description: REST surface for locations.
+      operations:
+      - method: GET
+        name: listlocations
+        description: List Locations
+        call: cloud-calling-locations.listlocations
+        with:
+          name: rest.name
+          id: rest.id
+          orgId: rest.orgId
+          max: rest.max
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: createlocation
+        description: Create a Location
+        call: cloud-calling-locations.createlocation
+        with:
+          orgId: rest.orgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/locations/{locationid}
+      name: locations-locationid
+      description: REST surface for locations-locationId.
+      operations:
+      - method: GET
+        name: getlocationdetails
+        description: Get Location Details
+        call: cloud-calling-locations.getlocationdetails
+        with:
+          locationId: rest.locationId
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: updatelocation
+        description: Update a Location
+        call: cloud-calling-locations.updatelocation
+        with:
+          locationId: rest.locationId
+          orgId: rest.orgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deletelocation
+        description: Delete Location
+        call: cloud-calling-locations.deletelocation
+        with:
+          locationId: rest.locationId
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/locations/{locationid}/floors
+      name: locations-locationid-floors
+      description: REST surface for locations-locationId-floors.
+      operations:
+      - method: GET
+        name: listlocationfloors
+        description: List Location Floors
+        call: cloud-calling-locations.listlocationfloors
+        with:
+          locationId: rest.locationId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: createlocationfloor
+        description: Create a Location Floor
+        call: cloud-calling-locations.createlocationfloor
+        with:
+          locationId: rest.locationId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/locations/{locationid}/floors/{floorid}
+      name: locations-locationid-floors-floorid
+      description: REST surface for locations-locationId-floors-floorId.
+      operations:
+      - method: GET
+        name: getlocationfloordetails
+        description: Get Location Floor Details
+        call: cloud-calling-locations.getlocationfloordetails
+        with:
+          locationId: rest.locationId
+          floorId: rest.floorId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: updatelocationfloor
+        description: Update a Location Floor
+        call: cloud-calling-locations.updatelocationfloor
+        with:
+          locationId: rest.locationId
+          floorId: rest.floorId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deletelocationfloor
+        description: Delete a Location Floor
+        call: cloud-calling-locations.deletelocationfloor
+        with:
+          locationId: rest.locationId
+          floorId: rest.floorId
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: cloud-calling-locations-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Webex Cloud Calling — Locations. One tool per consumed operation, routed inline through this
+      capability's consumes block.
+    tools:
+    - name: list-locations
+      description: List Locations
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: cloud-calling-locations.listlocations
+      with:
+        name: tools.name
+        id: tools.id
+        orgId: tools.orgId
+        max: tools.max
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-location
+      description: Create a Location
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: cloud-calling-locations.createlocation
+      with:
+        orgId: tools.orgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-location-details
+      description: Get Location Details
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: cloud-calling-locations.getlocationdetails
+      with:
+        locationId: tools.locationId
+        orgId: tools.orgId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-location
+      description: Update a Location
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: cloud-calling-locations.updatelocation
+      with:
+        locationId: tools.locationId
+        orgId: tools.orgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-location
+      description: Delete Location
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: cloud-calling-locations.deletelocation
+      with:
+        locationId: tools.locationId
+        orgId: tools.orgId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-location-floors
+      description: List Location Floors
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: cloud-calling-locations.listlocationfloors
+      with:
+        locationId: tools.locationId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-location-floor
+      description: Create a Location Floor
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: cloud-calling-locations.createlocationfloor
+      with:
+        locationId: tools.locationId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-location-floor-details
+      description: Get Location Floor Details
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: cloud-calling-locations.getlocationfloordetails
+      with:
+        locationId: tools.locationId
+        floorId: tools.floorId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-location-floor
+      description: Update a Location Floor
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: cloud-calling-locations.updatelocationfloor
+      with:
+        locationId: tools.locationId
+        floorId: tools.floorId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-location-floor
+      description: Delete a Location Floor
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: cloud-calling-locations.deletelocationfloor
+      with:
+        locationId: tools.locationId
+        floorId: tools.floorId
+      outputParameters:
+      - type: object
+        mapping: $.

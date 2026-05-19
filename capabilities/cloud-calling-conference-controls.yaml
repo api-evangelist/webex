@@ -1,0 +1,444 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Webex Cloud Calling — Conference Controls
+  description: 'Webex Cloud Calling — Conference Controls. 10 operations. Lead operation: Start Conference. Self-contained
+    Naftiko capability covering one Webex business surface.'
+  tags:
+  - Webex
+  - Conference Controls
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WEBEX_API_KEY: WEBEX_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: cloud-calling-conference-controls
+    baseUri: ''
+    description: Webex Cloud Calling — Conference Controls business capability. Self-contained, no shared references.
+    resources:
+    - name: telephony-conference
+      path: /telephony/conference
+      operations:
+      - name: startconference
+        method: POST
+        description: Start Conference
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+      - name: releaseconference
+        method: DELETE
+        description: Release Conference
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: lineOwnerId
+          in: query
+          type: string
+          description: The ID of a user, workspace, or virtual line for which there is a secondary line on a device owned
+            by the user invoking the API.
+      - name: getconferencedetails
+        method: GET
+        description: Get Conference Details
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: lineOwnerId
+          in: query
+          type: string
+          description: The ID of a user, workspace, or virtual line for which there is a secondary line on a device owned
+            by the user invoking the API.
+    - name: telephony-conference-addParticipant
+      path: /telephony/conference/addParticipant
+      operations:
+      - name: addparticipant
+        method: POST
+        description: Add Participant
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    - name: telephony-conference-deafen
+      path: /telephony/conference/deafen
+      operations:
+      - name: deafenparticipant
+        method: POST
+        description: Deafen Participant
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    - name: telephony-conference-hold
+      path: /telephony/conference/hold
+      operations:
+      - name: hold
+        method: POST
+        description: Hold
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: lineOwnerId
+          in: query
+          type: string
+          description: The ID of a user, workspace, or virtual line for which there is a secondary line on a device owned
+            by the user invoking the API.
+    - name: telephony-conference-mute
+      path: /telephony/conference/mute
+      operations:
+      - name: mute
+        method: POST
+        description: Mute
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    - name: telephony-conference-resume
+      path: /telephony/conference/resume
+      operations:
+      - name: resume
+        method: POST
+        description: Resume
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: lineOwnerId
+          in: query
+          type: string
+          description: The ID of a user, workspace, or virtual line for which there is a secondary line on a device owned
+            by the user invoking the API.
+    - name: telephony-conference-undeafen
+      path: /telephony/conference/undeafen
+      operations:
+      - name: undeafenparticipant
+        method: POST
+        description: Undeafen Participant
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    - name: telephony-conference-unmute
+      path: /telephony/conference/unmute
+      operations:
+      - name: unmute
+        method: POST
+        description: Unmute
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    authentication:
+      type: bearer
+      token: '{{env.WEBEX_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: cloud-calling-conference-controls-rest
+    port: 8080
+    description: REST adapter for Webex Cloud Calling — Conference Controls. One Spectral-compliant resource per consumed
+      operation, prefixed with /v1.
+    resources:
+    - path: /v1/telephony/conference
+      name: telephony-conference
+      description: REST surface for telephony-conference.
+      operations:
+      - method: POST
+        name: startconference
+        description: Start Conference
+        call: cloud-calling-conference-controls.startconference
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: releaseconference
+        description: Release Conference
+        call: cloud-calling-conference-controls.releaseconference
+        with:
+          lineOwnerId: rest.lineOwnerId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: GET
+        name: getconferencedetails
+        description: Get Conference Details
+        call: cloud-calling-conference-controls.getconferencedetails
+        with:
+          lineOwnerId: rest.lineOwnerId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/telephony/conference/addparticipant
+      name: telephony-conference-addparticipant
+      description: REST surface for telephony-conference-addParticipant.
+      operations:
+      - method: POST
+        name: addparticipant
+        description: Add Participant
+        call: cloud-calling-conference-controls.addparticipant
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/telephony/conference/deafen
+      name: telephony-conference-deafen
+      description: REST surface for telephony-conference-deafen.
+      operations:
+      - method: POST
+        name: deafenparticipant
+        description: Deafen Participant
+        call: cloud-calling-conference-controls.deafenparticipant
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/telephony/conference/hold
+      name: telephony-conference-hold
+      description: REST surface for telephony-conference-hold.
+      operations:
+      - method: POST
+        name: hold
+        description: Hold
+        call: cloud-calling-conference-controls.hold
+        with:
+          lineOwnerId: rest.lineOwnerId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/telephony/conference/mute
+      name: telephony-conference-mute
+      description: REST surface for telephony-conference-mute.
+      operations:
+      - method: POST
+        name: mute
+        description: Mute
+        call: cloud-calling-conference-controls.mute
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/telephony/conference/resume
+      name: telephony-conference-resume
+      description: REST surface for telephony-conference-resume.
+      operations:
+      - method: POST
+        name: resume
+        description: Resume
+        call: cloud-calling-conference-controls.resume
+        with:
+          lineOwnerId: rest.lineOwnerId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/telephony/conference/undeafen
+      name: telephony-conference-undeafen
+      description: REST surface for telephony-conference-undeafen.
+      operations:
+      - method: POST
+        name: undeafenparticipant
+        description: Undeafen Participant
+        call: cloud-calling-conference-controls.undeafenparticipant
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/telephony/conference/unmute
+      name: telephony-conference-unmute
+      description: REST surface for telephony-conference-unmute.
+      operations:
+      - method: POST
+        name: unmute
+        description: Unmute
+        call: cloud-calling-conference-controls.unmute
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: cloud-calling-conference-controls-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Webex Cloud Calling — Conference Controls. One tool per consumed operation, routed inline
+      through this capability's consumes block.
+    tools:
+    - name: start-conference
+      description: Start Conference
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: cloud-calling-conference-controls.startconference
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: release-conference
+      description: Release Conference
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: cloud-calling-conference-controls.releaseconference
+      with:
+        lineOwnerId: tools.lineOwnerId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-conference-details
+      description: Get Conference Details
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: cloud-calling-conference-controls.getconferencedetails
+      with:
+        lineOwnerId: tools.lineOwnerId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: add-participant
+      description: Add Participant
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: cloud-calling-conference-controls.addparticipant
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: deafen-participant
+      description: Deafen Participant
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: cloud-calling-conference-controls.deafenparticipant
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: hold
+      description: Hold
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: cloud-calling-conference-controls.hold
+      with:
+        lineOwnerId: tools.lineOwnerId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: mute
+      description: Mute
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: cloud-calling-conference-controls.mute
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: resume
+      description: Resume
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: cloud-calling-conference-controls.resume
+      with:
+        lineOwnerId: tools.lineOwnerId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: undeafen-participant
+      description: Undeafen Participant
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: cloud-calling-conference-controls.undeafenparticipant
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: unmute
+      description: Unmute
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: cloud-calling-conference-controls.unmute
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.

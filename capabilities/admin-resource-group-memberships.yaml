@@ -1,0 +1,259 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Webex Admin — Resource Group Memberships
+  description: 'Webex Admin — Resource Group Memberships. 4 operations. Lead operation: List Resource Group Memberships. Self-contained
+    Naftiko capability covering one Webex business surface.'
+  tags:
+  - Webex
+  - Resource Group Memberships
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WEBEX_API_KEY: WEBEX_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: admin-resource-group-memberships
+    baseUri: ''
+    description: Webex Admin — Resource Group Memberships business capability. Self-contained, no shared references.
+    resources:
+    - name: resourceGroup-memberships
+      path: /resourceGroup/memberships
+      operations:
+      - name: listresourcegroupmemberships
+        method: GET
+        description: List Resource Group Memberships
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: licenseId
+          in: query
+          type: string
+          description: List resource group memberships for a license, by ID.
+        - name: personId
+          in: query
+          type: string
+          description: List resource group memberships for a person, by ID.
+        - name: personOrgId
+          in: query
+          type: string
+          description: List resource group memberships for an organization, by ID.
+        - name: status
+          in: query
+          type: string
+          description: Limit resource group memberships to a specific status.
+        - name: max
+          in: query
+          type: number
+          description: Limit the maximum number of resource group memberships in the response.
+    - name: resourceGroup-memberships-v2
+      path: /resourceGroup/memberships/v2
+      operations:
+      - name: listresourcegroupmembershipsv2
+        method: GET
+        description: List Resource Group Memberships V2
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: licenseId
+          in: query
+          type: string
+          description: List resource group memberships for a license, by ID.
+        - name: id
+          in: query
+          type: string
+          description: List resource group memberships by ID.
+        - name: orgId
+          in: query
+          type: string
+          description: List resource group memberships for an organization, by ID.
+        - name: status
+          in: query
+          type: string
+          description: Limit resource group memberships to a specific status.
+        - name: type
+          in: query
+          type: string
+          description: List resource group memberships for an organization, by type. If left blank it will include both User
+            and Workspace type.
+        - name: max
+          in: query
+          type: number
+          description: Limit the maximum number of resource group memberships in the response.
+    - name: resourceGroup-memberships-resourceGroupMembershipId
+      path: /resourceGroup/memberships/{resourceGroupMembershipId}
+      operations:
+      - name: getresourcegroupmembershipdetails
+        method: GET
+        description: Get Resource Group Membership Details
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: resourceGroupMembershipId
+          in: path
+          type: string
+          description: The unique identifier for the resource group membership.
+          required: true
+      - name: updatearesourcegroupmembership
+        method: PUT
+        description: Update a Resource Group Membership
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: resourceGroupMembershipId
+          in: path
+          type: string
+          description: The unique identifier for the resource group membership.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    authentication:
+      type: bearer
+      token: '{{env.WEBEX_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: admin-resource-group-memberships-rest
+    port: 8080
+    description: REST adapter for Webex Admin — Resource Group Memberships. One Spectral-compliant resource per consumed operation,
+      prefixed with /v1.
+    resources:
+    - path: /v1/resourcegroup/memberships
+      name: resourcegroup-memberships
+      description: REST surface for resourceGroup-memberships.
+      operations:
+      - method: GET
+        name: listresourcegroupmemberships
+        description: List Resource Group Memberships
+        call: admin-resource-group-memberships.listresourcegroupmemberships
+        with:
+          licenseId: rest.licenseId
+          personId: rest.personId
+          personOrgId: rest.personOrgId
+          status: rest.status
+          max: rest.max
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/resourcegroup/memberships/v2
+      name: resourcegroup-memberships-v2
+      description: REST surface for resourceGroup-memberships-v2.
+      operations:
+      - method: GET
+        name: listresourcegroupmembershipsv2
+        description: List Resource Group Memberships V2
+        call: admin-resource-group-memberships.listresourcegroupmembershipsv2
+        with:
+          licenseId: rest.licenseId
+          id: rest.id
+          orgId: rest.orgId
+          status: rest.status
+          type: rest.type
+          max: rest.max
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/resourcegroup/memberships/{resourcegroupmembershipid}
+      name: resourcegroup-memberships-resourcegroupmembershipid
+      description: REST surface for resourceGroup-memberships-resourceGroupMembershipId.
+      operations:
+      - method: GET
+        name: getresourcegroupmembershipdetails
+        description: Get Resource Group Membership Details
+        call: admin-resource-group-memberships.getresourcegroupmembershipdetails
+        with:
+          resourceGroupMembershipId: rest.resourceGroupMembershipId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: updatearesourcegroupmembership
+        description: Update a Resource Group Membership
+        call: admin-resource-group-memberships.updatearesourcegroupmembership
+        with:
+          resourceGroupMembershipId: rest.resourceGroupMembershipId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: admin-resource-group-memberships-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Webex Admin — Resource Group Memberships. One tool per consumed operation, routed inline
+      through this capability's consumes block.
+    tools:
+    - name: list-resource-group-memberships
+      description: List Resource Group Memberships
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: admin-resource-group-memberships.listresourcegroupmemberships
+      with:
+        licenseId: tools.licenseId
+        personId: tools.personId
+        personOrgId: tools.personOrgId
+        status: tools.status
+        max: tools.max
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-resource-group-memberships-v2
+      description: List Resource Group Memberships V2
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: admin-resource-group-memberships.listresourcegroupmembershipsv2
+      with:
+        licenseId: tools.licenseId
+        id: tools.id
+        orgId: tools.orgId
+        status: tools.status
+        type: tools.type
+        max: tools.max
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-resource-group-membership-details
+      description: Get Resource Group Membership Details
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: admin-resource-group-memberships.getresourcegroupmembershipdetails
+      with:
+        resourceGroupMembershipId: tools.resourceGroupMembershipId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-resource-group-membership
+      description: Update a Resource Group Membership
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: admin-resource-group-memberships.updatearesourcegroupmembership
+      with:
+        resourceGroupMembershipId: tools.resourceGroupMembershipId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.

@@ -1,0 +1,168 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Webex Meetings — Session Types
+  description: 'Webex Meetings — Session Types. 3 operations. Lead operation: List Site Session Types. Self-contained Naftiko
+    capability covering one Webex business surface.'
+  tags:
+  - Webex
+  - Session Types
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WEBEX_API_KEY: WEBEX_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: meeting-session-types
+    baseUri: ''
+    description: Webex Meetings — Session Types business capability. Self-contained, no shared references.
+    resources:
+    - name: admin-meeting-config-sessionTypes
+      path: /admin/meeting/config/sessionTypes
+      operations:
+      - name: listsitesessiontypes
+        method: GET
+        description: List Site Session Types
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: siteUrl
+          in: query
+          type: string
+          description: URL of the Webex site to query. If siteUrl is not specified, the query will use the default site for
+            the admin's authorization token used to make the call.
+    - name: admin-meeting-userconfig-sessionTypes
+      path: /admin/meeting/userconfig/sessionTypes
+      operations:
+      - name: listusersessiontype
+        method: GET
+        description: List User Session Type
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: siteUrl
+          in: query
+          type: string
+          description: URL of the Webex site to query.
+        - name: personId
+          in: query
+          type: string
+          description: A unique identifier for the user.
+        - name: email
+          in: header
+          type: string
+          description: e.g. `john.andersen@example.com` (string, optional) - The email of the user.
+      - name: updateusersessiontypes
+        method: PUT
+        description: Update User Session Types
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    authentication:
+      type: bearer
+      token: '{{env.WEBEX_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: meeting-session-types-rest
+    port: 8080
+    description: REST adapter for Webex Meetings — Session Types. One Spectral-compliant resource per consumed operation,
+      prefixed with /v1.
+    resources:
+    - path: /v1/admin/meeting/config/sessiontypes
+      name: admin-meeting-config-sessiontypes
+      description: REST surface for admin-meeting-config-sessionTypes.
+      operations:
+      - method: GET
+        name: listsitesessiontypes
+        description: List Site Session Types
+        call: meeting-session-types.listsitesessiontypes
+        with:
+          siteUrl: rest.siteUrl
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/admin/meeting/userconfig/sessiontypes
+      name: admin-meeting-userconfig-sessiontypes
+      description: REST surface for admin-meeting-userconfig-sessionTypes.
+      operations:
+      - method: GET
+        name: listusersessiontype
+        description: List User Session Type
+        call: meeting-session-types.listusersessiontype
+        with:
+          siteUrl: rest.siteUrl
+          personId: rest.personId
+          email: rest.email
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: updateusersessiontypes
+        description: Update User Session Types
+        call: meeting-session-types.updateusersessiontypes
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: meeting-session-types-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Webex Meetings — Session Types. One tool per consumed operation, routed inline through this
+      capability's consumes block.
+    tools:
+    - name: list-site-session-types
+      description: List Site Session Types
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: meeting-session-types.listsitesessiontypes
+      with:
+        siteUrl: tools.siteUrl
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-user-session-type
+      description: List User Session Type
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: meeting-session-types.listusersessiontype
+      with:
+        siteUrl: tools.siteUrl
+        personId: tools.personId
+        email: tools.email
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-user-session-types
+      description: Update User Session Types
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: meeting-session-types.updateusersessiontypes
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.

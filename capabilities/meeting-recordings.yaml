@@ -1,0 +1,821 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Webex Meetings — Recordings
+  description: 'Webex Meetings — Recordings. 12 operations. Lead operation: List Recordings For an Admin or Compliance Officer.
+    Self-contained Naftiko capability covering one Webex business surface.'
+  tags:
+  - Webex
+  - Recordings
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WEBEX_API_KEY: WEBEX_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: meeting-recordings
+    baseUri: ''
+    description: Webex Meetings — Recordings business capability. Self-contained, no shared references.
+    resources:
+    - name: admin-recordings
+      path: /admin/recordings
+      operations:
+      - name: listrecordingsforadminorcomplianceofficer
+        method: GET
+        description: List Recordings For an Admin or Compliance Officer
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: max
+          in: query
+          type: number
+          description: Maximum number of recordings to return in a single page. `max` must be equal to or greater than `1`
+            and equal to or less than `100`.
+        - name: from
+          in: query
+          type: string
+          description: 'Starting date and time (inclusive) for recordings to return, in any [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601)
+            compliant format. `from` cannot be after '
+        - name: to
+          in: query
+          type: string
+          description: Ending date and time (exclusive) for List recordings to return, in any [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601)
+            compliant format. `to` cannot be befor
+        - name: meetingId
+          in: query
+          type: string
+          description: Unique identifier for the parent meeting series, scheduled meeting, or meeting instance for which recordings
+            are being requested. If a meeting series ID is spec
+        - name: siteUrl
+          in: query
+          type: string
+          description: 'URL of the Webex site which the API lists recordings from. If not specified, the API lists recordings
+            from user''s preferred site. All available Webex sites and '
+        - name: integrationTag
+          in: query
+          type: string
+          description: 'External key of the parent meeting created by an integration application. This parameter is used by
+            the integration application to query recordings by a key in '
+        - name: topic
+          in: query
+          type: string
+          description: Recording topic. If specified, the API filters recordings by topic in a case-insensitive manner.
+        - name: format
+          in: query
+          type: string
+          description: Recording's file format. If specified, the API filters recordings by format.
+        - name: serviceType
+          in: query
+          type: string
+          description: The service type for recordings. If specified, the API filters recordings by service type.
+        - name: status
+          in: query
+          type: string
+          description: Recording's status. If not specified or `available`, retrieves recordings that are available. If specified
+            as `deleted`, retrieves recordings that have been mov
+        - name: timezone
+          in: header
+          type: string
+          description: e.g. UTC
+    - name: admin-recordings-recordingId
+      path: /admin/recordings/{recordingId}
+      operations:
+      - name: admindeleterecordingbyid
+        method: DELETE
+        description: Delete a Recording By an Admin
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: recordingId
+          in: path
+          type: string
+          description: A unique identifier for the recording.
+          required: true
+    - name: group-recordings
+      path: /group/recordings
+      operations:
+      - name: listgrouprecordings
+        method: GET
+        description: List Group Recordings
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: personId
+          in: query
+          type: string
+          description: Person ID of the user whose recordings will be retrieved. The person ID can be retrieved from the [People
+            APIs](/docs/api/v1/people), e.g. [Lit People](/docs/ap
+        - name: max
+          in: query
+          type: number
+          description: Maximum number of recordings to return in a single page. `max` must be equal to or greater than `1`
+            and equal to or less than `100`.
+        - name: from
+          in: query
+          type: string
+          description: 'Starting date and time (inclusive) for recordings to return, in any [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601)
+            compliant format. `from` cannot be after '
+        - name: to
+          in: query
+          type: string
+          description: Ending date and time (exclusive) for List recordings to return, in any [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601)
+            compliant format. `to` cannot be befor
+        - name: siteUrl
+          in: query
+          type: string
+          description: 'URL of the Webex site which the API lists recordings from. If not specified, the API lists recordings
+            from user''s preferred site. All available Webex sites and '
+        - name: integrationTag
+          in: query
+          type: string
+          description: 'External key of the parent meeting created by an integration application. This parameter is used by
+            the integration application to query recordings by a key in '
+        - name: topic
+          in: query
+          type: string
+          description: Recording topic. If specified, the API filters recordings by topic in a case-insensitive manner.
+        - name: format
+          in: query
+          type: string
+          description: Recording's file format. If specified, the API filters recordings by format.
+        - name: serviceType
+          in: query
+          type: string
+          description: The service type for recordings. If specified, the API filters recordings by service type.
+        - name: timezone
+          in: header
+          type: string
+          description: e.g. UTC
+        - name: hostEmail
+          in: header
+          type: string
+          description: 'Email of the user whose recordings will be retrieved. The `hostEmail` parameter is optional, but one
+            of the `personId` parameter and `hostEmail` header must be '
+    - name: group-recordings-recordingId
+      path: /group/recordings/{recordingId}
+      operations:
+      - name: getgrouprecordingbyid
+        method: GET
+        description: Get Group Recording Details
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: personId
+          in: query
+          type: string
+          description: Person ID of the user whose recordings will be retrieved. The person ID can be retrieved from the [People
+            APIs](/docs/api/v1/people), e.g. [Lit People](/docs/ap
+        - name: recordingId
+          in: path
+          type: string
+          description: A unique identifier for the recording.
+          required: true
+        - name: timezone
+          in: header
+          type: string
+          description: e.g. UTC
+        - name: hostEmail
+          in: header
+          type: string
+          description: 'Email of the user whose recordings will be retrieved. The `hostEmail` parameter is optional, but one
+            of the `personId` parameter and `hostEmail` header must be '
+    - name: recordings
+      path: /recordings
+      operations:
+      - name: listrecordings
+        method: GET
+        description: List Recordings
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: max
+          in: query
+          type: number
+          description: Maximum number of recordings to return in a single page. `max` must be equal to or greater than `1`
+            and equal to or less than `100`.
+        - name: from
+          in: query
+          type: string
+          description: 'Starting date and time (inclusive) for recordings to return, in any [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601)
+            compliant format. `from` cannot be after '
+        - name: to
+          in: query
+          type: string
+          description: Ending date and time (exclusive) for List recordings to return, in any [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601)
+            compliant format. `to` cannot be befor
+        - name: meetingId
+          in: query
+          type: string
+          description: Unique identifier for the parent meeting series, scheduled meeting, or meeting instance for which recordings
+            are being requested. If a meeting series ID is spec
+        - name: hostEmail
+          in: query
+          type: string
+          description: Email address for the meeting host. This parameter is only used if the user or application calling
+            the API has the required [admin-level meeting scopes](/docs/m
+        - name: siteUrl
+          in: query
+          type: string
+          description: 'URL of the Webex site from which the API lists recordings. If not specified, the API lists recordings
+            from all of a user''s sites. All available Webex sites and '
+        - name: integrationTag
+          in: query
+          type: string
+          description: 'External key of the parent meeting created by an integration application. This parameter is used by
+            the integration application to query recordings by a key in '
+        - name: topic
+          in: query
+          type: string
+          description: Recording's topic. If specified, the API filters recordings by topic in a case-insensitive manner.
+        - name: format
+          in: query
+          type: string
+          description: Recording's file format. If specified, the API filters recordings by format.
+        - name: serviceType
+          in: query
+          type: string
+          description: The service type for recordings. If this item is specified, the API filters recordings by service-type.
+        - name: status
+          in: query
+          type: string
+          description: Recording's status. If not specified or `available`, retrieves recordings that are available. Otherwise,
+            if specified as `deleted`, retrieves recordings that ha
+        - name: timezone
+          in: header
+          type: string
+          description: e.g. UTC
+    - name: recordings-accessList
+      path: /recordings/accessList
+      operations:
+      - name: updaterecordingsharebylink
+        method: POST
+        description: Share a Recording Link
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    - name: recordings-purge
+      path: /recordings/purge
+      operations:
+      - name: bulkpurgerecordings
+        method: POST
+        description: Purge Recordings from Recycle Bin
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: hostEmail
+          in: query
+          type: string
+          description: Email address for the meeting host. Only used if the user or application calling the API has the required
+            [admin-level meeting scopes](/docs/meetings#adminorgan
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    - name: recordings-restore
+      path: /recordings/restore
+      operations:
+      - name: bulkrestorerecordings
+        method: POST
+        description: Restore Recordings from Recycle Bin
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: hostEmail
+          in: query
+          type: string
+          description: Email address for the meeting host. This parameter is only used if the user or application calling
+            the API has the required [admin-level meeting scopes](/docs/m
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    - name: recordings-softDelete
+      path: /recordings/softDelete
+      operations:
+      - name: bulksoftdeleterecordings
+        method: POST
+        description: Move Recordings into the Recycle Bin
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: hostEmail
+          in: query
+          type: string
+          description: Email address for the meeting host. Only used if the user or application calling the API has the required
+            [admin-level meeting scopes](/docs/meetings#adminorgan
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    - name: recordings-recordingId
+      path: /recordings/{recordingId}
+      operations:
+      - name: getrecordbyrecordid
+        method: GET
+        description: Get Recording Details
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: recordingId
+          in: path
+          type: string
+          description: A unique identifier for the recording.
+          required: true
+        - name: hostEmail
+          in: query
+          type: string
+          description: Email address for the meeting host. Only used if the user or application calling the API has required
+            [admin-level meeting scopes](/docs/meetings#adminorganizat
+        - name: timezone
+          in: header
+          type: string
+          description: e.g. UTC
+        - name: siteUrl
+          in: header
+          type: string
+          description: e.g. example.webex.com
+      - name: deleterecordingbyrecordid
+        method: DELETE
+        description: Delete a Recording
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: recordingId
+          in: path
+          type: string
+          description: A unique identifier for the recording.
+          required: true
+        - name: hostEmail
+          in: query
+          type: string
+          description: Email address for the meeting host. Only used if the user or application calling the API has the required
+            [admin-level meeting scopes](/docs/meetings#adminorgan
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    - name: recordings-recordingId-accessList
+      path: /recordings/{recordingId}/accessList
+      operations:
+      - name: updaterecordingsharebyid
+        method: POST
+        description: Share a Recording
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: recordingId
+          in: path
+          type: string
+          description: A unique identifier for the recording.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    authentication:
+      type: bearer
+      token: '{{env.WEBEX_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: meeting-recordings-rest
+    port: 8080
+    description: REST adapter for Webex Meetings — Recordings. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/admin/recordings
+      name: admin-recordings
+      description: REST surface for admin-recordings.
+      operations:
+      - method: GET
+        name: listrecordingsforadminorcomplianceofficer
+        description: List Recordings For an Admin or Compliance Officer
+        call: meeting-recordings.listrecordingsforadminorcomplianceofficer
+        with:
+          max: rest.max
+          from: rest.from
+          to: rest.to
+          meetingId: rest.meetingId
+          siteUrl: rest.siteUrl
+          integrationTag: rest.integrationTag
+          topic: rest.topic
+          format: rest.format
+          serviceType: rest.serviceType
+          status: rest.status
+          timezone: rest.timezone
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/admin/recordings/{recordingid}
+      name: admin-recordings-recordingid
+      description: REST surface for admin-recordings-recordingId.
+      operations:
+      - method: DELETE
+        name: admindeleterecordingbyid
+        description: Delete a Recording By an Admin
+        call: meeting-recordings.admindeleterecordingbyid
+        with:
+          recordingId: rest.recordingId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/group/recordings
+      name: group-recordings
+      description: REST surface for group-recordings.
+      operations:
+      - method: GET
+        name: listgrouprecordings
+        description: List Group Recordings
+        call: meeting-recordings.listgrouprecordings
+        with:
+          personId: rest.personId
+          max: rest.max
+          from: rest.from
+          to: rest.to
+          siteUrl: rest.siteUrl
+          integrationTag: rest.integrationTag
+          topic: rest.topic
+          format: rest.format
+          serviceType: rest.serviceType
+          timezone: rest.timezone
+          hostEmail: rest.hostEmail
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/group/recordings/{recordingid}
+      name: group-recordings-recordingid
+      description: REST surface for group-recordings-recordingId.
+      operations:
+      - method: GET
+        name: getgrouprecordingbyid
+        description: Get Group Recording Details
+        call: meeting-recordings.getgrouprecordingbyid
+        with:
+          personId: rest.personId
+          recordingId: rest.recordingId
+          timezone: rest.timezone
+          hostEmail: rest.hostEmail
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/recordings
+      name: recordings
+      description: REST surface for recordings.
+      operations:
+      - method: GET
+        name: listrecordings
+        description: List Recordings
+        call: meeting-recordings.listrecordings
+        with:
+          max: rest.max
+          from: rest.from
+          to: rest.to
+          meetingId: rest.meetingId
+          hostEmail: rest.hostEmail
+          siteUrl: rest.siteUrl
+          integrationTag: rest.integrationTag
+          topic: rest.topic
+          format: rest.format
+          serviceType: rest.serviceType
+          status: rest.status
+          timezone: rest.timezone
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/recordings/accesslist
+      name: recordings-accesslist
+      description: REST surface for recordings-accessList.
+      operations:
+      - method: POST
+        name: updaterecordingsharebylink
+        description: Share a Recording Link
+        call: meeting-recordings.updaterecordingsharebylink
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/recordings/purge
+      name: recordings-purge
+      description: REST surface for recordings-purge.
+      operations:
+      - method: POST
+        name: bulkpurgerecordings
+        description: Purge Recordings from Recycle Bin
+        call: meeting-recordings.bulkpurgerecordings
+        with:
+          hostEmail: rest.hostEmail
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/recordings/restore
+      name: recordings-restore
+      description: REST surface for recordings-restore.
+      operations:
+      - method: POST
+        name: bulkrestorerecordings
+        description: Restore Recordings from Recycle Bin
+        call: meeting-recordings.bulkrestorerecordings
+        with:
+          hostEmail: rest.hostEmail
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/recordings/softdelete
+      name: recordings-softdelete
+      description: REST surface for recordings-softDelete.
+      operations:
+      - method: POST
+        name: bulksoftdeleterecordings
+        description: Move Recordings into the Recycle Bin
+        call: meeting-recordings.bulksoftdeleterecordings
+        with:
+          hostEmail: rest.hostEmail
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/recordings/{recordingid}
+      name: recordings-recordingid
+      description: REST surface for recordings-recordingId.
+      operations:
+      - method: GET
+        name: getrecordbyrecordid
+        description: Get Recording Details
+        call: meeting-recordings.getrecordbyrecordid
+        with:
+          recordingId: rest.recordingId
+          hostEmail: rest.hostEmail
+          timezone: rest.timezone
+          siteUrl: rest.siteUrl
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deleterecordingbyrecordid
+        description: Delete a Recording
+        call: meeting-recordings.deleterecordingbyrecordid
+        with:
+          recordingId: rest.recordingId
+          hostEmail: rest.hostEmail
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/recordings/{recordingid}/accesslist
+      name: recordings-recordingid-accesslist
+      description: REST surface for recordings-recordingId-accessList.
+      operations:
+      - method: POST
+        name: updaterecordingsharebyid
+        description: Share a Recording
+        call: meeting-recordings.updaterecordingsharebyid
+        with:
+          recordingId: rest.recordingId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: meeting-recordings-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Webex Meetings — Recordings. One tool per consumed operation, routed inline through this
+      capability's consumes block.
+    tools:
+    - name: list-recordings-admin-compliance-officer
+      description: List Recordings For an Admin or Compliance Officer
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: meeting-recordings.listrecordingsforadminorcomplianceofficer
+      with:
+        max: tools.max
+        from: tools.from
+        to: tools.to
+        meetingId: tools.meetingId
+        siteUrl: tools.siteUrl
+        integrationTag: tools.integrationTag
+        topic: tools.topic
+        format: tools.format
+        serviceType: tools.serviceType
+        status: tools.status
+        timezone: tools.timezone
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-recording-admin
+      description: Delete a Recording By an Admin
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: meeting-recordings.admindeleterecordingbyid
+      with:
+        recordingId: tools.recordingId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-group-recordings
+      description: List Group Recordings
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: meeting-recordings.listgrouprecordings
+      with:
+        personId: tools.personId
+        max: tools.max
+        from: tools.from
+        to: tools.to
+        siteUrl: tools.siteUrl
+        integrationTag: tools.integrationTag
+        topic: tools.topic
+        format: tools.format
+        serviceType: tools.serviceType
+        timezone: tools.timezone
+        hostEmail: tools.hostEmail
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-group-recording-details
+      description: Get Group Recording Details
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: meeting-recordings.getgrouprecordingbyid
+      with:
+        personId: tools.personId
+        recordingId: tools.recordingId
+        timezone: tools.timezone
+        hostEmail: tools.hostEmail
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-recordings
+      description: List Recordings
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: meeting-recordings.listrecordings
+      with:
+        max: tools.max
+        from: tools.from
+        to: tools.to
+        meetingId: tools.meetingId
+        hostEmail: tools.hostEmail
+        siteUrl: tools.siteUrl
+        integrationTag: tools.integrationTag
+        topic: tools.topic
+        format: tools.format
+        serviceType: tools.serviceType
+        status: tools.status
+        timezone: tools.timezone
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: share-recording-link
+      description: Share a Recording Link
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: meeting-recordings.updaterecordingsharebylink
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: purge-recordings-recycle-bin
+      description: Purge Recordings from Recycle Bin
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: meeting-recordings.bulkpurgerecordings
+      with:
+        hostEmail: tools.hostEmail
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: restore-recordings-recycle-bin
+      description: Restore Recordings from Recycle Bin
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: meeting-recordings.bulkrestorerecordings
+      with:
+        hostEmail: tools.hostEmail
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: move-recordings-recycle-bin
+      description: Move Recordings into the Recycle Bin
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: meeting-recordings.bulksoftdeleterecordings
+      with:
+        hostEmail: tools.hostEmail
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-recording-details
+      description: Get Recording Details
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: meeting-recordings.getrecordbyrecordid
+      with:
+        recordingId: tools.recordingId
+        hostEmail: tools.hostEmail
+        timezone: tools.timezone
+        siteUrl: tools.siteUrl
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-recording
+      description: Delete a Recording
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: meeting-recordings.deleterecordingbyrecordid
+      with:
+        recordingId: tools.recordingId
+        hostEmail: tools.hostEmail
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: share-recording
+      description: Share a Recording
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: meeting-recordings.updaterecordingsharebyid
+      with:
+        recordingId: tools.recordingId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.

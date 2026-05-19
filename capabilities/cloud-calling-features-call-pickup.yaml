@@ -1,0 +1,401 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: 'Webex Cloud Calling — Features:  Call Pickup'
+  description: 'Webex Cloud Calling — Features:  Call Pickup. 6 operations. Lead operation: Read the List of Call Pickups.
+    Self-contained Naftiko capability covering one Webex business surface.'
+  tags:
+  - Webex
+  - 'Features:  Call Pickup'
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WEBEX_API_KEY: WEBEX_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: cloud-calling-features-call-pickup
+    baseUri: ''
+    description: 'Webex Cloud Calling — Features:  Call Pickup business capability. Self-contained, no shared references.'
+    resources:
+    - name: telephony-config-locations-locationId-callPickups
+      path: /telephony/config/locations/{locationId}/callPickups
+      operations:
+      - name: readthelistofcallpickups
+        method: GET
+        description: Read the List of Call Pickups
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: locationId
+          in: path
+          type: string
+          description: Return the list of call pickups for this location.
+          required: true
+        - name: orgId
+          in: query
+          type: string
+          description: List call pickups for this organization.
+        - name: max
+          in: query
+          type: number
+          description: Limit the number of call pickups returned to this maximum count. Default is 2000.
+        - name: start
+          in: query
+          type: number
+          description: Start at the zero-based offset in the list of matching call pickups. Default is 0.
+        - name: order
+          in: query
+          type: string
+          description: Sort the list of call pickups by name, either ASC or DSC. Default is ASC.
+        - name: name
+          in: query
+          type: string
+          description: Return the list of call pickups that contains the given name. The maximum length is 80.
+      - name: createacallpickup
+        method: POST
+        description: Create a Call Pickup
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: locationId
+          in: path
+          type: string
+          description: Create the call pickup for this location.
+          required: true
+        - name: orgId
+          in: query
+          type: string
+          description: Create the call pickup for this organization.
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    - name: telephony-config-locations-locationId-callPickups-availableUsers
+      path: /telephony/config/locations/{locationId}/callPickups/availableUsers
+      operations:
+      - name: getavailableagentsfromcallpickups
+        method: GET
+        description: Get available agents from Call Pickups
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: locationId
+          in: path
+          type: string
+          description: Return the available agents for this location.
+          required: true
+        - name: orgId
+          in: query
+          type: string
+          description: Return the available agents for this organization.
+        - name: callPickupName
+          in: query
+          type: string
+          description: Only return available agents from call pickups with the matching name.
+        - name: max
+          in: query
+          type: number
+          description: Limit the number of available agents returned to this maximum count.
+        - name: start
+          in: query
+          type: number
+          description: Start at the zero-based offset in the list of matching available agents.
+        - name: name
+          in: query
+          type: string
+          description: Only return available agents with the matching name.
+        - name: phoneNumber
+          in: query
+          type: string
+          description: Only return available agents with the matching primary number.
+        - name: order
+          in: query
+          type: string
+          description: 'Order the available agents according to the designated fields. Up to three vertical bar (|) separated
+            sort order fields may be specified. Available sort fields:'
+    - name: telephony-config-locations-locationId-callPickups-callPickupId
+      path: /telephony/config/locations/{locationId}/callPickups/{callPickupId}
+      operations:
+      - name: deleteacallpickup
+        method: DELETE
+        description: Delete a Call Pickup
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: locationId
+          in: path
+          type: string
+          description: Location from which to delete a call pickup.
+          required: true
+        - name: callPickupId
+          in: path
+          type: string
+          description: Delete the call pickup with the matching ID.
+          required: true
+        - name: orgId
+          in: query
+          type: string
+          description: Delete the call pickup from this organization.
+      - name: getdetailsforacallpickup
+        method: GET
+        description: Get Details for a Call Pickup
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: locationId
+          in: path
+          type: string
+          description: Retrieve settings for a call pickup in this location.
+          required: true
+        - name: callPickupId
+          in: path
+          type: string
+          description: Retrieve settings for a call pickup with the matching ID.
+          required: true
+        - name: orgId
+          in: query
+          type: string
+          description: Retrieve call pickup settings from this organization.
+      - name: updateacallpickup
+        method: PUT
+        description: Update a Call Pickup
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: locationId
+          in: path
+          type: string
+          description: Location in which this call pickup exists.
+          required: true
+        - name: callPickupId
+          in: path
+          type: string
+          description: Update settings for a call pickup with the matching ID.
+          required: true
+        - name: orgId
+          in: query
+          type: string
+          description: Update call pickup settings from this organization.
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    authentication:
+      type: bearer
+      token: '{{env.WEBEX_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: cloud-calling-features-call-pickup-rest
+    port: 8080
+    description: 'REST adapter for Webex Cloud Calling — Features:  Call Pickup. One Spectral-compliant resource per consumed
+      operation, prefixed with /v1.'
+    resources:
+    - path: /v1/telephony/config/locations/{locationid}/callpickups
+      name: telephony-config-locations-locationid-callpickups
+      description: REST surface for telephony-config-locations-locationId-callPickups.
+      operations:
+      - method: GET
+        name: readthelistofcallpickups
+        description: Read the List of Call Pickups
+        call: cloud-calling-features-call-pickup.readthelistofcallpickups
+        with:
+          locationId: rest.locationId
+          orgId: rest.orgId
+          max: rest.max
+          start: rest.start
+          order: rest.order
+          name: rest.name
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: createacallpickup
+        description: Create a Call Pickup
+        call: cloud-calling-features-call-pickup.createacallpickup
+        with:
+          locationId: rest.locationId
+          orgId: rest.orgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/telephony/config/locations/{locationid}/callpickups/availableusers
+      name: telephony-config-locations-locationid-callpickups-availableusers
+      description: REST surface for telephony-config-locations-locationId-callPickups-availableUsers.
+      operations:
+      - method: GET
+        name: getavailableagentsfromcallpickups
+        description: Get available agents from Call Pickups
+        call: cloud-calling-features-call-pickup.getavailableagentsfromcallpickups
+        with:
+          locationId: rest.locationId
+          orgId: rest.orgId
+          callPickupName: rest.callPickupName
+          max: rest.max
+          start: rest.start
+          name: rest.name
+          phoneNumber: rest.phoneNumber
+          order: rest.order
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/telephony/config/locations/{locationid}/callpickups/{callpickupid}
+      name: telephony-config-locations-locationid-callpickups-callpickupid
+      description: REST surface for telephony-config-locations-locationId-callPickups-callPickupId.
+      operations:
+      - method: DELETE
+        name: deleteacallpickup
+        description: Delete a Call Pickup
+        call: cloud-calling-features-call-pickup.deleteacallpickup
+        with:
+          locationId: rest.locationId
+          callPickupId: rest.callPickupId
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: GET
+        name: getdetailsforacallpickup
+        description: Get Details for a Call Pickup
+        call: cloud-calling-features-call-pickup.getdetailsforacallpickup
+        with:
+          locationId: rest.locationId
+          callPickupId: rest.callPickupId
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: updateacallpickup
+        description: Update a Call Pickup
+        call: cloud-calling-features-call-pickup.updateacallpickup
+        with:
+          locationId: rest.locationId
+          callPickupId: rest.callPickupId
+          orgId: rest.orgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: cloud-calling-features-call-pickup-mcp
+    port: 9090
+    transport: http
+    description: 'MCP adapter for Webex Cloud Calling — Features:  Call Pickup. One tool per consumed operation, routed inline
+      through this capability''s consumes block.'
+    tools:
+    - name: read-list-call-pickups
+      description: Read the List of Call Pickups
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: cloud-calling-features-call-pickup.readthelistofcallpickups
+      with:
+        locationId: tools.locationId
+        orgId: tools.orgId
+        max: tools.max
+        start: tools.start
+        order: tools.order
+        name: tools.name
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-call-pickup
+      description: Create a Call Pickup
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: cloud-calling-features-call-pickup.createacallpickup
+      with:
+        locationId: tools.locationId
+        orgId: tools.orgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-available-agents-call-pickups
+      description: Get available agents from Call Pickups
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: cloud-calling-features-call-pickup.getavailableagentsfromcallpickups
+      with:
+        locationId: tools.locationId
+        orgId: tools.orgId
+        callPickupName: tools.callPickupName
+        max: tools.max
+        start: tools.start
+        name: tools.name
+        phoneNumber: tools.phoneNumber
+        order: tools.order
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-call-pickup
+      description: Delete a Call Pickup
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: cloud-calling-features-call-pickup.deleteacallpickup
+      with:
+        locationId: tools.locationId
+        callPickupId: tools.callPickupId
+        orgId: tools.orgId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-details-call-pickup
+      description: Get Details for a Call Pickup
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: cloud-calling-features-call-pickup.getdetailsforacallpickup
+      with:
+        locationId: tools.locationId
+        callPickupId: tools.callPickupId
+        orgId: tools.orgId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-call-pickup
+      description: Update a Call Pickup
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: cloud-calling-features-call-pickup.updateacallpickup
+      with:
+        locationId: tools.locationId
+        callPickupId: tools.callPickupId
+        orgId: tools.orgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.

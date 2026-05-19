@@ -1,0 +1,69 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Webex Cloud Calling
+  description: 'Webex Cloud Calling. 1 operations. Lead operation: Read the Contact Center Extensions. Self-contained Naftiko
+    capability covering one Webex business surface.'
+  tags:
+  - Webex
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WEBEX_API_KEY: WEBEX_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: cloud-calling-general
+    baseUri: ''
+    description: Webex Cloud Calling business capability. Self-contained, no shared references.
+    resources:
+    - name: telephony-config-people-me-settings-contactCenterExtensions
+      path: /telephony/config/people/me/settings/contactCenterExtensions
+      operations:
+      - name: readthecontactcenterextensions
+        method: GET
+        description: Read the Contact Center Extensions
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    authentication:
+      type: bearer
+      token: '{{env.WEBEX_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: cloud-calling-general-rest
+    port: 8080
+    description: REST adapter for Webex Cloud Calling. One Spectral-compliant resource per consumed operation, prefixed with
+      /v1.
+    resources:
+    - path: /v1/telephony/config/people/me/settings/contactcenterextensions
+      name: telephony-config-people-me-settings-contactcenterextensions
+      description: REST surface for telephony-config-people-me-settings-contactCenterExtensions.
+      operations:
+      - method: GET
+        name: readthecontactcenterextensions
+        description: Read the Contact Center Extensions
+        call: cloud-calling-general.readthecontactcenterextensions
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: cloud-calling-general-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Webex Cloud Calling. One tool per consumed operation, routed inline through this capability's
+      consumes block.
+    tools:
+    - name: read-contact-center-extensions
+      description: Read the Contact Center Extensions
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: cloud-calling-general.readthecontactcenterextensions
+      outputParameters:
+      - type: object
+        mapping: $.

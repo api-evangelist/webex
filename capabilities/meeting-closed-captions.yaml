@@ -1,0 +1,193 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Webex Meetings — Closed Captions
+  description: 'Webex Meetings — Closed Captions. 3 operations. Lead operation: List Meeting Closed Captions. Self-contained
+    Naftiko capability covering one Webex business surface.'
+  tags:
+  - Webex
+  - Closed Captions
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WEBEX_API_KEY: WEBEX_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: meeting-closed-captions
+    baseUri: ''
+    description: Webex Meetings — Closed Captions business capability. Self-contained, no shared references.
+    resources:
+    - name: meetingClosedCaptions
+      path: /meetingClosedCaptions
+      operations:
+      - name: getmeetingclosedcaptions
+        method: GET
+        description: List Meeting Closed Captions
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: meetingId
+          in: query
+          type: string
+          description: Unique identifier for the [meeting instance](/docs/meetings#meeting-series-scheduled-meetings-and-meeting-instances)
+            which the closed captions belong to. This p
+          required: true
+    - name: meetingClosedCaptions-closedCaptionId-download
+      path: /meetingClosedCaptions/{closedCaptionId}/download
+      operations:
+      - name: downloadtranscript
+        method: GET
+        description: Download Meeting Closed Caption Snippets
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: closedCaptionId
+          in: path
+          type: string
+          description: Unique identifier for the meeting closed caption.
+          required: true
+        - name: format
+          in: query
+          type: string
+          description: Format for the downloaded meeting closed caption snippets.
+        - name: meetingId
+          in: query
+          type: string
+          description: Unique identifier for the [meeting instance](/docs/meetings#meeting-series-scheduled-meetings-and-meeting-instances)
+            which the closed caption snippets belong to
+          required: true
+        - name: timezone
+          in: header
+          type: string
+          description: e.g. UTC
+    - name: meetingClosedCaptions-closedCaptionId-snippets
+      path: /meetingClosedCaptions/{closedCaptionId}/snippets
+      operations:
+      - name: getmeetingclosedcaptionssnippets
+        method: GET
+        description: List Meeting Closed Caption Snippets
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: closedCaptionId
+          in: path
+          type: string
+          description: Unique identifier for the meeting closed caption which the snippets belong to.
+          required: true
+        - name: meetingId
+          in: query
+          type: string
+          description: Unique identifier for the [meeting instance](/docs/meetings#meeting-series-scheduled-meetings-and-meeting-instances)
+            which the closed caption snippets belong to
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.WEBEX_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: meeting-closed-captions-rest
+    port: 8080
+    description: REST adapter for Webex Meetings — Closed Captions. One Spectral-compliant resource per consumed operation,
+      prefixed with /v1.
+    resources:
+    - path: /v1/meetingclosedcaptions
+      name: meetingclosedcaptions
+      description: REST surface for meetingClosedCaptions.
+      operations:
+      - method: GET
+        name: getmeetingclosedcaptions
+        description: List Meeting Closed Captions
+        call: meeting-closed-captions.getmeetingclosedcaptions
+        with:
+          meetingId: rest.meetingId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/meetingclosedcaptions/{closedcaptionid}/download
+      name: meetingclosedcaptions-closedcaptionid-download
+      description: REST surface for meetingClosedCaptions-closedCaptionId-download.
+      operations:
+      - method: GET
+        name: downloadtranscript
+        description: Download Meeting Closed Caption Snippets
+        call: meeting-closed-captions.downloadtranscript
+        with:
+          closedCaptionId: rest.closedCaptionId
+          format: rest.format
+          meetingId: rest.meetingId
+          timezone: rest.timezone
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/meetingclosedcaptions/{closedcaptionid}/snippets
+      name: meetingclosedcaptions-closedcaptionid-snippets
+      description: REST surface for meetingClosedCaptions-closedCaptionId-snippets.
+      operations:
+      - method: GET
+        name: getmeetingclosedcaptionssnippets
+        description: List Meeting Closed Caption Snippets
+        call: meeting-closed-captions.getmeetingclosedcaptionssnippets
+        with:
+          closedCaptionId: rest.closedCaptionId
+          meetingId: rest.meetingId
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: meeting-closed-captions-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Webex Meetings — Closed Captions. One tool per consumed operation, routed inline through
+      this capability's consumes block.
+    tools:
+    - name: list-meeting-closed-captions
+      description: List Meeting Closed Captions
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: meeting-closed-captions.getmeetingclosedcaptions
+      with:
+        meetingId: tools.meetingId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: download-meeting-closed-caption-snippets
+      description: Download Meeting Closed Caption Snippets
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: meeting-closed-captions.downloadtranscript
+      with:
+        closedCaptionId: tools.closedCaptionId
+        format: tools.format
+        meetingId: tools.meetingId
+        timezone: tools.timezone
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-meeting-closed-caption-snippets
+      description: List Meeting Closed Caption Snippets
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: meeting-closed-captions.getmeetingclosedcaptionssnippets
+      with:
+        closedCaptionId: tools.closedCaptionId
+        meetingId: tools.meetingId
+      outputParameters:
+      - type: object
+        mapping: $.

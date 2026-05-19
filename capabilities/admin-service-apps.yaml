@@ -1,0 +1,87 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Webex Admin — Service Apps
+  description: 'Webex Admin — Service Apps. 1 operations. Lead operation: Create Service App Access Token. Self-contained
+    Naftiko capability covering one Webex business surface.'
+  tags:
+  - Webex
+  - Service Apps
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WEBEX_API_KEY: WEBEX_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: admin-service-apps
+    baseUri: ''
+    description: Webex Admin — Service Apps business capability. Self-contained, no shared references.
+    resources:
+    - name: applications-applicationId-token
+      path: /applications/{applicationId}/token
+      operations:
+      - name: createserviceappaccesstoken
+        method: POST
+        description: Create Service App Access Token
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: applicationId
+          in: path
+          type: string
+          description: The unique identifier of the Service App
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.WEBEX_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: admin-service-apps-rest
+    port: 8080
+    description: REST adapter for Webex Admin — Service Apps. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/applications/{applicationid}/token
+      name: applications-applicationid-token
+      description: REST surface for applications-applicationId-token.
+      operations:
+      - method: POST
+        name: createserviceappaccesstoken
+        description: Create Service App Access Token
+        call: admin-service-apps.createserviceappaccesstoken
+        with:
+          applicationId: rest.applicationId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: admin-service-apps-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Webex Admin — Service Apps. One tool per consumed operation, routed inline through this capability's
+      consumes block.
+    tools:
+    - name: create-service-app-access-token
+      description: Create Service App Access Token
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: admin-service-apps.createserviceappaccesstoken
+      with:
+        applicationId: tools.applicationId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.

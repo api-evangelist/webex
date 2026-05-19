@@ -1,0 +1,266 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Webex Broadworks Calling — BroadWorks Enterprises
+  description: 'Webex Broadworks Calling — BroadWorks Enterprises. 5 operations. Lead operation: List BroadWorks Enterprises.
+    Self-contained Naftiko capability covering one Webex business surface.'
+  tags:
+  - Webex
+  - BroadWorks Enterprises
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WEBEX_API_KEY: WEBEX_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: broadworks-broadworks-enterprises
+    baseUri: ''
+    description: Webex Broadworks Calling — BroadWorks Enterprises business capability. Self-contained, no shared references.
+    resources:
+    - name: broadworks-enterprises
+      path: /broadworks/enterprises
+      operations:
+      - name: listbroadworksenterprises
+        method: GET
+        description: List BroadWorks Enterprises
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: spEnterpriseId
+          in: query
+          type: string
+          description: The Service Provider supplied unique identifier for the subscriber's enterprise.
+        - name: startsWith
+          in: query
+          type: string
+          description: The starting string of the enterprise identifiers to match against.
+        - name: max
+          in: query
+          type: number
+          description: Limit the number of enterprises returned in the search, up to 1000.
+    - name: broadworks-enterprises-id-broadworksDirectorySync
+      path: /broadworks/enterprises/{id}/broadworksDirectorySync
+      operations:
+      - name: updatedirectorysyncforabroadworksenterprise
+        method: PUT
+        description: Update Directory Sync for a BroadWorks Enterprise
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: id
+          in: path
+          type: string
+          description: A unique identifier for the enterprise in question.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+      - name: triggerdirectorysyncforanenterprise
+        method: POST
+        description: Trigger Directory Sync for an Enterprise
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: id
+          in: path
+          type: string
+          description: A unique identifier for the enterprise in question.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+      - name: getdirectorysyncstatusforanenterprise
+        method: GET
+        description: Get Directory Sync Status for an Enterprise
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: id
+          in: path
+          type: string
+          description: A unique identifier for the enterprise in question.
+          required: true
+    - name: broadworks-enterprises-id-broadworksDirectorySync-externalUser
+      path: /broadworks/enterprises/{id}/broadworksDirectorySync/externalUser
+      operations:
+      - name: triggerdirectorysyncforauser
+        method: POST
+        description: Trigger Directory Sync for a User
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: id
+          in: path
+          type: string
+          description: A unique identifier for the enterprise in question.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    authentication:
+      type: bearer
+      token: '{{env.WEBEX_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: broadworks-broadworks-enterprises-rest
+    port: 8080
+    description: REST adapter for Webex Broadworks Calling — BroadWorks Enterprises. One Spectral-compliant resource per consumed
+      operation, prefixed with /v1.
+    resources:
+    - path: /v1/broadworks/enterprises
+      name: broadworks-enterprises
+      description: REST surface for broadworks-enterprises.
+      operations:
+      - method: GET
+        name: listbroadworksenterprises
+        description: List BroadWorks Enterprises
+        call: broadworks-broadworks-enterprises.listbroadworksenterprises
+        with:
+          spEnterpriseId: rest.spEnterpriseId
+          startsWith: rest.startsWith
+          max: rest.max
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/broadworks/enterprises/{id}/broadworksdirectorysync
+      name: broadworks-enterprises-id-broadworksdirectorysync
+      description: REST surface for broadworks-enterprises-id-broadworksDirectorySync.
+      operations:
+      - method: PUT
+        name: updatedirectorysyncforabroadworksenterprise
+        description: Update Directory Sync for a BroadWorks Enterprise
+        call: broadworks-broadworks-enterprises.updatedirectorysyncforabroadworksenterprise
+        with:
+          id: rest.id
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: triggerdirectorysyncforanenterprise
+        description: Trigger Directory Sync for an Enterprise
+        call: broadworks-broadworks-enterprises.triggerdirectorysyncforanenterprise
+        with:
+          id: rest.id
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: GET
+        name: getdirectorysyncstatusforanenterprise
+        description: Get Directory Sync Status for an Enterprise
+        call: broadworks-broadworks-enterprises.getdirectorysyncstatusforanenterprise
+        with:
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/broadworks/enterprises/{id}/broadworksdirectorysync/externaluser
+      name: broadworks-enterprises-id-broadworksdirectorysync-externaluser
+      description: REST surface for broadworks-enterprises-id-broadworksDirectorySync-externalUser.
+      operations:
+      - method: POST
+        name: triggerdirectorysyncforauser
+        description: Trigger Directory Sync for a User
+        call: broadworks-broadworks-enterprises.triggerdirectorysyncforauser
+        with:
+          id: rest.id
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: broadworks-broadworks-enterprises-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Webex Broadworks Calling — BroadWorks Enterprises. One tool per consumed operation, routed
+      inline through this capability's consumes block.
+    tools:
+    - name: list-broadworks-enterprises
+      description: List BroadWorks Enterprises
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: broadworks-broadworks-enterprises.listbroadworksenterprises
+      with:
+        spEnterpriseId: tools.spEnterpriseId
+        startsWith: tools.startsWith
+        max: tools.max
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-directory-sync-broadworks-enterprise
+      description: Update Directory Sync for a BroadWorks Enterprise
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: broadworks-broadworks-enterprises.updatedirectorysyncforabroadworksenterprise
+      with:
+        id: tools.id
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: trigger-directory-sync-enterprise
+      description: Trigger Directory Sync for an Enterprise
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: broadworks-broadworks-enterprises.triggerdirectorysyncforanenterprise
+      with:
+        id: tools.id
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-directory-sync-status-enterprise
+      description: Get Directory Sync Status for an Enterprise
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: broadworks-broadworks-enterprises.getdirectorysyncstatusforanenterprise
+      with:
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: trigger-directory-sync-user
+      description: Trigger Directory Sync for a User
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: broadworks-broadworks-enterprises.triggerdirectorysyncforauser
+      with:
+        id: tools.id
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.

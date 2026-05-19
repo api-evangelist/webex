@@ -1,0 +1,482 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Webex Admin — Workspace Locations
+  description: 'Webex Admin — Workspace Locations. 10 operations. Lead operation: List Workspace Locations. Self-contained
+    Naftiko capability covering one Webex business surface.'
+  tags:
+  - Webex
+  - Workspace Locations
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WEBEX_API_KEY: WEBEX_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: admin-workspace-locations
+    baseUri: ''
+    description: Webex Admin — Workspace Locations business capability. Self-contained, no shared references.
+    resources:
+    - name: workspaceLocations
+      path: /workspaceLocations
+      operations:
+      - name: listworkspacelocations
+        method: GET
+        description: List Workspace Locations
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: query
+          type: string
+          description: List workspace locations in this organization. Only admin users of another organization (such as partners)
+            may use this parameter.
+        - name: displayName
+          in: query
+          type: string
+          description: Location display name.
+        - name: address
+          in: query
+          type: string
+          description: Location address.
+        - name: countryCode
+          in: query
+          type: string
+          description: Location country code (ISO 3166-1).
+        - name: cityName
+          in: query
+          type: string
+          description: Location city name.
+      - name: createaworkspacelocation
+        method: POST
+        description: Create a Workspace Location
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    - name: workspaceLocations-locationId
+      path: /workspaceLocations/{locationId}
+      operations:
+      - name: getaworkspacelocationdetails
+        method: GET
+        description: Get a Workspace Location Details
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: locationId
+          in: path
+          type: string
+          description: A unique identifier for the location.
+          required: true
+      - name: updateaworkspacelocation
+        method: PUT
+        description: Update a Workspace Location
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: locationId
+          in: path
+          type: string
+          description: A unique identifier for the location.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+      - name: deleteaworkspacelocation
+        method: DELETE
+        description: Delete a Workspace Location
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: locationId
+          in: path
+          type: string
+          description: A unique identifier for the location.
+          required: true
+    - name: workspaceLocations-locationId-floors
+      path: /workspaceLocations/{locationId}/floors
+      operations:
+      - name: listworkspacelocationfloors
+        method: GET
+        description: List Workspace Location Floors
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: locationId
+          in: path
+          type: string
+          description: A unique identifier for the location.
+          required: true
+      - name: createaworkspacelocationfloor
+        method: POST
+        description: Create a Workspace Location Floor
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: locationId
+          in: path
+          type: string
+          description: A unique identifier for the location.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    - name: workspaceLocations-locationId-floors-floorId
+      path: /workspaceLocations/{locationId}/floors/{floorId}
+      operations:
+      - name: getaworkspacelocationfloordetails
+        method: GET
+        description: Get a Workspace Location Floor Details
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: locationId
+          in: path
+          type: string
+          description: A unique identifier for the location.
+          required: true
+        - name: floorId
+          in: path
+          type: string
+          description: A unique identifier for the floor.
+          required: true
+      - name: updateaworkspacelocationfloor
+        method: PUT
+        description: Update a Workspace Location Floor
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: locationId
+          in: path
+          type: string
+          description: A unique identifier for the location.
+          required: true
+        - name: floorId
+          in: path
+          type: string
+          description: A unique identifier for the floor.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+      - name: deleteaworkspacelocationfloor
+        method: DELETE
+        description: Delete a Workspace Location Floor
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: locationId
+          in: path
+          type: string
+          description: A unique identifier for the location.
+          required: true
+        - name: floorId
+          in: path
+          type: string
+          description: A unique identifier for the floor.
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.WEBEX_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: admin-workspace-locations-rest
+    port: 8080
+    description: REST adapter for Webex Admin — Workspace Locations. One Spectral-compliant resource per consumed operation,
+      prefixed with /v1.
+    resources:
+    - path: /v1/workspacelocations
+      name: workspacelocations
+      description: REST surface for workspaceLocations.
+      operations:
+      - method: GET
+        name: listworkspacelocations
+        description: List Workspace Locations
+        call: admin-workspace-locations.listworkspacelocations
+        with:
+          orgId: rest.orgId
+          displayName: rest.displayName
+          address: rest.address
+          countryCode: rest.countryCode
+          cityName: rest.cityName
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: createaworkspacelocation
+        description: Create a Workspace Location
+        call: admin-workspace-locations.createaworkspacelocation
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/workspacelocations/{locationid}
+      name: workspacelocations-locationid
+      description: REST surface for workspaceLocations-locationId.
+      operations:
+      - method: GET
+        name: getaworkspacelocationdetails
+        description: Get a Workspace Location Details
+        call: admin-workspace-locations.getaworkspacelocationdetails
+        with:
+          locationId: rest.locationId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: updateaworkspacelocation
+        description: Update a Workspace Location
+        call: admin-workspace-locations.updateaworkspacelocation
+        with:
+          locationId: rest.locationId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deleteaworkspacelocation
+        description: Delete a Workspace Location
+        call: admin-workspace-locations.deleteaworkspacelocation
+        with:
+          locationId: rest.locationId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/workspacelocations/{locationid}/floors
+      name: workspacelocations-locationid-floors
+      description: REST surface for workspaceLocations-locationId-floors.
+      operations:
+      - method: GET
+        name: listworkspacelocationfloors
+        description: List Workspace Location Floors
+        call: admin-workspace-locations.listworkspacelocationfloors
+        with:
+          locationId: rest.locationId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: createaworkspacelocationfloor
+        description: Create a Workspace Location Floor
+        call: admin-workspace-locations.createaworkspacelocationfloor
+        with:
+          locationId: rest.locationId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/workspacelocations/{locationid}/floors/{floorid}
+      name: workspacelocations-locationid-floors-floorid
+      description: REST surface for workspaceLocations-locationId-floors-floorId.
+      operations:
+      - method: GET
+        name: getaworkspacelocationfloordetails
+        description: Get a Workspace Location Floor Details
+        call: admin-workspace-locations.getaworkspacelocationfloordetails
+        with:
+          locationId: rest.locationId
+          floorId: rest.floorId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: updateaworkspacelocationfloor
+        description: Update a Workspace Location Floor
+        call: admin-workspace-locations.updateaworkspacelocationfloor
+        with:
+          locationId: rest.locationId
+          floorId: rest.floorId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deleteaworkspacelocationfloor
+        description: Delete a Workspace Location Floor
+        call: admin-workspace-locations.deleteaworkspacelocationfloor
+        with:
+          locationId: rest.locationId
+          floorId: rest.floorId
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: admin-workspace-locations-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Webex Admin — Workspace Locations. One tool per consumed operation, routed inline through
+      this capability's consumes block.
+    tools:
+    - name: list-workspace-locations
+      description: List Workspace Locations
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: admin-workspace-locations.listworkspacelocations
+      with:
+        orgId: tools.orgId
+        displayName: tools.displayName
+        address: tools.address
+        countryCode: tools.countryCode
+        cityName: tools.cityName
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-workspace-location
+      description: Create a Workspace Location
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: admin-workspace-locations.createaworkspacelocation
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-workspace-location-details
+      description: Get a Workspace Location Details
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: admin-workspace-locations.getaworkspacelocationdetails
+      with:
+        locationId: tools.locationId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-workspace-location
+      description: Update a Workspace Location
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: admin-workspace-locations.updateaworkspacelocation
+      with:
+        locationId: tools.locationId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-workspace-location
+      description: Delete a Workspace Location
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: admin-workspace-locations.deleteaworkspacelocation
+      with:
+        locationId: tools.locationId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-workspace-location-floors
+      description: List Workspace Location Floors
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: admin-workspace-locations.listworkspacelocationfloors
+      with:
+        locationId: tools.locationId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-workspace-location-floor
+      description: Create a Workspace Location Floor
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: admin-workspace-locations.createaworkspacelocationfloor
+      with:
+        locationId: tools.locationId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-workspace-location-floor-details
+      description: Get a Workspace Location Floor Details
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: admin-workspace-locations.getaworkspacelocationfloordetails
+      with:
+        locationId: tools.locationId
+        floorId: tools.floorId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-workspace-location-floor
+      description: Update a Workspace Location Floor
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: admin-workspace-locations.updateaworkspacelocationfloor
+      with:
+        locationId: tools.locationId
+        floorId: tools.floorId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-workspace-location-floor
+      description: Delete a Workspace Location Floor
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: admin-workspace-locations.deleteaworkspacelocationfloor
+      with:
+        locationId: tools.locationId
+        floorId: tools.floorId
+      outputParameters:
+      - type: object
+        mapping: $.

@@ -1,0 +1,253 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Webex Messaging — Memberships
+  description: 'Webex Messaging — Memberships. 5 operations. Lead operation: List Memberships. Self-contained Naftiko capability
+    covering one Webex business surface.'
+  tags:
+  - Webex
+  - Memberships
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WEBEX_API_KEY: WEBEX_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: messaging-memberships
+    baseUri: ''
+    description: Webex Messaging — Memberships business capability. Self-contained, no shared references.
+    resources:
+    - name: memberships
+      path: /memberships
+      operations:
+      - name: listmemberships
+        method: GET
+        description: List Memberships
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: roomId
+          in: query
+          type: string
+          description: List memberships associated with a room, by ID.
+        - name: personId
+          in: query
+          type: string
+          description: List memberships associated with a person, by ID. The `roomId` parameter is required when using this
+            parameter.
+        - name: personEmail
+          in: query
+          type: string
+          description: List memberships associated with a person, by email address. The `roomId` parameter is required when
+            using this parameter.
+        - name: max
+          in: query
+          type: number
+          description: Limit the maximum number of memberships in the response.
+      - name: createamembership
+        method: POST
+        description: Create a Membership
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    - name: memberships-membershipId
+      path: /memberships/{membershipId}
+      operations:
+      - name: getmembershipdetails
+        method: GET
+        description: Get Membership Details
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: membershipId
+          in: path
+          type: string
+          description: The unique identifier for the membership.
+          required: true
+      - name: updateamembership
+        method: PUT
+        description: Update a Membership
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: membershipId
+          in: path
+          type: string
+          description: The unique identifier for the membership.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+      - name: deleteamembership
+        method: DELETE
+        description: Delete a Membership
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: membershipId
+          in: path
+          type: string
+          description: The unique identifier for the membership.
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.WEBEX_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: messaging-memberships-rest
+    port: 8080
+    description: REST adapter for Webex Messaging — Memberships. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/memberships
+      name: memberships
+      description: REST surface for memberships.
+      operations:
+      - method: GET
+        name: listmemberships
+        description: List Memberships
+        call: messaging-memberships.listmemberships
+        with:
+          roomId: rest.roomId
+          personId: rest.personId
+          personEmail: rest.personEmail
+          max: rest.max
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: createamembership
+        description: Create a Membership
+        call: messaging-memberships.createamembership
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/memberships/{membershipid}
+      name: memberships-membershipid
+      description: REST surface for memberships-membershipId.
+      operations:
+      - method: GET
+        name: getmembershipdetails
+        description: Get Membership Details
+        call: messaging-memberships.getmembershipdetails
+        with:
+          membershipId: rest.membershipId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: updateamembership
+        description: Update a Membership
+        call: messaging-memberships.updateamembership
+        with:
+          membershipId: rest.membershipId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deleteamembership
+        description: Delete a Membership
+        call: messaging-memberships.deleteamembership
+        with:
+          membershipId: rest.membershipId
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: messaging-memberships-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Webex Messaging — Memberships. One tool per consumed operation, routed inline through this
+      capability's consumes block.
+    tools:
+    - name: list-memberships
+      description: List Memberships
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: messaging-memberships.listmemberships
+      with:
+        roomId: tools.roomId
+        personId: tools.personId
+        personEmail: tools.personEmail
+        max: tools.max
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-membership
+      description: Create a Membership
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: messaging-memberships.createamembership
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-membership-details
+      description: Get Membership Details
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: messaging-memberships.getmembershipdetails
+      with:
+        membershipId: tools.membershipId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-membership
+      description: Update a Membership
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: messaging-memberships.updateamembership
+      with:
+        membershipId: tools.membershipId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-membership
+      description: Delete a Membership
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: messaging-memberships.deleteamembership
+      with:
+        membershipId: tools.membershipId
+      outputParameters:
+      - type: object
+        mapping: $.

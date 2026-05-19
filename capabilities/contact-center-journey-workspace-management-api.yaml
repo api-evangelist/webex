@@ -1,0 +1,258 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Webex Contact Center — Journey - Workspace management API
+  description: 'Webex Contact Center — Journey - Workspace management API. 5 operations. Lead operation: Get All Workspaces.
+    Self-contained Naftiko capability covering one Webex business surface.'
+  tags:
+  - Webex
+  - Journey - Workspace management API
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WEBEX_API_KEY: WEBEX_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: contact-center-journey-workspace-management-api
+    baseUri: ''
+    description: Webex Contact Center — Journey - Workspace management API business capability. Self-contained, no shared
+      references.
+    resources:
+    - name: admin-v1-api-workspace
+      path: /admin/v1/api/workspace
+      operations:
+      - name: getallworkspaces
+        method: GET
+        description: Get All Workspaces
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: filter
+          in: query
+          type: string
+          description: 'Optional filter which can be applied to the elements to be fetched. '
+        - name: sortBy
+          in: query
+          type: string
+          description: Sort By Field
+        - name: sort
+          in: query
+          type: string
+          description: Sort direction
+        - name: page
+          in: query
+          type: integer
+          description: Index of the page of results to be fetched.
+        - name: pageSize
+          in: query
+          type: integer
+          description: Number of items to be displayed on a page.
+      - name: createworkspace
+        method: POST
+        description: Create Workspace
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: admin-v1-api-workspace-workspace-id-workspaceId
+      path: /admin/v1/api/workspace/workspace-id/{workspaceId}
+      operations:
+      - name: getworkspacebyid
+        method: GET
+        description: Get Workspace
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: workspaceId
+          in: path
+          type: string
+          description: Workspace ID
+          required: true
+      - name: updateworkspacebyid
+        method: PUT
+        description: Update Workspace
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: workspaceId
+          in: path
+          type: string
+          description: Workspace ID
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+      - name: deleteworkspacebyid
+        method: DELETE
+        description: Delete Workspace
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: workspaceId
+          in: path
+          type: string
+          description: Workspace ID
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.WEBEX_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: contact-center-journey-workspace-management-api-rest
+    port: 8080
+    description: REST adapter for Webex Contact Center — Journey - Workspace management API. One Spectral-compliant resource
+      per consumed operation, prefixed with /v1.
+    resources:
+    - path: /v1/admin/v1/api/workspace
+      name: admin-v1-api-workspace
+      description: REST surface for admin-v1-api-workspace.
+      operations:
+      - method: GET
+        name: getallworkspaces
+        description: Get All Workspaces
+        call: contact-center-journey-workspace-management-api.getallworkspaces
+        with:
+          filter: rest.filter
+          sortBy: rest.sortBy
+          sort: rest.sort
+          page: rest.page
+          pageSize: rest.pageSize
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: createworkspace
+        description: Create Workspace
+        call: contact-center-journey-workspace-management-api.createworkspace
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/admin/v1/api/workspace/workspace-id/{workspaceid}
+      name: admin-v1-api-workspace-workspace-id-workspaceid
+      description: REST surface for admin-v1-api-workspace-workspace-id-workspaceId.
+      operations:
+      - method: GET
+        name: getworkspacebyid
+        description: Get Workspace
+        call: contact-center-journey-workspace-management-api.getworkspacebyid
+        with:
+          workspaceId: rest.workspaceId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: updateworkspacebyid
+        description: Update Workspace
+        call: contact-center-journey-workspace-management-api.updateworkspacebyid
+        with:
+          workspaceId: rest.workspaceId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deleteworkspacebyid
+        description: Delete Workspace
+        call: contact-center-journey-workspace-management-api.deleteworkspacebyid
+        with:
+          workspaceId: rest.workspaceId
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: contact-center-journey-workspace-management-api-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Webex Contact Center — Journey - Workspace management API. One tool per consumed operation,
+      routed inline through this capability's consumes block.
+    tools:
+    - name: get-all-workspaces
+      description: Get All Workspaces
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: contact-center-journey-workspace-management-api.getallworkspaces
+      with:
+        filter: tools.filter
+        sortBy: tools.sortBy
+        sort: tools.sort
+        page: tools.page
+        pageSize: tools.pageSize
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-workspace
+      description: Create Workspace
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: contact-center-journey-workspace-management-api.createworkspace
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-workspace
+      description: Get Workspace
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: contact-center-journey-workspace-management-api.getworkspacebyid
+      with:
+        workspaceId: tools.workspaceId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-workspace
+      description: Update Workspace
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: contact-center-journey-workspace-management-api.updateworkspacebyid
+      with:
+        workspaceId: tools.workspaceId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-workspace
+      description: Delete Workspace
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: contact-center-journey-workspace-management-api.deleteworkspacebyid
+      with:
+        workspaceId: tools.workspaceId
+      outputParameters:
+      - type: object
+        mapping: $.

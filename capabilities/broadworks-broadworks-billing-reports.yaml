@@ -1,0 +1,203 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Webex Broadworks Calling — BroadWorks Billing Reports
+  description: 'Webex Broadworks Calling — BroadWorks Billing Reports. 4 operations. Lead operation: List BroadWorks Billing
+    Reports. Self-contained Naftiko capability covering one Webex business surface.'
+  tags:
+  - Webex
+  - BroadWorks Billing Reports
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WEBEX_API_KEY: WEBEX_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: broadworks-broadworks-billing-reports
+    baseUri: ''
+    description: Webex Broadworks Calling — BroadWorks Billing Reports business capability. Self-contained, no shared references.
+    resources:
+    - name: broadworks-billing-reports
+      path: /broadworks/billing/reports
+      operations:
+      - name: listbroadworksbillingreports
+        method: GET
+        description: List BroadWorks Billing Reports
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: before
+          in: query
+          type: string
+          description: Only include billing reports created before this date.
+        - name: after
+          in: query
+          type: string
+          description: Only include billing reports created after this date.
+        - name: sortBy
+          in: query
+          type: string
+          description: Sort the reports.
+      - name: createabroadworksbillingreport
+        method: POST
+        description: Create a BroadWorks Billing Report
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    - name: broadworks-billing-reports-id
+      path: /broadworks/billing/reports/{id}
+      operations:
+      - name: getabroadworksbillingreport
+        method: GET
+        description: Get a BroadWorks Billing Report
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: id
+          in: path
+          type: string
+          description: A unique identifier for the report in request.
+          required: true
+      - name: deleteabroadworksbillingreport
+        method: DELETE
+        description: Delete a BroadWorks Billing Report
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: id
+          in: path
+          type: string
+          description: A unique report ID that corresponds to a billing report.
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.WEBEX_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: broadworks-broadworks-billing-reports-rest
+    port: 8080
+    description: REST adapter for Webex Broadworks Calling — BroadWorks Billing Reports. One Spectral-compliant resource per
+      consumed operation, prefixed with /v1.
+    resources:
+    - path: /v1/broadworks/billing/reports
+      name: broadworks-billing-reports
+      description: REST surface for broadworks-billing-reports.
+      operations:
+      - method: GET
+        name: listbroadworksbillingreports
+        description: List BroadWorks Billing Reports
+        call: broadworks-broadworks-billing-reports.listbroadworksbillingreports
+        with:
+          before: rest.before
+          after: rest.after
+          sortBy: rest.sortBy
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: createabroadworksbillingreport
+        description: Create a BroadWorks Billing Report
+        call: broadworks-broadworks-billing-reports.createabroadworksbillingreport
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/broadworks/billing/reports/{id}
+      name: broadworks-billing-reports-id
+      description: REST surface for broadworks-billing-reports-id.
+      operations:
+      - method: GET
+        name: getabroadworksbillingreport
+        description: Get a BroadWorks Billing Report
+        call: broadworks-broadworks-billing-reports.getabroadworksbillingreport
+        with:
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deleteabroadworksbillingreport
+        description: Delete a BroadWorks Billing Report
+        call: broadworks-broadworks-billing-reports.deleteabroadworksbillingreport
+        with:
+          id: rest.id
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: broadworks-broadworks-billing-reports-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Webex Broadworks Calling — BroadWorks Billing Reports. One tool per consumed operation, routed
+      inline through this capability's consumes block.
+    tools:
+    - name: list-broadworks-billing-reports
+      description: List BroadWorks Billing Reports
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: broadworks-broadworks-billing-reports.listbroadworksbillingreports
+      with:
+        before: tools.before
+        after: tools.after
+        sortBy: tools.sortBy
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-broadworks-billing-report
+      description: Create a BroadWorks Billing Report
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: broadworks-broadworks-billing-reports.createabroadworksbillingreport
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-broadworks-billing-report
+      description: Get a BroadWorks Billing Report
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: broadworks-broadworks-billing-reports.getabroadworksbillingreport
+      with:
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-broadworks-billing-report
+      description: Delete a BroadWorks Billing Report
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: broadworks-broadworks-billing-reports.deleteabroadworksbillingreport
+      with:
+        id: tools.id
+      outputParameters:
+      - type: object
+        mapping: $.

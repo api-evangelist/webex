@@ -1,0 +1,322 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Webex Contact Center — Call Monitoring
+  description: 'Webex Contact Center — Call Monitoring. 7 operations. Lead operation: Create Monitoring Request. Self-contained
+    Naftiko capability covering one Webex business surface.'
+  tags:
+  - Webex
+  - Call Monitoring
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WEBEX_API_KEY: WEBEX_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: contact-center-call-monitoring
+    baseUri: ''
+    description: Webex Contact Center — Call Monitoring business capability. Self-contained, no shared references.
+    resources:
+    - name: v1-monitor
+      path: /v1/monitor
+      operations:
+      - name: createmonitoringrequest
+        method: POST
+        description: Create Monitoring Request
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: v1-monitor-sessions
+      path: /v1/monitor/sessions
+      operations:
+      - name: fetchmonitoringsessionsroute
+        method: GET
+        description: Fetch Monitoring Sessions
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: v1-monitor-requestId
+      path: /v1/monitor/{requestId}
+      operations:
+      - name: deletemonitoringrequestroute
+        method: DELETE
+        description: Delete Monitoring Request
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: requestId
+          in: path
+          type: string
+          description: The id with which the monitoring request has been created.
+          required: true
+    - name: v1-monitor-taskId-bargeIn
+      path: /v1/monitor/{taskId}/bargeIn
+      operations:
+      - name: bargeinroute
+        method: POST
+        description: BargeIn Request
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: taskId
+          in: path
+          type: string
+          description: The unique ID representing the task that needs to be barged by the supervisor.
+          required: true
+    - name: v1-monitor-taskId-end
+      path: /v1/monitor/{taskId}/end
+      operations:
+      - name: endactivemonitoringroute
+        method: POST
+        description: End Monitoring Request
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: taskId
+          in: path
+          type: string
+          description: The unique ID represents the task that needs to end.
+          required: true
+    - name: v1-monitor-taskId-hold
+      path: /v1/monitor/{taskId}/hold
+      operations:
+      - name: supervisorholdmonitoringroute
+        method: POST
+        description: Hold Monitoring Request
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: taskId
+          in: path
+          type: string
+          description: The unique ID representing the task that needs to be held.
+          required: true
+    - name: v1-monitor-taskId-unhold
+      path: /v1/monitor/{taskId}/unhold
+      operations:
+      - name: supervisorunholdmonitoringroute
+        method: POST
+        description: Unhold Monitoring Request
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: taskId
+          in: path
+          type: string
+          description: The unique ID representing the task that needs to be resumed and was on hold already.
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.WEBEX_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: contact-center-call-monitoring-rest
+    port: 8080
+    description: REST adapter for Webex Contact Center — Call Monitoring. One Spectral-compliant resource per consumed operation,
+      prefixed with /v1.
+    resources:
+    - path: /v1/v1/monitor
+      name: v1-monitor
+      description: REST surface for v1-monitor.
+      operations:
+      - method: POST
+        name: createmonitoringrequest
+        description: Create Monitoring Request
+        call: contact-center-call-monitoring.createmonitoringrequest
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v1/monitor/sessions
+      name: v1-monitor-sessions
+      description: REST surface for v1-monitor-sessions.
+      operations:
+      - method: GET
+        name: fetchmonitoringsessionsroute
+        description: Fetch Monitoring Sessions
+        call: contact-center-call-monitoring.fetchmonitoringsessionsroute
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v1/monitor/{requestid}
+      name: v1-monitor-requestid
+      description: REST surface for v1-monitor-requestId.
+      operations:
+      - method: DELETE
+        name: deletemonitoringrequestroute
+        description: Delete Monitoring Request
+        call: contact-center-call-monitoring.deletemonitoringrequestroute
+        with:
+          requestId: rest.requestId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v1/monitor/{taskid}/bargein
+      name: v1-monitor-taskid-bargein
+      description: REST surface for v1-monitor-taskId-bargeIn.
+      operations:
+      - method: POST
+        name: bargeinroute
+        description: BargeIn Request
+        call: contact-center-call-monitoring.bargeinroute
+        with:
+          taskId: rest.taskId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v1/monitor/{taskid}/end
+      name: v1-monitor-taskid-end
+      description: REST surface for v1-monitor-taskId-end.
+      operations:
+      - method: POST
+        name: endactivemonitoringroute
+        description: End Monitoring Request
+        call: contact-center-call-monitoring.endactivemonitoringroute
+        with:
+          taskId: rest.taskId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v1/monitor/{taskid}/hold
+      name: v1-monitor-taskid-hold
+      description: REST surface for v1-monitor-taskId-hold.
+      operations:
+      - method: POST
+        name: supervisorholdmonitoringroute
+        description: Hold Monitoring Request
+        call: contact-center-call-monitoring.supervisorholdmonitoringroute
+        with:
+          taskId: rest.taskId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v1/monitor/{taskid}/unhold
+      name: v1-monitor-taskid-unhold
+      description: REST surface for v1-monitor-taskId-unhold.
+      operations:
+      - method: POST
+        name: supervisorunholdmonitoringroute
+        description: Unhold Monitoring Request
+        call: contact-center-call-monitoring.supervisorunholdmonitoringroute
+        with:
+          taskId: rest.taskId
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: contact-center-call-monitoring-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Webex Contact Center — Call Monitoring. One tool per consumed operation, routed inline through
+      this capability's consumes block.
+    tools:
+    - name: create-monitoring-request
+      description: Create Monitoring Request
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: contact-center-call-monitoring.createmonitoringrequest
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: fetch-monitoring-sessions
+      description: Fetch Monitoring Sessions
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: contact-center-call-monitoring.fetchmonitoringsessionsroute
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-monitoring-request
+      description: Delete Monitoring Request
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: contact-center-call-monitoring.deletemonitoringrequestroute
+      with:
+        requestId: tools.requestId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: bargein-request
+      description: BargeIn Request
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: contact-center-call-monitoring.bargeinroute
+      with:
+        taskId: tools.taskId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: end-monitoring-request
+      description: End Monitoring Request
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: contact-center-call-monitoring.endactivemonitoringroute
+      with:
+        taskId: tools.taskId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: hold-monitoring-request
+      description: Hold Monitoring Request
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: contact-center-call-monitoring.supervisorholdmonitoringroute
+      with:
+        taskId: tools.taskId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: unhold-monitoring-request
+      description: Unhold Monitoring Request
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: contact-center-call-monitoring.supervisorunholdmonitoringroute
+      with:
+        taskId: tools.taskId
+      outputParameters:
+      - type: object
+        mapping: $.

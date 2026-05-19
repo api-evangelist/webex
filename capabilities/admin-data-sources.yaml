@@ -1,0 +1,305 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Webex Admin — Data Sources
+  description: 'Webex Admin — Data Sources. 7 operations. Lead operation: Register a Data Source. Self-contained Naftiko capability
+    covering one Webex business surface.'
+  tags:
+  - Webex
+  - Data Sources
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WEBEX_API_KEY: WEBEX_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: admin-data-sources
+    baseUri: ''
+    description: Webex Admin — Data Sources business capability. Self-contained, no shared references.
+    resources:
+    - name: dataSources
+      path: /dataSources
+      operations:
+      - name: registeradatasource
+        method: POST
+        description: Register a Data Source
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    - name: dataSources
+      path: /dataSources/
+      operations:
+      - name: retrievealldatasources
+        method: GET
+        description: Retrieve All Data Sources
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: dataSources-schemas
+      path: /dataSources/schemas
+      operations:
+      - name: retrievedatasourceschemas
+        method: GET
+        description: Retrieve Data Source Schemas
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: dataSources-schemas-schemaId
+      path: /dataSources/schemas/{schemaId}
+      operations:
+      - name: retrievedetailsofaspecificdatasourceschema
+        method: GET
+        description: Retrieve Details of a Specific Data Source Schema
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: schemaId
+          in: path
+          type: string
+          description: The unique identifier for the schema.
+          required: true
+    - name: dataSources-dataSourceId
+      path: /dataSources/{dataSourceId}
+      operations:
+      - name: deleteadatasource
+        method: DELETE
+        description: Delete a Data Source
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: dataSourceId
+          in: path
+          type: string
+          description: The unique identifier for the dataSource.
+          required: true
+      - name: retrievedatasourcedetails
+        method: GET
+        description: Retrieve Data Source Details
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: dataSourceId
+          in: path
+          type: string
+          description: The unique identifier for the dataSource.
+          required: true
+      - name: updateadatasource
+        method: PUT
+        description: Update a Data Source
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: dataSourceId
+          in: path
+          type: string
+          description: The unique identifier for the data source.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    authentication:
+      type: bearer
+      token: '{{env.WEBEX_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: admin-data-sources-rest
+    port: 8080
+    description: REST adapter for Webex Admin — Data Sources. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/datasources
+      name: datasources
+      description: REST surface for dataSources.
+      operations:
+      - method: POST
+        name: registeradatasource
+        description: Register a Data Source
+        call: admin-data-sources.registeradatasource
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/datasources
+      name: datasources
+      description: REST surface for dataSources.
+      operations:
+      - method: GET
+        name: retrievealldatasources
+        description: Retrieve All Data Sources
+        call: admin-data-sources.retrievealldatasources
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/datasources/schemas
+      name: datasources-schemas
+      description: REST surface for dataSources-schemas.
+      operations:
+      - method: GET
+        name: retrievedatasourceschemas
+        description: Retrieve Data Source Schemas
+        call: admin-data-sources.retrievedatasourceschemas
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/datasources/schemas/{schemaid}
+      name: datasources-schemas-schemaid
+      description: REST surface for dataSources-schemas-schemaId.
+      operations:
+      - method: GET
+        name: retrievedetailsofaspecificdatasourceschema
+        description: Retrieve Details of a Specific Data Source Schema
+        call: admin-data-sources.retrievedetailsofaspecificdatasourceschema
+        with:
+          schemaId: rest.schemaId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/datasources/{datasourceid}
+      name: datasources-datasourceid
+      description: REST surface for dataSources-dataSourceId.
+      operations:
+      - method: DELETE
+        name: deleteadatasource
+        description: Delete a Data Source
+        call: admin-data-sources.deleteadatasource
+        with:
+          dataSourceId: rest.dataSourceId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: GET
+        name: retrievedatasourcedetails
+        description: Retrieve Data Source Details
+        call: admin-data-sources.retrievedatasourcedetails
+        with:
+          dataSourceId: rest.dataSourceId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: updateadatasource
+        description: Update a Data Source
+        call: admin-data-sources.updateadatasource
+        with:
+          dataSourceId: rest.dataSourceId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: admin-data-sources-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Webex Admin — Data Sources. One tool per consumed operation, routed inline through this capability's
+      consumes block.
+    tools:
+    - name: register-data-source
+      description: Register a Data Source
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: admin-data-sources.registeradatasource
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: retrieve-all-data-sources
+      description: Retrieve All Data Sources
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: admin-data-sources.retrievealldatasources
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: retrieve-data-source-schemas
+      description: Retrieve Data Source Schemas
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: admin-data-sources.retrievedatasourceschemas
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: retrieve-details-specific-data-source
+      description: Retrieve Details of a Specific Data Source Schema
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: admin-data-sources.retrievedetailsofaspecificdatasourceschema
+      with:
+        schemaId: tools.schemaId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-data-source
+      description: Delete a Data Source
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: admin-data-sources.deleteadatasource
+      with:
+        dataSourceId: tools.dataSourceId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: retrieve-data-source-details
+      description: Retrieve Data Source Details
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: admin-data-sources.retrievedatasourcedetails
+      with:
+        dataSourceId: tools.dataSourceId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-data-source
+      description: Update a Data Source
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: admin-data-sources.updateadatasource
+      with:
+        dataSourceId: tools.dataSourceId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.

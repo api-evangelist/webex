@@ -1,0 +1,122 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Webex Admin — Resource Groups
+  description: 'Webex Admin — Resource Groups. 2 operations. Lead operation: List Resource Groups. Self-contained Naftiko
+    capability covering one Webex business surface.'
+  tags:
+  - Webex
+  - Resource Groups
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WEBEX_API_KEY: WEBEX_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: admin-resource-groups
+    baseUri: ''
+    description: Webex Admin — Resource Groups business capability. Self-contained, no shared references.
+    resources:
+    - name: resourceGroups
+      path: /resourceGroups
+      operations:
+      - name: listresourcegroups
+        method: GET
+        description: List Resource Groups
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: query
+          type: string
+          description: List resource groups in this organization. Only admin users of another organization (such as partners)
+            may use this parameter.
+    - name: resourceGroups-resourceGroupId
+      path: /resourceGroups/{resourceGroupId}
+      operations:
+      - name: getresourcegroupdetails
+        method: GET
+        description: Get Resource Group Details
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: resourceGroupId
+          in: path
+          type: string
+          description: The unique identifier for the resource group.
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.WEBEX_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: admin-resource-groups-rest
+    port: 8080
+    description: REST adapter for Webex Admin — Resource Groups. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/resourcegroups
+      name: resourcegroups
+      description: REST surface for resourceGroups.
+      operations:
+      - method: GET
+        name: listresourcegroups
+        description: List Resource Groups
+        call: admin-resource-groups.listresourcegroups
+        with:
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/resourcegroups/{resourcegroupid}
+      name: resourcegroups-resourcegroupid
+      description: REST surface for resourceGroups-resourceGroupId.
+      operations:
+      - method: GET
+        name: getresourcegroupdetails
+        description: Get Resource Group Details
+        call: admin-resource-groups.getresourcegroupdetails
+        with:
+          resourceGroupId: rest.resourceGroupId
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: admin-resource-groups-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Webex Admin — Resource Groups. One tool per consumed operation, routed inline through this
+      capability's consumes block.
+    tools:
+    - name: list-resource-groups
+      description: List Resource Groups
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: admin-resource-groups.listresourcegroups
+      with:
+        orgId: tools.orgId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-resource-group-details
+      description: Get Resource Group Details
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: admin-resource-groups.getresourcegroupdetails
+      with:
+        resourceGroupId: tools.resourceGroupId
+      outputParameters:
+      - type: object
+        mapping: $.

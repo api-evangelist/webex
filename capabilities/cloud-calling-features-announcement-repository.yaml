@@ -1,0 +1,786 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: 'Webex Cloud Calling — Features: Announcement Repository'
+  description: 'Webex Cloud Calling — Features: Announcement Repository. 15 operations. Lead operation: Fetch list of announcement
+    greetings on location and organization level. Self-contained Naftiko capability covering one Webex business surface.'
+  tags:
+  - Webex
+  - 'Features: Announcement Repository'
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WEBEX_API_KEY: WEBEX_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: cloud-calling-features-announcement-repository
+    baseUri: ''
+    description: 'Webex Cloud Calling — Features: Announcement Repository business capability. Self-contained, no shared references.'
+    resources:
+    - name: telephony-config-announcements
+      path: /telephony/config/announcements
+      operations:
+      - name: fetchlistofannouncementgreetingsonlocationandorganizationlevel
+        method: GET
+        description: Fetch list of announcement greetings on location and organization level
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: query
+          type: string
+          description: Get announcements in this organization.
+        - name: locationId
+          in: query
+          type: string
+          description: Return the list of enterprise or Location announcement files. Without this parameter, the Enterprise
+            level announcements are returned.
+        - name: max
+          in: query
+          type: number
+          description: Limit the number of objects returned to this maximum count.
+        - name: start
+          in: query
+          type: number
+          description: Start at the zero-based offset in the list of matching objects.
+        - name: order
+          in: query
+          type: string
+          description: Sort the list according to fileName or fileSize. The default sort will be in Ascending order.
+        - name: fileName
+          in: query
+          type: string
+          description: Return the list of announcements with the given fileName.
+        - name: fileType
+          in: query
+          type: string
+          description: Return the list of announcement files for this fileType.
+        - name: mediaFileType
+          in: query
+          type: string
+          description: Return the list of announcement files for this mediaFileType.
+        - name: name
+          in: query
+          type: string
+          description: Return the list of announcement files for this announcement label.
+      - name: uploadabinaryannouncementgreetingatorganizationlevel
+        method: POST
+        description: Upload a binary announcement greeting at organization level
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: query
+          type: string
+          description: Create an announcement in this organization.
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: telephony-config-announcements-usage
+      path: /telephony/config/announcements/usage
+      operations:
+      - name: fetchrepositoryusageforannouncementsforanorganization
+        method: GET
+        description: Fetch repository usage for announcements for an organization
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: query
+          type: string
+          description: Get announcement usage in this organization.
+    - name: telephony-config-announcements-announcementId
+      path: /telephony/config/announcements/{announcementId}
+      operations:
+      - name: deleteanannouncementgreetingoftheorganization
+        method: DELETE
+        description: Delete an announcement greeting of the organization
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: announcementId
+          in: path
+          type: string
+          description: Unique identifier of an announcement.
+          required: true
+        - name: orgId
+          in: query
+          type: string
+          description: Delete an announcement in this organization.
+      - name: fetchdetailsofabinaryannouncementgreetingattheorganizationlevel
+        method: GET
+        description: Fetch details of a binary announcement greeting at the organization level
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: announcementId
+          in: path
+          type: string
+          description: Unique identifier of an announcement.
+          required: true
+        - name: orgId
+          in: query
+          type: string
+          description: Get an announcement in this organization.
+      - name: modifyabinaryannouncementgreetingatorganizationlevel
+        method: PUT
+        description: Modify a binary announcement greeting at organization level
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: announcementId
+          in: path
+          type: string
+          description: Unique identifier of an announcement.
+          required: true
+        - name: orgId
+          in: query
+          type: string
+          description: Modify an announcement in this organization.
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: telephony-config-locations-locationId-announcements
+      path: /telephony/config/locations/{locationId}/announcements
+      operations:
+      - name: uploadabinaryannouncementgreetingatthelocationlevel
+        method: POST
+        description: Upload a binary announcement greeting at the location level
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: locationId
+          in: path
+          type: string
+          description: Unique identifier of a location where an announcement is being created.
+          required: true
+        - name: orgId
+          in: query
+          type: string
+          description: Create an announcement for location in this organization.
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: telephony-config-locations-locationId-announcements-usage
+      path: /telephony/config/locations/{locationId}/announcements/usage
+      operations:
+      - name: fetchrepositoryusageforannouncementsinalocation
+        method: GET
+        description: Fetch repository usage for announcements in a location
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: locationId
+          in: path
+          type: string
+          description: Unique identifier of a location where an announcement is being created.
+          required: true
+        - name: orgId
+          in: query
+          type: string
+          description: Get announcement usage for location in this organization.
+    - name: telephony-config-locations-locationId-announcements-announcementId
+      path: /telephony/config/locations/{locationId}/announcements/{announcementId}
+      operations:
+      - name: deleteanannouncementgreetinginalocation
+        method: DELETE
+        description: Delete an announcement greeting in a location
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: locationId
+          in: path
+          type: string
+          description: Unique identifier of a location where announcement is being created.
+          required: true
+        - name: announcementId
+          in: path
+          type: string
+          description: Unique identifier of an announcement.
+          required: true
+        - name: orgId
+          in: query
+          type: string
+          description: Delete an announcement for location in this organization.
+      - name: fetchdetailsofabinaryannouncementgreetingatlocationlevel
+        method: GET
+        description: Fetch details of a binary announcement greeting at location level
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: locationId
+          in: path
+          type: string
+          description: Unique identifier of a location where an announcement is being created.
+          required: true
+        - name: announcementId
+          in: path
+          type: string
+          description: Unique identifier of an announcement.
+          required: true
+        - name: orgId
+          in: query
+          type: string
+          description: Fetch an announcement for location in this organization.
+      - name: modifyabinaryannouncementgreetingatlocationlevel
+        method: PUT
+        description: Modify a binary announcement greeting at location level
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: locationId
+          in: path
+          type: string
+          description: Unique identifier of a location where an announcement is being created.
+          required: true
+        - name: announcementId
+          in: path
+          type: string
+          description: Unique identifier of an announcement.
+          required: true
+        - name: orgId
+          in: query
+          type: string
+          description: Modify an announcement for location in this organization.
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: telephony-config-textToSpeech-actions-generate-invoke
+      path: /telephony/config/textToSpeech/actions/generate/invoke
+      operations:
+      - name: generatetexttospeech
+        method: POST
+        description: Generate a Text-to-Speech Prompt
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: query
+          type: string
+          description: Generate text-to-speech for this organization.
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: telephony-config-textToSpeech-usage
+      path: /telephony/config/textToSpeech/usage
+      operations:
+      - name: gettexttospeechusage
+        method: GET
+        description: Get Text-to-Speech Usage
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: query
+          type: string
+          description: Get text-to-speech usage for this organization.
+    - name: telephony-config-textToSpeech-voices
+      path: /telephony/config/textToSpeech/voices
+      operations:
+      - name: listtexttospeechvoices
+        method: GET
+        description: List Text-to-Speech Voices
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: query
+          type: string
+          description: List text-to-speech voices supported for this organization.
+    - name: telephony-config-textToSpeech-ttsId
+      path: /telephony/config/textToSpeech/{ttsId}
+      operations:
+      - name: gettexttospeechgenerationstatus
+        method: GET
+        description: Get Text-to-Speech Generation Status
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: ttsId
+          in: path
+          type: string
+          description: Unique identifier of the text-to-speech generation request.
+          required: true
+        - name: orgId
+          in: query
+          type: string
+          description: Get text-to-speech status for this organization.
+    authentication:
+      type: bearer
+      token: '{{env.WEBEX_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: cloud-calling-features-announcement-repository-rest
+    port: 8080
+    description: 'REST adapter for Webex Cloud Calling — Features: Announcement Repository. One Spectral-compliant resource
+      per consumed operation, prefixed with /v1.'
+    resources:
+    - path: /v1/telephony/config/announcements
+      name: telephony-config-announcements
+      description: REST surface for telephony-config-announcements.
+      operations:
+      - method: GET
+        name: fetchlistofannouncementgreetingsonlocationandorganizationlevel
+        description: Fetch list of announcement greetings on location and organization level
+        call: cloud-calling-features-announcement-repository.fetchlistofannouncementgreetingsonlocationandorganizationlevel
+        with:
+          orgId: rest.orgId
+          locationId: rest.locationId
+          max: rest.max
+          start: rest.start
+          order: rest.order
+          fileName: rest.fileName
+          fileType: rest.fileType
+          mediaFileType: rest.mediaFileType
+          name: rest.name
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: uploadabinaryannouncementgreetingatorganizationlevel
+        description: Upload a binary announcement greeting at organization level
+        call: cloud-calling-features-announcement-repository.uploadabinaryannouncementgreetingatorganizationlevel
+        with:
+          orgId: rest.orgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/telephony/config/announcements/usage
+      name: telephony-config-announcements-usage
+      description: REST surface for telephony-config-announcements-usage.
+      operations:
+      - method: GET
+        name: fetchrepositoryusageforannouncementsforanorganization
+        description: Fetch repository usage for announcements for an organization
+        call: cloud-calling-features-announcement-repository.fetchrepositoryusageforannouncementsforanorganization
+        with:
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/telephony/config/announcements/{announcementid}
+      name: telephony-config-announcements-announcementid
+      description: REST surface for telephony-config-announcements-announcementId.
+      operations:
+      - method: DELETE
+        name: deleteanannouncementgreetingoftheorganization
+        description: Delete an announcement greeting of the organization
+        call: cloud-calling-features-announcement-repository.deleteanannouncementgreetingoftheorganization
+        with:
+          announcementId: rest.announcementId
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: GET
+        name: fetchdetailsofabinaryannouncementgreetingattheorganizationlevel
+        description: Fetch details of a binary announcement greeting at the organization level
+        call: cloud-calling-features-announcement-repository.fetchdetailsofabinaryannouncementgreetingattheorganizationlevel
+        with:
+          announcementId: rest.announcementId
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: modifyabinaryannouncementgreetingatorganizationlevel
+        description: Modify a binary announcement greeting at organization level
+        call: cloud-calling-features-announcement-repository.modifyabinaryannouncementgreetingatorganizationlevel
+        with:
+          announcementId: rest.announcementId
+          orgId: rest.orgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/telephony/config/locations/{locationid}/announcements
+      name: telephony-config-locations-locationid-announcements
+      description: REST surface for telephony-config-locations-locationId-announcements.
+      operations:
+      - method: POST
+        name: uploadabinaryannouncementgreetingatthelocationlevel
+        description: Upload a binary announcement greeting at the location level
+        call: cloud-calling-features-announcement-repository.uploadabinaryannouncementgreetingatthelocationlevel
+        with:
+          locationId: rest.locationId
+          orgId: rest.orgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/telephony/config/locations/{locationid}/announcements/usage
+      name: telephony-config-locations-locationid-announcements-usage
+      description: REST surface for telephony-config-locations-locationId-announcements-usage.
+      operations:
+      - method: GET
+        name: fetchrepositoryusageforannouncementsinalocation
+        description: Fetch repository usage for announcements in a location
+        call: cloud-calling-features-announcement-repository.fetchrepositoryusageforannouncementsinalocation
+        with:
+          locationId: rest.locationId
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/telephony/config/locations/{locationid}/announcements/{announcementid}
+      name: telephony-config-locations-locationid-announcements-announcementid
+      description: REST surface for telephony-config-locations-locationId-announcements-announcementId.
+      operations:
+      - method: DELETE
+        name: deleteanannouncementgreetinginalocation
+        description: Delete an announcement greeting in a location
+        call: cloud-calling-features-announcement-repository.deleteanannouncementgreetinginalocation
+        with:
+          locationId: rest.locationId
+          announcementId: rest.announcementId
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: GET
+        name: fetchdetailsofabinaryannouncementgreetingatlocationlevel
+        description: Fetch details of a binary announcement greeting at location level
+        call: cloud-calling-features-announcement-repository.fetchdetailsofabinaryannouncementgreetingatlocationlevel
+        with:
+          locationId: rest.locationId
+          announcementId: rest.announcementId
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: modifyabinaryannouncementgreetingatlocationlevel
+        description: Modify a binary announcement greeting at location level
+        call: cloud-calling-features-announcement-repository.modifyabinaryannouncementgreetingatlocationlevel
+        with:
+          locationId: rest.locationId
+          announcementId: rest.announcementId
+          orgId: rest.orgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/telephony/config/texttospeech/actions/generate/invoke
+      name: telephony-config-texttospeech-actions-generate-invoke
+      description: REST surface for telephony-config-textToSpeech-actions-generate-invoke.
+      operations:
+      - method: POST
+        name: generatetexttospeech
+        description: Generate a Text-to-Speech Prompt
+        call: cloud-calling-features-announcement-repository.generatetexttospeech
+        with:
+          orgId: rest.orgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/telephony/config/texttospeech/usage
+      name: telephony-config-texttospeech-usage
+      description: REST surface for telephony-config-textToSpeech-usage.
+      operations:
+      - method: GET
+        name: gettexttospeechusage
+        description: Get Text-to-Speech Usage
+        call: cloud-calling-features-announcement-repository.gettexttospeechusage
+        with:
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/telephony/config/texttospeech/voices
+      name: telephony-config-texttospeech-voices
+      description: REST surface for telephony-config-textToSpeech-voices.
+      operations:
+      - method: GET
+        name: listtexttospeechvoices
+        description: List Text-to-Speech Voices
+        call: cloud-calling-features-announcement-repository.listtexttospeechvoices
+        with:
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/telephony/config/texttospeech/{ttsid}
+      name: telephony-config-texttospeech-ttsid
+      description: REST surface for telephony-config-textToSpeech-ttsId.
+      operations:
+      - method: GET
+        name: gettexttospeechgenerationstatus
+        description: Get Text-to-Speech Generation Status
+        call: cloud-calling-features-announcement-repository.gettexttospeechgenerationstatus
+        with:
+          ttsId: rest.ttsId
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: cloud-calling-features-announcement-repository-mcp
+    port: 9090
+    transport: http
+    description: 'MCP adapter for Webex Cloud Calling — Features: Announcement Repository. One tool per consumed operation,
+      routed inline through this capability''s consumes block.'
+    tools:
+    - name: fetch-list-announcement-greetings-location
+      description: Fetch list of announcement greetings on location and organization level
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: cloud-calling-features-announcement-repository.fetchlistofannouncementgreetingsonlocationandorganizationlevel
+      with:
+        orgId: tools.orgId
+        locationId: tools.locationId
+        max: tools.max
+        start: tools.start
+        order: tools.order
+        fileName: tools.fileName
+        fileType: tools.fileType
+        mediaFileType: tools.mediaFileType
+        name: tools.name
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: upload-binary-announcement-greeting-organization
+      description: Upload a binary announcement greeting at organization level
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: cloud-calling-features-announcement-repository.uploadabinaryannouncementgreetingatorganizationlevel
+      with:
+        orgId: tools.orgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: fetch-repository-usage-announcements-organization
+      description: Fetch repository usage for announcements for an organization
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: cloud-calling-features-announcement-repository.fetchrepositoryusageforannouncementsforanorganization
+      with:
+        orgId: tools.orgId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-announcement-greeting-organization
+      description: Delete an announcement greeting of the organization
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: cloud-calling-features-announcement-repository.deleteanannouncementgreetingoftheorganization
+      with:
+        announcementId: tools.announcementId
+        orgId: tools.orgId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: fetch-details-binary-announcement-greeting
+      description: Fetch details of a binary announcement greeting at the organization level
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: cloud-calling-features-announcement-repository.fetchdetailsofabinaryannouncementgreetingattheorganizationlevel
+      with:
+        announcementId: tools.announcementId
+        orgId: tools.orgId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: modify-binary-announcement-greeting-organization
+      description: Modify a binary announcement greeting at organization level
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: cloud-calling-features-announcement-repository.modifyabinaryannouncementgreetingatorganizationlevel
+      with:
+        announcementId: tools.announcementId
+        orgId: tools.orgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: upload-binary-announcement-greeting-location
+      description: Upload a binary announcement greeting at the location level
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: cloud-calling-features-announcement-repository.uploadabinaryannouncementgreetingatthelocationlevel
+      with:
+        locationId: tools.locationId
+        orgId: tools.orgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: fetch-repository-usage-announcements-location
+      description: Fetch repository usage for announcements in a location
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: cloud-calling-features-announcement-repository.fetchrepositoryusageforannouncementsinalocation
+      with:
+        locationId: tools.locationId
+        orgId: tools.orgId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-announcement-greeting-location
+      description: Delete an announcement greeting in a location
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: cloud-calling-features-announcement-repository.deleteanannouncementgreetinginalocation
+      with:
+        locationId: tools.locationId
+        announcementId: tools.announcementId
+        orgId: tools.orgId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: fetch-details-binary-announcement-greeting-2
+      description: Fetch details of a binary announcement greeting at location level
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: cloud-calling-features-announcement-repository.fetchdetailsofabinaryannouncementgreetingatlocationlevel
+      with:
+        locationId: tools.locationId
+        announcementId: tools.announcementId
+        orgId: tools.orgId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: modify-binary-announcement-greeting-location
+      description: Modify a binary announcement greeting at location level
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: cloud-calling-features-announcement-repository.modifyabinaryannouncementgreetingatlocationlevel
+      with:
+        locationId: tools.locationId
+        announcementId: tools.announcementId
+        orgId: tools.orgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: generate-text-speech-prompt
+      description: Generate a Text-to-Speech Prompt
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: cloud-calling-features-announcement-repository.generatetexttospeech
+      with:
+        orgId: tools.orgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-text-speech-usage
+      description: Get Text-to-Speech Usage
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: cloud-calling-features-announcement-repository.gettexttospeechusage
+      with:
+        orgId: tools.orgId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-text-speech-voices
+      description: List Text-to-Speech Voices
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: cloud-calling-features-announcement-repository.listtexttospeechvoices
+      with:
+        orgId: tools.orgId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-text-speech-generation-status
+      description: Get Text-to-Speech Generation Status
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: cloud-calling-features-announcement-repository.gettexttospeechgenerationstatus
+      with:
+        ttsId: tools.ttsId
+        orgId: tools.orgId
+      outputParameters:
+      - type: object
+        mapping: $.

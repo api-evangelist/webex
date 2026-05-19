@@ -1,0 +1,128 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Webex Admin — Hybrid Clusters
+  description: 'Webex Admin — Hybrid Clusters. 2 operations. Lead operation: List Hybrid Clusters. Self-contained Naftiko
+    capability covering one Webex business surface.'
+  tags:
+  - Webex
+  - Hybrid Clusters
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WEBEX_API_KEY: WEBEX_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: admin-hybrid-clusters
+    baseUri: ''
+    description: Webex Admin — Hybrid Clusters business capability. Self-contained, no shared references.
+    resources:
+    - name: hybrid-clusters
+      path: /hybrid/clusters
+      operations:
+      - name: listhybridclusters
+        method: GET
+        description: List Hybrid Clusters
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: query
+          type: string
+          description: List hybrid clusters in this organization. If an organization is not specified, the organization of
+            the caller will be used.
+    - name: hybrid-clusters-hybridClusterId
+      path: /hybrid/clusters/{hybridClusterId}
+      operations:
+      - name: gethybridclusterdetails
+        method: GET
+        description: Get Hybrid Cluster Details
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: hybridClusterId
+          in: path
+          type: string
+          description: The ID of the cluster.
+          required: true
+        - name: orgId
+          in: query
+          type: string
+          description: Find the cluster in this specific organization.
+    authentication:
+      type: bearer
+      token: '{{env.WEBEX_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: admin-hybrid-clusters-rest
+    port: 8080
+    description: REST adapter for Webex Admin — Hybrid Clusters. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/hybrid/clusters
+      name: hybrid-clusters
+      description: REST surface for hybrid-clusters.
+      operations:
+      - method: GET
+        name: listhybridclusters
+        description: List Hybrid Clusters
+        call: admin-hybrid-clusters.listhybridclusters
+        with:
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/hybrid/clusters/{hybridclusterid}
+      name: hybrid-clusters-hybridclusterid
+      description: REST surface for hybrid-clusters-hybridClusterId.
+      operations:
+      - method: GET
+        name: gethybridclusterdetails
+        description: Get Hybrid Cluster Details
+        call: admin-hybrid-clusters.gethybridclusterdetails
+        with:
+          hybridClusterId: rest.hybridClusterId
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: admin-hybrid-clusters-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Webex Admin — Hybrid Clusters. One tool per consumed operation, routed inline through this
+      capability's consumes block.
+    tools:
+    - name: list-hybrid-clusters
+      description: List Hybrid Clusters
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: admin-hybrid-clusters.listhybridclusters
+      with:
+        orgId: tools.orgId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-hybrid-cluster-details
+      description: Get Hybrid Cluster Details
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: admin-hybrid-clusters.gethybridclusterdetails
+      with:
+        hybridClusterId: tools.hybridClusterId
+        orgId: tools.orgId
+      outputParameters:
+      - type: object
+        mapping: $.

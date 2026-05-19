@@ -1,0 +1,334 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Webex Contact Center — Flow
+  description: 'Webex Contact Center — Flow. 4 operations. Lead operation: List Flows or Subflows. Self-contained Naftiko
+    capability covering one Webex business surface.'
+  tags:
+  - Webex
+  - Flow
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WEBEX_API_KEY: WEBEX_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: contact-center-flow
+    baseUri: ''
+    description: Webex Contact Center — Flow business capability. Self-contained, no shared references.
+    resources:
+    - name: flow-store-orgId-project-projectId-flows
+      path: /flow-store/{orgId}/project/{projectId}/flows
+      operations:
+      - name: findflowsusingget
+        method: GET
+        description: List Flows or Subflows
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: flowType
+          in: query
+          type: string
+          description: Either of 'FLOW' or 'SUBFLOW'.
+        - name: ids
+          in: query
+          type: array
+          description: Filters results based on a comma-separated list of flow IDs. If provided, only flows with those IDs
+            will be fetched in the response.
+        - name: orgId
+          in: path
+          type: string
+          description: Organization ID.
+          required: true
+        - name: page
+          in: query
+          type: integer
+          description: Defines the number of the displayed page. The page number starts from 0.
+        - name: partialNameSearch
+          in: query
+          type: string
+          description: Performs a partial string match on the name of the flow. If the flow name contains the given string
+            it will be fetched in the response.
+        - name: projectId
+          in: path
+          type: string
+          description: 'Project ID. System generated value which is the same across orgs and environments. Always use: 5e5c9ad6d61f870d6d778c1b.'
+          required: true
+        - name: size
+          in: query
+          type: integer
+          description: Defines the number of items to be displayed on a page. If the number specified is more than allowed
+            max page size, the API will automatically adjust the page si
+        - name: includePagination
+          in: query
+          type: boolean
+          description: If set to to true then a different paginated response object containing the page metadata (currentPage,
+            totalRecords, pageSize, totalPages) will be returned. Th
+    - name: flow-store-orgId-project-projectId-flows-flowId}:export
+      path: /flow-store/{orgId}/project/{projectId}/flows/{flowId}:export
+      operations:
+      - name: exportflowversionusingget
+        method: GET
+        description: Export a Flow or Subflow
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: flowId
+          in: path
+          type: string
+          description: ID of the flow/subflow to export.
+          required: true
+        - name: orgId
+          in: path
+          type: string
+          description: Organization ID.
+          required: true
+        - name: projectId
+          in: path
+          type: string
+          description: 'Project ID. System generated value which is the same across orgs and environments. Always use: 5e5c9ad6d61f870d6d778c1b.'
+          required: true
+        - name: version
+          in: query
+          type: string
+          description: Version ID. Possible values are 'draft', 'latest' or version ID like '64b92c004ccd9f3d1c680709'. Defaulted
+            to 'latest'.
+    - name: flow-store-orgId-project-projectId-flows-flowId}:publish
+      path: /flow-store/{orgId}/project/{projectId}/flows/{flowId}:publish
+      operations:
+      - name: publishflowversionusingpost
+        method: POST
+        description: Publish a Flow or Subflow
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: flowId
+          in: path
+          type: string
+          description: ID of the flow/subflow to export.
+          required: true
+        - name: orgId
+          in: path
+          type: string
+          description: Organization ID.
+          required: true
+        - name: projectId
+          in: path
+          type: string
+          description: 'Project ID. System generated value which is the same across orgs and environments. Always use: 5e5c9ad6d61f870d6d778c1b.'
+          required: true
+        - name: TrackingId
+          in: header
+          type: string
+          description: ID for tracking.
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: flow-store-orgId-project-projectId-flows:import
+      path: /flow-store/{orgId}/project/{projectId}/flows:import
+      operations:
+      - name: importflowversionusingpost
+        method: POST
+        description: Import a Flow or Subflow
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: Content-Length
+          in: header
+          type: integer
+          description: Content length value in number of bytes.
+          required: true
+        - name: orgId
+          in: path
+          type: string
+          description: Organization ID.
+          required: true
+        - name: projectId
+          in: path
+          type: string
+          description: 'Project ID. System generated value which is the same across orgs and environments. Always use: 5e5c9ad6d61f870d6d778c1b.'
+          required: true
+        - name: overwrite
+          in: query
+          type: string
+          description: 'Determines whether to overwrite the existing flow or not. Possible values: yes/no.'
+        - name: flowType
+          in: query
+          type: string
+          description: Either of 'FLOW' or 'SUBFLOW'.
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    authentication:
+      type: bearer
+      token: '{{env.WEBEX_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: contact-center-flow-rest
+    port: 8080
+    description: REST adapter for Webex Contact Center — Flow. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/flow-store/{orgid}/project/{projectid}/flows
+      name: flow-store-orgid-project-projectid-flows
+      description: REST surface for flow-store-orgId-project-projectId-flows.
+      operations:
+      - method: GET
+        name: findflowsusingget
+        description: List Flows or Subflows
+        call: contact-center-flow.findflowsusingget
+        with:
+          flowType: rest.flowType
+          ids: rest.ids
+          orgId: rest.orgId
+          page: rest.page
+          partialNameSearch: rest.partialNameSearch
+          projectId: rest.projectId
+          size: rest.size
+          includePagination: rest.includePagination
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/flow-store/{orgid}/project/{projectid}/flows/flowid-export
+      name: flow-store-orgid-project-projectid-flows-flowid-export
+      description: REST surface for flow-store-orgId-project-projectId-flows-flowId}:export.
+      operations:
+      - method: GET
+        name: exportflowversionusingget
+        description: Export a Flow or Subflow
+        call: contact-center-flow.exportflowversionusingget
+        with:
+          flowId: rest.flowId
+          orgId: rest.orgId
+          projectId: rest.projectId
+          version: rest.version
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/flow-store/{orgid}/project/{projectid}/flows/flowid-publish
+      name: flow-store-orgid-project-projectid-flows-flowid-publish
+      description: REST surface for flow-store-orgId-project-projectId-flows-flowId}:publish.
+      operations:
+      - method: POST
+        name: publishflowversionusingpost
+        description: Publish a Flow or Subflow
+        call: contact-center-flow.publishflowversionusingpost
+        with:
+          flowId: rest.flowId
+          orgId: rest.orgId
+          projectId: rest.projectId
+          TrackingId: rest.TrackingId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/flow-store/{orgid}/project/{projectid}/flows-import
+      name: flow-store-orgid-project-projectid-flows-import
+      description: REST surface for flow-store-orgId-project-projectId-flows:import.
+      operations:
+      - method: POST
+        name: importflowversionusingpost
+        description: Import a Flow or Subflow
+        call: contact-center-flow.importflowversionusingpost
+        with:
+          Content-Length: rest.Content-Length
+          orgId: rest.orgId
+          projectId: rest.projectId
+          overwrite: rest.overwrite
+          flowType: rest.flowType
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: contact-center-flow-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Webex Contact Center — Flow. One tool per consumed operation, routed inline through this
+      capability's consumes block.
+    tools:
+    - name: list-flows-subflows
+      description: List Flows or Subflows
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: contact-center-flow.findflowsusingget
+      with:
+        flowType: tools.flowType
+        ids: tools.ids
+        orgId: tools.orgId
+        page: tools.page
+        partialNameSearch: tools.partialNameSearch
+        projectId: tools.projectId
+        size: tools.size
+        includePagination: tools.includePagination
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: export-flow-subflow
+      description: Export a Flow or Subflow
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: contact-center-flow.exportflowversionusingget
+      with:
+        flowId: tools.flowId
+        orgId: tools.orgId
+        projectId: tools.projectId
+        version: tools.version
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: publish-flow-subflow
+      description: Publish a Flow or Subflow
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: contact-center-flow.publishflowversionusingpost
+      with:
+        flowId: tools.flowId
+        orgId: tools.orgId
+        projectId: tools.projectId
+        TrackingId: tools.TrackingId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: import-flow-subflow
+      description: Import a Flow or Subflow
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: contact-center-flow.importflowversionusingpost
+      with:
+        Content-Length: tools.Content-Length
+        orgId: tools.orgId
+        projectId: tools.projectId
+        overwrite: tools.overwrite
+        flowType: tools.flowType
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.

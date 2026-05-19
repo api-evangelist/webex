@@ -1,0 +1,122 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Webex Admin — Hybrid Connectors
+  description: 'Webex Admin — Hybrid Connectors. 2 operations. Lead operation: List Hybrid Connectors. Self-contained Naftiko
+    capability covering one Webex business surface.'
+  tags:
+  - Webex
+  - Hybrid Connectors
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WEBEX_API_KEY: WEBEX_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: admin-hybrid-connectors
+    baseUri: ''
+    description: Webex Admin — Hybrid Connectors business capability. Self-contained, no shared references.
+    resources:
+    - name: hybrid-connectors
+      path: /hybrid/connectors
+      operations:
+      - name: listhybridconnectors
+        method: GET
+        description: List Hybrid Connectors
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: query
+          type: string
+          description: List hybrid connectors in this organization. If an organization is not specified, the organization
+            of the caller will be used.
+    - name: hybrid-connectors-connectorId
+      path: /hybrid/connectors/{connectorId}
+      operations:
+      - name: gethybridconnectordetails
+        method: GET
+        description: Get Hybrid Connector Details
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: connectorId
+          in: path
+          type: string
+          description: The ID of the connector.
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.WEBEX_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: admin-hybrid-connectors-rest
+    port: 8080
+    description: REST adapter for Webex Admin — Hybrid Connectors. One Spectral-compliant resource per consumed operation,
+      prefixed with /v1.
+    resources:
+    - path: /v1/hybrid/connectors
+      name: hybrid-connectors
+      description: REST surface for hybrid-connectors.
+      operations:
+      - method: GET
+        name: listhybridconnectors
+        description: List Hybrid Connectors
+        call: admin-hybrid-connectors.listhybridconnectors
+        with:
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/hybrid/connectors/{connectorid}
+      name: hybrid-connectors-connectorid
+      description: REST surface for hybrid-connectors-connectorId.
+      operations:
+      - method: GET
+        name: gethybridconnectordetails
+        description: Get Hybrid Connector Details
+        call: admin-hybrid-connectors.gethybridconnectordetails
+        with:
+          connectorId: rest.connectorId
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: admin-hybrid-connectors-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Webex Admin — Hybrid Connectors. One tool per consumed operation, routed inline through this
+      capability's consumes block.
+    tools:
+    - name: list-hybrid-connectors
+      description: List Hybrid Connectors
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: admin-hybrid-connectors.listhybridconnectors
+      with:
+        orgId: tools.orgId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-hybrid-connector-details
+      description: Get Hybrid Connector Details
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: admin-hybrid-connectors.gethybridconnectordetails
+      with:
+        connectorId: tools.connectorId
+      outputParameters:
+      - type: object
+        mapping: $.

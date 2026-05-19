@@ -1,0 +1,115 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Webex Contact Center — Estimated Wait Time
+  description: 'Webex Contact Center — Estimated Wait Time. 1 operations. Lead operation: Get Estimated Wait Time. Self-contained
+    Naftiko capability covering one Webex business surface.'
+  tags:
+  - Webex
+  - Estimated Wait Time
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WEBEX_API_KEY: WEBEX_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: contact-center-estimated-wait-time
+    baseUri: ''
+    description: Webex Contact Center — Estimated Wait Time business capability. Self-contained, no shared references.
+    resources:
+    - name: v1-ewt
+      path: /v1/ewt
+      operations:
+      - name: getewt
+        method: GET
+        description: Get Estimated Wait Time
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: queueId
+          in: query
+          type: string
+          description: Id of the queue for which the EWT is to be returned
+          required: true
+        - name: lookbackMinutes
+          in: query
+          type: integer
+          description: Integer between 5 and 240 (4 hours) signifying how long back to look at the data points to determine
+            EWT for this queue
+          required: true
+        - name: maxCV
+          in: query
+          type: integer
+          description: This an optional parameter. Maximum value of Coefficient of Variance in a subset of samples (wait times
+            for tasks that got connected to agent in one minute inte
+        - name: minValidSamples
+          in: query
+          type: integer
+          description: 'This an optional parameter. Minimum value of percentage of valid samples (with respect to total number
+            of samples) in the specified lookbackMinutes minutes. If '
+        - name: TrackingId
+          in: header
+          type: string
+          description: Tracking ID to use for this operation, for traceability, debugging, and error reporting purposes.
+        - name: orgId
+          in: query
+          type: string
+          description: Organization ID to use for this operation. If unspecified, inferred from token. Token must have permission
+            to interact with this organization.
+    authentication:
+      type: bearer
+      token: '{{env.WEBEX_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: contact-center-estimated-wait-time-rest
+    port: 8080
+    description: REST adapter for Webex Contact Center — Estimated Wait Time. One Spectral-compliant resource per consumed
+      operation, prefixed with /v1.
+    resources:
+    - path: /v1/v1/ewt
+      name: v1-ewt
+      description: REST surface for v1-ewt.
+      operations:
+      - method: GET
+        name: getewt
+        description: Get Estimated Wait Time
+        call: contact-center-estimated-wait-time.getewt
+        with:
+          queueId: rest.queueId
+          lookbackMinutes: rest.lookbackMinutes
+          maxCV: rest.maxCV
+          minValidSamples: rest.minValidSamples
+          TrackingId: rest.TrackingId
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: contact-center-estimated-wait-time-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Webex Contact Center — Estimated Wait Time. One tool per consumed operation, routed inline
+      through this capability's consumes block.
+    tools:
+    - name: get-estimated-wait-time
+      description: Get Estimated Wait Time
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: contact-center-estimated-wait-time.getewt
+      with:
+        queueId: tools.queueId
+        lookbackMinutes: tools.lookbackMinutes
+        maxCV: tools.maxCV
+        minValidSamples: tools.minValidSamples
+        TrackingId: tools.TrackingId
+        orgId: tools.orgId
+      outputParameters:
+      - type: object
+        mapping: $.

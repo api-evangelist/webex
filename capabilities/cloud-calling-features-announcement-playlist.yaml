@@ -1,0 +1,353 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: 'Webex Cloud Calling — Features: Announcement Playlist'
+  description: 'Webex Cloud Calling — Features: Announcement Playlist. 7 operations. Lead operation: List Announcement Playlists.
+    Self-contained Naftiko capability covering one Webex business surface.'
+  tags:
+  - Webex
+  - 'Features: Announcement Playlist'
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WEBEX_API_KEY: WEBEX_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: cloud-calling-features-announcement-playlist
+    baseUri: ''
+    description: 'Webex Cloud Calling — Features: Announcement Playlist business capability. Self-contained, no shared references.'
+    resources:
+    - name: telephony-config-announcements-playlists
+      path: /telephony/config/announcements/playlists
+      operations:
+      - name: listannouncementplaylists
+        method: GET
+        description: List Announcement Playlists
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: query
+          type: string
+          description: Get announcements playlist in this organization.
+      - name: createannouncementplaylist
+        method: POST
+        description: Create Announcement Playlist
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: query
+          type: string
+          description: Create an announcement playlist in this organization.
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    - name: telephony-config-announcements-playlists-playlistId
+      path: /telephony/config/announcements/playlists/{playlistId}
+      operations:
+      - name: getannouncementplaylist
+        method: GET
+        description: Get Announcement Playlist
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: playlistId
+          in: path
+          type: string
+          description: Unique identifier of an announcement playlist.
+          required: true
+        - name: orgId
+          in: query
+          type: string
+          description: Get an announcement playlist in this organization.
+      - name: updateannouncementplaylist
+        method: PUT
+        description: Update Announcement Playlist
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: playlistId
+          in: path
+          type: string
+          description: Unique identifier of an announcement playlist.
+          required: true
+        - name: orgId
+          in: query
+          type: string
+          description: Modify an announcement playlist in this organization.
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+      - name: deleteannouncementplaylist
+        method: DELETE
+        description: Delete Announcement Playlist
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: playlistId
+          in: path
+          type: string
+          description: Unique identifier of an announcement playlist.
+          required: true
+        - name: orgId
+          in: query
+          type: string
+          description: Delete an announcement playlist in this organization.
+    - name: telephony-config-announcements-playlists-playlistId-locations
+      path: /telephony/config/announcements/playlists/{playlistId}/locations
+      operations:
+      - name: listplaylistlocations
+        method: GET
+        description: List Playlist Locations
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: playlistId
+          in: path
+          type: string
+          description: Unique identifier of playlist.
+          required: true
+        - name: orgId
+          in: query
+          type: string
+          description: Get location associated to a playlist in this organization.
+      - name: updateplaylistlocations
+        method: PUT
+        description: Update Playlist Locations
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: playlistId
+          in: path
+          type: string
+          description: Unique identifier of an announcement playlist.
+          required: true
+        - name: orgId
+          in: query
+          type: string
+          description: Modify an assign location for announcement playlist for organization.
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    authentication:
+      type: bearer
+      token: '{{env.WEBEX_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: cloud-calling-features-announcement-playlist-rest
+    port: 8080
+    description: 'REST adapter for Webex Cloud Calling — Features: Announcement Playlist. One Spectral-compliant resource
+      per consumed operation, prefixed with /v1.'
+    resources:
+    - path: /v1/telephony/config/announcements/playlists
+      name: telephony-config-announcements-playlists
+      description: REST surface for telephony-config-announcements-playlists.
+      operations:
+      - method: GET
+        name: listannouncementplaylists
+        description: List Announcement Playlists
+        call: cloud-calling-features-announcement-playlist.listannouncementplaylists
+        with:
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: createannouncementplaylist
+        description: Create Announcement Playlist
+        call: cloud-calling-features-announcement-playlist.createannouncementplaylist
+        with:
+          orgId: rest.orgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/telephony/config/announcements/playlists/{playlistid}
+      name: telephony-config-announcements-playlists-playlistid
+      description: REST surface for telephony-config-announcements-playlists-playlistId.
+      operations:
+      - method: GET
+        name: getannouncementplaylist
+        description: Get Announcement Playlist
+        call: cloud-calling-features-announcement-playlist.getannouncementplaylist
+        with:
+          playlistId: rest.playlistId
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: updateannouncementplaylist
+        description: Update Announcement Playlist
+        call: cloud-calling-features-announcement-playlist.updateannouncementplaylist
+        with:
+          playlistId: rest.playlistId
+          orgId: rest.orgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deleteannouncementplaylist
+        description: Delete Announcement Playlist
+        call: cloud-calling-features-announcement-playlist.deleteannouncementplaylist
+        with:
+          playlistId: rest.playlistId
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/telephony/config/announcements/playlists/{playlistid}/locations
+      name: telephony-config-announcements-playlists-playlistid-locations
+      description: REST surface for telephony-config-announcements-playlists-playlistId-locations.
+      operations:
+      - method: GET
+        name: listplaylistlocations
+        description: List Playlist Locations
+        call: cloud-calling-features-announcement-playlist.listplaylistlocations
+        with:
+          playlistId: rest.playlistId
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: updateplaylistlocations
+        description: Update Playlist Locations
+        call: cloud-calling-features-announcement-playlist.updateplaylistlocations
+        with:
+          playlistId: rest.playlistId
+          orgId: rest.orgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: cloud-calling-features-announcement-playlist-mcp
+    port: 9090
+    transport: http
+    description: 'MCP adapter for Webex Cloud Calling — Features: Announcement Playlist. One tool per consumed operation,
+      routed inline through this capability''s consumes block.'
+    tools:
+    - name: list-announcement-playlists
+      description: List Announcement Playlists
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: cloud-calling-features-announcement-playlist.listannouncementplaylists
+      with:
+        orgId: tools.orgId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-announcement-playlist
+      description: Create Announcement Playlist
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: cloud-calling-features-announcement-playlist.createannouncementplaylist
+      with:
+        orgId: tools.orgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-announcement-playlist
+      description: Get Announcement Playlist
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: cloud-calling-features-announcement-playlist.getannouncementplaylist
+      with:
+        playlistId: tools.playlistId
+        orgId: tools.orgId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-announcement-playlist
+      description: Update Announcement Playlist
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: cloud-calling-features-announcement-playlist.updateannouncementplaylist
+      with:
+        playlistId: tools.playlistId
+        orgId: tools.orgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-announcement-playlist
+      description: Delete Announcement Playlist
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: cloud-calling-features-announcement-playlist.deleteannouncementplaylist
+      with:
+        playlistId: tools.playlistId
+        orgId: tools.orgId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-playlist-locations
+      description: List Playlist Locations
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: cloud-calling-features-announcement-playlist.listplaylistlocations
+      with:
+        playlistId: tools.playlistId
+        orgId: tools.orgId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-playlist-locations
+      description: Update Playlist Locations
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: cloud-calling-features-announcement-playlist.updateplaylistlocations
+      with:
+        playlistId: tools.playlistId
+        orgId: tools.orgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.

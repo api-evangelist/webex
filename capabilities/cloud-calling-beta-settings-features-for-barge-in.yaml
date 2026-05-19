@@ -1,0 +1,106 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Webex Cloud Calling — Beta Settings Features For Barge-In
+  description: 'Webex Cloud Calling — Beta Settings Features For Barge-In. 2 operations. Lead operation: Get Barge-In Settings.
+    Self-contained Naftiko capability covering one Webex business surface.'
+  tags:
+  - Webex
+  - Beta Settings Features For Barge-In
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WEBEX_API_KEY: WEBEX_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: cloud-calling-beta-settings-features-for-barge-in
+    baseUri: ''
+    description: Webex Cloud Calling — Beta Settings Features For Barge-In business capability. Self-contained, no shared
+      references.
+    resources:
+    - name: telephony-config-people-me-settings-bargeIn
+      path: /telephony/config/people/me/settings/bargeIn
+      operations:
+      - name: getbargeinsettings
+        method: GET
+        description: Get Barge-In Settings
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+      - name: configurebargeinsettings
+        method: PUT
+        description: Configure Barge-In Settings
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    authentication:
+      type: bearer
+      token: '{{env.WEBEX_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: cloud-calling-beta-settings-features-for-barge-in-rest
+    port: 8080
+    description: REST adapter for Webex Cloud Calling — Beta Settings Features For Barge-In. One Spectral-compliant resource
+      per consumed operation, prefixed with /v1.
+    resources:
+    - path: /v1/telephony/config/people/me/settings/bargein
+      name: telephony-config-people-me-settings-bargein
+      description: REST surface for telephony-config-people-me-settings-bargeIn.
+      operations:
+      - method: GET
+        name: getbargeinsettings
+        description: Get Barge-In Settings
+        call: cloud-calling-beta-settings-features-for-barge-in.getbargeinsettings
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: configurebargeinsettings
+        description: Configure Barge-In Settings
+        call: cloud-calling-beta-settings-features-for-barge-in.configurebargeinsettings
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: cloud-calling-beta-settings-features-for-barge-in-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Webex Cloud Calling — Beta Settings Features For Barge-In. One tool per consumed operation,
+      routed inline through this capability's consumes block.
+    tools:
+    - name: get-barge-settings
+      description: Get Barge-In Settings
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: cloud-calling-beta-settings-features-for-barge-in.getbargeinsettings
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: configure-barge-settings
+      description: Configure Barge-In Settings
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: cloud-calling-beta-settings-features-for-barge-in.configurebargeinsettings
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.

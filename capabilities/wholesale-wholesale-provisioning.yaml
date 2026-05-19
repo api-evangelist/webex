@@ -1,0 +1,778 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Webex Wholesale — Wholesale Provisioning
+  description: 'Webex Wholesale — Wholesale Provisioning. 14 operations. Lead operation: Send Consent User Move Email to Pending
+    Wholesale Subscribers. Self-contained Naftiko capability covering one Webex business surface.'
+  tags:
+  - Webex
+  - Wholesale Provisioning
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WEBEX_API_KEY: WEBEX_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: wholesale-wholesale-provisioning
+    baseUri: ''
+    description: Webex Wholesale — Wholesale Provisioning business capability. Self-contained, no shared references.
+    resources:
+    - name: subscribers-subscriberId-emails-consentMove
+      path: /subscribers/{subscriberId}/emails/consentMove
+      operations:
+      - name: sendconsentusermoveemailtopendingwholesalesubscribers
+        method: POST
+        description: Send Consent User Move Email to Pending Wholesale Subscribers
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: subscriberId
+          in: path
+          type: string
+          description: A unique identifier for the subscriber in question.
+          required: true
+        - name: onBehalfOfSubPartnerOrgId
+          in: query
+          type: string
+          description: The encoded organization ID for the sub partner.
+    - name: wholesale-customers
+      path: /wholesale/customers
+      operations:
+      - name: listwholesalecustomers
+        method: GET
+        description: List Wholesale Customers
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: externalId
+          in: query
+          type: string
+          description: Customer external ID.
+        - name: orgId
+          in: query
+          type: string
+          description: The encoded Organization ID for the customer.
+        - name: status
+          in: query
+          type: array
+          description: Customer API status.
+        - name: offset
+          in: query
+          type: string
+          description: Offset value for implementing pagination.
+        - name: max
+          in: query
+          type: string
+          description: The maximum number of customers returned in the response.
+        - name: onBehalfOfSubPartnerOrgId
+          in: query
+          type: string
+          description: The encoded organization ID for the sub partner.
+      - name: provisionawholesalecustomer
+        method: POST
+        description: Provision a Wholesale Customer
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: onBehalfOfSubPartnerOrgId
+          in: query
+          type: string
+          description: The encoded organization ID for the sub partner.
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    - name: wholesale-customers-validate
+      path: /wholesale/customers/validate
+      operations:
+      - name: precheckawholesalecustomerprovisioning
+        method: POST
+        description: Precheck a Wholesale Customer Provisioning
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: onBehalfOfSubPartnerOrgId
+          in: query
+          type: string
+          description: The encoded organization ID for the sub partner.
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    - name: wholesale-customers-customerId
+      path: /wholesale/customers/{customerId}
+      operations:
+      - name: getawholesalecustomer
+        method: GET
+        description: Get a Wholesale Customer
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: customerId
+          in: path
+          type: string
+          description: A unique identifier for the customer in question.
+          required: true
+        - name: onBehalfOfSubPartnerOrgId
+          in: query
+          type: string
+          description: The encoded organization ID for the sub partner.
+        - name: includePackageLicenseInfo
+          in: query
+          type: boolean
+          description: If specified as true, a list of licenseIds will be returned for all provisioned packages
+      - name: updateawholesalecustomer
+        method: PUT
+        description: Update a Wholesale Customer
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: customerId
+          in: path
+          type: string
+          description: A unique identifier for the customer to be updated.
+          required: true
+        - name: onBehalfOfSubPartnerOrgId
+          in: query
+          type: string
+          description: The encoded organization ID for the sub partner.
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+      - name: removeawholesalecustomer
+        method: DELETE
+        description: Remove a Wholesale Customer
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: customerId
+          in: path
+          type: string
+          description: A unique identifier for the customer in question.
+          required: true
+        - name: onBehalfOfSubPartnerOrgId
+          in: query
+          type: string
+          description: The encoded organization ID for the sub partner.
+    - name: wholesale-subPartners
+      path: /wholesale/subPartners
+      operations:
+      - name: listwholesalesubpartners
+        method: GET
+        description: List Wholesale Sub-partners
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: provisioningState
+          in: query
+          type: string
+          description: Status to filter sub-partners based on provisioning state.
+        - name: offset
+          in: query
+          type: string
+          description: Offset value for implementing pagination.
+        - name: max
+          in: query
+          type: string
+          description: The maximum number of sub-partners returned in the response.
+    - name: wholesale-subscribers
+      path: /wholesale/subscribers
+      operations:
+      - name: listwholesalesubscribers
+        method: GET
+        description: List Wholesale Subscribers
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: max
+          in: query
+          type: integer
+          description: Limit the maximum number of subscribers returned in the search response, up to 100 per page. Refer
+            to the [Pagination](/docs/basics#pagination) section of [Webe
+        - name: offset
+          in: query
+          type: integer
+          description: Offset value to implement [pagination](/docs/basics#pagination).
+        - name: customerId
+          in: query
+          type: string
+          description: Wholesale customer ID.
+        - name: personId
+          in: query
+          type: string
+          description: The person ID of the subscriber used in the [/v1/people API](/docs/api/v1/people).
+        - name: externalCustomerId
+          in: query
+          type: string
+          description: Customer external ID.
+        - name: email
+          in: query
+          type: string
+          description: The email address of the subscriber.
+        - name: status
+          in: query
+          type: string
+          description: The provisioning status of the subscriber.
+        - name: after
+          in: query
+          type: string
+          description: Only include subscribers created after this date and time. Epoch time (in milliseconds) preferred,
+            but ISO 8601 date format also accepted.
+        - name: lastStatusChange
+          in: query
+          type: string
+          description: Only include subscribers with a provisioning status change after this date and time. Epoch time (in
+            milliseconds) preferred, but ISO 8601 date format also accep
+        - name: sortBy
+          in: query
+          type: string
+          description: Supported `sortBy` attributes are `created` and `lastStatusChange`. Default is `created`.
+        - name: sortOrder
+          in: query
+          type: string
+          description: Sort by `ASC` (ascending) or `DESC` (descending).
+        - name: onBehalfOfSubPartnerOrgId
+          in: query
+          type: string
+          description: The encoded organization ID for the sub partner.
+      - name: provisionawholesalesubscriber
+        method: POST
+        description: Provision a Wholesale Subscriber
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: onBehalfOfSubPartnerOrgId
+          in: query
+          type: string
+          description: The encoded organization ID for the sub partner.
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    - name: wholesale-subscribers-validate
+      path: /wholesale/subscribers/validate
+      operations:
+      - name: precheckawholesalesubscriberprovisioning
+        method: POST
+        description: Precheck a Wholesale Subscriber Provisioning
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: onBehalfOfSubPartnerOrgId
+          in: query
+          type: string
+          description: The encoded organization ID for the sub partner.
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    - name: wholesale-subscribers-subscriberId
+      path: /wholesale/subscribers/{subscriberId}
+      operations:
+      - name: getawholesalesubscriber
+        method: GET
+        description: Get a Wholesale Subscriber
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: subscriberId
+          in: path
+          type: string
+          description: A unique identifier for the subscriber in question.
+          required: true
+        - name: onBehalfOfSubPartnerOrgId
+          in: query
+          type: string
+          description: The encoded organization ID for the sub partner.
+      - name: updateawholesalesubscriber
+        method: PUT
+        description: Update a Wholesale Subscriber
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: subscriberId
+          in: path
+          type: string
+          description: A unique identifier for the subscriber in question.
+          required: true
+        - name: onBehalfOfSubPartnerOrgId
+          in: query
+          type: string
+          description: The encoded organization ID for the sub partner.
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+      - name: removeawholesalesubscriber
+        method: DELETE
+        description: Remove a Wholesale Subscriber
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: subscriberId
+          in: path
+          type: string
+          description: A unique identifier for the subscriber in question.
+          required: true
+        - name: onBehalfOfSubPartnerOrgId
+          in: query
+          type: string
+          description: The encoded organization ID for the sub partner.
+    authentication:
+      type: bearer
+      token: '{{env.WEBEX_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: wholesale-wholesale-provisioning-rest
+    port: 8080
+    description: REST adapter for Webex Wholesale — Wholesale Provisioning. One Spectral-compliant resource per consumed operation,
+      prefixed with /v1.
+    resources:
+    - path: /v1/subscribers/{subscriberid}/emails/consentmove
+      name: subscribers-subscriberid-emails-consentmove
+      description: REST surface for subscribers-subscriberId-emails-consentMove.
+      operations:
+      - method: POST
+        name: sendconsentusermoveemailtopendingwholesalesubscribers
+        description: Send Consent User Move Email to Pending Wholesale Subscribers
+        call: wholesale-wholesale-provisioning.sendconsentusermoveemailtopendingwholesalesubscribers
+        with:
+          subscriberId: rest.subscriberId
+          onBehalfOfSubPartnerOrgId: rest.onBehalfOfSubPartnerOrgId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/wholesale/customers
+      name: wholesale-customers
+      description: REST surface for wholesale-customers.
+      operations:
+      - method: GET
+        name: listwholesalecustomers
+        description: List Wholesale Customers
+        call: wholesale-wholesale-provisioning.listwholesalecustomers
+        with:
+          externalId: rest.externalId
+          orgId: rest.orgId
+          status: rest.status
+          offset: rest.offset
+          max: rest.max
+          onBehalfOfSubPartnerOrgId: rest.onBehalfOfSubPartnerOrgId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: provisionawholesalecustomer
+        description: Provision a Wholesale Customer
+        call: wholesale-wholesale-provisioning.provisionawholesalecustomer
+        with:
+          onBehalfOfSubPartnerOrgId: rest.onBehalfOfSubPartnerOrgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/wholesale/customers/validate
+      name: wholesale-customers-validate
+      description: REST surface for wholesale-customers-validate.
+      operations:
+      - method: POST
+        name: precheckawholesalecustomerprovisioning
+        description: Precheck a Wholesale Customer Provisioning
+        call: wholesale-wholesale-provisioning.precheckawholesalecustomerprovisioning
+        with:
+          onBehalfOfSubPartnerOrgId: rest.onBehalfOfSubPartnerOrgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/wholesale/customers/{customerid}
+      name: wholesale-customers-customerid
+      description: REST surface for wholesale-customers-customerId.
+      operations:
+      - method: GET
+        name: getawholesalecustomer
+        description: Get a Wholesale Customer
+        call: wholesale-wholesale-provisioning.getawholesalecustomer
+        with:
+          customerId: rest.customerId
+          onBehalfOfSubPartnerOrgId: rest.onBehalfOfSubPartnerOrgId
+          includePackageLicenseInfo: rest.includePackageLicenseInfo
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: updateawholesalecustomer
+        description: Update a Wholesale Customer
+        call: wholesale-wholesale-provisioning.updateawholesalecustomer
+        with:
+          customerId: rest.customerId
+          onBehalfOfSubPartnerOrgId: rest.onBehalfOfSubPartnerOrgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: removeawholesalecustomer
+        description: Remove a Wholesale Customer
+        call: wholesale-wholesale-provisioning.removeawholesalecustomer
+        with:
+          customerId: rest.customerId
+          onBehalfOfSubPartnerOrgId: rest.onBehalfOfSubPartnerOrgId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/wholesale/subpartners
+      name: wholesale-subpartners
+      description: REST surface for wholesale-subPartners.
+      operations:
+      - method: GET
+        name: listwholesalesubpartners
+        description: List Wholesale Sub-partners
+        call: wholesale-wholesale-provisioning.listwholesalesubpartners
+        with:
+          provisioningState: rest.provisioningState
+          offset: rest.offset
+          max: rest.max
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/wholesale/subscribers
+      name: wholesale-subscribers
+      description: REST surface for wholesale-subscribers.
+      operations:
+      - method: GET
+        name: listwholesalesubscribers
+        description: List Wholesale Subscribers
+        call: wholesale-wholesale-provisioning.listwholesalesubscribers
+        with:
+          max: rest.max
+          offset: rest.offset
+          customerId: rest.customerId
+          personId: rest.personId
+          externalCustomerId: rest.externalCustomerId
+          email: rest.email
+          status: rest.status
+          after: rest.after
+          lastStatusChange: rest.lastStatusChange
+          sortBy: rest.sortBy
+          sortOrder: rest.sortOrder
+          onBehalfOfSubPartnerOrgId: rest.onBehalfOfSubPartnerOrgId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: provisionawholesalesubscriber
+        description: Provision a Wholesale Subscriber
+        call: wholesale-wholesale-provisioning.provisionawholesalesubscriber
+        with:
+          onBehalfOfSubPartnerOrgId: rest.onBehalfOfSubPartnerOrgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/wholesale/subscribers/validate
+      name: wholesale-subscribers-validate
+      description: REST surface for wholesale-subscribers-validate.
+      operations:
+      - method: POST
+        name: precheckawholesalesubscriberprovisioning
+        description: Precheck a Wholesale Subscriber Provisioning
+        call: wholesale-wholesale-provisioning.precheckawholesalesubscriberprovisioning
+        with:
+          onBehalfOfSubPartnerOrgId: rest.onBehalfOfSubPartnerOrgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/wholesale/subscribers/{subscriberid}
+      name: wholesale-subscribers-subscriberid
+      description: REST surface for wholesale-subscribers-subscriberId.
+      operations:
+      - method: GET
+        name: getawholesalesubscriber
+        description: Get a Wholesale Subscriber
+        call: wholesale-wholesale-provisioning.getawholesalesubscriber
+        with:
+          subscriberId: rest.subscriberId
+          onBehalfOfSubPartnerOrgId: rest.onBehalfOfSubPartnerOrgId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: updateawholesalesubscriber
+        description: Update a Wholesale Subscriber
+        call: wholesale-wholesale-provisioning.updateawholesalesubscriber
+        with:
+          subscriberId: rest.subscriberId
+          onBehalfOfSubPartnerOrgId: rest.onBehalfOfSubPartnerOrgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: removeawholesalesubscriber
+        description: Remove a Wholesale Subscriber
+        call: wholesale-wholesale-provisioning.removeawholesalesubscriber
+        with:
+          subscriberId: rest.subscriberId
+          onBehalfOfSubPartnerOrgId: rest.onBehalfOfSubPartnerOrgId
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: wholesale-wholesale-provisioning-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Webex Wholesale — Wholesale Provisioning. One tool per consumed operation, routed inline
+      through this capability's consumes block.
+    tools:
+    - name: send-consent-user-move-email
+      description: Send Consent User Move Email to Pending Wholesale Subscribers
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: wholesale-wholesale-provisioning.sendconsentusermoveemailtopendingwholesalesubscribers
+      with:
+        subscriberId: tools.subscriberId
+        onBehalfOfSubPartnerOrgId: tools.onBehalfOfSubPartnerOrgId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-wholesale-customers
+      description: List Wholesale Customers
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: wholesale-wholesale-provisioning.listwholesalecustomers
+      with:
+        externalId: tools.externalId
+        orgId: tools.orgId
+        status: tools.status
+        offset: tools.offset
+        max: tools.max
+        onBehalfOfSubPartnerOrgId: tools.onBehalfOfSubPartnerOrgId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: provision-wholesale-customer
+      description: Provision a Wholesale Customer
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: wholesale-wholesale-provisioning.provisionawholesalecustomer
+      with:
+        onBehalfOfSubPartnerOrgId: tools.onBehalfOfSubPartnerOrgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: precheck-wholesale-customer-provisioning
+      description: Precheck a Wholesale Customer Provisioning
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: false
+      call: wholesale-wholesale-provisioning.precheckawholesalecustomerprovisioning
+      with:
+        onBehalfOfSubPartnerOrgId: tools.onBehalfOfSubPartnerOrgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-wholesale-customer
+      description: Get a Wholesale Customer
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: wholesale-wholesale-provisioning.getawholesalecustomer
+      with:
+        customerId: tools.customerId
+        onBehalfOfSubPartnerOrgId: tools.onBehalfOfSubPartnerOrgId
+        includePackageLicenseInfo: tools.includePackageLicenseInfo
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-wholesale-customer
+      description: Update a Wholesale Customer
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: wholesale-wholesale-provisioning.updateawholesalecustomer
+      with:
+        customerId: tools.customerId
+        onBehalfOfSubPartnerOrgId: tools.onBehalfOfSubPartnerOrgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: remove-wholesale-customer
+      description: Remove a Wholesale Customer
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: wholesale-wholesale-provisioning.removeawholesalecustomer
+      with:
+        customerId: tools.customerId
+        onBehalfOfSubPartnerOrgId: tools.onBehalfOfSubPartnerOrgId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-wholesale-sub-partners
+      description: List Wholesale Sub-partners
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: wholesale-wholesale-provisioning.listwholesalesubpartners
+      with:
+        provisioningState: tools.provisioningState
+        offset: tools.offset
+        max: tools.max
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-wholesale-subscribers
+      description: List Wholesale Subscribers
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: wholesale-wholesale-provisioning.listwholesalesubscribers
+      with:
+        max: tools.max
+        offset: tools.offset
+        customerId: tools.customerId
+        personId: tools.personId
+        externalCustomerId: tools.externalCustomerId
+        email: tools.email
+        status: tools.status
+        after: tools.after
+        lastStatusChange: tools.lastStatusChange
+        sortBy: tools.sortBy
+        sortOrder: tools.sortOrder
+        onBehalfOfSubPartnerOrgId: tools.onBehalfOfSubPartnerOrgId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: provision-wholesale-subscriber
+      description: Provision a Wholesale Subscriber
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: wholesale-wholesale-provisioning.provisionawholesalesubscriber
+      with:
+        onBehalfOfSubPartnerOrgId: tools.onBehalfOfSubPartnerOrgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: precheck-wholesale-subscriber-provisioning
+      description: Precheck a Wholesale Subscriber Provisioning
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: false
+      call: wholesale-wholesale-provisioning.precheckawholesalesubscriberprovisioning
+      with:
+        onBehalfOfSubPartnerOrgId: tools.onBehalfOfSubPartnerOrgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-wholesale-subscriber
+      description: Get a Wholesale Subscriber
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: wholesale-wholesale-provisioning.getawholesalesubscriber
+      with:
+        subscriberId: tools.subscriberId
+        onBehalfOfSubPartnerOrgId: tools.onBehalfOfSubPartnerOrgId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-wholesale-subscriber
+      description: Update a Wholesale Subscriber
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: wholesale-wholesale-provisioning.updateawholesalesubscriber
+      with:
+        subscriberId: tools.subscriberId
+        onBehalfOfSubPartnerOrgId: tools.onBehalfOfSubPartnerOrgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: remove-wholesale-subscriber
+      description: Remove a Wholesale Subscriber
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: wholesale-wholesale-provisioning.removeawholesalesubscriber
+      with:
+        subscriberId: tools.subscriberId
+        onBehalfOfSubPartnerOrgId: tools.onBehalfOfSubPartnerOrgId
+      outputParameters:
+      - type: object
+        mapping: $.

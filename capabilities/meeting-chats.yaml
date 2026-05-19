@@ -1,0 +1,129 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Webex Meetings — Chats
+  description: 'Webex Meetings — Chats. 2 operations. Lead operation: List Meeting Chats. Self-contained Naftiko capability
+    covering one Webex business surface.'
+  tags:
+  - Webex
+  - Chats
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WEBEX_API_KEY: WEBEX_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: meeting-chats
+    baseUri: ''
+    description: Webex Meetings — Chats business capability. Self-contained, no shared references.
+    resources:
+    - name: meetings-postMeetingChats
+      path: /meetings/postMeetingChats
+      operations:
+      - name: listmeetingchats
+        method: GET
+        description: List Meeting Chats
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: meetingId
+          in: query
+          type: string
+          description: A unique identifier for the [meeting instance](/docs/meetings#meeting-series-scheduled-meetings-and-meeting-instances)
+            to which the chats belong. The meeting ID
+          required: true
+        - name: max
+          in: query
+          type: number
+          description: Limit the maximum number of meeting chats in the response, up to 100.
+        - name: offset
+          in: query
+          type: number
+          description: Offset from the first result that you want to fetch.
+      - name: deletemeetingchats
+        method: DELETE
+        description: Delete Meeting Chats
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: meetingId
+          in: query
+          type: string
+          description: A unique identifier for the [meeting instance](/docs/meetings#meeting-series-scheduled-meetings-and-meeting-instances)
+            to which the chats belong. Meeting IDs of
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.WEBEX_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: meeting-chats-rest
+    port: 8080
+    description: REST adapter for Webex Meetings — Chats. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/meetings/postmeetingchats
+      name: meetings-postmeetingchats
+      description: REST surface for meetings-postMeetingChats.
+      operations:
+      - method: GET
+        name: listmeetingchats
+        description: List Meeting Chats
+        call: meeting-chats.listmeetingchats
+        with:
+          meetingId: rest.meetingId
+          max: rest.max
+          offset: rest.offset
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deletemeetingchats
+        description: Delete Meeting Chats
+        call: meeting-chats.deletemeetingchats
+        with:
+          meetingId: rest.meetingId
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: meeting-chats-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Webex Meetings — Chats. One tool per consumed operation, routed inline through this capability's
+      consumes block.
+    tools:
+    - name: list-meeting-chats
+      description: List Meeting Chats
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: meeting-chats.listmeetingchats
+      with:
+        meetingId: tools.meetingId
+        max: tools.max
+        offset: tools.offset
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-meeting-chats
+      description: Delete Meeting Chats
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: meeting-chats.deletemeetingchats
+      with:
+        meetingId: tools.meetingId
+      outputParameters:
+      - type: object
+        mapping: $.

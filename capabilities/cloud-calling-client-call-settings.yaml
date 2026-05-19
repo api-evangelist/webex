@@ -1,0 +1,120 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Webex Cloud Calling — Client Call Settings
+  description: 'Webex Cloud Calling — Client Call Settings. 2 operations. Lead operation: Get an Organization''s MS Teams
+    Settings. Self-contained Naftiko capability covering one Webex business surface.'
+  tags:
+  - Webex
+  - Client Call Settings
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WEBEX_API_KEY: WEBEX_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: cloud-calling-client-call-settings
+    baseUri: ''
+    description: Webex Cloud Calling — Client Call Settings business capability. Self-contained, no shared references.
+    resources:
+    - name: telephony-config-settings-msTeams
+      path: /telephony/config/settings/msTeams
+      operations:
+      - name: getanorganizationsmsteamssettings
+        method: GET
+        description: Get an Organization's MS Teams Settings
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: query
+          type: string
+          description: Retrieve MS Teams settings for the organization.
+      - name: updateanorganizationsmsteamssetting
+        method: PUT
+        description: Update an Organization's MS Teams Setting
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: query
+          type: string
+          description: Update MS Teams setting value for the organization.
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    authentication:
+      type: bearer
+      token: '{{env.WEBEX_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: cloud-calling-client-call-settings-rest
+    port: 8080
+    description: REST adapter for Webex Cloud Calling — Client Call Settings. One Spectral-compliant resource per consumed
+      operation, prefixed with /v1.
+    resources:
+    - path: /v1/telephony/config/settings/msteams
+      name: telephony-config-settings-msteams
+      description: REST surface for telephony-config-settings-msTeams.
+      operations:
+      - method: GET
+        name: getanorganizationsmsteamssettings
+        description: Get an Organization's MS Teams Settings
+        call: cloud-calling-client-call-settings.getanorganizationsmsteamssettings
+        with:
+          orgId: rest.orgId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: updateanorganizationsmsteamssetting
+        description: Update an Organization's MS Teams Setting
+        call: cloud-calling-client-call-settings.updateanorganizationsmsteamssetting
+        with:
+          orgId: rest.orgId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: cloud-calling-client-call-settings-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Webex Cloud Calling — Client Call Settings. One tool per consumed operation, routed inline
+      through this capability's consumes block.
+    tools:
+    - name: get-organization-s-ms-teams-settings
+      description: Get an Organization's MS Teams Settings
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: cloud-calling-client-call-settings.getanorganizationsmsteamssettings
+      with:
+        orgId: tools.orgId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-organization-s-ms-teams-setting
+      description: Update an Organization's MS Teams Setting
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: cloud-calling-client-call-settings.updateanorganizationsmsteamssetting
+      with:
+        orgId: tools.orgId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.

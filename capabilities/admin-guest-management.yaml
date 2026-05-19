@@ -1,0 +1,112 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Webex Admin — Guest Management
+  description: 'Webex Admin — Guest Management. 2 operations. Lead operation: Get Guest Count. Self-contained Naftiko capability
+    covering one Webex business surface.'
+  tags:
+  - Webex
+  - Guest Management
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WEBEX_API_KEY: WEBEX_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: admin-guest-management
+    baseUri: ''
+    description: Webex Admin — Guest Management business capability. Self-contained, no shared references.
+    resources:
+    - name: guests-count
+      path: /guests/count
+      operations:
+      - name: getguestcount
+        method: GET
+        description: Get Guest Count
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: guests-token
+      path: /guests/token
+      operations:
+      - name: createaguest
+        method: POST
+        description: Create a Guest
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    authentication:
+      type: bearer
+      token: '{{env.WEBEX_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: admin-guest-management-rest
+    port: 8080
+    description: REST adapter for Webex Admin — Guest Management. One Spectral-compliant resource per consumed operation,
+      prefixed with /v1.
+    resources:
+    - path: /v1/guests/count
+      name: guests-count
+      description: REST surface for guests-count.
+      operations:
+      - method: GET
+        name: getguestcount
+        description: Get Guest Count
+        call: admin-guest-management.getguestcount
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/guests/token
+      name: guests-token
+      description: REST surface for guests-token.
+      operations:
+      - method: POST
+        name: createaguest
+        description: Create a Guest
+        call: admin-guest-management.createaguest
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: admin-guest-management-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Webex Admin — Guest Management. One tool per consumed operation, routed inline through this
+      capability's consumes block.
+    tools:
+    - name: get-guest-count
+      description: Get Guest Count
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: admin-guest-management.getguestcount
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-guest
+      description: Create a Guest
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: admin-guest-management.createaguest
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.

@@ -1,0 +1,2629 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Webex Meetings — Meetings
+  description: 'Webex Meetings — Meetings. 45 operations. Lead operation: List Meetings By an Admin. Self-contained Naftiko
+    capability covering one Webex business surface.'
+  tags:
+  - Webex
+  - Meetings
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WEBEX_API_KEY: WEBEX_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: meeting-meetings
+    baseUri: ''
+    description: Webex Meetings — Meetings business capability. Self-contained, no shared references.
+    resources:
+    - name: admin-meetings
+      path: /admin/meetings
+      operations:
+      - name: adminlistmeetings
+        method: GET
+        description: List Meetings By an Admin
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: meetingNumber
+          in: query
+          type: string
+          description: Meeting number for the meeting objects being requested. `meetingNumber` and `webLink` are mutually
+            exclusive. If it's an exceptional meeting from a meeting seri
+        - name: webLink
+          in: query
+          type: string
+          description: URL encoded link to information page for the meeting objects being requested. `meetingNumber` and `webLink`
+            are mutually exclusive.
+        - name: current
+          in: query
+          type: boolean
+          description: Flag identifying to retrieve the current scheduled meeting of the meeting series or the entire meeting
+            series. This parameter only applies to scenarios where `m
+        - name: timezone
+          in: header
+          type: string
+          description: e.g. UTC
+    - name: admin-meetings-meetingId
+      path: /admin/meetings/{meetingId}
+      operations:
+      - name: admingetmeetingbyid
+        method: GET
+        description: Get a Meeting By an Admin
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: meetingId
+          in: path
+          type: string
+          description: Unique identifier for the meeting being requested.
+          required: true
+        - name: current
+          in: query
+          type: boolean
+          description: Whether or not to retrieve only the current scheduled meeting of the meeting series, i.e. the meeting
+            ready to join or start or the upcoming meeting of the meet
+        - name: timezone
+          in: header
+          type: string
+          description: e.g. UTC
+    - name: meetings
+      path: /meetings
+      operations:
+      - name: createmeeting
+        method: POST
+        description: Create a Meeting
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+      - name: listmeetings
+        method: GET
+        description: List Meetings
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: meetingNumber
+          in: query
+          type: string
+          description: Meeting number for the meeting objects being requested. `meetingNumber`, `webLink` and `roomId` are
+            mutually exclusive. If it's an exceptional meeting from a me
+        - name: webLink
+          in: query
+          type: string
+          description: URL encoded link to information page for the meeting objects being requested. `meetingNumber`, `webLink`
+            and `roomId` are mutually exclusive.
+        - name: roomId
+          in: query
+          type: string
+          description: Associated Webex space ID for the meeting objects being requested. `meetingNumber`, `webLink` and `roomId`
+            are mutually exclusive.
+        - name: meetingSeriesId
+          in: query
+          type: string
+          description: Unique identifier for the meeting series. The meeting ID of a scheduled [personal room](https://help.webex.com/en-us/article/nul0wut/Webex-Personal-Rooms-in-Web
+        - name: max
+          in: query
+          type: number
+          description: Limit the maximum number of meetings in the response, up to 100. This parameter is ignored if `meetingNumber`,
+            `webLink` or `roomId` is specified. The default v
+        - name: from
+          in: query
+          type: string
+          description: 'Start date and time (inclusive) for the range for which meetings are to be returned in any [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601)
+            compliant format. '
+        - name: to
+          in: query
+          type: string
+          description: End date and time (exclusive) for the range for which meetings are to be returned in any [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601)
+            compliant format. `t
+        - name: meetingType
+          in: query
+          type: string
+          description: Meeting type for the meeting objects being requested. This parameter will be ignored if `meetingNumber`,
+            `webLink` or `roomId` is specified.
+        - name: state
+          in: query
+          type: string
+          description: Meeting state for the meeting objects being requested. If not specified, return meetings of all states.
+            This parameter will be ignored if `meetingNumber`, `webL
+        - name: scheduledType
+          in: query
+          type: string
+          description: Scheduled type for the meeting objects being requested.
+        - name: isModified
+          in: query
+          type: boolean
+          description: Flag identifying whether a meeting has been modified. Only applies to scheduled meetings. If `true`,
+            only return modified scheduled meetings; if `false`, only r
+        - name: hasChat
+          in: query
+          type: boolean
+          description: Flag identifying whether a meeting has a chat log. Only applies to ended meeting instances. If `true`,
+            only return meeting instances which have chats; if `false
+        - name: hasRecording
+          in: query
+          type: boolean
+          description: Flag identifying meetings which have been recorded. Only applies to ended meeting instances. If true,
+            only return meeting instances which have been recorded; if
+        - name: hasTranscription
+          in: query
+          type: boolean
+          description: Flag identifying meetings with transcripts. Only applies to ended meeting instances. If `true`, only
+            return meeting instances which have transcripts; if `false`
+        - name: hasSummary
+          in: query
+          type: boolean
+          description: Flag identifying meetings with summaries. Only applies to ended meeting instances. If `true`, only
+            return meeting instances which have summaries; if `false`, on
+        - name: hasClosedCaption
+          in: query
+          type: boolean
+          description: Flag identifying meetings with closed captions. Only applies to ended meeting instances. If `true`,
+            only return meeting instances which have closed captions; if
+        - name: hasPolls
+          in: query
+          type: boolean
+          description: Flag identifying meetings with polls. Only applies to ended meeting instances. If `true`, only return
+            meeting instances which have polls; if `false`, only retur
+        - name: hasQA
+          in: query
+          type: boolean
+          description: Flag identifying meetings with Q&A. Only applies to ended meeting instances. If `true`, only return
+            meeting instances which have Q&A; if `false`, only return me
+        - name: hasSlido
+          in: query
+          type: boolean
+          description: Flag identifying meetings with Slido interactions. Only applies to ended meeting instances. If `true`,
+            only return meeting instances which have Slido interactio
+        - name: current
+          in: query
+          type: boolean
+          description: Flag identifying to retrieve the current scheduled meeting of the meeting series or the entire meeting
+            series. This parameter only applies to scenarios where th
+        - name: hostEmail
+          in: query
+          type: string
+          description: Email address for the meeting host. This parameter is only used if the user or application calling
+            the API has the admin-level scopes. If set, the admin may spe
+        - name: siteUrl
+          in: query
+          type: string
+          description: URL of the Webex site which the API lists meetings from. If not specified, the API lists meetings from
+            user's all sites. All available Webex sites of the user c
+        - name: integrationTag
+          in: query
+          type: string
+          description: External key created by an integration application. This parameter is used by the integration application
+            to query meetings by a key in its own domain such as a
+        - name: password
+          in: header
+          type: string
+          description: e.g. BgJep@4323
+        - name: timezone
+          in: header
+          type: string
+          description: e.g. UTC
+    - name: meetings-controls
+      path: /meetings/controls
+      operations:
+      - name: getmeetingcontrol
+        method: GET
+        description: Get Meeting Control Status
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: meetingId
+          in: query
+          type: string
+          description: Unique identifier for the meeting. Does not support meeting IDs for a scheduled [personal room](https://help.webex.com/en-us/article/nul0wut/Webex-Personal-Room
+          required: true
+      - name: updatemeetingcontrol
+        method: PUT
+        description: Update Meeting Control Status
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: meetingId
+          in: query
+          type: string
+          description: Unique identifier for the meeting. Does not support meeting IDs for a scheduled [personal room](https://help.webex.com/en-us/article/nul0wut/Webex-Personal-Room
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    - name: meetings-join
+      path: /meetings/join
+      operations:
+      - name: meetingjoin
+        method: POST
+        description: Join a Meeting
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    - name: meetings-reassignHost
+      path: /meetings/reassignHost
+      operations:
+      - name: reassignhost
+        method: POST
+        description: Reassign Meetings to a New Host
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: siteUrl
+          in: header
+          type: string
+          description: e.g. example.webex.com
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    - name: meetings-sessionTypes
+      path: /meetings/sessionTypes
+      operations:
+      - name: listmeetingsessiontypes
+        method: GET
+        description: List Meeting Session Types
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: hostEmail
+          in: query
+          type: string
+          description: Email address for the user. This parameter is only used if the user or application calling the API
+            has the admin-level scopes. If set, the admin may specify the
+        - name: siteUrl
+          in: query
+          type: string
+          description: Webex site URL to query. If `siteUrl` is not specified, the users' preferred site will be used. If
+            the authorization token has the admin-level scopes, the admin
+    - name: meetings-sessionTypes-sessionTypeId
+      path: /meetings/sessionTypes/{sessionTypeId}
+      operations:
+      - name: getmeetingsessiontypebyid
+        method: GET
+        description: Get a Meeting Session Type
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: sessionTypeId
+          in: path
+          type: number
+          description: A unique identifier for the sessionType.
+          required: true
+        - name: hostEmail
+          in: query
+          type: string
+          description: Email address for the user. This parameter is only used if the user or application calling the API
+            has the admin-level scopes. If set, the admin may specify the
+        - name: siteUrl
+          in: query
+          type: string
+          description: Webex site URL to query. If `siteUrl` is not specified, the users' preferred site will be used. If
+            the authorization token has the admin-level scopes, the admin
+    - name: meetings-templates
+      path: /meetings/templates
+      operations:
+      - name: listtemplates
+        method: GET
+        description: List Meeting Templates
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: templateType
+          in: query
+          type: string
+          description: Meeting template type for the meeting template objects being requested. If not specified, return meeting
+            templates of all types.
+        - name: locale
+          in: query
+          type: string
+          description: Locale for the meeting template objects being requested. If not specified, return meeting templates
+            of the default `en_US` locale. Refer to [Meeting Template Lo
+        - name: isDefault
+          in: query
+          type: boolean
+          description: The value is `true` or `false`. If it's `true`, return the default meeting templates; if it's `false`,
+            return the non-default meeting templates. If it's not spe
+        - name: isStandard
+          in: query
+          type: boolean
+          description: The value is `true` or `false`. If it's `true`, return the standard meeting templates; if it's `false`,
+            return the non-standard meeting templates. If it's not s
+        - name: hostEmail
+          in: query
+          type: string
+          description: Email address for the meeting host. This parameter is only used if the user or application calling
+            the API has the admin-level scopes. If set, the admin may spe
+        - name: siteUrl
+          in: query
+          type: string
+          description: URL of the Webex site which the API lists meeting templates from. If not specified, the API lists meeting
+            templates from user's preferred site. All available We
+    - name: meetings-templates-templateId
+      path: /meetings/templates/{templateId}
+      operations:
+      - name: gettemplatebyid
+        method: GET
+        description: Get a Meeting Template
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: templateId
+          in: path
+          type: string
+          description: Unique identifier for the meeting template being requested.
+          required: true
+        - name: hostEmail
+          in: query
+          type: string
+          description: Email address for the meeting host. This parameter is only used if the user or application calling
+            the API has the admin-level scopes. If set, the admin may spe
+        - name: timezone
+          in: header
+          type: string
+          description: e.g. UTC
+    - name: meetings-trackingCodes
+      path: /meetings/trackingCodes
+      operations:
+      - name: getmeetinghosttrackingcodes
+        method: GET
+        description: List Meeting Tracking Codes
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: siteUrl
+          in: query
+          type: string
+          description: 'URL of the Webex site which the API retrieves the tracking code from. If not specified, the API retrieves
+            the tracking code from the user''s preferred site. All '
+        - name: service
+          in: query
+          type: string
+          description: Service for schedule or sign-up pages.
+          required: true
+        - name: hostEmail
+          in: query
+          type: string
+          description: Email address for the meeting host. This parameter is only used if a user or application calling the
+            API has the admin-level scopes. The admin may specify the e
+    - name: meetings-meetingId
+      path: /meetings/{meetingId}
+      operations:
+      - name: getmeetingbyid
+        method: GET
+        description: Get a Meeting
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: meetingId
+          in: path
+          type: string
+          description: Unique identifier for the meeting being requested.
+          required: true
+        - name: current
+          in: query
+          type: boolean
+          description: Whether or not to retrieve only the current scheduled meeting of the meeting series, i.e. the meeting
+            ready to join or start or the upcoming meeting of the meet
+        - name: hostEmail
+          in: query
+          type: string
+          description: Email address for the meeting host. This parameter is only used if the user or application calling
+            the API has the admin-level scopes. If set, the admin may spe
+        - name: password
+          in: header
+          type: string
+          description: e.g. BgJep@4323
+        - name: timezone
+          in: header
+          type: string
+          description: e.g. UTC
+      - name: patchmeeting
+        method: PATCH
+        description: Patch a Meeting
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: meetingId
+          in: path
+          type: string
+          description: Unique identifier for the meeting to be updated. This parameter applies to meeting series and scheduled
+            meetings. It doesn't apply to ended or in-progress meeti
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+      - name: updatemeeting
+        method: PUT
+        description: Update a Meeting
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: meetingId
+          in: path
+          type: string
+          description: Unique identifier for the meeting to be updated. This parameter applies to meeting series and scheduled
+            meetings. It doesn't apply to ended or in-progress meeti
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+      - name: deletemeeting
+        method: DELETE
+        description: Delete a Meeting
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: meetingId
+          in: path
+          type: string
+          description: Unique identifier for the meeting to be deleted. This parameter applies to meeting series and scheduled
+            meetings. It doesn't apply to ended or in-progress meeti
+          required: true
+        - name: hostEmail
+          in: query
+          type: string
+          description: Email address for the meeting host. This parameter is only used if the user or application calling
+            the API has the admin-level scopes. If set, the admin may spe
+        - name: sendEmail
+          in: query
+          type: boolean
+          description: Whether or not to send emails to host and invitees. It is an optional field and default value is true.
+    - name: meetings-meetingId-breakoutSessions
+      path: /meetings/{meetingId}/breakoutSessions
+      operations:
+      - name: listbreakoutsessions
+        method: GET
+        description: List Meeting Breakout Sessions
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: meetingId
+          in: path
+          type: string
+          description: Unique identifier for the meeting. This parameter applies to meeting series, scheduled meeting and
+            ended or ongoing meeting instance objects. Please note that c
+          required: true
+        - name: hostEmail
+          in: header
+          type: string
+          description: e.g. `john.andersen@example.com` (string, optional) - Email address for the meeting host. This parameter
+            is only used if the user or application calling the API
+      - name: updatebreakoutsessions
+        method: PUT
+        description: Update Meeting Breakout Sessions
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: meetingId
+          in: path
+          type: string
+          description: Unique identifier for the meeting. Does not support meeting IDs for a scheduled [personal room](https://help.webex.com/en-us/article/nul0wut/Webex-Personal-Room
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+      - name: deletebreakoutsessions
+        method: DELETE
+        description: Delete Meeting Breakout Sessions
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: meetingId
+          in: path
+          type: string
+          description: Unique identifier for the meeting. This parameter applies to meeting series and scheduled meetings.
+            It doesn't apply to ended or in-progress meeting instances.
+          required: true
+        - name: sendEmail
+          in: query
+          type: boolean
+          description: Whether or not to send emails to host and invitees. It is an optional field and default value is true.
+        - name: hostEmail
+          in: header
+          type: string
+          description: e.g. `john.andersen@example.com` (string, optional) - Email address for the meeting host. This parameter
+            is only used if the user or application calling the API
+    - name: meetings-meetingId-end
+      path: /meetings/{meetingId}/end
+      operations:
+      - name: endmeeting
+        method: POST
+        description: End a Meeting
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: meetingId
+          in: path
+          type: string
+          description: Unique identifier for the meeting to be ended.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    - name: meetings-meetingId-interpreters
+      path: /meetings/{meetingId}/interpreters
+      operations:
+      - name: createinterpreter
+        method: POST
+        description: Create a Meeting Interpreter
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: meetingId
+          in: path
+          type: string
+          description: Unique identifier for the meeting to which the interpreter is to be assigned.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+      - name: listinterpreters
+        method: GET
+        description: List Meeting Interpreters
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: meetingId
+          in: path
+          type: string
+          description: Unique identifier for the meeting for which interpreters are being requested. The meeting can be meeting
+            series, scheduled meeting or meeting instance which has
+          required: true
+        - name: hostEmail
+          in: query
+          type: string
+          description: 'Email address for the meeting host. This parameter is only used if the user or application calling
+            the API has the admin on-behalf-of scopes. If set, the admin '
+    - name: meetings-meetingId-interpreters-interpreterId
+      path: /meetings/{meetingId}/interpreters/{interpreterId}
+      operations:
+      - name: getinterpreterbyid
+        method: GET
+        description: Get a Meeting Interpreter
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: meetingId
+          in: path
+          type: string
+          description: Unique identifier for the meeting to which the interpreter has been assigned.
+          required: true
+        - name: interpreterId
+          in: path
+          type: string
+          description: Unique identifier for the interpreter whose details are being requested.
+          required: true
+        - name: hostEmail
+          in: query
+          type: string
+          description: 'Email address for the meeting host. This parameter is only used if the user or application calling
+            the API has the admin on-behalf-of scopes. If set, the admin '
+      - name: updateinterpreterbyid
+        method: PUT
+        description: Update a Meeting Interpreter
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: meetingId
+          in: path
+          type: string
+          description: Unique identifier for the meeting whose interpreters were belong to.
+          required: true
+        - name: interpreterId
+          in: path
+          type: string
+          description: Unique identifier for the interpreter whose details are being requested.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+      - name: deleteinterpreterbyid
+        method: DELETE
+        description: Delete a Meeting Interpreter
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: meetingId
+          in: path
+          type: string
+          description: Unique identifier for the meeting whose interpreters were belong to.
+          required: true
+        - name: interpreterId
+          in: path
+          type: string
+          description: Unique identifier for the interpreter to be removed.
+          required: true
+        - name: hostEmail
+          in: query
+          type: string
+          description: 'Email address for the meeting host. This parameter is only used if the user or application calling
+            the API has the admin on-behalf-of scopes. If set, the admin '
+        - name: sendEmail
+          in: query
+          type: boolean
+          description: If `true`, send email to the interpreter.
+    - name: meetings-meetingId-invitationSources
+      path: /meetings/{meetingId}/invitationSources
+      operations:
+      - name: createinvitationsources
+        method: POST
+        description: Create Invitation Sources
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: meetingId
+          in: path
+          type: string
+          description: Unique identifier for the meeting. Only the meeting ID of a scheduled webinar is supported for this
+            API.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+      - name: listinvitationsources
+        method: GET
+        description: List Invitation Sources
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: meetingId
+          in: path
+          type: string
+          description: Unique identifier for the meeting. Only the meeting ID of a scheduled webinar is supported for this
+            API.
+          required: true
+        - name: hostEmail
+          in: header
+          type: string
+          description: e.g. john.andersen@example.com
+        - name: personId
+          in: header
+          type: string
+          description: e.g. Y2lzY29zcGFyazovL3VzL1BFT1BMRS8yNWJiZjgzMS01YmU5LTRjMjUtYjRiMC05YjU5MmM4YTA4NmI
+    - name: meetings-meetingId-registrants
+      path: /meetings/{meetingId}/registrants
+      operations:
+      - name: createregistrant
+        method: POST
+        description: Register a Meeting Registrant
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: meetingId
+          in: path
+          type: string
+          description: Unique identifier for the meeting. Only the ID of the meeting series is supported for meetingId. IDs
+            of scheduled meetings, meeting instances, or scheduled pers
+          required: true
+        - name: current
+          in: query
+          type: boolean
+          description: Whether or not to retrieve only the current scheduled meeting of the meeting series, i.e. the meeting
+            ready to join or start or the upcoming meeting of the meet
+        - name: hostEmail
+          in: query
+          type: string
+          description: Email address for the meeting host. This parameter is only used if the user or application calling
+            the API has the admin-level scopes. If set, the admin may spe
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+      - name: listmeetingregistrants
+        method: GET
+        description: List Meeting Registrants
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: meetingId
+          in: path
+          type: string
+          description: Unique identifier for the meeting. Only the ID of the meeting series is supported for meetingId. IDs
+            of scheduled meetings, meeting instances, or scheduled pers
+          required: true
+        - name: max
+          in: query
+          type: number
+          description: Limit the maximum number of registrants in the response, up to 100. The default is 10.
+        - name: hostEmail
+          in: query
+          type: string
+          description: Email address for the meeting host. This parameter is only used if the user or application calling
+            the API has the admin-level scopes. If set, the admin may spe
+        - name: current
+          in: query
+          type: boolean
+          description: Whether or not to retrieve only the current scheduled meeting of the meeting series, i.e. the meeting
+            ready to join or start or the upcoming meeting of the meet
+        - name: email
+          in: query
+          type: string
+          description: Registrant's email to filter registrants.
+        - name: registrationTimeFrom
+          in: query
+          type: string
+          description: 'The time registrants register a meeting starts from the specified date and time (inclusive) in any
+            [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant '
+        - name: registrationTimeTo
+          in: query
+          type: string
+          description: The time registrants register a meeting before the specified date and time (exclusive) in any [ISO
+            8601](https://en.wikipedia.org/wiki/ISO_8601) compliant forma
+    - name: meetings-meetingId-registrants-approve
+      path: /meetings/{meetingId}/registrants/approve
+      operations:
+      - name: batchapprovemeetingregistrants
+        method: POST
+        description: Batch Approve Meeting Registrants
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: meetingId
+          in: path
+          type: string
+          description: Unique identifier for the meeting. Only the ID of the meeting series is supported for meetingId. IDs
+            of scheduled meetings, meeting instances, or scheduled pers
+          required: true
+        - name: current
+          in: query
+          type: boolean
+          description: Whether or not to retrieve only the current scheduled meeting of the meeting series, i.e. the meeting
+            ready to join or start or the upcoming meeting of the meet
+        - name: hostEmail
+          in: query
+          type: string
+          description: Email address for the meeting host. This parameter is only used if the user or application calling
+            the API has the admin-level scopes. If set, the admin may spe
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    - name: meetings-meetingId-registrants-bulkDelete
+      path: /meetings/{meetingId}/registrants/bulkDelete
+      operations:
+      - name: batchdeletemeetingregistrants
+        method: POST
+        description: Batch Delete Meeting Registrants
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: meetingId
+          in: path
+          type: string
+          description: Unique identifier for the meeting. Only the ID of the meeting series is supported for meetingId. IDs
+            of scheduled meetings, meeting instances, or scheduled pers
+          required: true
+        - name: current
+          in: query
+          type: boolean
+          description: Whether or not to retrieve only the current scheduled meeting of the meeting series, i.e. the meeting
+            ready to join or start or the upcoming meeting of the meet
+        - name: hostEmail
+          in: query
+          type: string
+          description: Email address for the meeting host. This parameter is only used if the user or application calling
+            the API has the admin-level scopes. If set, the admin may spe
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    - name: meetings-meetingId-registrants-bulkInsert
+      path: /meetings/{meetingId}/registrants/bulkInsert
+      operations:
+      - name: createregistrants
+        method: POST
+        description: Batch register Meeting Registrants
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: meetingId
+          in: path
+          type: string
+          description: Unique identifier for the meeting. Only the ID of the meeting series is supported for meetingId. IDs
+            of scheduled meetings, meeting instances, or scheduled pers
+          required: true
+        - name: current
+          in: query
+          type: boolean
+          description: Whether or not to retrieve only the current scheduled meeting of the meeting series, i.e. the meeting
+            ready to join or start or the upcoming meeting of the meet
+        - name: hostEmail
+          in: query
+          type: string
+          description: Email address for the meeting host. This parameter is only used if the user or application calling
+            the API has the admin-level scopes. If set, the admin may spe
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    - name: meetings-meetingId-registrants-cancel
+      path: /meetings/{meetingId}/registrants/cancel
+      operations:
+      - name: batchcancelmeetingregistrants
+        method: POST
+        description: Batch Cancel Meeting Registrants
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: meetingId
+          in: path
+          type: string
+          description: Unique identifier for the meeting. Only the ID of the meeting series is supported for meetingId. IDs
+            of scheduled meetings, meeting instances, or scheduled pers
+          required: true
+        - name: current
+          in: query
+          type: boolean
+          description: Whether or not to retrieve only the current scheduled meeting of the meeting series, i.e. the meeting
+            ready to join or start or the upcoming meeting of the meet
+        - name: hostEmail
+          in: query
+          type: string
+          description: Email address for the meeting host. This parameter is only used if the user or application calling
+            the API has the admin-level scopes. If set, the admin may spe
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    - name: meetings-meetingId-registrants-query
+      path: /meetings/{meetingId}/registrants/query
+      operations:
+      - name: querymeetingregistrants
+        method: POST
+        description: Query Meeting Registrants
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: meetingId
+          in: path
+          type: string
+          description: Unique identifier for the meeting. Only the ID of the meeting series is supported for meetingId. IDs
+            of scheduled meetings, meeting instances, or scheduled pers
+          required: true
+        - name: max
+          in: query
+          type: number
+          description: Limit the maximum number of registrants in the response, up to 100. The default is 10.
+        - name: current
+          in: query
+          type: boolean
+          description: Whether or not to retrieve only the current scheduled meeting of the meeting series, i.e. the meeting
+            ready to join or start or the upcoming meeting of the meet
+        - name: hostEmail
+          in: query
+          type: string
+          description: Email address for the meeting host. This parameter is only used if the user or application calling
+            the API has the admin-level scopes. If set, the admin may spe
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    - name: meetings-meetingId-registrants-reject
+      path: /meetings/{meetingId}/registrants/reject
+      operations:
+      - name: batchrejectmeetingregistrants
+        method: POST
+        description: Batch Reject Meeting Registrants
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: meetingId
+          in: path
+          type: string
+          description: Unique identifier for the meeting. Only the ID of the meeting series is supported for meetingId. IDs
+            of scheduled meetings, meeting instances, or scheduled pers
+          required: true
+        - name: current
+          in: query
+          type: boolean
+          description: Whether or not to retrieve only the current scheduled meeting of the meeting series, i.e. the meeting
+            ready to join or start or the upcoming meeting of the meet
+        - name: hostEmail
+          in: query
+          type: string
+          description: Email address for the meeting host. This parameter is only used if the user or application calling
+            the API has the admin-level scopes. If set, the admin may spe
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    - name: meetings-meetingId-registrants-registrantId
+      path: /meetings/{meetingId}/registrants/{registrantId}
+      operations:
+      - name: getregistrant
+        method: GET
+        description: Get Detailed Information for a Meeting Registrant
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: meetingId
+          in: path
+          type: string
+          description: Unique identifier for the meeting. Only the ID of the meeting series is supported for meetingId. IDs
+            of scheduled meetings, meeting instances, or scheduled pers
+          required: true
+        - name: registrantId
+          in: path
+          type: string
+          description: Unique identifier for the registrant
+          required: true
+        - name: current
+          in: query
+          type: boolean
+          description: Whether or not to retrieve only the current scheduled meeting of the meeting series, i.e. the meeting
+            ready to join or start or the upcoming meeting of the meet
+        - name: hostEmail
+          in: query
+          type: string
+          description: Email address for the meeting host. This parameter is only used if the user or application calling
+            the API has the admin-level scopes. If set, the admin may spe
+      - name: deleteregistrant
+        method: DELETE
+        description: Delete a Meeting Registrant
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: meetingId
+          in: path
+          type: string
+          description: Unique identifier for the meeting. Only the ID of the meeting series is supported for meetingId. IDs
+            of scheduled meetings, meeting instances, or scheduled pers
+          required: true
+        - name: registrantId
+          in: path
+          type: string
+          description: Unique identifier for the registrant.
+          required: true
+        - name: current
+          in: query
+          type: boolean
+          description: Whether or not to retrieve only the current scheduled meeting of the meeting series, i.e. the meeting
+            ready to join or start or the upcoming meeting of the meet
+        - name: hostEmail
+          in: query
+          type: string
+          description: Email address for the meeting host. This parameter is only used if the user or application calling
+            the API has the admin-level scopes. If set, the admin may spe
+    - name: meetings-meetingId-registration
+      path: /meetings/{meetingId}/registration
+      operations:
+      - name: getmeetingregistration
+        method: GET
+        description: Get registration form for a meeting
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: meetingId
+          in: path
+          type: string
+          description: Unique identifier for the meeting. Only the ID of the meeting series is supported for meetingId. IDs
+            of scheduled meetings, meeting instances, or scheduled pers
+          required: true
+        - name: current
+          in: query
+          type: boolean
+          description: Whether or not to retrieve only the current scheduled meeting of the meeting series, i.e. the meeting
+            ready to join or start or the upcoming meeting of the meet
+        - name: hostEmail
+          in: query
+          type: string
+          description: Email address for the meeting host. This parameter is only used if the user or application calling
+            the API has the admin-level scopes. If set, the admin may spe
+      - name: updatemeetingregistration
+        method: PUT
+        description: Update Meeting Registration Form
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: meetingId
+          in: path
+          type: string
+          description: Unique identifier for the meeting. Only the ID of the meeting series is supported for meetingId. IDs
+            of scheduled meetings, meeting instances, or scheduled pers
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+      - name: deletemeetingregistration
+        method: DELETE
+        description: Delete Meeting Registration Form
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: meetingId
+          in: path
+          type: string
+          description: Unique identifier for the meeting. Only the ID of the meeting series is supported for meetingId. IDs
+            of scheduled meetings, meeting instances, or scheduled pers
+          required: true
+        - name: hostEmail
+          in: header
+          type: string
+          description: e.g. `brenda.song@example.com` (string, optional) - Email address for the meeting host. This parameter
+            is only used if the user or application calling the API h
+    - name: meetings-meetingId-simultaneousInterpretation
+      path: /meetings/{meetingId}/simultaneousInterpretation
+      operations:
+      - name: updatemeetingsimultaneousinterpretation
+        method: PUT
+        description: Update Meeting Simultaneous interpretation
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: meetingId
+          in: path
+          type: string
+          description: Unique identifier for the meeting. Does not support meeting IDs for a scheduled [personal room](https://help.webex.com/en-us/article/nul0wut/Webex-Personal-Room
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    - name: meetings-meetingId-survey
+      path: /meetings/{meetingId}/survey
+      operations:
+      - name: getsurveybymeetingid
+        method: GET
+        description: Get a Meeting Survey
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: meetingId
+          in: path
+          type: string
+          description: Unique identifier for the meeting. Please note that only the meeting ID of a scheduled webinar is supported
+            for this API.
+          required: true
+        - name: hostEmail
+          in: header
+          type: string
+          description: e.g. john.andersen@example.com
+    - name: meetings-meetingId-surveyLinks
+      path: /meetings/{meetingId}/surveyLinks
+      operations:
+      - name: generatesurveylink
+        method: POST
+        description: Get Meeting Survey Links
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: meetingId
+          in: path
+          type: string
+          description: Unique identifier for the meeting. Only applies to webinars. Meetings and personal room meetings are
+            not supported.
+          required: true
+        - name: timezone
+          in: header
+          type: string
+          description: e.g. UTC
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: false
+    - name: meetings-meetingId-surveyResults
+      path: /meetings/{meetingId}/surveyResults
+      operations:
+      - name: listsurveyresultsbymeetingid
+        method: GET
+        description: List Meeting Survey Results
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: meetingId
+          in: path
+          type: string
+          description: Unique identifier for the meeting. Please note that only the meeting ID of a scheduled webinar is supported
+            for this API.
+          required: true
+        - name: meetingStartTimeFrom
+          in: query
+          type: string
+          description: Start date and time (inclusive) in any [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant
+            format for the meeting objects being requested. `meetingStar
+        - name: meetingStartTimeTo
+          in: query
+          type: string
+          description: End date and time (exclusive) in any [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant format
+            for the meeting objects being requested. `meetingStartT
+        - name: max
+          in: query
+          type: number
+          description: Limit the maximum number of meetings in the response, up to 100. The default is 10.
+        - name: timezone
+          in: header
+          type: string
+          description: e.g. UTC
+        - name: hostEmail
+          in: header
+          type: string
+          description: e.g. john.andersen@example.com
+    authentication:
+      type: bearer
+      token: '{{env.WEBEX_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: meeting-meetings-rest
+    port: 8080
+    description: REST adapter for Webex Meetings — Meetings. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/admin/meetings
+      name: admin-meetings
+      description: REST surface for admin-meetings.
+      operations:
+      - method: GET
+        name: adminlistmeetings
+        description: List Meetings By an Admin
+        call: meeting-meetings.adminlistmeetings
+        with:
+          meetingNumber: rest.meetingNumber
+          webLink: rest.webLink
+          current: rest.current
+          timezone: rest.timezone
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/admin/meetings/{meetingid}
+      name: admin-meetings-meetingid
+      description: REST surface for admin-meetings-meetingId.
+      operations:
+      - method: GET
+        name: admingetmeetingbyid
+        description: Get a Meeting By an Admin
+        call: meeting-meetings.admingetmeetingbyid
+        with:
+          meetingId: rest.meetingId
+          current: rest.current
+          timezone: rest.timezone
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/meetings
+      name: meetings
+      description: REST surface for meetings.
+      operations:
+      - method: POST
+        name: createmeeting
+        description: Create a Meeting
+        call: meeting-meetings.createmeeting
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: GET
+        name: listmeetings
+        description: List Meetings
+        call: meeting-meetings.listmeetings
+        with:
+          meetingNumber: rest.meetingNumber
+          webLink: rest.webLink
+          roomId: rest.roomId
+          meetingSeriesId: rest.meetingSeriesId
+          max: rest.max
+          from: rest.from
+          to: rest.to
+          meetingType: rest.meetingType
+          state: rest.state
+          scheduledType: rest.scheduledType
+          isModified: rest.isModified
+          hasChat: rest.hasChat
+          hasRecording: rest.hasRecording
+          hasTranscription: rest.hasTranscription
+          hasSummary: rest.hasSummary
+          hasClosedCaption: rest.hasClosedCaption
+          hasPolls: rest.hasPolls
+          hasQA: rest.hasQA
+          hasSlido: rest.hasSlido
+          current: rest.current
+          hostEmail: rest.hostEmail
+          siteUrl: rest.siteUrl
+          integrationTag: rest.integrationTag
+          password: rest.password
+          timezone: rest.timezone
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/meetings/controls
+      name: meetings-controls
+      description: REST surface for meetings-controls.
+      operations:
+      - method: GET
+        name: getmeetingcontrol
+        description: Get Meeting Control Status
+        call: meeting-meetings.getmeetingcontrol
+        with:
+          meetingId: rest.meetingId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: updatemeetingcontrol
+        description: Update Meeting Control Status
+        call: meeting-meetings.updatemeetingcontrol
+        with:
+          meetingId: rest.meetingId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/meetings/join
+      name: meetings-join
+      description: REST surface for meetings-join.
+      operations:
+      - method: POST
+        name: meetingjoin
+        description: Join a Meeting
+        call: meeting-meetings.meetingjoin
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/meetings/reassignhost
+      name: meetings-reassignhost
+      description: REST surface for meetings-reassignHost.
+      operations:
+      - method: POST
+        name: reassignhost
+        description: Reassign Meetings to a New Host
+        call: meeting-meetings.reassignhost
+        with:
+          siteUrl: rest.siteUrl
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/meetings/sessiontypes
+      name: meetings-sessiontypes
+      description: REST surface for meetings-sessionTypes.
+      operations:
+      - method: GET
+        name: listmeetingsessiontypes
+        description: List Meeting Session Types
+        call: meeting-meetings.listmeetingsessiontypes
+        with:
+          hostEmail: rest.hostEmail
+          siteUrl: rest.siteUrl
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/meetings/sessiontypes/{sessiontypeid}
+      name: meetings-sessiontypes-sessiontypeid
+      description: REST surface for meetings-sessionTypes-sessionTypeId.
+      operations:
+      - method: GET
+        name: getmeetingsessiontypebyid
+        description: Get a Meeting Session Type
+        call: meeting-meetings.getmeetingsessiontypebyid
+        with:
+          sessionTypeId: rest.sessionTypeId
+          hostEmail: rest.hostEmail
+          siteUrl: rest.siteUrl
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/meetings/templates
+      name: meetings-templates
+      description: REST surface for meetings-templates.
+      operations:
+      - method: GET
+        name: listtemplates
+        description: List Meeting Templates
+        call: meeting-meetings.listtemplates
+        with:
+          templateType: rest.templateType
+          locale: rest.locale
+          isDefault: rest.isDefault
+          isStandard: rest.isStandard
+          hostEmail: rest.hostEmail
+          siteUrl: rest.siteUrl
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/meetings/templates/{templateid}
+      name: meetings-templates-templateid
+      description: REST surface for meetings-templates-templateId.
+      operations:
+      - method: GET
+        name: gettemplatebyid
+        description: Get a Meeting Template
+        call: meeting-meetings.gettemplatebyid
+        with:
+          templateId: rest.templateId
+          hostEmail: rest.hostEmail
+          timezone: rest.timezone
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/meetings/trackingcodes
+      name: meetings-trackingcodes
+      description: REST surface for meetings-trackingCodes.
+      operations:
+      - method: GET
+        name: getmeetinghosttrackingcodes
+        description: List Meeting Tracking Codes
+        call: meeting-meetings.getmeetinghosttrackingcodes
+        with:
+          siteUrl: rest.siteUrl
+          service: rest.service
+          hostEmail: rest.hostEmail
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/meetings/{meetingid}
+      name: meetings-meetingid
+      description: REST surface for meetings-meetingId.
+      operations:
+      - method: GET
+        name: getmeetingbyid
+        description: Get a Meeting
+        call: meeting-meetings.getmeetingbyid
+        with:
+          meetingId: rest.meetingId
+          current: rest.current
+          hostEmail: rest.hostEmail
+          password: rest.password
+          timezone: rest.timezone
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PATCH
+        name: patchmeeting
+        description: Patch a Meeting
+        call: meeting-meetings.patchmeeting
+        with:
+          meetingId: rest.meetingId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: updatemeeting
+        description: Update a Meeting
+        call: meeting-meetings.updatemeeting
+        with:
+          meetingId: rest.meetingId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deletemeeting
+        description: Delete a Meeting
+        call: meeting-meetings.deletemeeting
+        with:
+          meetingId: rest.meetingId
+          hostEmail: rest.hostEmail
+          sendEmail: rest.sendEmail
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/meetings/{meetingid}/breakoutsessions
+      name: meetings-meetingid-breakoutsessions
+      description: REST surface for meetings-meetingId-breakoutSessions.
+      operations:
+      - method: GET
+        name: listbreakoutsessions
+        description: List Meeting Breakout Sessions
+        call: meeting-meetings.listbreakoutsessions
+        with:
+          meetingId: rest.meetingId
+          hostEmail: rest.hostEmail
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: updatebreakoutsessions
+        description: Update Meeting Breakout Sessions
+        call: meeting-meetings.updatebreakoutsessions
+        with:
+          meetingId: rest.meetingId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deletebreakoutsessions
+        description: Delete Meeting Breakout Sessions
+        call: meeting-meetings.deletebreakoutsessions
+        with:
+          meetingId: rest.meetingId
+          sendEmail: rest.sendEmail
+          hostEmail: rest.hostEmail
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/meetings/{meetingid}/end
+      name: meetings-meetingid-end
+      description: REST surface for meetings-meetingId-end.
+      operations:
+      - method: POST
+        name: endmeeting
+        description: End a Meeting
+        call: meeting-meetings.endmeeting
+        with:
+          meetingId: rest.meetingId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/meetings/{meetingid}/interpreters
+      name: meetings-meetingid-interpreters
+      description: REST surface for meetings-meetingId-interpreters.
+      operations:
+      - method: POST
+        name: createinterpreter
+        description: Create a Meeting Interpreter
+        call: meeting-meetings.createinterpreter
+        with:
+          meetingId: rest.meetingId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: GET
+        name: listinterpreters
+        description: List Meeting Interpreters
+        call: meeting-meetings.listinterpreters
+        with:
+          meetingId: rest.meetingId
+          hostEmail: rest.hostEmail
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/meetings/{meetingid}/interpreters/{interpreterid}
+      name: meetings-meetingid-interpreters-interpreterid
+      description: REST surface for meetings-meetingId-interpreters-interpreterId.
+      operations:
+      - method: GET
+        name: getinterpreterbyid
+        description: Get a Meeting Interpreter
+        call: meeting-meetings.getinterpreterbyid
+        with:
+          meetingId: rest.meetingId
+          interpreterId: rest.interpreterId
+          hostEmail: rest.hostEmail
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: updateinterpreterbyid
+        description: Update a Meeting Interpreter
+        call: meeting-meetings.updateinterpreterbyid
+        with:
+          meetingId: rest.meetingId
+          interpreterId: rest.interpreterId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deleteinterpreterbyid
+        description: Delete a Meeting Interpreter
+        call: meeting-meetings.deleteinterpreterbyid
+        with:
+          meetingId: rest.meetingId
+          interpreterId: rest.interpreterId
+          hostEmail: rest.hostEmail
+          sendEmail: rest.sendEmail
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/meetings/{meetingid}/invitationsources
+      name: meetings-meetingid-invitationsources
+      description: REST surface for meetings-meetingId-invitationSources.
+      operations:
+      - method: POST
+        name: createinvitationsources
+        description: Create Invitation Sources
+        call: meeting-meetings.createinvitationsources
+        with:
+          meetingId: rest.meetingId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: GET
+        name: listinvitationsources
+        description: List Invitation Sources
+        call: meeting-meetings.listinvitationsources
+        with:
+          meetingId: rest.meetingId
+          hostEmail: rest.hostEmail
+          personId: rest.personId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/meetings/{meetingid}/registrants
+      name: meetings-meetingid-registrants
+      description: REST surface for meetings-meetingId-registrants.
+      operations:
+      - method: POST
+        name: createregistrant
+        description: Register a Meeting Registrant
+        call: meeting-meetings.createregistrant
+        with:
+          meetingId: rest.meetingId
+          current: rest.current
+          hostEmail: rest.hostEmail
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: GET
+        name: listmeetingregistrants
+        description: List Meeting Registrants
+        call: meeting-meetings.listmeetingregistrants
+        with:
+          meetingId: rest.meetingId
+          max: rest.max
+          hostEmail: rest.hostEmail
+          current: rest.current
+          email: rest.email
+          registrationTimeFrom: rest.registrationTimeFrom
+          registrationTimeTo: rest.registrationTimeTo
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/meetings/{meetingid}/registrants/approve
+      name: meetings-meetingid-registrants-approve
+      description: REST surface for meetings-meetingId-registrants-approve.
+      operations:
+      - method: POST
+        name: batchapprovemeetingregistrants
+        description: Batch Approve Meeting Registrants
+        call: meeting-meetings.batchapprovemeetingregistrants
+        with:
+          meetingId: rest.meetingId
+          current: rest.current
+          hostEmail: rest.hostEmail
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/meetings/{meetingid}/registrants/bulkdelete
+      name: meetings-meetingid-registrants-bulkdelete
+      description: REST surface for meetings-meetingId-registrants-bulkDelete.
+      operations:
+      - method: POST
+        name: batchdeletemeetingregistrants
+        description: Batch Delete Meeting Registrants
+        call: meeting-meetings.batchdeletemeetingregistrants
+        with:
+          meetingId: rest.meetingId
+          current: rest.current
+          hostEmail: rest.hostEmail
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/meetings/{meetingid}/registrants/bulkinsert
+      name: meetings-meetingid-registrants-bulkinsert
+      description: REST surface for meetings-meetingId-registrants-bulkInsert.
+      operations:
+      - method: POST
+        name: createregistrants
+        description: Batch register Meeting Registrants
+        call: meeting-meetings.createregistrants
+        with:
+          meetingId: rest.meetingId
+          current: rest.current
+          hostEmail: rest.hostEmail
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/meetings/{meetingid}/registrants/cancel
+      name: meetings-meetingid-registrants-cancel
+      description: REST surface for meetings-meetingId-registrants-cancel.
+      operations:
+      - method: POST
+        name: batchcancelmeetingregistrants
+        description: Batch Cancel Meeting Registrants
+        call: meeting-meetings.batchcancelmeetingregistrants
+        with:
+          meetingId: rest.meetingId
+          current: rest.current
+          hostEmail: rest.hostEmail
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/meetings/{meetingid}/registrants/query
+      name: meetings-meetingid-registrants-query
+      description: REST surface for meetings-meetingId-registrants-query.
+      operations:
+      - method: POST
+        name: querymeetingregistrants
+        description: Query Meeting Registrants
+        call: meeting-meetings.querymeetingregistrants
+        with:
+          meetingId: rest.meetingId
+          max: rest.max
+          current: rest.current
+          hostEmail: rest.hostEmail
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/meetings/{meetingid}/registrants/reject
+      name: meetings-meetingid-registrants-reject
+      description: REST surface for meetings-meetingId-registrants-reject.
+      operations:
+      - method: POST
+        name: batchrejectmeetingregistrants
+        description: Batch Reject Meeting Registrants
+        call: meeting-meetings.batchrejectmeetingregistrants
+        with:
+          meetingId: rest.meetingId
+          current: rest.current
+          hostEmail: rest.hostEmail
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/meetings/{meetingid}/registrants/{registrantid}
+      name: meetings-meetingid-registrants-registrantid
+      description: REST surface for meetings-meetingId-registrants-registrantId.
+      operations:
+      - method: GET
+        name: getregistrant
+        description: Get Detailed Information for a Meeting Registrant
+        call: meeting-meetings.getregistrant
+        with:
+          meetingId: rest.meetingId
+          registrantId: rest.registrantId
+          current: rest.current
+          hostEmail: rest.hostEmail
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deleteregistrant
+        description: Delete a Meeting Registrant
+        call: meeting-meetings.deleteregistrant
+        with:
+          meetingId: rest.meetingId
+          registrantId: rest.registrantId
+          current: rest.current
+          hostEmail: rest.hostEmail
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/meetings/{meetingid}/registration
+      name: meetings-meetingid-registration
+      description: REST surface for meetings-meetingId-registration.
+      operations:
+      - method: GET
+        name: getmeetingregistration
+        description: Get registration form for a meeting
+        call: meeting-meetings.getmeetingregistration
+        with:
+          meetingId: rest.meetingId
+          current: rest.current
+          hostEmail: rest.hostEmail
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: updatemeetingregistration
+        description: Update Meeting Registration Form
+        call: meeting-meetings.updatemeetingregistration
+        with:
+          meetingId: rest.meetingId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deletemeetingregistration
+        description: Delete Meeting Registration Form
+        call: meeting-meetings.deletemeetingregistration
+        with:
+          meetingId: rest.meetingId
+          hostEmail: rest.hostEmail
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/meetings/{meetingid}/simultaneousinterpretation
+      name: meetings-meetingid-simultaneousinterpretation
+      description: REST surface for meetings-meetingId-simultaneousInterpretation.
+      operations:
+      - method: PUT
+        name: updatemeetingsimultaneousinterpretation
+        description: Update Meeting Simultaneous interpretation
+        call: meeting-meetings.updatemeetingsimultaneousinterpretation
+        with:
+          meetingId: rest.meetingId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/meetings/{meetingid}/survey
+      name: meetings-meetingid-survey
+      description: REST surface for meetings-meetingId-survey.
+      operations:
+      - method: GET
+        name: getsurveybymeetingid
+        description: Get a Meeting Survey
+        call: meeting-meetings.getsurveybymeetingid
+        with:
+          meetingId: rest.meetingId
+          hostEmail: rest.hostEmail
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/meetings/{meetingid}/surveylinks
+      name: meetings-meetingid-surveylinks
+      description: REST surface for meetings-meetingId-surveyLinks.
+      operations:
+      - method: POST
+        name: generatesurveylink
+        description: Get Meeting Survey Links
+        call: meeting-meetings.generatesurveylink
+        with:
+          meetingId: rest.meetingId
+          timezone: rest.timezone
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/meetings/{meetingid}/surveyresults
+      name: meetings-meetingid-surveyresults
+      description: REST surface for meetings-meetingId-surveyResults.
+      operations:
+      - method: GET
+        name: listsurveyresultsbymeetingid
+        description: List Meeting Survey Results
+        call: meeting-meetings.listsurveyresultsbymeetingid
+        with:
+          meetingId: rest.meetingId
+          meetingStartTimeFrom: rest.meetingStartTimeFrom
+          meetingStartTimeTo: rest.meetingStartTimeTo
+          max: rest.max
+          timezone: rest.timezone
+          hostEmail: rest.hostEmail
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: meeting-meetings-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Webex Meetings — Meetings. One tool per consumed operation, routed inline through this capability's
+      consumes block.
+    tools:
+    - name: list-meetings-admin
+      description: List Meetings By an Admin
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: meeting-meetings.adminlistmeetings
+      with:
+        meetingNumber: tools.meetingNumber
+        webLink: tools.webLink
+        current: tools.current
+        timezone: tools.timezone
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-meeting-admin
+      description: Get a Meeting By an Admin
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: meeting-meetings.admingetmeetingbyid
+      with:
+        meetingId: tools.meetingId
+        current: tools.current
+        timezone: tools.timezone
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-meeting
+      description: Create a Meeting
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: meeting-meetings.createmeeting
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-meetings
+      description: List Meetings
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: meeting-meetings.listmeetings
+      with:
+        meetingNumber: tools.meetingNumber
+        webLink: tools.webLink
+        roomId: tools.roomId
+        meetingSeriesId: tools.meetingSeriesId
+        max: tools.max
+        from: tools.from
+        to: tools.to
+        meetingType: tools.meetingType
+        state: tools.state
+        scheduledType: tools.scheduledType
+        isModified: tools.isModified
+        hasChat: tools.hasChat
+        hasRecording: tools.hasRecording
+        hasTranscription: tools.hasTranscription
+        hasSummary: tools.hasSummary
+        hasClosedCaption: tools.hasClosedCaption
+        hasPolls: tools.hasPolls
+        hasQA: tools.hasQA
+        hasSlido: tools.hasSlido
+        current: tools.current
+        hostEmail: tools.hostEmail
+        siteUrl: tools.siteUrl
+        integrationTag: tools.integrationTag
+        password: tools.password
+        timezone: tools.timezone
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-meeting-control-status
+      description: Get Meeting Control Status
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: meeting-meetings.getmeetingcontrol
+      with:
+        meetingId: tools.meetingId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-meeting-control-status
+      description: Update Meeting Control Status
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: meeting-meetings.updatemeetingcontrol
+      with:
+        meetingId: tools.meetingId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: join-meeting
+      description: Join a Meeting
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: meeting-meetings.meetingjoin
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: reassign-meetings-new-host
+      description: Reassign Meetings to a New Host
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: meeting-meetings.reassignhost
+      with:
+        siteUrl: tools.siteUrl
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-meeting-session-types
+      description: List Meeting Session Types
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: meeting-meetings.listmeetingsessiontypes
+      with:
+        hostEmail: tools.hostEmail
+        siteUrl: tools.siteUrl
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-meeting-session-type
+      description: Get a Meeting Session Type
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: meeting-meetings.getmeetingsessiontypebyid
+      with:
+        sessionTypeId: tools.sessionTypeId
+        hostEmail: tools.hostEmail
+        siteUrl: tools.siteUrl
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-meeting-templates
+      description: List Meeting Templates
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: meeting-meetings.listtemplates
+      with:
+        templateType: tools.templateType
+        locale: tools.locale
+        isDefault: tools.isDefault
+        isStandard: tools.isStandard
+        hostEmail: tools.hostEmail
+        siteUrl: tools.siteUrl
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-meeting-template
+      description: Get a Meeting Template
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: meeting-meetings.gettemplatebyid
+      with:
+        templateId: tools.templateId
+        hostEmail: tools.hostEmail
+        timezone: tools.timezone
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-meeting-tracking-codes
+      description: List Meeting Tracking Codes
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: meeting-meetings.getmeetinghosttrackingcodes
+      with:
+        siteUrl: tools.siteUrl
+        service: tools.service
+        hostEmail: tools.hostEmail
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-meeting
+      description: Get a Meeting
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: meeting-meetings.getmeetingbyid
+      with:
+        meetingId: tools.meetingId
+        current: tools.current
+        hostEmail: tools.hostEmail
+        password: tools.password
+        timezone: tools.timezone
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: patch-meeting
+      description: Patch a Meeting
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: meeting-meetings.patchmeeting
+      with:
+        meetingId: tools.meetingId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-meeting
+      description: Update a Meeting
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: meeting-meetings.updatemeeting
+      with:
+        meetingId: tools.meetingId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-meeting
+      description: Delete a Meeting
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: meeting-meetings.deletemeeting
+      with:
+        meetingId: tools.meetingId
+        hostEmail: tools.hostEmail
+        sendEmail: tools.sendEmail
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-meeting-breakout-sessions
+      description: List Meeting Breakout Sessions
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: meeting-meetings.listbreakoutsessions
+      with:
+        meetingId: tools.meetingId
+        hostEmail: tools.hostEmail
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-meeting-breakout-sessions
+      description: Update Meeting Breakout Sessions
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: meeting-meetings.updatebreakoutsessions
+      with:
+        meetingId: tools.meetingId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-meeting-breakout-sessions
+      description: Delete Meeting Breakout Sessions
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: meeting-meetings.deletebreakoutsessions
+      with:
+        meetingId: tools.meetingId
+        sendEmail: tools.sendEmail
+        hostEmail: tools.hostEmail
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: end-meeting
+      description: End a Meeting
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: meeting-meetings.endmeeting
+      with:
+        meetingId: tools.meetingId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-meeting-interpreter
+      description: Create a Meeting Interpreter
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: meeting-meetings.createinterpreter
+      with:
+        meetingId: tools.meetingId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-meeting-interpreters
+      description: List Meeting Interpreters
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: meeting-meetings.listinterpreters
+      with:
+        meetingId: tools.meetingId
+        hostEmail: tools.hostEmail
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-meeting-interpreter
+      description: Get a Meeting Interpreter
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: meeting-meetings.getinterpreterbyid
+      with:
+        meetingId: tools.meetingId
+        interpreterId: tools.interpreterId
+        hostEmail: tools.hostEmail
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-meeting-interpreter
+      description: Update a Meeting Interpreter
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: meeting-meetings.updateinterpreterbyid
+      with:
+        meetingId: tools.meetingId
+        interpreterId: tools.interpreterId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-meeting-interpreter
+      description: Delete a Meeting Interpreter
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: meeting-meetings.deleteinterpreterbyid
+      with:
+        meetingId: tools.meetingId
+        interpreterId: tools.interpreterId
+        hostEmail: tools.hostEmail
+        sendEmail: tools.sendEmail
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: create-invitation-sources
+      description: Create Invitation Sources
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: meeting-meetings.createinvitationsources
+      with:
+        meetingId: tools.meetingId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-invitation-sources
+      description: List Invitation Sources
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: meeting-meetings.listinvitationsources
+      with:
+        meetingId: tools.meetingId
+        hostEmail: tools.hostEmail
+        personId: tools.personId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: register-meeting-registrant
+      description: Register a Meeting Registrant
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: meeting-meetings.createregistrant
+      with:
+        meetingId: tools.meetingId
+        current: tools.current
+        hostEmail: tools.hostEmail
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-meeting-registrants
+      description: List Meeting Registrants
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: meeting-meetings.listmeetingregistrants
+      with:
+        meetingId: tools.meetingId
+        max: tools.max
+        hostEmail: tools.hostEmail
+        current: tools.current
+        email: tools.email
+        registrationTimeFrom: tools.registrationTimeFrom
+        registrationTimeTo: tools.registrationTimeTo
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: batch-approve-meeting-registrants
+      description: Batch Approve Meeting Registrants
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: meeting-meetings.batchapprovemeetingregistrants
+      with:
+        meetingId: tools.meetingId
+        current: tools.current
+        hostEmail: tools.hostEmail
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: batch-delete-meeting-registrants
+      description: Batch Delete Meeting Registrants
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: meeting-meetings.batchdeletemeetingregistrants
+      with:
+        meetingId: tools.meetingId
+        current: tools.current
+        hostEmail: tools.hostEmail
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: batch-register-meeting-registrants
+      description: Batch register Meeting Registrants
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: meeting-meetings.createregistrants
+      with:
+        meetingId: tools.meetingId
+        current: tools.current
+        hostEmail: tools.hostEmail
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: batch-cancel-meeting-registrants
+      description: Batch Cancel Meeting Registrants
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: meeting-meetings.batchcancelmeetingregistrants
+      with:
+        meetingId: tools.meetingId
+        current: tools.current
+        hostEmail: tools.hostEmail
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: query-meeting-registrants
+      description: Query Meeting Registrants
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: false
+      call: meeting-meetings.querymeetingregistrants
+      with:
+        meetingId: tools.meetingId
+        max: tools.max
+        current: tools.current
+        hostEmail: tools.hostEmail
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: batch-reject-meeting-registrants
+      description: Batch Reject Meeting Registrants
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: meeting-meetings.batchrejectmeetingregistrants
+      with:
+        meetingId: tools.meetingId
+        current: tools.current
+        hostEmail: tools.hostEmail
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-detailed-information-meeting-registrant
+      description: Get Detailed Information for a Meeting Registrant
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: meeting-meetings.getregistrant
+      with:
+        meetingId: tools.meetingId
+        registrantId: tools.registrantId
+        current: tools.current
+        hostEmail: tools.hostEmail
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-meeting-registrant
+      description: Delete a Meeting Registrant
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: meeting-meetings.deleteregistrant
+      with:
+        meetingId: tools.meetingId
+        registrantId: tools.registrantId
+        current: tools.current
+        hostEmail: tools.hostEmail
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-registration-form-meeting
+      description: Get registration form for a meeting
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: meeting-meetings.getmeetingregistration
+      with:
+        meetingId: tools.meetingId
+        current: tools.current
+        hostEmail: tools.hostEmail
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-meeting-registration-form
+      description: Update Meeting Registration Form
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: meeting-meetings.updatemeetingregistration
+      with:
+        meetingId: tools.meetingId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: delete-meeting-registration-form
+      description: Delete Meeting Registration Form
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: meeting-meetings.deletemeetingregistration
+      with:
+        meetingId: tools.meetingId
+        hostEmail: tools.hostEmail
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: update-meeting-simultaneous-interpretation
+      description: Update Meeting Simultaneous interpretation
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: meeting-meetings.updatemeetingsimultaneousinterpretation
+      with:
+        meetingId: tools.meetingId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-meeting-survey
+      description: Get a Meeting Survey
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: meeting-meetings.getsurveybymeetingid
+      with:
+        meetingId: tools.meetingId
+        hostEmail: tools.hostEmail
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: get-meeting-survey-links
+      description: Get Meeting Survey Links
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: false
+      call: meeting-meetings.generatesurveylink
+      with:
+        meetingId: tools.meetingId
+        timezone: tools.timezone
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-meeting-survey-results
+      description: List Meeting Survey Results
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: meeting-meetings.listsurveyresultsbymeetingid
+      with:
+        meetingId: tools.meetingId
+        meetingStartTimeFrom: tools.meetingStartTimeFrom
+        meetingStartTimeTo: tools.meetingStartTimeTo
+        max: tools.max
+        timezone: tools.timezone
+        hostEmail: tools.hostEmail
+      outputParameters:
+      - type: object
+        mapping: $.

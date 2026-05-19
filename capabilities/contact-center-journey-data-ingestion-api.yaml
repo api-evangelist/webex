@@ -1,0 +1,87 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Webex Contact Center — Journey - Data Ingestion API
+  description: 'Webex Contact Center — Journey - Data Ingestion API. 1 operations. Lead operation: Journey Event Posting.
+    Self-contained Naftiko capability covering one Webex business surface.'
+  tags:
+  - Webex
+  - Journey - Data Ingestion API
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WEBEX_API_KEY: WEBEX_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: contact-center-journey-data-ingestion-api
+    baseUri: ''
+    description: Webex Contact Center — Journey - Data Ingestion API business capability. Self-contained, no shared references.
+    resources:
+    - name: publish-v1-api-event
+      path: /publish/v1/api/event
+      operations:
+      - name: journeyeventposting
+        method: POST
+        description: Journey Event Posting
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: workspaceId
+          in: query
+          type: string
+          description: Workspace ID
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.WEBEX_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: contact-center-journey-data-ingestion-api-rest
+    port: 8080
+    description: REST adapter for Webex Contact Center — Journey - Data Ingestion API. One Spectral-compliant resource per
+      consumed operation, prefixed with /v1.
+    resources:
+    - path: /v1/publish/v1/api/event
+      name: publish-v1-api-event
+      description: REST surface for publish-v1-api-event.
+      operations:
+      - method: POST
+        name: journeyeventposting
+        description: Journey Event Posting
+        call: contact-center-journey-data-ingestion-api.journeyeventposting
+        with:
+          workspaceId: rest.workspaceId
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: contact-center-journey-data-ingestion-api-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Webex Contact Center — Journey - Data Ingestion API. One tool per consumed operation, routed
+      inline through this capability's consumes block.
+    tools:
+    - name: journey-event-posting
+      description: Journey Event Posting
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: contact-center-journey-data-ingestion-api.journeyeventposting
+      with:
+        workspaceId: tools.workspaceId
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.

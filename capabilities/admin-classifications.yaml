@@ -1,0 +1,70 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Webex Admin — Classifications
+  description: 'Webex Admin — Classifications. 1 operations. Lead operation: List classifications. Self-contained Naftiko
+    capability covering one Webex business surface.'
+  tags:
+  - Webex
+  - Classifications
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WEBEX_API_KEY: WEBEX_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: admin-classifications
+    baseUri: ''
+    description: Webex Admin — Classifications business capability. Self-contained, no shared references.
+    resources:
+    - name: classifications
+      path: /classifications
+      operations:
+      - name: listclassifications
+        method: GET
+        description: List classifications
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    authentication:
+      type: bearer
+      token: '{{env.WEBEX_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: admin-classifications-rest
+    port: 8080
+    description: REST adapter for Webex Admin — Classifications. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/classifications
+      name: classifications
+      description: REST surface for classifications.
+      operations:
+      - method: GET
+        name: listclassifications
+        description: List classifications
+        call: admin-classifications.listclassifications
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: admin-classifications-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Webex Admin — Classifications. One tool per consumed operation, routed inline through this
+      capability's consumes block.
+    tools:
+    - name: list-classifications
+      description: List classifications
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: admin-classifications.listclassifications
+      outputParameters:
+      - type: object
+        mapping: $.

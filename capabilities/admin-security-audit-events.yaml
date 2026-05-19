@@ -1,0 +1,112 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Webex Admin — Security Audit Events
+  description: 'Webex Admin — Security Audit Events. 1 operations. Lead operation: List Security Audit Events. Self-contained
+    Naftiko capability covering one Webex business surface.'
+  tags:
+  - Webex
+  - Security Audit Events
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WEBEX_API_KEY: WEBEX_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: admin-security-audit-events
+    baseUri: ''
+    description: Webex Admin — Security Audit Events business capability. Self-contained, no shared references.
+    resources:
+    - name: admin-securityAudit-events
+      path: /admin/securityAudit/events
+      operations:
+      - name: listsecurityauditevents
+        method: GET
+        description: List Security Audit Events
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: orgId
+          in: query
+          type: string
+          description: List events in this organization, by ID.
+          required: true
+        - name: startTime
+          in: query
+          type: string
+          description: List events which occurred after a specific date and time.
+          required: true
+        - name: endTime
+          in: query
+          type: string
+          description: List events which occurred before a specific date and time.
+          required: true
+        - name: actorId
+          in: query
+          type: string
+          description: List events performed by this person, by ID.
+        - name: max
+          in: query
+          type: number
+          description: Limit the maximum number of events in the response. The maximum value is `1000`.
+        - name: eventCategories
+          in: query
+          type: array
+          description: List events, by event categories.
+    authentication:
+      type: bearer
+      token: '{{env.WEBEX_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: admin-security-audit-events-rest
+    port: 8080
+    description: REST adapter for Webex Admin — Security Audit Events. One Spectral-compliant resource per consumed operation,
+      prefixed with /v1.
+    resources:
+    - path: /v1/admin/securityaudit/events
+      name: admin-securityaudit-events
+      description: REST surface for admin-securityAudit-events.
+      operations:
+      - method: GET
+        name: listsecurityauditevents
+        description: List Security Audit Events
+        call: admin-security-audit-events.listsecurityauditevents
+        with:
+          orgId: rest.orgId
+          startTime: rest.startTime
+          endTime: rest.endTime
+          actorId: rest.actorId
+          max: rest.max
+          eventCategories: rest.eventCategories
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: admin-security-audit-events-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Webex Admin — Security Audit Events. One tool per consumed operation, routed inline through
+      this capability's consumes block.
+    tools:
+    - name: list-security-audit-events
+      description: List Security Audit Events
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: admin-security-audit-events.listsecurityauditevents
+      with:
+        orgId: tools.orgId
+        startTime: tools.startTime
+        endTime: tools.endTime
+        actorId: tools.actorId
+        max: tools.max
+        eventCategories: tools.eventCategories
+      outputParameters:
+      - type: object
+        mapping: $.

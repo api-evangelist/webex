@@ -1,0 +1,206 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Webex Meetings — Meetings Summary Report
+  description: 'Webex Meetings — Meetings Summary Report. 2 operations. Lead operation: List Meeting Attendee Reports. Self-contained
+    Naftiko capability covering one Webex business surface.'
+  tags:
+  - Webex
+  - Meetings Summary Report
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WEBEX_API_KEY: WEBEX_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: meeting-meetings-summary-report
+    baseUri: ''
+    description: Webex Meetings — Meetings Summary Report business capability. Self-contained, no shared references.
+    resources:
+    - name: meetingReports-attendees
+      path: /meetingReports/attendees
+      operations:
+      - name: listmeetingattendeereports
+        method: GET
+        description: List Meeting Attendee Reports
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: siteUrl
+          in: query
+          type: string
+          description: URL of the Webex site which the API lists meeting attendee reports from. All available Webex sites
+            can be retrieved by the [Get Site List](/docs/api/v1/meeting-
+          required: true
+        - name: from
+          in: query
+          type: string
+          description: 'Starting date and time for the meeting attendee reports to return, in any [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601)
+            compliant format. `from` cannot be '
+        - name: to
+          in: query
+          type: string
+          description: Ending date and time for the meeting attendee reports to return, in any [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601)
+            compliant format. `to` cannot be befo
+        - name: max
+          in: query
+          type: number
+          description: Maximum number of meeting attendees to include in the meeting attendee report in a single page. `max`
+            must be greater than 0 and equal to or less than `1000`.
+        - name: meetingId
+          in: query
+          type: string
+          description: Meeting ID for the meeting attendee reports to return. If specified, return meeting attendee reports
+            of the specified meeting; otherwise, return meeting attende
+        - name: meetingNumber
+          in: query
+          type: string
+          description: Meeting number for the meeting attendee reports to return. If specified, return meeting attendee reports
+            of the specified meeting; otherwise, return meeting att
+        - name: meetingTitle
+          in: query
+          type: string
+          description: Meeting title for the meeting attendee reports to return. If specified, return meeting attendee reports
+            of the specified meeting; otherwise, return meeting atte
+        - name: timezone
+          in: header
+          type: string
+          description: e.g. Asia/Shanghai
+    - name: meetingReports-usage
+      path: /meetingReports/usage
+      operations:
+      - name: listmeetingusagereports
+        method: GET
+        description: List Meeting Usage Reports
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: siteUrl
+          in: query
+          type: string
+          description: URL of the Webex site which the API lists meeting usage reports from. All available Webex sites can
+            be retrieved by the [Get Site List](/docs/api/v1/meeting-pre
+          required: true
+        - name: serviceType
+          in: query
+          type: string
+          description: Meeting usage report's service-type. If `serviceType` is specified, the API filters meeting usage reports
+            by service-type. If `serviceType` is not specified, th
+        - name: from
+          in: query
+          type: string
+          description: Starting date and time for meeting usage reports to return, in any [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601)
+            compliant format. `from` cannot be after `
+        - name: to
+          in: query
+          type: string
+          description: Ending date and time for meeting usage reports to return, in any [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601)
+            compliant format. `to` cannot be before `fro
+        - name: max
+          in: query
+          type: number
+          description: Maximum number of meetings to include in the meetings usage report in a single page. `max` must be
+            greater than 0 and equal to or less than `1000`.
+        - name: timezone
+          in: header
+          type: string
+          description: e.g. Asia/Shanghai
+    authentication:
+      type: bearer
+      token: '{{env.WEBEX_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: meeting-meetings-summary-report-rest
+    port: 8080
+    description: REST adapter for Webex Meetings — Meetings Summary Report. One Spectral-compliant resource per consumed operation,
+      prefixed with /v1.
+    resources:
+    - path: /v1/meetingreports/attendees
+      name: meetingreports-attendees
+      description: REST surface for meetingReports-attendees.
+      operations:
+      - method: GET
+        name: listmeetingattendeereports
+        description: List Meeting Attendee Reports
+        call: meeting-meetings-summary-report.listmeetingattendeereports
+        with:
+          siteUrl: rest.siteUrl
+          from: rest.from
+          to: rest.to
+          max: rest.max
+          meetingId: rest.meetingId
+          meetingNumber: rest.meetingNumber
+          meetingTitle: rest.meetingTitle
+          timezone: rest.timezone
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/meetingreports/usage
+      name: meetingreports-usage
+      description: REST surface for meetingReports-usage.
+      operations:
+      - method: GET
+        name: listmeetingusagereports
+        description: List Meeting Usage Reports
+        call: meeting-meetings-summary-report.listmeetingusagereports
+        with:
+          siteUrl: rest.siteUrl
+          serviceType: rest.serviceType
+          from: rest.from
+          to: rest.to
+          max: rest.max
+          timezone: rest.timezone
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: meeting-meetings-summary-report-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Webex Meetings — Meetings Summary Report. One tool per consumed operation, routed inline
+      through this capability's consumes block.
+    tools:
+    - name: list-meeting-attendee-reports
+      description: List Meeting Attendee Reports
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: meeting-meetings-summary-report.listmeetingattendeereports
+      with:
+        siteUrl: tools.siteUrl
+        from: tools.from
+        to: tools.to
+        max: tools.max
+        meetingId: tools.meetingId
+        meetingNumber: tools.meetingNumber
+        meetingTitle: tools.meetingTitle
+        timezone: tools.timezone
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: list-meeting-usage-reports
+      description: List Meeting Usage Reports
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: meeting-meetings-summary-report.listmeetingusagereports
+      with:
+        siteUrl: tools.siteUrl
+        serviceType: tools.serviceType
+        from: tools.from
+        to: tools.to
+        max: tools.max
+        timezone: tools.timezone
+      outputParameters:
+      - type: object
+        mapping: $.

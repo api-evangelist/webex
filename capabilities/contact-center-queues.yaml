@@ -1,0 +1,116 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Webex Contact Center — Queues
+  description: 'Webex Contact Center — Queues. 1 operations. Lead operation: Get Queue Statistics. Self-contained Naftiko
+    capability covering one Webex business surface.'
+  tags:
+  - Webex
+  - Queues
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    WEBEX_API_KEY: WEBEX_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: contact-center-queues
+    baseUri: ''
+    description: Webex Contact Center — Queues business capability. Self-contained, no shared references.
+    resources:
+    - name: v1-queues-statistics
+      path: /v1/queues/statistics
+      operations:
+      - name: getdocumentbyqueryparam1
+        method: GET
+        description: Get Queue Statistics
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: from
+          in: query
+          type: integer
+          description: Start time for the query (in epoch milliseconds). Any epoch time can be passed in the input, from date
+            will be rounded down to nearest 15 minute window. For exa
+          required: true
+        - name: to
+          in: query
+          type: integer
+          description: End time for the query (in epoch milliseconds). Any epoch time can be passed in the input, from date
+            will be rounded down to nearest 15 minute window. For examp
+          required: true
+        - name: interval
+          in: query
+          type: integer
+          description: Time interval (in minutes) to chunk statistics by i.e. break up the entire from-to timeframe by this
+            interval amount so that statistics can be viewed incrementa
+        - name: queueIds
+          in: query
+          type: array
+          description: Comma-separated list of queue IDs. A maximum of 100 values is permitted. If values are not provided,
+            all queues for an organization are returned.
+        - name: orgId
+          in: query
+          type: string
+          description: Organization ID to use for this operation. If unspecified, inferred from token. Token must have permission
+            to interact with this organization.
+        - name: TrackingId
+          in: header
+          type: string
+          description: Tracking ID to use for this operation, for traceability, debugging, and error reporting purposes.
+    authentication:
+      type: bearer
+      token: '{{env.WEBEX_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: contact-center-queues-rest
+    port: 8080
+    description: REST adapter for Webex Contact Center — Queues. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/v1/queues/statistics
+      name: v1-queues-statistics
+      description: REST surface for v1-queues-statistics.
+      operations:
+      - method: GET
+        name: getdocumentbyqueryparam1
+        description: Get Queue Statistics
+        call: contact-center-queues.getdocumentbyqueryparam1
+        with:
+          from: rest.from
+          to: rest.to
+          interval: rest.interval
+          queueIds: rest.queueIds
+          orgId: rest.orgId
+          TrackingId: rest.TrackingId
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: contact-center-queues-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Webex Contact Center — Queues. One tool per consumed operation, routed inline through this
+      capability's consumes block.
+    tools:
+    - name: get-queue-statistics
+      description: Get Queue Statistics
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: contact-center-queues.getdocumentbyqueryparam1
+      with:
+        from: tools.from
+        to: tools.to
+        interval: tools.interval
+        queueIds: tools.queueIds
+        orgId: tools.orgId
+        TrackingId: tools.TrackingId
+      outputParameters:
+      - type: object
+        mapping: $.
