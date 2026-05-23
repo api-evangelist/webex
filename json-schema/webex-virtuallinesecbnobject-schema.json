@@ -1,0 +1,157 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/VirtualLinesECBNObject",
+  "title": "VirtualLinesECBNObject",
+  "type": "object",
+  "required": [
+    "selected"
+  ],
+  "properties": {
+    "selected": {
+      "$ref": "#/components/schemas/ECBNSelectionType",
+      "description": "Selected number type to configure emergency call back."
+    },
+    "directLineInfo": {
+      "type": "object",
+      "required": [
+        "firstName",
+        "lastName",
+        "effectiveLevel",
+        "quality"
+      ],
+      "properties": {
+        "phoneNumber": {
+          "type": "string",
+          "example": "2056350001",
+          "description": "The callback phone number that is associated with the direct line."
+        },
+        "firstName": {
+          "type": "string",
+          "example": "John",
+          "description": "First name of a user."
+        },
+        "lastName": {
+          "type": "string",
+          "example": "Smith",
+          "description": "Last name of a user."
+        },
+        "effectiveLevel": {
+          "$ref": "#/components/schemas/ECBNDirectLineEffectiveLevelType",
+          "description": "The source from which the emergency calling line ID (CLID) is selected for an actual emergency call, applying fallback rules as necessary."
+        },
+        "effectiveValue": {
+          "type": "string",
+          "example": "9726856770",
+          "description": "The field contains the valid ECBN number at the location level, or the user's main number if valid, defaulting to the location's main number if both are unavailable."
+        },
+        "quality": {
+          "$ref": "#/components/schemas/ECBNQualityType",
+          "description": "Used to represent whether a number is a recommended ECBN."
+        }
+      },
+      "description": "Data relevant to the ECBN for this user/location/virtual line/hunt group."
+    },
+    "locationECBNInfo": {
+      "type": "object",
+      "required": [
+        "effectiveLevel",
+        "quality"
+      ],
+      "properties": {
+        "phoneNumber": {
+          "type": "string",
+          "example": "9726856700",
+          "description": "The callback phone number that is associated with the location's ECBN configuration."
+        },
+        "firstName": {
+          "type": "string",
+          "example": "John",
+          "description": "First name for the location. This field will be populated with group name when the `effectiveLevel` is `LOCATION_ECBN` or `LOCATION_NUMBER`."
+        },
+        "lastName": {
+          "type": "string",
+          "example": "Smith",
+          "description": "This field contains the location member's last name when the `effectiveLevel` is `LOCATION_ECBN`, the location is using a location member number, and the selected member is a user. This field will always return \".\" when the `effectiveLevel` is `LOCATION_ECBN`, the location is using the location member number, and the selected member is a place."
+        },
+        "effectiveLevel": {
+          "$ref": "#/components/schemas/ECBNDirectLineEffectiveLevelType",
+          "description": "The source from which the emergency calling line ID (CLID) is selected for an actual emergency call, applying fallback rules as necessary."
+        },
+        "effectiveValue": {
+          "type": "string",
+          "example": "9726856770",
+          "description": "Contains the location-level emergency callback number if valid. If not, contains the user's main number if valid."
+        },
+        "quality": {
+          "$ref": "#/components/schemas/ECBNQualityType",
+          "description": "Used to represent whether a number is a recommended ECBN."
+        }
+      },
+      "description": "Data relevant to the user/place/virtual line/hunt group selected for ECBN for this location."
+    },
+    "locationMemberInfo": {
+      "type": "object",
+      "required": [
+        "effectiveLevel",
+        "quality"
+      ],
+      "properties": {
+        "phoneNumber": {
+          "type": "string",
+          "example": "9726856700",
+          "description": "A unique identifier for the location member's PSTN phone number."
+        },
+        "firstName": {
+          "type": "string",
+          "example": "James",
+          "description": "First name for the location member."
+        },
+        "lastName": {
+          "type": "string",
+          "example": "Johnson",
+          "description": "Last name for the location member. This field will always return \".\" when `effectiveLevel` is `DIRECT_LINE` or `LOCATION_MEMBER_NUMBER`, and the selected member is a place."
+        },
+        "memberId": {
+          "type": "string",
+          "example": "Y2lzY29zcGFyazovL3VzL1BFT1BMRS82MmQ3YTY3MS00YmVlLTQ2MDItOGVkOC1jOTFmNjU5NjcxZGI",
+          "description": "Member ID of user/place/virtual line/hunt group within the location."
+        },
+        "effectiveLevel": {
+          "$ref": "#/components/schemas/LocationMemberInfoEffectiveLevelType",
+          "description": "The source from which the emergency calling line ID (CLID) is selected for an actual emergency call, applying fallback rules as necessary."
+        },
+        "effectiveValue": {
+          "type": "string",
+          "example": "9726856770",
+          "description": "Contains the location-level emergency callback number if valid. If not, contains the user's main number if valid."
+        },
+        "quality": {
+          "$ref": "#/components/schemas/ECBNQualityType",
+          "description": "Used to represent whether a number is a recommended ECBN."
+        },
+        "memberType": {
+          "$ref": "#/components/schemas/MemberType",
+          "description": "Type of the member."
+        }
+      }
+    },
+    "defaultInfo": {
+      "type": "object",
+      "required": [
+        "quality"
+      ],
+      "properties": {
+        "effectiveValue": {
+          "type": "string",
+          "example": "9726856770",
+          "description": "The field contains ECBN number."
+        },
+        "quality": {
+          "$ref": "#/components/schemas/ECBNQualityType",
+          "description": "Used to represent whether a number is a recommended ECBN."
+        }
+      },
+      "description": "Contains the Emergency Callback Number effective value when none of the above parameters are assigned or some other value is set."
+    }
+  }
+}

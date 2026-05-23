@@ -1,0 +1,182 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/ModeManagementFeatureResponse",
+  "title": "ModeManagementFeatureResponse",
+  "type": "object",
+  "required": [
+    "modeBasedForwardingEnabled",
+    "currentOperatingModeId",
+    "timezone",
+    "modes"
+  ],
+  "properties": {
+    "modeBasedForwardingEnabled": {
+      "type": "boolean",
+      "example": true,
+      "description": "Whether mode based forwarding is enabled for the feature"
+    },
+    "timezone": {
+      "type": "string",
+      "example": "America/Los_Angeles",
+      "description": "Timezone for the feature"
+    },
+    "phoneNumber": {
+      "type": "string",
+      "example": "+14085551234",
+      "description": "Phone number of the feature"
+    },
+    "extension": {
+      "type": "string",
+      "example": "1234",
+      "description": "Extension of the feature"
+    },
+    "currentOperatingModeId": {
+      "type": "string",
+      "example": "Y2lzY29zcGFyazovL3VzL09QRVJBVElOR19NT0RFLzAyZjZlMmI4LTFjZDktNWI3ZS1jOTVjLTczYzZkYzk1MTZjMg==",
+      "description": "Unique identifier for the current operating mode."
+    },
+    "currentOperatingModeEndTime": {
+      "type": "string",
+      "example": "06:00 AM",
+      "description": "The current operating mode's end time in 12-hour format showing hour and minute only (no date information). This field's presence and meaning depends on the operational state:\n * Present during normal operation with the time at which the next mode change will occur.\n * Not present for Manual Switch Back exceptions.\n * For Automatic Switch Back (Early Start) exceptions it is when the exception ends and the feature automatically reverts to normal operation which is the mode's configured start time.\n * For Automatic Switch Back (Extension) exceptions it is when the exception ends and the feature automatically reverts to normal operation which is the mode's configured end time when the exception started plus the extension time.\n * For Automatic Switch Back (Standard) exceptions it is when the exception ends and the feature automatically reverts to normal operation which is the mode's configured end time."
+    },
+    "currentOperatingModeForwardDestination": {
+      "type": "string",
+      "example": "+14085555678",
+      "description": "Forward destination for current operating mode"
+    },
+    "exceptionType": {
+      "type": "string",
+      "enum": [
+        "AUTOMATIC_SWITCH_BACK_EARLY_START",
+        "AUTOMATIC_SWITCH_BACK_EXTENSION",
+        "MANUAL_SWITCH_BACK",
+        "AUTOMATIC_SWITCH_BACK_STANDARD"
+      ],
+      "example": "MANUAL_SWITCH_BACK",
+      "description": "Type of exception indicating how the feature will switch back from the current mode. This field is not present when the feature is in normal operation.\n\n * `AUTOMATIC_SWITCH_BACK_EARLY_START` - Automatic switchback with early start.\n * `AUTOMATIC_SWITCH_BACK_EXTENSION` - Automatic switchback with extension.\n * `MANUAL_SWITCH_BACK` - Manual switchback required.\n * `AUTOMATIC_SWITCH_BACK_STANDARD` - Standard automatic switchback.\n"
+    },
+    "modes": {
+      "type": "array",
+      "description": "Array of operating modes configured for this feature",
+      "example": [
+        {
+          "id": "Y2lzY29zcGFyazovL3VzL09QRVJBVElOR19NT0RFLzAyZjZlMmI4LTFjZDktNWI3ZS1jOTVjLTczYzZkYzk1MTZjMg==",
+          "name": "Business Hours",
+          "normalOperationEnabled": true
+        }
+      ],
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "normalOperationEnabled"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "Y2lzY29zcGFyazovL3VzL09QRVJBVElOR19NT0RFLzAyZjZlMmI4LTFjZDktNWI3ZS1jOTVjLTczYzZkYzk1MTZjMg==",
+            "description": "Unique identifier for the operating mode."
+          },
+          "name": {
+            "type": "string",
+            "example": "Business Hours",
+            "description": "Display name of the operating mode."
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "NONE",
+              "SAME_HOURS_DAILY",
+              "DIFFERENT_HOURS_DAILY",
+              "HOLIDAY"
+            ],
+            "example": "SAME_HOURS_DAILY",
+            "description": " * `NONE` - No schedule defined.\n * `SAME_HOURS_DAILY` - Same hours for weekdays and weekends.\n * `DIFFERENT_HOURS_DAILY` - Different hours for each day.\n * `HOLIDAY` - Holiday-based schedule.\n"
+          },
+          "level": {
+            "type": "string",
+            "enum": [
+              "ORGANIZATION",
+              "LOCATION"
+            ],
+            "example": "LOCATION",
+            "description": " * `ORGANIZATION` - Organization level mode.\n * `LOCATION` - Location level mode.\n"
+          },
+          "normalOperationEnabled": {
+            "type": "boolean",
+            "example": true,
+            "description": "Whether this mode is enabled for normal operation."
+          },
+          "forwardTo": {
+            "type": "object",
+            "description": "Forwarding configuration for this mode",
+            "required": [
+              "sendToVoicemailEnabled",
+              "defaultSendToVoicemailEnabled"
+            ],
+            "properties": {
+              "selection": {
+                "type": "string",
+                "enum": [
+                  "DO_NOT_FORWARD",
+                  "FORWARD_TO_SPECIFIED_NUMBER",
+                  "FORWARD_TO_DEFAULT_NUMBER"
+                ],
+                "example": "FORWARD_TO_SPECIFIED_NUMBER",
+                "description": " * `DO_NOT_FORWARD` - Do not forward calls.\n * `FORWARD_TO_SPECIFIED_NUMBER` - Forward to a specified number.\n * `FORWARD_TO_DEFAULT_NUMBER` - Use the mode's default forwarding setting (which may be to forward or not forward).\n"
+              },
+              "phoneNumber": {
+                "type": "string",
+                "example": "+14085551234",
+                "description": "Phone number to forward to when selection is FORWARD_TO_SPECIFIED_NUMBER."
+              },
+              "sendToVoicemailEnabled": {
+                "type": "boolean",
+                "example": false,
+                "description": "Whether to send to voicemail when selection is FORWARD_TO_SPECIFIED_NUMBER."
+              },
+              "defaultPhoneNumber": {
+                "type": "string",
+                "example": "+14085555678",
+                "description": "Default phone number when selection is FORWARD_TO_DEFAULT_NUMBER. This field is not present if the mode's default is to not forward."
+              },
+              "defaultSendToVoicemailEnabled": {
+                "type": "boolean",
+                "example": true,
+                "description": "Whether default is to send to voicemail"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "example": {
+    "modeBasedForwardingEnabled": true,
+    "timezone": "America/Los_Angeles",
+    "phoneNumber": "+14085551234",
+    "extension": "1234",
+    "currentOperatingModeId": "Y2lzY29zcGFyazovL3VzL09QRVJBVElOR19NT0RFLzAyZjZlMmI4LTFjZDktNWI3ZS1jOTVjLTczYzZkYzk1MTZjMg==",
+    "currentOperatingModeEndTime": "06:00 AM",
+    "currentOperatingModeForwardDestination": "+14085555678",
+    "exceptionType": "MANUAL_SWITCH_BACK",
+    "modes": [
+      {
+        "id": "Y2lzY29zcGFyazovL3VzL09QRVJBVElOR19NT0RFLzAyZjZlMmI4LTFjZDktNWI3ZS1jOTVjLTczYzZkYzk1MTZjMg==",
+        "name": "Business Hours",
+        "type": "SAME_HOURS_DAILY",
+        "level": "LOCATION",
+        "normalOperationEnabled": true,
+        "forwardTo": {
+          "selection": "FORWARD_TO_SPECIFIED_NUMBER",
+          "phoneNumber": "+14085551234",
+          "sendToVoicemailEnabled": false,
+          "defaultPhoneNumber": "+14085555678",
+          "defaultSendToVoicemailEnabled": true
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,526 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/MeetingObjectForAdminListMeeting",
+  "title": "MeetingObjectForAdminListMeeting",
+  "type": "object",
+  "required": [
+    "id",
+    "meetingSeriesId",
+    "title",
+    "meetingType",
+    "state",
+    "timezone",
+    "start",
+    "end",
+    "hostUserId",
+    "hostDisplayName",
+    "hostEmail",
+    "siteUrl",
+    "telephony",
+    "enabledBreakoutSessions"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "example": "dfb45ece33264639a7bc3dd9535d53f7_20200516T230000Z",
+      "description": "Unique identifier for meeting. For a meeting series, the `id` is used to identify the entire series. For scheduled meetings from a series, the `id` is used to identify that scheduled meeting. For a meeting instance that is in progress or has concluded, the `id` is used to identify that instance."
+    },
+    "meetingSeriesId": {
+      "type": "string",
+      "example": "dfb45ece33264639a7bc3dd9535d53f7",
+      "description": "Unique identifier for meeting series. It only apples to scheduled meeting and meeting instance. If it's a scheduled meeting from a series or a meeting instance that is happening or has happened, the `meetingSeriesId` is the `id` of the primary series."
+    },
+    "scheduledMeetingId": {
+      "type": "string",
+      "example": "dfb45ece33264639a7bc3dd9535d53f7",
+      "description": "Unique identifier for scheduled meeting which current meeting is associated with. It only apples to meeting instance which is happening or has happened. It's the `id` of the scheduled meeting this instance is associated with."
+    },
+    "meetingNumber": {
+      "type": "string",
+      "example": "123456789",
+      "description": "Meeting number. Applies to meeting series, scheduled meeting, and meeting instances, but not to meeting instances which have ended."
+    },
+    "title": {
+      "type": "string",
+      "example": "John's Meeting",
+      "description": "Meeting title. Can be modified for a meeting series or a scheduled meeting using the [Update a Meeting](/docs/api/v1/meetings/update-a-meeting) API."
+    },
+    "meetingType": {
+      "type": "string",
+      "enum": [
+        "meetingSeries",
+        "scheduledMeeting",
+        "meeting"
+      ],
+      "description": "Meeting type.\n * `meetingSeries` - Primary instance of a scheduled series of meetings which consists of one or more scheduled meetings based on a `recurrence` rule. When a non-recurring meeting is scheduled with no `recurrence`, its `meetingType` is also `meetingSeries` which is a meeting series with only one occurrence in Webex meeting modeling.\n * `scheduledMeeting` - Instance from a primary meeting series.\n * `meeting` - Meeting instance that is in progress or has completed.\n"
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "active",
+        "scheduled",
+        "ready",
+        "lobby",
+        "inProgress",
+        "ended",
+        "missed",
+        "expired"
+      ],
+      "description": "Meeting state.\n * `active` - Only applies to a meeting series. Indicates that one or more future scheduled meetings exist for this meeting series.\n * `scheduled` - Only applies to scheduled meeting. Indicates that the meeting is scheduled in the future.\n * `ready` - Only applies to scheduled meeting. Indicates that this scheduled meeting is ready to start or join immediately.\n * `lobby` - Only applies to meeting instances. Indicates that a locked meeting has been joined by participants, but no hosts have joined.\n * `inProgress` - Applies to meeting series and meeting instance. For meeting series, indicates that an instance of this series is in progress; for a meeting instances, indicates that the meeting has been joined and unlocked.\n * `ended` - Applies to scheduled meetings and meeting instances. For scheduled meetings, indicates that the meeting was started and is now over. For meeting instances, indicates that the meeting instance has concluded.\n * `missed` - This state only applies to scheduled meetings. Indicates that the meeting was scheduled in the past but never happened.\n * `expired` - This state only applies to a meeting series. Indicates that all scheduled meetings of this series have passed.\n"
+    },
+    "hostDidJoin": {
+      "type": "boolean",
+      "description": "Only applies to meeting series in the `inProgress` state, scheduled meetings in the `ready` state, and meeting instances in the `inProgress` state, whether or not the meeting host joined the meeting. If true, the meeting host has joined the meeitng even if they dropped off; otherwise, the meeting host hasn't ever join the meeting. Indicates that someone is waiting in the lobby and the host hasn't joined the meeting if `attendeeDidJoin` is true and `hostDidJoin` is false."
+    },
+    "attendeeDidJoin": {
+      "type": "boolean",
+      "description": "Only applies to meeting series in the `inProgress` state, scheduled meetings in the `ready` state, and meeting instances in the `inProgress` state. Whether or not anyone has joined the meeting. If true, the meeting host or any attendee has joined the meeting; otherwise, no one has joined the meeting. Indicates that someone is waiting in the lobby and the host hasn't joined the meeting if `attendeeDidJoin` is true and `hostDidJoin` is false."
+    },
+    "isModified": {
+      "type": "boolean",
+      "description": "This state only applies to scheduled meeting. Flag identifying whether or not the scheduled meeting has been modified."
+    },
+    "timezone": {
+      "type": "string",
+      "example": "UTC",
+      "description": "[Time zone](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List) of `start` and `end`, conforming with the [IANA time zone database](https://www.iana.org/time-zones)."
+    },
+    "start": {
+      "type": "string",
+      "example": "2019-03-18T11:26:30Z",
+      "description": "Start time for meeting in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant format. If the meetingType of a meeting is `meetingSeries`, `start` is the scheduled start time of the first occurrence of this series. If the meeting is a meeting series and the `current` filter is true, `start` is the date and time the upcoming or ongoing meeting of the series starts. If the meetingType of a meeting is `scheduledMeeting`, `start` is the scheduled start time of this occurrence. If the meetingType of a meeting is `meeting`, `start` is the actual start time of the meeting instance. Can be modified for a meeting series or a scheduled meeting using the [Update a Meeting](/docs/api/v1/meetings/update-a-meeting) API."
+    },
+    "end": {
+      "type": "string",
+      "example": "2019-03-18T12:26:30Z",
+      "description": "End time for a meeting in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant format. If the meetingType of a meeting is `meetingSeries`, `end` is the scheduled end time of the first occurrence of this series. If the meeting is a meeting series and the current filter is true, `end` is the date and time the upcoming or ongoing meeting of the series ends. If the meetingType of a meeting is `scheduledMeeting`, `end` is the scheduled end time of this occurrence. If the meetingType of a meeting is `meeting`, `end` is the actual end time of the meeting instance. If a meeting instance is in progress, `end` is not available. Can be modified for a meeting series or a scheduled meeting using the [Update a Meeting](/docs/api/v1/meetings/update-a-meeting) API."
+    },
+    "recurrence": {
+      "type": "string",
+      "example": "FREQ=DAILY;INTERVAL=1;COUNT=10",
+      "description": "Meeting series recurrence rule (conforming with [RFC 2445](https://www.ietf.org/rfc/rfc2445.txt)). Applies only to a recurring meeting series, not to a meeting series with only one scheduled meeting. Can be modified for a meeting series using the [Update a Meeting](/docs/api/v1/meetings/update-a-meeting) API. Multiple days or dates for monthly or yearly `recurrence` rule are not supported, only the first day or date specified is taken. For example, \"FREQ=MONTHLY;INTERVAL=1;COUNT=10;BYMONTHDAY=10,11,12\" is not supported and it will be partially supported as \"FREQ=MONTHLY;INTERVAL=1;COUNT=10;BYMONTHDAY=10\"."
+    },
+    "hostUserId": {
+      "type": "string",
+      "example": "Y2lzY29zcGFyazovL3VzL1BFT1BMRS83QkFCQkU5OS1CNDNFLTREM0YtOTE0Ny1BMUU5RDQ2QzlDQTA",
+      "description": "Unique identifier for the meeting host."
+    },
+    "hostDisplayName": {
+      "type": "string",
+      "example": "John Andersen",
+      "description": "Display name for the meeting host."
+    },
+    "hostEmail": {
+      "type": "string",
+      "example": "john.andersen@example.com",
+      "description": "Email address for the meeting host."
+    },
+    "siteUrl": {
+      "type": "string",
+      "example": "site4-example.webex.com",
+      "description": "Site URL for the meeting."
+    },
+    "roomId": {
+      "type": "string",
+      "example": "Y2lzY29zcGFyazovL3VzL1JPT00vNDMzZjk0ZjAtOTZhNi0xMWViLWJhOTctOTU3OTNjZDhiY2Q2",
+      "description": "Room ID of the associated Webex space. Only applies to ad-hoc meetings and space meetings."
+    },
+    "enabledAutoRecordMeeting": {
+      "type": "boolean",
+      "description": "Whether or not meeting is recorded automatically. Can be modified for a meeting series or a scheduled meeting using the [Update a Meeting](/docs/api/v1/meetings/update-a-meeting) API."
+    },
+    "allowAnyUserToBeCoHost": {
+      "type": "boolean",
+      "description": "Whether or not to allow any attendee with a host account on the target site to become a cohost when joining the meeting. The target site is specified by a `siteUrl` parameter when creating the meeting. If not specified, it's a user's preferred site. The `allowAnyUserToBeCoHost` attribute can be modified for a meeting series or a scheduled meeting using the [Update a Meeting](/docs/api/v1/meetings/update-a-meeting) API."
+    },
+    "enabledJoinBeforeHost": {
+      "type": "boolean",
+      "description": "Whether or not to allow any attendee to join the meeting before the host joins the meeting. The `enabledJoinBeforeHost` attribute can be modified for a meeting series or a scheduled meeting using the [Update a Meeting](/docs/api/v1/meetings/update-a-meeting) API."
+    },
+    "enableConnectAudioBeforeHost": {
+      "type": "boolean",
+      "description": "Whether or not to allow any attendee to connect to audio before the host joins the meeting. Only applicable if the `enabledJoinBeforeHost` attribute is set to `true`. The `enableConnectAudioBeforeHost` attribute can be modified for a meeting series or a scheduled meeting using the [Update a Meeting](/docs/api/v1/meetings/update-a-meeting) API."
+    },
+    "joinBeforeHostMinutes": {
+      "type": "number",
+      "example": 15,
+      "description": "Number of minutes an attendee can join the meeting before the meeting start time and the host joins. Only applicable if the `enabledJoinBeforeHost` attribute is set to true. The `joinBeforeHostMinutes` attribute can be modified for a meeting series or a scheduled meeting using the [Update a Meeting](/docs/api/v1/meetings/update-a-meeting) API. Valid options for a meeting are `0`, `5`, `10`, and `15`, and valid options for a webinar are `0`, `15`, `30`, `45`, and `60`. The default is `0` if not specified."
+    },
+    "excludePassword": {
+      "type": "boolean",
+      "description": "Whether or not to exclude the meeting password from the email invitation."
+    },
+    "publicMeeting": {
+      "type": "boolean",
+      "description": "Whether or not to allow the meeting to be listed on the public calendar."
+    },
+    "reminderTime": {
+      "type": "number",
+      "example": 10,
+      "description": "The number of minutes before the meeting begins, that an email reminder is sent to the host."
+    },
+    "unlockedMeetingJoinSecurity": {
+      "type": "string",
+      "enum": [
+        "allowJoin",
+        "allowJoinWithLobby",
+        "blockFromJoin"
+      ],
+      "description": "Specifies how the people who aren't on the invite can join the unlocked meeting.\n * `allowJoin` - If the value of `unlockedMeetingJoinSecurity` attribute is `allowJoin`, people can join the unlocked meeting directly.\n * `allowJoinWithLobby` - If the value of `unlockedMeetingJoinSecurity` attribute is `allowJoinWithLobby`, people will wait in the lobby until the host admits them.\n * `blockFromJoin` - If the value of `unlockedMeetingJoinSecurity` attribute is `blockFromJoin`, people can't join the unlocked meeting.\n"
+    },
+    "sessionTypeId": {
+      "type": "number",
+      "example": 3,
+      "description": "Unique identifier for a meeting session type for the user. This attribute is required when scheduling a webinar meeting. All available meeting session types enabled for the user can be retrieved using the [List Meeting Session Types](/docs/api/v1/meetings/list-meeting-session-types) API."
+    },
+    "scheduledType": {
+      "type": "string",
+      "enum": [
+        "meeting",
+        "webinar",
+        "personalRoomMeeting"
+      ],
+      "description": "Specifies whether the meeting is a regular meeting, a webinar, or a meeting scheduled in the user's [personal room](https://help.webex.com/en-us/article/nul0wut/Webex-Personal-Rooms-in-Webex-Meetings).\n * `meeting` - If the value of `scheduledType` attribute is `meeting`, it is a regular meeting.\n * `webinar` - If the value of `scheduledType` attribute is `webinar`, it is a webinar meeting.\n * `personalRoomMeeting` - If the value of `scheduledType` attribute is `personalRoomMeeting`, it is a meeting scheduled in the user's [personal room](https://help.webex.com/en-us/article/nul0wut/Webex-Personal-Rooms-in-Webex-Meetings).\n"
+    },
+    "enabledWebcastView": {
+      "type": "boolean",
+      "description": "Whether or not webcast view is enabled."
+    },
+    "enableAutomaticLock": {
+      "type": "boolean",
+      "description": "Whether or not to automatically lock the meeting after it starts."
+    },
+    "automaticLockMinutes": {
+      "type": "number",
+      "example": 10,
+      "description": "The number of minutes after the meeting begins, for automatically locking it."
+    },
+    "allowFirstUserToBeCoHost": {
+      "type": "boolean",
+      "description": "Whether or not to allow the first attendee of the meeting with a host account on the target site to become a cohost. The target site is specified by the `siteUrl` parameter when creating the meeting. If not specified, it's a user's preferred site. The `allowFirstUserToBeCoHost` attribute can be modified for a meeting series or a scheduled meeting uisng the [Update a Meeting](/docs/api/v1/meetings/update-a-meeting) API."
+    },
+    "allowAuthenticatedDevices": {
+      "type": "boolean",
+      "description": "Whether or not to allow authenticated video devices in the meeting's organization to start or join the meeting without a prompt. This attribute can be modified for a meeting series or a scheduled meeting using the [Update a Meeting](/docs/api/v1/meetings/update-a-meeting) API."
+    },
+    "hasChat": {
+      "type": "boolean",
+      "description": "Whether or not this meeting instance has chat."
+    },
+    "hasRecording": {
+      "type": "boolean",
+      "description": "Whether or not this meeting instance has been recorded. `true` if the meeting instance has been recorded even if the recording has been deleted."
+    },
+    "hasTranscription": {
+      "type": "boolean",
+      "description": "Whether or not this meeting instance has a transcription."
+    },
+    "hasSummary": {
+      "type": "boolean",
+      "description": "Whether or not this meeting instance has a summary."
+    },
+    "hasClosedCaption": {
+      "type": "boolean",
+      "description": "Whether or not this meeting instance has closed captions."
+    },
+    "hasPolls": {
+      "type": "boolean",
+      "description": "Whether or not this meeting instance has polls."
+    },
+    "hasQA": {
+      "type": "boolean",
+      "description": "Whether or not this meeting instance has Q&A."
+    },
+    "hasRegistration": {
+      "type": "boolean",
+      "description": "Whether or not this meeting instance has a registration form. Only applies to ended meeting or webinar instances. Doesn't apply to meeting series, scheduled meetings, or in-progress meeting or webinar instances."
+    },
+    "hasRegistrants": {
+      "type": "boolean",
+      "description": "Whether or not someone has registered a this meeting instance via the registration form. Only applies to ended meeting or webinar instances. Doesn't apply to meeting series, scheduled meetings, or in-progress meeting or webinar instances."
+    },
+    "hasPostEventSurvey": {
+      "type": "boolean",
+      "description": "Whether this meeting instance has a survey and someone has responded to the survey. Only applies to ended webinar instances. Doesn't apply to meeting series, scheduled meetings, in-progress meeting or webinar instances, or ended meeting instances."
+    },
+    "telephony": {
+      "type": "object",
+      "required": [
+        "callInNumbers"
+      ],
+      "properties": {
+        "callInNumbers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "label",
+              "callInNumber",
+              "tollType"
+            ],
+            "properties": {
+              "label": {
+                "type": "string",
+                "example": "Call-in toll-free number (US/Canada)",
+                "description": "Label for the call-in number."
+              },
+              "callInNumber": {
+                "type": "string",
+                "example": "123456789",
+                "description": "Call-in number to join the teleconference from a phone."
+              },
+              "tollType": {
+                "type": "string",
+                "enum": [
+                  "toll",
+                  "tollFree"
+                ],
+                "description": "Type of toll for the call-in number."
+              }
+            }
+          },
+          "description": "Array of call-in numbers for joining a teleconference from a phone."
+        },
+        "links": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/LinksObjectForTelephony"
+          },
+          "description": "[HATEOAS](https://en.wikipedia.org/wiki/HATEOAS) information of global call-in numbers for joining a teleconference from a phone."
+        }
+      },
+      "description": "Information for callbacks from a meeting to phone or for joining a teleconference using a phone."
+    },
+    "meetingOptions": {
+      "type": "object",
+      "properties": {
+        "enabledChat": {
+          "type": "boolean",
+          "example": true,
+          "description": "Whether or not to allow any attendee to chat in the meeting. Also depends on the session type."
+        },
+        "enabledVideo": {
+          "type": "boolean",
+          "example": true,
+          "description": "Whether or not to allow any attendee to have video in the meeting. Also depends on the session type."
+        },
+        "enabledPolling": {
+          "type": "boolean",
+          "description": "Whether or not to allow any attendee to poll in the meeting. Can only be set `true` for a webinar. The value of this attribute depends on the session type for a meeting. Please contact your site admin if this attribute is not available. Not supported if the site has been migrated to the Webex Suite meeting platform."
+        },
+        "enabledNote": {
+          "type": "boolean",
+          "example": true,
+          "description": "Whether or not to allow any attendee to take notes in the meeting. The value of this attribute also depends on the session type. Not supported if the site has been migrated to the Webex Suite meeting platform."
+        },
+        "noteType": {
+          "type": "string",
+          "enum": [
+            "allowAll",
+            "allowOne"
+          ],
+          "description": "Whether note taking is enabled. If the value of `enabledNote` is false, users cannot set this attribute and get the default value `allowAll`. Not supported if the site has been migrated to the Webex Suite meeting platform.\n * `allowAll` - If the value of `noteType` attribute is `allowAll`, all participants can take notes.\n * `allowOne` - If the value of `noteType` attribute is `allowOne`, only a single note taker is allowed.\n"
+        },
+        "enabledFileTransfer": {
+          "type": "boolean",
+          "description": "Whether or not to allow any attendee to transfer files in the meeting. The value of this attribute also depends on the session type."
+        },
+        "enabledUCFRichMedia": {
+          "type": "boolean",
+          "description": "Whether or not to allow any attendee to share [Universal Communications Format](https://www.cisco.com/c/en/us/td/docs/collaboration/training_center/wbs30/WebEx_BK_TE1FB6C1_00_training-center-frequently-asked-questions/WebEx_BK_TE1FB6C1_00_training-center-frequently-asked-questions_chapter_0110.pdf) media files in the meeting. The value of this attribute also depends on the sessionType. Not supported if the site has been migrated to the Webex Suite meeting platform."
+        }
+      },
+      "description": "Meeting Options."
+    },
+    "attendeePrivileges": {
+      "type": "object",
+      "properties": {
+        "enabledShareContent": {
+          "type": "boolean",
+          "example": true,
+          "description": "Whether or not to allow any attendee to share content in the meeting."
+        },
+        "enabledSaveDocument": {
+          "type": "boolean",
+          "description": "Whether or not to allow any attendee to save shared documents, slides, or whiteboards when they are shared as files in the content viewer instead of in a window or application."
+        },
+        "enabledPrintDocument": {
+          "type": "boolean",
+          "description": "Whether or not to allow any attendee to print shared documents, slides, or whiteboards when they are shared as files in the content viewer instead of in a window or application."
+        },
+        "enabledAnnotate": {
+          "type": "boolean",
+          "description": "Whether or not to allow any attendee to annotate shared documents, slides, or whiteboards when they are shared as files in the content viewer instead of in a window or application."
+        },
+        "enabledViewParticipantList": {
+          "type": "boolean",
+          "example": true,
+          "description": "Whether or not to allow any attendee to view participants."
+        },
+        "enabledViewThumbnails": {
+          "type": "boolean",
+          "description": "Whether or not to allow any attendee to see a small preview image of any page of shared documents or slides when they are shared as files in the content viewer instead of in a window or application."
+        },
+        "enabledRemoteControl": {
+          "type": "boolean",
+          "example": true,
+          "description": "Whether or not to allow any attendee to control applications, web browsers, or desktops remotely."
+        },
+        "enabledViewAnyDocument": {
+          "type": "boolean",
+          "description": "Whether or not to allow any attendee to view any shared documents or slides when they are shared as files in the content viewer instead of in a window or application."
+        },
+        "enabledViewAnyPage": {
+          "type": "boolean",
+          "description": "Whether or not to allow any attendee to scroll through any page of shared documents or slides when they are shared as files in the content viewer instead of in a window or application."
+        },
+        "enabledContactOperatorPrivately": {
+          "type": "boolean",
+          "description": "Whether or not to allow any attendee to contact the operator privately."
+        },
+        "enabledChatHost": {
+          "type": "boolean",
+          "example": true,
+          "description": "Whether or not to allow any attendee to chat with the host in private."
+        },
+        "enabledChatPresenter": {
+          "type": "boolean",
+          "example": true,
+          "description": "Whether or not to allow any attendee to chat with the presenter in private."
+        },
+        "enabledChatOtherParticipants": {
+          "type": "boolean",
+          "example": true,
+          "description": "Whether or not to allow any attendee to chat with other participants in private."
+        }
+      },
+      "description": "Attendee Privileges. This attribute is not supported for a webinar."
+    },
+    "integrationTags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "External keys created by an integration application in its domain, for example, Zendesk ticket IDs, Jira IDs, Salesforce Opportunity IDs, etc."
+    },
+    "simultaneousInterpretation": {
+      "type": "object",
+      "required": [
+        "enabled"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Whether or not simultaneous interpretation is enabled."
+        },
+        "interpreters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/InterpreterObjectForSimultaneousInterpretationOfGetOrListMeeting"
+          },
+          "description": "Interpreters for meeting."
+        }
+      },
+      "description": "Simultaneous interpretation information for the meeting."
+    },
+    "enabledBreakoutSessions": {
+      "type": "boolean",
+      "description": "Whether or not breakout sessions are enabled."
+    },
+    "links": {
+      "type": "array",
+      "items": {
+        "$ref": "#/components/schemas/LinksObjectForBreakoutSessions"
+      },
+      "description": "[HATEOAS](https://en.wikipedia.org/wiki/HATEOAS) Breakout Sessions information for meeting."
+    },
+    "trackingCodes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/components/schemas/TrackingCodeItemForGetMeetingObject"
+      },
+      "description": "Tracking codes information."
+    },
+    "enabledAudioWatermark": {
+      "type": "boolean",
+      "description": "Whether or not the audio watermark is enabled."
+    },
+    "enabledVisualWatermark": {
+      "type": "boolean",
+      "description": "Whether or not the visual watermark is enabled."
+    },
+    "visualWatermarkOpacity": {
+      "type": "number",
+      "example": 10,
+      "description": "Opacity level for visual watermark."
+    },
+    "audioConnectionOptions": {
+      "type": "object",
+      "properties": {
+        "audioConnectionType": {
+          "type": "string",
+          "enum": [
+            "webexAudio",
+            "VoIP",
+            "other",
+            "none"
+          ],
+          "description": "Choose how meeting attendees join the audio portion of the meeting.\n * `webexAudio` - Provide a hybrid audio option, allowing attendees to join using their computer audio or a phone.\n * `VoIP` - Only restricts attendees to join the audio portion of the meeting using their computer instead of a telephone option.\n * `other` - Other teleconference services.\n * `none` - The way of attendees join the audio portion of the meeting is the default value.\n"
+        },
+        "enabledTollFreeCallIn": {
+          "type": "boolean",
+          "example": true,
+          "description": "Whether or not to show toll-free call-in numbers."
+        },
+        "enabledGlobalCallIn": {
+          "type": "boolean",
+          "example": true,
+          "description": "Whether or not to show global call-in numbers to attendees."
+        },
+        "enabledAudienceCallBack": {
+          "type": "boolean",
+          "description": "Whether or not to allow attendees to receive a call-back and call-in is available. Can only be set `true` for a webinar."
+        },
+        "entryAndExitTone": {
+          "type": "string",
+          "enum": [
+            "beep",
+            "announceName",
+            "noTone"
+          ],
+          "description": "Select the sound you want users who have a phone audio connection to hear when someone enters or exits the meeting.\n * `beep` - All call-in users joining the meeting will hear the beep.\n * `announceName` - All call-in users joining the meeting will hear their names.\n * `noTone` - Turn off beeps and name announcements.\n"
+        },
+        "allowHostToUnmuteParticipants": {
+          "type": "boolean",
+          "description": "Whether or not to allow the host to unmute participants."
+        },
+        "allowAttendeeToUnmuteSelf": {
+          "type": "boolean",
+          "example": true,
+          "description": "Whether or not to allow attendees to unmute themselves."
+        },
+        "muteAttendeeUponEntry": {
+          "type": "boolean",
+          "description": "Whether or not to auto-mute attendees when attendees enter meetings."
+        }
+      },
+      "description": "Audio connection options."
+    },
+    "requireAttendeeLogin": {
+      "type": "boolean",
+      "description": "Require attendees to sign in before joining the webinar."
+    },
+    "restrictToInvitees": {
+      "type": "boolean",
+      "description": "Restrict webinar to invited attendees only."
+    },
+    "enabledLiveStream": {
+      "type": "boolean",
+      "description": "Whether or not live streaming is enabled. If enabled, the `liveStream` must be specified. The RTMP streaming specified by `liveStream.rtmpUrl` can be started and viewed during the meeting without any ad-hoc settings."
+    },
+    "liveStream": {
+      "$ref": "#/components/schemas/LiveStreamObject",
+      "description": "Live streaming settings. Applies when `enabledLiveStream` is `true`."
+    }
+  }
+}

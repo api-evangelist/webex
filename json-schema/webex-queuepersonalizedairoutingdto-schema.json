@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/QueuePersonalizedAIRoutingDTO",
+  "title": "QueuePersonalizedAIRoutingDTO",
+  "type": "object",
+  "description": "Queue-level Personalized AI Routing configuration. Enables intelligent agent routing based on AI/ML predictions.",
+  "properties": {
+    "aiRoutingMode": {
+      "type": "string",
+      "default": "NONE",
+      "description": "AI Routing mode. Valid transitions: NONE \u2192 EVALUATION; EVALUATION \u2192 ACTIVE or NONE; ACTIVE \u2192 NONE. NONE: AI routing disabled (default). EVALUATION: Shadow mode - AI predictions are generated but not used for routing (for testing/validation). ACTIVE: AI routing enabled - contacts are routed based on AI predictions.",
+      "enum": [
+        "NONE",
+        "EVALUATION",
+        "ACTIVE"
+      ],
+      "example": "EVALUATION"
+    },
+    "aiRoutingKPIId": {
+      "type": "string",
+      "description": "AI Routing KPI ID - the performance metric used by AI to optimize routing decisions. This should reference a valid KPI configured in the AI routing system. Required when aiRoutingMode is EVALUATION or ACTIVE.",
+      "example": "63beec53-8a61-489f-afc6-bb03c8c73834"
+    },
+    "evaluationModeStartTime": {
+      "type": "integer",
+      "format": "int64",
+      "description": "Timestamp (epoch milliseconds) when EVALUATION mode was activated. Automatically set by the system when transitioning from NONE to EVALUATION. Used to track evaluation duration and readiness for ACTIVE mode transition.",
+      "example": 1730269619000,
+      "readOnly": true
+    }
+  }
+}

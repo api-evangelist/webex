@@ -1,0 +1,253 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/UserProfileDTO_UserResponseWithUserProfile",
+  "title": "UserProfileDTO_UserResponseWithUserProfile",
+  "type": "object",
+  "description": "Details of UserProfile which a Contact Center administrator has configured for the user.This is an optional object, returned only when the endpoint 'Get User along with profile by ID' is invoked.",
+  "properties": {
+    "organizationId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "ID of the contact center organization. This field is required for all bulk save operations.",
+      "example": "f53c8b54-46ca-43f6-ba05-08426a46e23d",
+      "maxLength": 36,
+      "minLength": 32,
+      "pattern": "^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$"
+    },
+    "id": {
+      "type": "string",
+      "description": "ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.",
+      "example": "93912f11-6017-404b-bf14-5331890b1797"
+    },
+    "version": {
+      "type": "integer",
+      "format": "int32",
+      "description": "The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.",
+      "example": 1
+    },
+    "name": {
+      "type": "string",
+      "description": "The name of the user profile.",
+      "example": "Contact Center Admin Profile",
+      "maxLength": 80,
+      "minLength": 0,
+      "pattern": "^[a-zA-Z0-9,_\\-\\s]*$"
+    },
+    "description": {
+      "type": "string",
+      "description": "An optional description of the profile.",
+      "example": "This profile should be applied only to contact center admins.",
+      "maxLength": 255,
+      "minLength": 0
+    },
+    "profileType": {
+      "type": "string",
+      "description": "The type determines the privileges applicable for a profile.\n\nIt can take one of these values:\n\nSTANDARD_AGENT \u2014 Has access to Agent Desktop[m_agent_desktop] module.\n\nPREMIUM_AGENT \u2014 Has access to Agent Desktop[m_agent_desktop] and Multimedia[m_multimedia] module.\n\nSUPERVISOR \u2014 Has access to all modules except to manage tenants in the Provisioning[m_provisioning] module.\n\nADMINISTRATOR \u2014 Has access to all modules.\n\nADMINISTRATOR_ONLY \u2014 Has access to Provisioning[m_provisioning], Real Time Reports[m_real_time_reports], Call Recording[m_call_recording], IMI Digital Channels[m_imi_digital_channels], and Routing Strategy[m_routing_strategy] modules.\n\nIt is required only during a create operation. \n\nThe profile type cannot be changed for an existing user profile.\n\n",
+      "enum": [
+        "ADMINISTRATOR",
+        "ADMINISTRATOR_ONLY",
+        "SUPERVISOR",
+        "PREMIUM_AGENT",
+        "STANDARD_AGENT",
+        "ANALYZER_ADMINISTRATOR",
+        "ANALYZER_SUPERVISOR",
+        "ANALYZER_USER"
+      ],
+      "example": "PREMIUM_AGENT"
+    },
+    "accessAllModules": {
+      "type": "string",
+      "description": "This can be used to allow users of this profile access to specific or all the Webex Contact Center modules.\n\nIt can take one of these values:\n\nALL \u2014 A contact center user with this profile can access all Contact Center modules.\n\nSPECIFIC \u2014 A contact center user with this profile can access only specific modules.\n\n",
+      "enum": [
+        "SPECIFIC",
+        "ALL",
+        "PROVISIONED_VALUE",
+        "NONE"
+      ],
+      "example": "ALL"
+    },
+    "userProfileAppModules": {
+      "type": "array",
+      "description": "Specifies the module(s) a user of this profile has access to.\n\nIt should be chosen when module access is SPECIFIC.\n\nPlease specify all the following modules and their respective access type.\n\n",
+      "items": {
+        "$ref": "#/components/schemas/UserProfileAppModuleDTO_UserResponseWithUserProfile"
+      },
+      "uniqueItems": true
+    },
+    "accessAllEntryPoints": {
+      "type": "string",
+      "description": "Allow users of this profile access to specific or all the entry points for an organization.\n\nIt can take one of these values:\n\nALL \u2014 A contact center user with this profile can access all the entry points for an organization.\n\nSPECIFIC \u2014 A contact center user with this profile can access only specific entry points for an organization.\n\n",
+      "enum": [
+        "SPECIFIC",
+        "ALL",
+        "PROVISIONED_VALUE",
+        "NONE"
+      ],
+      "example": "ALL"
+    },
+    "accessAllSites": {
+      "type": "string",
+      "description": "Allow users of this profile access to specific or all the sites for an organization.\n\nIt can take one of these values:\n\nALL \u2014 A contact center user with this profile can access all the sites for an organization.\n\nSPECIFIC \u2014 A contact center user with this profile can access only specific sites for an organization.\n\n",
+      "enum": [
+        "SPECIFIC",
+        "ALL",
+        "PROVISIONED_VALUE",
+        "NONE"
+      ],
+      "example": "ALL"
+    },
+    "accessAllQueues": {
+      "type": "string",
+      "description": "Allow users of this profile access to specific or all the contact center queues for an organization.\n\nIt can take one of these values:\n\nALL \u2014 A contact center user with this profile can access all the contact center queues for an organization.\n\nSPECIFIC \u2014 A contact center user with this profile can access only specific contact center queues for an organization.\n\n",
+      "enum": [
+        "SPECIFIC",
+        "ALL",
+        "PROVISIONED_VALUE",
+        "NONE"
+      ],
+      "example": "ALL"
+    },
+    "accessAllTeams": {
+      "type": "string",
+      "description": "Allow users of this profile access to specific or all the contact center teams for an organization.\n\nIt can take one of these values:\n\nALL \u2014 A contact center user with this profile can access all the contact center teams for an organization.\n\nSPECIFIC \u2014 A contact center user with this profile can access only specific contact center teams for an organization.\n\n",
+      "enum": [
+        "SPECIFIC",
+        "ALL",
+        "PROVISIONED_VALUE",
+        "NONE"
+      ],
+      "example": "ALL"
+    },
+    "active": {
+      "type": "boolean",
+      "description": "Specify whether the User profile is active or not.",
+      "example": true
+    },
+    "editableFolderIds": {
+      "type": "array",
+      "description": "Indicates the id(s) of the reporting folders a user of this profile has read and write access to. \n",
+      "example": [
+        1,
+        2
+      ],
+      "items": {
+        "type": "integer",
+        "format": "int32",
+        "description": "Indicates the id(s) of the reporting folders a user of this profile has read and write access to. \n",
+        "example": 1
+      },
+      "uniqueItems": true
+    },
+    "viewableFolderIds": {
+      "type": "array",
+      "description": "Indicates the id(s) of the reporting folders a user of this profile has read access to. \n",
+      "example": [
+        1,
+        2
+      ],
+      "items": {
+        "type": "integer",
+        "format": "int32",
+        "description": "Indicates the id(s) of the reporting folders a user of this profile has read access to. \n",
+        "example": 1
+      },
+      "uniqueItems": true
+    },
+    "nonViewableFolderIds": {
+      "type": "array",
+      "description": "Indicates the id(s) of the restricted reporting folders for a user of this profile. \n",
+      "example": [
+        1,
+        2
+      ],
+      "items": {
+        "type": "integer",
+        "format": "int32",
+        "description": "Indicates the id(s) of the restricted reporting folders for a user of this profile. \n",
+        "example": 1
+      },
+      "uniqueItems": true
+    },
+    "systemDefault": {
+      "type": "boolean",
+      "description": "Indicates whether the created resource is system created or not",
+      "example": false
+    },
+    "createdTime": {
+      "type": "integer",
+      "format": "int64",
+      "description": "This is the created time of the entity."
+    },
+    "lastUpdatedTime": {
+      "type": "integer",
+      "format": "int64",
+      "description": "This is the updated time of the entity."
+    },
+    "entryPoints": {
+      "type": "array",
+      "description": "Specify the id(s) of the entry point(s) a user of this profile will have access to. \n\nIt should be chosen when entry points access is SPECIFIC. Please see '''Entry Point documentation''', and use Get EntryPoints API to fetch the values of entry points.\n\n",
+      "example": [
+        "f53c8b54-46ca-43f6-ba05-08426a46e23d",
+        "a53c8b54-46ca-43f6-ba05-08426a46e23f"
+      ],
+      "items": {
+        "type": "string",
+        "description": "Specify the id(s) of the entry point(s) a user of this profile will have access to. \n\nIt should be chosen when entry points access is SPECIFIC. Please see '''Entry Point documentation''', and use Get EntryPoints API to fetch the values of entry points.\n\n",
+        "example": "f53c8b54-46ca-43f6-ba05-08426a46e23d"
+      },
+      "uniqueItems": true
+    },
+    "sites": {
+      "type": "array",
+      "description": "Specify the id(s) of the site(s) a user of this profile will have access to. \nIt should be chosen when sites access is SPECIFIC. Please see Sites documentation, and use Get Site API to fetch the values of site IDs.\n\n",
+      "example": [
+        "f53c8b54-46ca-43f6-ba05-08426a46e23d",
+        "a53c8b54-46ca-43f6-ba05-08426a46e23f"
+      ],
+      "items": {
+        "type": "string",
+        "description": "Specify the id(s) of the site(s) a user of this profile will have access to. \nIt should be chosen when sites access is SPECIFIC. Please see Sites documentation, and use Get Site API to fetch the values of site IDs.\n\n",
+        "example": "f53c8b54-46ca-43f6-ba05-08426a46e23d"
+      },
+      "uniqueItems": true
+    },
+    "queues": {
+      "type": "array",
+      "description": "Specify the id(s) of the queue(s) a user of this profile will have access to. \nIt should be chosen when queues access is SPECIFIC. Please see Queues documentation, and use Get Queues API to fetch the values of queue IDs.\n\n",
+      "example": [
+        "f53c8b54-46ca-43f6-ba05-08426a46e23d",
+        "a53c8b54-46ca-43f6-ba05-08426a46e23f"
+      ],
+      "items": {
+        "type": "string",
+        "description": "Specify the id(s) of the queue(s) a user of this profile will have access to. \nIt should be chosen when queues access is SPECIFIC. Please see Queues documentation, and use Get Queues API to fetch the values of queue IDs.\n\n",
+        "example": "f53c8b54-46ca-43f6-ba05-08426a46e23d"
+      },
+      "uniqueItems": true
+    },
+    "teams": {
+      "type": "array",
+      "description": "Specify the id(s) of the team(s) a user of this profile will have access to.\nIt should be chosen when teams access is SPECIFIC. Please see Teams documentation, and use Get Teams API to fetch the values of team IDs.\n\n",
+      "example": [
+        "f53c8b54-46ca-43f6-ba05-08426a46e23d",
+        "a53c8b54-46ca-43f6-ba05-08426a46e23f"
+      ],
+      "items": {
+        "type": "string",
+        "description": "Specify the id(s) of the team(s) a user of this profile will have access to.\nIt should be chosen when teams access is SPECIFIC. Please see Teams documentation, and use Get Teams API to fetch the values of team IDs.\n\n",
+        "example": "f53c8b54-46ca-43f6-ba05-08426a46e23d"
+      },
+      "uniqueItems": true
+    }
+  },
+  "required": [
+    "accessAllEntryPoints",
+    "accessAllModules",
+    "accessAllQueues",
+    "accessAllSites",
+    "accessAllTeams",
+    "active",
+    "name",
+    "profileType"
+  ]
+}

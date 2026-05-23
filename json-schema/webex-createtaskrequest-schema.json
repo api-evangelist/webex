@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/CreateTaskRequest",
+  "title": "CreateTaskRequest",
+  "description": "Request body for creating a task.",
+  "required": [
+    "destination",
+    "entryPointId",
+    "mediaType"
+  ],
+  "type": "object",
+  "properties": {
+    "destination": {
+      "type": "string",
+      "description": "A valid customer DN, on which the response is expected, maximum length 36 characters.",
+      "example": "2147751365"
+    },
+    "entryPointId": {
+      "type": "string",
+      "description": "An entryPointId for respective task. For ```CALLBACK``` and ```OUTDIAL``` this should be an outboundEP. For ```EXECUTE_FLOW``` this should be an inboundEP which is mapped to a flow that will be triggered, maximum length 36 characters.",
+      "example": "510d198d-7aa7-4b75-a5ff-e61759f4f313"
+    },
+    "attributes": {
+      "type": "object",
+      "description": "This is a schema free data tuple to pass-on specific data, depending on the outboundType. Supports a maximum of 30 tuples. Each tuple can have a key up to 200 bytes (up to 200 UTF-8 characters) and a value up to 1024 bytes (up to 1024 UTF-8 characters).",
+      "example": {
+        "channel": "sales"
+      }
+    },
+    "outboundType": {
+      "type": "string",
+      "description": "The outbound type for the task. Supported values are ```CALLBACK```, ```OUTDIAL```, and ```EXECUTE_FLOW```. Use ```OUTDIAL``` when the user is logged into the Agent Desktop and needs to make an outbound call to the customer. Use ```CALLBACK``` when the user is not logged in and needs to schedule a callback to the customer. Use ```EXECUTE_FLOW``` when the task is linked to a predefined flow triggered through an Inbound Entrypoint.",
+      "example": "CALLBACK"
+    },
+    "mediaType": {
+      "type": "string",
+      "description": "The media type for the request. The ```telephony``` type is required for ```EXECUTE_FLOW``` and ```CALLBACK```. The supported value is ```telephony```.",
+      "example": "telephony"
+    },
+    "origin": {
+      "type": "string",
+      "description": "The contact center number, which is an ANI Outdial number, that will be used while making a call to the customer. This field is mandatory for ```EXECUTE_FLOW``` and ```OUTDIAL``` type while it is optional for ```CALLBACK```. If not provided for ```CALLBACK``` type, default out-dial ANI configuration will be used, maximum length 36 characters. The origin value must exactly match one of the configured Outdial ANIs in the agent profile.",
+      "example": "2147751364"
+    },
+    "callback": {
+      "type": "object",
+      "description": "Callback details. Required only when outboundType is set to ```CALLBACK```.",
+      "$ref": "#/components/schemas/CallbackDetails"
+    },
+    "customAttributes": {
+      "type": "object",
+      "description": "This is a schema-free data tuple to pass on specific SIP header data, Supports a maximum of 20 headers, selected alphabetically if more than 20 are present. Each header key is converted to lowercase, and hyphens are retained. The payload is restricted to 1100 bytes to comply with RFC3261 when using UDP. No header values are logged to ensure PII protection.Ex:The Caller ID Name is included as 'caller_id_name', derived from the appropriate SIP header",
+      "example": {
+        "x_custom_header": "val"
+      }
+    }
+  }
+}

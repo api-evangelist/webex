@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/SummaryListResponse",
+  "title": "SummaryListResponse",
+  "type": "object",
+  "properties": {
+    "orgId": {
+      "type": "string",
+      "description": "The unique identifier of the organization to which the summarized interactions belong."
+    },
+    "agentCiUserId": {
+      "type": "string",
+      "description": "The CI (Common Identity) user ID of the agent associated with the summaries. Present when searchType is AGENT; otherwise null.",
+      "nullable": true
+    },
+    "interactionId": {
+      "type": "string",
+      "description": "The unique identifier of a specific interaction. Present when searchType is INTERACTION; otherwise null.",
+      "nullable": true
+    },
+    "queueId": {
+      "type": "string",
+      "description": "The queue ID (reserved for future use).",
+      "nullable": true
+    },
+    "searchType": {
+      "$ref": "#/components/schemas/SearchType"
+    },
+    "summaries": {
+      "type": "object",
+      "description": "Map of summaries keyed by feature type (POST_CALL, MID_CALL). Each feature maps summary identifiers to their summary fields.",
+      "properties": {
+        "POST_CALL": {
+          "type": "object",
+          "description": "Post-call summaries keyed by summary identifier.",
+          "additionalProperties": {
+            "$ref": "#/components/schemas/PostCallSummary"
+          }
+        },
+        "MID_CALL": {
+          "type": "object",
+          "description": "Mid-call summaries keyed by summary identifier.",
+          "additionalProperties": {
+            "$ref": "#/components/schemas/MidCallSummary"
+          }
+        }
+      }
+    }
+  },
+  "example": {
+    "interactionId": null,
+    "orgId": "acc80d18-b1fb-4261-b44e-a46435eea1da",
+    "searchType": "ORGANIZATION",
+    "agentCiUserId": null,
+    "summaries": {
+      "POST_CALL": {
+        "acc80d18-b1fb-4261-b44e-a46435eea1da:1bf3bd99-633b-401a-a3d4-61157a446809:c47d7c08-0776-4e38-a6bb-751d933a0c5d": {
+          "initialContactReason": "Broken tools appointment request",
+          "additionalContext": "Customer mentioned they had previously tried to fix the tools themselves but were unsuccessful.",
+          "additionalContactReasons": "Customer also asked about warranty coverage for the broken tools.",
+          "keyActionsTaken": "Scheduled an appointment with Doctor Petrophe for the caller",
+          "nextSteps": "Confirm appointment details via email and follow up on warranty inquiry.",
+          "chosenWrapUpCode": "Appointment Scheduled",
+          "proposedWrapUpCodes": [
+            {
+              "name": "Appointment Scheduled"
+            },
+            {
+              "name": "Service Request"
+            }
+          ]
+        }
+      },
+      "MID_CALL": {
+        "acc80d18-b1fb-4261-b44e-a46435eea1da:9d2a7879-8957-4cd6-a39c-46d4f21eaea5:c47d7c08-0776-4e38-a6bb-751d933a0c5d": {
+          "reasonForTransferOrConsult": "The caller wants to purchase fifteen tickets for an upcoming match but the current agent needs to check with teammates for ticket availability, requiring a transfer to another agent who can assist with ticket sales.",
+          "additionalContext": "The match will take place next weekend at 6 PM, and the caller is part of a group looking to buy a large number of tickets.",
+          "keyActionsTaken": "Checked the match schedule\\nInquired about the number of tickets needed\\nInitiated a transfer to check ticket availability with teammates"
+        }
+      }
+    },
+    "queueId": null
+  }
+}

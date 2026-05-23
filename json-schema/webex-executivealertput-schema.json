@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/ExecutiveAlertPut",
+  "title": "ExecutiveAlertPut",
+  "type": "object",
+  "properties": {
+    "alertingMode": {
+      "type": "string",
+      "enum": [
+        "SEQUENTIAL",
+        "SIMULTANEOUS"
+      ],
+      "description": " * `SEQUENTIAL` - Alerts assistants one at a time in the defined order.\n * `SIMULTANEOUS` - Alerts all assistants at the same time.\n"
+    },
+    "nextAssistantNumberOfRings": {
+      "type": "integer",
+      "description": "Number of rings before alerting the next assistant when `alertingMode` is `SEQUENTIAL`."
+    },
+    "rolloverEnabled": {
+      "type": "boolean",
+      "description": "Controls whether the rollover timer (`rolloverWaitTimeInSecs`) is enabled. When set to `true`, rollover will trigger after the timer expires, even if assistants are still available. When `false`, rollover only occurs when no assistants remain."
+    },
+    "rolloverAction": {
+      "type": "string",
+      "enum": [
+        "VOICE_MESSAGING",
+        "NO_ANSWER_PROCESSING",
+        "FORWARD"
+      ],
+      "description": "Specifies what happens when rollover is triggered.\n * `VOICE_MESSAGING` - The call is sent to the executive's voicemail.\n * `FORWARD` - The call is forwarded to the specified destination (`rolloverForwardToPhoneNumber`).\n * `NO_ANSWER_PROCESSING` - The call is sent to no answer processing which may trigger executive services such as call forwarding or voicemail.\nRollover is always triggered when no assistants remain for a filtered call. If the rollover timer is enabled, rollover can also be triggered when the timer expires, even if assistants are still available."
+    },
+    "rolloverForwardToPhoneNumber": {
+      "type": "string",
+      "description": "Phone number to forward calls to when rollover action is set to `FORWARD`."
+    },
+    "rolloverWaitTimeInSecs": {
+      "type": "integer",
+      "description": "Time in seconds to wait before applying the rollover action when `rolloverEnabled` is `true`."
+    },
+    "clidNameMode": {
+      "type": "string",
+      "enum": [
+        "EXECUTIVE_ORIGINATOR",
+        "ORIGINATOR_EXECUTIVE",
+        "EXECUTIVE",
+        "ORIGINATOR",
+        "CUSTOM"
+      ],
+      "description": "Controls how Caller ID name is displayed on assistant's phone.\n * `EXECUTIVE_ORIGINATOR` - Display executive name followed by caller name.\n * `ORIGINATOR_EXECUTIVE` - Display caller name followed by executive name.\n * `EXECUTIVE` - Display only executive name.\n * `ORIGINATOR` - Display only caller name.\n * `CUSTOM` - Display a custom name.\n"
+    },
+    "customCLIDName": {
+      "type": "string",
+      "description": "Custom caller ID name to display when `clidNameMode` is set to `CUSTOM` (deprecated)."
+    },
+    "customCLIDNameInUnicode": {
+      "type": "string",
+      "description": "Unicode Custom caller ID name to display when `clidNameMode` is set to `CUSTOM`."
+    },
+    "clidPhoneNumberMode": {
+      "type": "string",
+      "enum": [
+        "EXECUTIVE",
+        "ORIGINATOR",
+        "CUSTOM"
+      ],
+      "description": "Controls which Caller ID phone number is displayed on assistant's phone.\n * `EXECUTIVE` - Display executive's phone number.\n * `ORIGINATOR` - Display caller's phone number.\n * `CUSTOM` - Display a custom phone number.\n"
+    },
+    "customCLIDPhoneNumber": {
+      "type": "string",
+      "description": "Custom caller ID phone number to display on assistant's phone when `clidPhoneNumberMode` is set to `CUSTOM`."
+    }
+  }
+}

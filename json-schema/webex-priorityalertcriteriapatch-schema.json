@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/PriorityAlertCriteriaPatch",
+  "title": "PriorityAlertCriteriaPatch",
+  "type": "object",
+  "example": {
+    "scheduleName": "Holiday V2",
+    "scheduleType": "holidays",
+    "scheduleLevel": "LOCATION",
+    "callsFrom": "SELECT_PHONE_NUMBERS",
+    "anonymousCallersEnabled": true,
+    "unavailableCallersEnabled": true,
+    "notificationEnabled": false,
+    "phoneNumbers": [
+      "+16177817766"
+    ]
+  },
+  "description": "Request body for updating priority alert criteria settings.",
+  "properties": {
+    "scheduleName": {
+      "type": "string",
+      "description": "Name of the schedule to be associated with the criteria.",
+      "example": "Holiday V2"
+    },
+    "scheduleType": {
+      "type": "string",
+      "enum": [
+        "businessHours",
+        "holidays"
+      ],
+      "description": "Type of the schedule.\n * `businessHours` - Business hours schedule type.\n * `holidays` - Holidays schedule type.\n"
+    },
+    "scheduleLevel": {
+      "type": "string",
+      "enum": [
+        "PEOPLE",
+        "LOCATION"
+      ],
+      "description": " * `PEOPLE` - The schedule is at the user level.\n * `LOCATION` - The schedule is at the location level.\n"
+    },
+    "callsFrom": {
+      "type": "string",
+      "enum": [
+        "ANY_PHONE_NUMBER",
+        "SELECT_PHONE_NUMBERS"
+      ],
+      "description": "Specifies the type of callsFrom, categorizing incoming data based on callsFrom types or numbers that match the current criteria.\n * `ANY_PHONE_NUMBER` - The criteria applies to any phone number.\n* `SELECT_PHONE_NUMBERS` - The criteria applies to selected phone numbers.\n"
+    },
+    "anonymousCallersEnabled": {
+      "type": "boolean",
+      "description": "Indicates whether anonymous callers are included in this criteria. Required if `callsFrom` is `SELECT_PHONE_NUMBERS`.",
+      "example": true
+    },
+    "unavailableCallersEnabled": {
+      "type": "boolean",
+      "description": "Indicates whether unavailable callers are included in this criteria. Required if `callsFrom` is `SELECT_PHONE_NUMBERS`.",
+      "example": true
+    },
+    "phoneNumbers": {
+      "type": "array",
+      "description": "List of phone numbers to update for this criteria. Required if `callsFrom` is `SELECT_PHONE_NUMBERS`.",
+      "items": {
+        "type": "string",
+        "description": "Phone number that the criteria applies to."
+      }
+    },
+    "notificationEnabled": {
+      "type": "boolean",
+      "description": "Determines whether priority alerting is applied for calls matching this criteria. If `true`, priority alerting is applied. If `false`, this criteria acts as a 'Don't Alert' rule, preventing priority alerting. Criteria with `notificationEnabled` set to `false` (Don't Alert) take precedence over criteria with `notificationEnabled` set to `true` (Alert).",
+      "example": false
+    }
+  }
+}

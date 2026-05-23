@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/WorkItem",
+  "title": "WorkItem",
+  "type": "object",
+  "description": "Request body to create an inbound `workItem` task via a configured workItem channel. The `channel` must reference an active configured workItem channel in the organization. `workItemData` within `channelParams` carries the structured form payload \u2014 up to 50 entries, with keys up to 100 UTF-8 bytes and values up to 1024 UTF-8 bytes.",
+  "required": [
+    "origin",
+    "destination",
+    "channelType",
+    "channel",
+    "channelParams"
+  ],
+  "properties": {
+    "origin": {
+      "title": "Origin",
+      "type": "object",
+      "description": "Origin of the task. For inbound `workItem` tasks, this represents the customer.",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Customer's identifier, such as an email address.",
+          "example": "customer@domain.com"
+        },
+        "name": {
+          "type": "string",
+          "nullable": true,
+          "description": "Optional human-readable display name for the customer.",
+          "example": "Customer Name"
+        }
+      }
+    },
+    "destination": {
+      "title": "Destination",
+      "type": "object",
+      "description": "Destination for the workItem task. The `type` must be `businessAddress`.",
+      "required": [
+        "id",
+        "type"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Business address associated with the configured workItem channel entry point.",
+          "example": "customer-support@biz.com"
+        },
+        "type": {
+          "type": "string",
+          "description": "Must be `businessAddress` for `workItem` tasks.",
+          "enum": [
+            "businessAddress",
+            "dialNumber"
+          ],
+          "example": "businessAddress"
+        }
+      }
+    },
+    "channelType": {
+      "type": "string",
+      "enum": [
+        "workItem"
+      ],
+      "description": "Discriminator field. Must be `workItem` for custom channel task creation.",
+      "example": "workItem"
+    },
+    "channel": {
+      "type": "string",
+      "description": "Identifier of the configured workItem channel in the organization. Required for `workItem` requests.",
+      "example": "support-form"
+    },
+    "flowSettings": {
+      "$ref": "#/components/schemas/FlowSettings"
+    },
+    "globalVariables": {
+      "$ref": "#/components/schemas/GlobalVariables"
+    },
+    "channelParams": {
+      "$ref": "#/components/schemas/WorkItemParams"
+    }
+  },
+  "example": {
+    "origin": {
+      "id": "customer@domain.com",
+      "name": "Customer Name"
+    },
+    "destination": {
+      "id": "customer-support@biz.com",
+      "type": "businessAddress"
+    },
+    "channelType": "workItem",
+    "channel": "support-form",
+    "channelParams": {
+      "type": "work-item-form",
+      "message": {
+        "aliasId": "msg-001",
+        "workItemData": {
+          "name": "customer name",
+          "email": "customer@domain.com"
+        },
+        "timestamp": 1732786800000
+      }
+    }
+  }
+}

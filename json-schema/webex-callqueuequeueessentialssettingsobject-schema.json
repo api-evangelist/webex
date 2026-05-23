@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/CallQueueQueueEssentialsSettingsObject",
+  "title": "CallQueueQueueEssentialsSettingsObject",
+  "type": "object",
+  "required": [
+    "queueSize",
+    "overflow"
+  ],
+  "properties": {
+    "queueSize": {
+      "type": "number",
+      "example": 50,
+      "description": "The maximum number of calls for this call queue. Once this number is reached, the overflow settings are triggered."
+    },
+    "callOfferToneEnabled `true`": {
+      "type": "boolean",
+      "description": "Play ringing tone to callers when their call is set to an available agent."
+    },
+    "resetCallStatisticsEnabled": {
+      "type": "boolean",
+      "description": "Reset caller statistics upon queue entry."
+    },
+    "overflow": {
+      "type": "object",
+      "required": [
+        "action",
+        "greeting"
+      ],
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": [
+            "PERFORM_BUSY_TREATMENT",
+            "PLAY_RINGING_UNTIL_CALLER_HANGS_UP",
+            "TRANSFER_TO_PHONE_NUMBER"
+          ],
+          "description": "Indicates how to handle new calls when the queue is full.\n * `PERFORM_BUSY_TREATMENT` - The caller hears a fast-busy tone.\n * `PLAY_RINGING_UNTIL_CALLER_HANGS_UP` - The caller hears ringing until they disconnect.\n * `TRANSFER_TO_PHONE_NUMBER` - Number where you want to transfer overflow calls.\n"
+        },
+        "sendToVoicemail": {
+          "type": "boolean",
+          "description": "When `true`, forwards all calls to a voicemail service of an internal number. This option is ignored when an external `transferNumber` is entered."
+        },
+        "transferNumber": {
+          "type": "string",
+          "example": "+15553331212",
+          "description": "Destination number for overflow calls when `action` is set to `TRANSFER_TO_PHONE_NUMBER`."
+        },
+        "overflowAfterWaitEnabled": {
+          "type": "boolean",
+          "example": true,
+          "description": "After calls wait for the configured number of seconds and no agent is available, the overflow treatment is triggered."
+        },
+        "overflowAfterWaitTime": {
+          "type": "number",
+          "example": 20,
+          "description": "Number of seconds to wait before the overflow treatment is triggered when no agent is available."
+        },
+        "playOverflowGreetingEnabled": {
+          "type": "boolean",
+          "example": true,
+          "description": "Indicate overflow audio to be played, otherwise callers will hear the hold music until the call is answered by a user."
+        },
+        "greeting": {
+          "type": "string",
+          "enum": [
+            "CUSTOM",
+            "DEFAULT"
+          ],
+          "description": "Indicates how to handle new calls when the queue is full.\n * `CUSTOM` - Play the custom announcement specified by the `fileName` field.\n * `DEFAULT` - Play default announcement.\n"
+        },
+        "audioFiles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Array of announcement file name strings to be played as overflow greetings. These files are from the list of announcements files associated with this call queue."
+        }
+      },
+      "description": "Settings for incoming calls exceed queueSize."
+    }
+  }
+}

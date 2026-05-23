@@ -1,0 +1,326 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/PatchGroupMeetingObject",
+  "title": "PatchGroupMeetingObject",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "example": "John's Meeting",
+      "description": "Meeting title. The title can be a maximum of 128 characters long."
+    },
+    "agenda": {
+      "type": "string",
+      "example": "John's Agenda",
+      "description": "Meeting agenda. The agenda can be a maximum of 1300 characters long. It can be specified `null` so that it becomes null and hidden from the response after the patch."
+    },
+    "password": {
+      "type": "string",
+      "example": "BgJep@43",
+      "description": "Meeting password. Must conform to the site's password complexity settings. Read [password management](https://help.webex.com/en-us/zrupm6/Manage-Security-Options-for-Your-Site-in-Webex-Site-Administration) for details."
+    },
+    "start": {
+      "type": "string",
+      "example": "2020-05-15T20:30:00-08:00",
+      "description": "Date and time for the start of meeting in any [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant format. `start` cannot be before current date and time or after `end`. Duration between `start` and `end` cannot be shorter than 10 minutes or longer than 23 hours 59 minutes. Refer to the [Webex Meetings](/docs/meetings#restrictions-on-updating-a-meeting) guide for more information about restrictions on updating date and time for a meeting. Please note that when a meeting is being updated, `start` of the meeting will be accurate to minutes, not seconds or milliseconds. Therefore, if `start` is within the same minute as the current time, `start` will be adjusted to the upcoming minute; otherwise, `start` will be adjusted with seconds and milliseconds stripped off. For instance, if the current time is `2022-03-01T10:32:16.657+08:00`, `start` of `2022-03-01T10:32:28.076+08:00` or `2022-03-01T10:32:41+08:00` will be adjusted to `2022-03-01T10:33:00+08:00`, and `start` of `2022-03-01T11:32:28.076+08:00` or `2022-03-01T11:32:41+08:00` will be adjusted to `2022-03-01T11:32:00+08:00`."
+    },
+    "end": {
+      "type": "string",
+      "example": "2020-05-15T21:30:00-08:00",
+      "description": "Date and time for the end of meeting in any [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant format. `end` cannot be before current date and time or before `start`. Duration between `start` and `end` cannot be shorter than 10 minutes or longer than 23 hours 59 minutes. Refer to the [Webex Meetings](/docs/meetings#restrictions-on-updating-a-meeting) guide for more information about restrictions on updating date and time for a meeting. Please note that when a meeting is being updated, `end` of the meeting will be accurate to minutes, not seconds or milliseconds. Therefore, `end` will be adjusted with seconds and milliseconds stripped off. For instance, `end` of `2022-03-01T11:52:28.076+08:00` or `2022-03-01T11:52:41+08:00` will be adjusted to `2022-03-01T11:52:00+08:00`."
+    },
+    "timezone": {
+      "type": "string",
+      "example": "America/Los_Angeles",
+      "description": "[Time zone](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List) in which the meeting was originally scheduled (conforming with the [IANA time zone database](https://www.iana.org/time-zones))."
+    },
+    "recurrence": {
+      "type": "string",
+      "example": "FREQ=DAILY;INTERVAL=1;COUNT=20",
+      "description": "Meeting series recurrence rule (conforming with [RFC 2445](https://www.ietf.org/rfc/rfc2445.txt)). Applies only to a recurring meeting series, not to a meeting series with only one scheduled meeting. Multiple days or dates for monthly or yearly `recurrence` rule are not supported, only the first day or date specified is taken. For example, \"FREQ=MONTHLY;INTERVAL=1;COUNT=10;BYMONTHDAY=10,11,12\" is not supported and it will be partially supported as \"FREQ=MONTHLY;INTERVAL=1;COUNT=10;BYMONTHDAY=10\". It can be specified `null` so that the meeting becomes non-recurring and the `recurrence` attribute becomes null and hidden from the response after the patch. If you specify a `recurrence` like `FREQ=DAILY;INTERVAL=1` which never ends, the furthest date of the series is unlimited. You can also specify a `recurrence` with a very distant ending date in the future, e.g. `FREQ=DAILY;INTERVAL=1;UNTIL=21241001T000000Z`, but the actual furthest date accepted for the recurring meeting is five years from now. Specifically, if it has an ending date, there can be up to 5 occurrences for a yearly meeting, 60 occurrences for a monthly meeting, 261 occurrences for a weekly meeting, or 1826 occurrences for a daily meeting."
+    },
+    "enabledAutoRecordMeeting": {
+      "type": "boolean",
+      "description": "Whether or not meeting is recorded automatically."
+    },
+    "allowAnyUserToBeCoHost": {
+      "type": "boolean",
+      "description": "Whether or not to allow any attendee with a host account on the target site to become a cohost when joining the meeting. The target site is specified by `siteUrl` parameter when creating the meeting; if not specified, it's user's preferred site."
+    },
+    "enabledJoinBeforeHost": {
+      "type": "boolean",
+      "description": "Whether or not to allow any attendee to join the meeting before the host joins the meeting."
+    },
+    "enableConnectAudioBeforeHost": {
+      "type": "boolean",
+      "description": "Whether or not to allow any attendee to connect audio in the meeting before the host joins the meeting. This attribute is only applicable if the `enabledJoinBeforeHost` attribute is set to true."
+    },
+    "joinBeforeHostMinutes": {
+      "type": "number",
+      "example": 15,
+      "description": "Number of minutes an attendee can join the meeting before the meeting start time and the host joins. Only applicable if the `enabledJoinBeforeHost` attribute is set to true. Valid options for a meeting are `0`, `5`, `10`, and `15`, and valid options for a webinar are `0`, `15`, `30`, `45`, and `60`. The default is `0` if not specified."
+    },
+    "excludePassword": {
+      "type": "boolean",
+      "description": "Whether or not to exclude the meeting password from the email invitation."
+    },
+    "publicMeeting": {
+      "type": "boolean",
+      "description": "Whether or not to allow the meeting to be listed on the public calendar."
+    },
+    "reminderTime": {
+      "type": "number",
+      "example": 30,
+      "description": "The number of minutes before the meeting begins, that an email reminder is sent to the host."
+    },
+    "unlockedMeetingJoinSecurity": {
+      "type": "string",
+      "enum": [
+        "allowJoin",
+        "allowJoinWithLobby",
+        "blockFromJoin"
+      ],
+      "description": "Specifies how the people who aren't on the invite can join the unlocked meeting.\n * `allowJoin` - If the value of `unlockedMeetingJoinSecurity` attribute is `allowJoin`, people can join the unlocked meeting directly.\n * `allowJoinWithLobby` - If the value of `unlockedMeetingJoinSecurity` attribute is `allowJoinWithLobby`, people will wait in the lobby until the host admits them.\n * `blockFromJoin` - If the value of `unlockedMeetingJoinSecurity` attribute is `blockFromJoin`, people can't join the unlocked meeting.\n"
+    },
+    "sessionTypeId": {
+      "type": "number",
+      "example": 3,
+      "description": "Unique identifier for a meeting session type for the user. This attribute is required while scheduling webinar meeting. All available meeting session types enabled for the user can be retrieved by [List Meeting Session Types](/docs/api/v1/meetings/list-meeting-session-types) API."
+    },
+    "enabledWebcastView": {
+      "type": "boolean",
+      "description": "Whether or not webcast view is enabled."
+    },
+    "panelistPassword": {
+      "type": "string",
+      "example": "GwLqa@78",
+      "description": "Password for panelists of a webinar meeting. Must conform to the site's password complexity settings. Read [password management](https://help.webex.com/en-us/zrupm6/Manage-Security-Options-for-Your-Site-in-Webex-Site-Administration) for details. If not specified, a random password conforming to the site's password rules will be generated automatically."
+    },
+    "enableAutomaticLock": {
+      "type": "boolean",
+      "description": "Whether or not to automatically lock the meeting after it starts."
+    },
+    "automaticLockMinutes": {
+      "type": "number",
+      "example": 10,
+      "description": "The number of minutes after the meeting begins, for automatically locking it."
+    },
+    "allowFirstUserToBeCoHost": {
+      "type": "boolean",
+      "description": "Whether or not to allow the first attendee of the meeting with a host account on the target site to become a cohost. The target site is specified by `siteUrl` parameter when creating the meeting; if not specified, it's user's preferred site."
+    },
+    "allowAuthenticatedDevices": {
+      "type": "boolean",
+      "description": "Whether or not to allow authenticated video devices in the meeting's organization to start or join the meeting without a prompt."
+    },
+    "sendEmail": {
+      "type": "boolean",
+      "example": true,
+      "description": "Whether or not to send emails to host and invitees. It is an optional field and default value is true."
+    },
+    "meetingOptions": {
+      "type": "object",
+      "properties": {
+        "enabledChat": {
+          "type": "boolean",
+          "example": true,
+          "description": "Whether or not to allow any attendee to chat in the meeting. Also depends on the session type."
+        },
+        "enabledVideo": {
+          "type": "boolean",
+          "example": true,
+          "description": "Whether or not to allow any attendee to have video in the meeting. Also depends on the session type."
+        },
+        "enabledPolling": {
+          "type": "boolean",
+          "description": "Whether or not to allow any attendee to poll in the meeting. Can only be set `true` for a webinar. The value of this attribute depends on the session type for a meeting. Please contact your site admin if this attribute is not available. Not supported if the site has been migrated to the Webex Suite meeting platform."
+        },
+        "enabledNote": {
+          "type": "boolean",
+          "example": true,
+          "description": "Whether or not to allow any attendee to take notes in the meeting. The value of this attribute also depends on the session type. Not supported if the site has been migrated to the Webex Suite meeting platform."
+        },
+        "noteType": {
+          "type": "string",
+          "enum": [
+            "allowAll",
+            "allowOne"
+          ],
+          "description": "Whether note taking is enabled. If the value of `enabledNote` is false, users cannot set this attribute and get the default value `allowAll`. Not supported if the site has been migrated to the Webex Suite meeting platform.\n * `allowAll` - If the value of `noteType` attribute is `allowAll`, all participants can take notes.\n * `allowOne` - If the value of `noteType` attribute is `allowOne`, only a single note taker is allowed.\n"
+        },
+        "enabledFileTransfer": {
+          "type": "boolean",
+          "description": "Whether or not to allow any attendee to transfer files in the meeting. The value of this attribute also depends on the session type."
+        },
+        "enabledUCFRichMedia": {
+          "type": "boolean",
+          "description": "Whether or not to allow any attendee to share [Universal Communications Format](https://www.cisco.com/c/en/us/td/docs/collaboration/training_center/wbs30/WebEx_BK_TE1FB6C1_00_training-center-frequently-asked-questions/WebEx_BK_TE1FB6C1_00_training-center-frequently-asked-questions_chapter_0110.pdf) media files in the meeting. The value of this attribute also depends on the sessionType. Not supported if the site has been migrated to the Webex Suite meeting platform."
+        }
+      },
+      "description": "Meeting Options."
+    },
+    "attendeePrivileges": {
+      "type": "object",
+      "properties": {
+        "enabledShareContent": {
+          "type": "boolean",
+          "example": true,
+          "description": "Whether or not to allow any attendee to share content in the meeting."
+        },
+        "enabledSaveDocument": {
+          "type": "boolean",
+          "description": "Whether or not to allow any attendee to save shared documents, slides, or whiteboards when they are shared as files in the content viewer instead of in a window or application. This option is no longer supported for meetings on a site which has been migrated to the Webex Suite Meeting Platform (WSMP)."
+        },
+        "enabledPrintDocument": {
+          "type": "boolean",
+          "description": "Whether or not to allow any attendee to print shared documents, slides, or whiteboards when they are shared as files in the content viewer instead of in a window or application. This option is no longer supported for meetings on a site which has been migrated to the Webex Suite Meeting Platform (WSMP)."
+        },
+        "enabledAnnotate": {
+          "type": "boolean",
+          "description": "Whether or not to allow any attendee to annotate shared documents, slides, or whiteboards when they are shared as files in the content viewer instead of in a window or application. This option is no longer supported for meetings on a site which has been migrated to the Webex Suite Meeting Platform (WSMP)."
+        },
+        "enabledViewParticipantList": {
+          "type": "boolean",
+          "example": true,
+          "description": "Whether or not to allow any attendee to view participants."
+        },
+        "enabledViewThumbnails": {
+          "type": "boolean",
+          "description": "Whether or not to allow any attendee to see a small preview image of any page of shared documents or slides when they are shared as files in the content viewer instead of in a window or application. This option is no longer supported for meetings on a site which has been migrated to the Webex Suite Meeting Platform (WSMP)."
+        },
+        "enabledRemoteControl": {
+          "type": "boolean",
+          "example": true,
+          "description": "Whether or not to allow any attendee to control applications, web browsers, or desktops remotely. This option is no longer supported for meetings on a site which has been migrated to the Webex Suite Meeting Platform (WSMP)."
+        },
+        "enabledViewAnyDocument": {
+          "type": "boolean",
+          "description": "Whether or not to allow any attendee to view any shared documents or slides when they are shared as files in the content viewer instead of in a window or application. This option is no longer supported for meetings on a site which has been migrated to the Webex Suite Meeting Platform (WSMP)."
+        },
+        "enabledViewAnyPage": {
+          "type": "boolean",
+          "description": "Whether or not to allow any attendee to scroll through any page of shared documents or slides when they are shared as files in the content viewer instead of in a window or application. This option is no longer supported for meetings on a site which has been migrated to the Webex Suite Meeting Platform (WSMP)."
+        },
+        "enabledContactOperatorPrivately": {
+          "type": "boolean",
+          "description": "Whether or not to allow any attendee to contact the operator privately. This option is no longer supported for meetings on a site which has been migrated to the Webex Suite Meeting Platform (WSMP)."
+        },
+        "enabledChatHost": {
+          "type": "boolean",
+          "example": true,
+          "description": "Whether or not to allow any attendee to chat with the host in private. This option is no longer supported for meetings on a site which has been migrated to the Webex Suite Meeting Platform (WSMP)."
+        },
+        "enabledChatPresenter": {
+          "type": "boolean",
+          "example": true,
+          "description": "Whether or not to allow any attendee to chat with the presenter in private. This option is no longer supported for meetings on a site which has been migrated to the Webex Suite Meeting Platform (WSMP)."
+        },
+        "enabledChatOtherParticipants": {
+          "type": "boolean",
+          "example": true,
+          "description": "Whether or not to allow any attendee to chat with other participants in private. This option is no longer supported for meetings on a site which has been migrated to the Webex Suite Meeting Platform (WSMP)."
+        }
+      },
+      "description": "Attendee Privileges. This attribute is not supported for a webinar."
+    },
+    "integrationTags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "External keys created by an integration application in its own domain, for example Zendesk ticket IDs, Jira IDs, Salesforce Opportunity IDs, etc. The integration application queries meetings by a key in its own domain. The maximum size of `integrationTags` is 3 and each item of `integrationTags` can be a maximum of 64 characters long. Please note that an empty or null `integrationTags` will delete all existing integration tags for the meeting implicitly. Developer can update integration tags for a `meetingSeries` but he cannot update it for a `scheduledMeeting` or a `meeting` instance."
+    },
+    "enabledBreakoutSessions": {
+      "type": "boolean",
+      "description": "Whether or not breakout sessions are enabled. If the value of `enabledBreakoutSessions` is false, users can not set breakout sessions. If the value of `enabledBreakoutSessions` is true, users can update breakout sessions using the [Update Breakout Sessions](/docs/api/v1/meetings/{meetingId}/breakoutSessions) API. Updating breakout sessions are not supported by this API."
+    },
+    "trackingCodes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/components/schemas/TrackingCodeItemForCreateMeetingObject"
+      },
+      "description": "Tracking codes information. All available tracking codes and their options for the specified site can be retrieved by [List Meeting Tracking Codes](/docs/api/v1/meetings/list-meeting-tracking-codes) API. If an optional tracking code is missing from the `trackingCodes` array and there's a default option for this tracking code, the default option is assigned automatically. If the `inputMode` of a tracking code is `select`, its value must be one of the site-level options or the user-level value. Tracking code is not supported for a personal room meeting or an ad-hoc space meeting. It can be specified `null` so that it becomes null and hidden from the response after the patch."
+    },
+    "enabledAudioWatermark": {
+      "type": "boolean",
+      "description": "Whether or not the audio watermark is enabled. If it's `true`, `scheduledType` equals or defaults to `meeting`, and `audioConnectionOptions.audioConnectionType` equals `VoIP`, the audio for this meeting will have a watermark. In this case, a unique identifier is embedded into the audio that plays out of each Webex app and device. An administrator can use this watermark when analyzing an unauthorized recording to identify which Webex app or device was the source of the recording."
+    },
+    "enabledVisualWatermark": {
+      "type": "boolean",
+      "description": "Whether or not the visual watermark is enabled. If it's `true`, the video for this meeting will have a watermark. In this case, Webex superimposes a watermark image pattern on top of the meeting video and shared content to deter participants from leaking meeting information. Each participant viewing the meeting sees a watermark image pattern with their email address. If the participant is not signed in, the watermark image pattern includes their display name and email address."
+    },
+    "visualWatermarkOpacity": {
+      "type": "number",
+      "example": 10,
+      "description": "Opacity level for the visual watermark. The value must be between 5 and 80, inclusive. A smaller value means less distraction for meeting participants, while a larger value shows a clearer watermark. It's supported when `enabledVisualWatermark` is `true`."
+    },
+    "audioConnectionOptions": {
+      "type": "object",
+      "properties": {
+        "audioConnectionType": {
+          "type": "string",
+          "enum": [
+            "webexAudio",
+            "VoIP",
+            "other",
+            "none"
+          ],
+          "description": "Choose how meeting attendees join the audio portion of the meeting.\n * `webexAudio` - Provide a hybrid audio option, allowing attendees to join using their computer audio or a phone.\n * `VoIP` - Only restricts attendees to join the audio portion of the meeting using their computer instead of a telephone option.\n * `other` - Other teleconference services.\n * `none` - The way of attendees join the audio portion of the meeting is the default value.\n"
+        },
+        "enabledTollFreeCallIn": {
+          "type": "boolean",
+          "example": true,
+          "description": "Whether or not to show toll-free call-in numbers."
+        },
+        "enabledGlobalCallIn": {
+          "type": "boolean",
+          "example": true,
+          "description": "Whether or not to show global call-in numbers to attendees."
+        },
+        "enabledAudienceCallBack": {
+          "type": "boolean",
+          "description": "Whether or not to allow attendees to receive a call-back and call-in is available. Can only be set `true` for a webinar."
+        },
+        "entryAndExitTone": {
+          "type": "string",
+          "enum": [
+            "beep",
+            "announceName",
+            "noTone"
+          ],
+          "description": "Select the sound you want users who have a phone audio connection to hear when someone enters or exits the meeting.\n * `beep` - All call-in users joining the meeting will hear the beep.\n * `announceName` - All call-in users joining the meeting will hear their names.\n * `noTone` - Turn off beeps and name announcements.\n"
+        },
+        "allowHostToUnmuteParticipants": {
+          "type": "boolean",
+          "description": "Whether or not to allow the host to unmute participants."
+        },
+        "allowAttendeeToUnmuteSelf": {
+          "type": "boolean",
+          "example": true,
+          "description": "Whether or not to allow attendees to unmute themselves."
+        },
+        "muteAttendeeUponEntry": {
+          "type": "boolean",
+          "description": "Whether or not to auto-mute attendees when attendees enter meetings."
+        }
+      },
+      "description": "Audio connection options."
+    },
+    "requireAttendeeLogin": {
+      "type": "boolean",
+      "description": "Require attendees to sign in before joining the webinar. This option works when the value of `scheduledType` attribute is `webinar`. Please note that `requireAttendeeLogin` cannot be set if someone has already registered for the webinar."
+    },
+    "restrictToInvitees": {
+      "type": "boolean",
+      "description": "Restrict webinar to invited attendees only. This option works when the registration option is disabled and the value of `scheduledType` attribute is `webinar`. Please note that `restrictToInvitees` cannot be set to `true` if `requireAttendeeLogin` is `false`."
+    },
+    "enabledLiveStream": {
+      "type": "boolean",
+      "description": "When `true`, live streaming is enabled."
+    },
+    "liveStream": {
+      "$ref": "#/components/schemas/LiveStreamObject",
+      "description": "Live streaming settings. Applies when `enabledLiveStream` is `true`."
+    }
+  }
+}

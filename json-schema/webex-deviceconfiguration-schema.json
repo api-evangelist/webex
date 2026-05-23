@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/DeviceConfiguration",
+  "title": "DeviceConfiguration",
+  "type": "object",
+  "properties": {
+    "configuration_key": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "type": "string",
+          "enum": [
+            "default",
+            "configured"
+          ],
+          "description": "The source of the current value that is applied to the device.\n * `default` - Current value comes from the schema default.\n * `configured` - Current value comes from configuredValue.\n"
+        },
+        "sources": {
+          "type": "object",
+          "properties": {
+            "default": {
+              "type": "object",
+              "properties": {
+                "editability": {
+                  "type": "object",
+                  "properties": {
+                    "isEditable": {
+                      "type": "boolean",
+                      "description": "Whether or not the value is editable on this source (always `false` for `default`)."
+                    },
+                    "reason": {
+                      "type": "string",
+                      "example": "FACTORY_DEFAULT",
+                      "description": "The reason value is not editable on this source (always `FACTORY_DEFAULT` for `default`)."
+                    }
+                  }
+                }
+              }
+            },
+            "configured": {
+              "type": "object",
+              "properties": {
+                "editability": {
+                  "type": "object",
+                  "properties": {
+                    "isEditable": {
+                      "type": "boolean",
+                      "example": true,
+                      "description": "Whether or not the value is editable on this source."
+                    },
+                    "reason": {
+                      "type": "string",
+                      "enum": [
+                        "NOT_AUTHORIZED",
+                        "CONFIG_MANAGED_BY_DIFFERENT_AUTHORITY"
+                      ],
+                      "description": "The reason the value is not editable on this source.\n * `NOT_AUTHORIZED` - User is not authorized to edit any values.\n * `CONFIG_MANAGED_BY_DIFFERENT_AUTHORITY` - The configuration is managed by a different authority. For example `CUCM`.\n"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "valueSpace": {
+          "type": "object",
+          "properties": {},
+          "description": "[JSON Schema](http://json-schema.org/) describing the data format of the configuration as specified by the device."
+        }
+      },
+      "description": "Key of the configuration."
+    }
+  }
+}

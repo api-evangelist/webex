@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/SkillDTO",
+  "title": "SkillDTO",
+  "type": "object",
+  "properties": {
+    "organizationId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "ID of the contact center organization. This field is required for all bulk save operations.",
+      "example": "f53c8b54-46ca-43f6-ba05-08426a46e23d",
+      "maxLength": 36,
+      "minLength": 32,
+      "pattern": "^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$"
+    },
+    "id": {
+      "type": "string",
+      "description": "ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.",
+      "example": "93912f11-6017-404b-bf14-5331890b1797"
+    },
+    "version": {
+      "type": "integer",
+      "format": "int32",
+      "description": "The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.",
+      "example": 1
+    },
+    "name": {
+      "type": "string",
+      "description": "Indicates the name of the skill. Once created, name cannot be modified.",
+      "example": "German Speaking",
+      "maxLength": 80,
+      "minLength": 0,
+      "pattern": "^[a-zA-Z0-9,@_.\\-\\s]*$"
+    },
+    "description": {
+      "type": "string",
+      "description": "Indicates the description of the skill.",
+      "example": "Skill to speak fluent German.",
+      "maxLength": 255,
+      "minLength": 0
+    },
+    "serviceLevelThreshold": {
+      "type": "integer",
+      "format": "int32",
+      "description": "Allows to set the time that a customer request can be in a queue before the system flags it as outside the service level. \n\n If the agent completes a customer service request within this time interval, the system considers it within the service level. \nIt is required only for a create or an update operation.",
+      "example": 0
+    },
+    "enumSkillValues": {
+      "type": "array",
+      "items": {
+        "$ref": "#/components/schemas/EnumSkillValueDTO",
+        "description": "If skillType is enum, the skill can take different sub-values which are defined with this field. For instance, a skill named \"tech support\" may have enumSkillValues for \"windows\", \"macOS\" and \"linux\"."
+      },
+      "uniqueItems": true
+    },
+    "active": {
+      "type": "boolean",
+      "description": "Indicates the status of the skill whether it is active(when true) or not active(when false). It is required only during a create or an update operation.",
+      "example": true
+    },
+    "dynamicSkill": {
+      "type": "boolean",
+      "description": "Indicates whether the skill is a dynamic skill or not. Default value is false.",
+      "example": false
+    },
+    "skillType": {
+      "type": "string",
+      "description": "This can be of the following types\n\nPROFICIENCY: id = 0\n\nBOOLEAN: id = 1\n\nTEXT: id = 2\n\nENUM: id = 3\n\nOnce created, skillType cannot be modified.\n",
+      "enum": [
+        "Proficiency",
+        "Boolean",
+        "Text",
+        "enum"
+      ],
+      "example": "BOOLEAN"
+    },
+    "createdTime": {
+      "type": "integer",
+      "format": "int64",
+      "description": "This is the created time of the entity.",
+      "example": 123456789
+    },
+    "lastUpdatedTime": {
+      "type": "integer",
+      "format": "int64",
+      "description": "This is the updated time of the entity.",
+      "example": 123456789
+    }
+  },
+  "required": [
+    "active",
+    "name",
+    "serviceLevelThreshold",
+    "skillType"
+  ]
+}

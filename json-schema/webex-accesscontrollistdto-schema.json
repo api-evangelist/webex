@@ -1,0 +1,236 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/AccessControlListDTO",
+  "title": "AccessControlListDTO",
+  "type": "object",
+  "description": "Access Control List is higher order DTO of user profile and resource collection.",
+  "example": {
+    "organizationId": "f53c8b54-46ca-43f6-ba05-08426a46e23d",
+    "id": "93912f11-6017-404b-bf14-5331890b1797",
+    "version": 1,
+    "name": "Administrator",
+    "profileType": "ADMINISTRATOR",
+    "description": "User Profile Description",
+    "active": true,
+    "permissionAccessLevel": "ALL",
+    "resourceAccessLevel": "ALL",
+    "editableFolderIds": [
+      1,
+      2,
+      3
+    ],
+    "viewableFolderIds": [
+      4,
+      5,
+      6
+    ],
+    "nonViewableFolderIds": [
+      7,
+      8,
+      9
+    ],
+    "defaultResourceCollectionId": "123e4567-e89b-12d3-a456-426614174000",
+    "resourceCollections": [
+      {
+        "id": "80f49a6e-11d7-4651-b730-99ed2f726f61",
+        "name": "Department1",
+        "description": "Department1 description.",
+        "resources": [
+          {
+            "name": "team",
+            "accessLevel": "SPECIFIC",
+            "ids": [
+              "00734874-4732-43bb-bfff-d1e75d309eb1",
+              "00734874-4732-43bb-bfff-d1e75d309eb2"
+            ]
+          },
+          {
+            "name": "desktop-profile",
+            "accessLevel": "ALL"
+          },
+          {
+            "name": "desktop-layout",
+            "accessLevel": "NONE"
+          }
+        ],
+        "resourceCount": 2
+      }
+    ],
+    "permissions": [
+      {
+        "id": "00734874-4732-43bb-bfff-d1e75d309eb1",
+        "name": "sites",
+        "access": "NONE"
+      }
+    ],
+    "resources": [
+      {
+        "name": "site",
+        "accessLevel": "ALL",
+        "ids": [
+          "00734874-4732-43bb-bfff-d1e75d309eb1",
+          "00734874-4732-43bb-bfff-d1e75d309eb2"
+        ]
+      }
+    ],
+    "createdTime": 0,
+    "lastUpdatedTime": 0
+  },
+  "properties": {
+    "organizationId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "ID of the contact center organization. This field is required for all bulk save operations.",
+      "example": "f53c8b54-46ca-43f6-ba05-08426a46e23d",
+      "maxLength": 36,
+      "minLength": 32,
+      "pattern": "^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$"
+    },
+    "id": {
+      "type": "string",
+      "description": "ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.",
+      "example": "93912f11-6017-404b-bf14-5331890b1797"
+    },
+    "version": {
+      "type": "integer",
+      "format": "int32",
+      "description": "The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.",
+      "example": 1
+    },
+    "name": {
+      "type": "string",
+      "description": "name of the user profile as ACL.",
+      "example": "Administrator"
+    },
+    "profileType": {
+      "type": "string",
+      "description": "User Profile Type.",
+      "enum": [
+        "ADMINISTRATOR",
+        "ADMINISTRATOR_ONLY",
+        "SUPERVISOR",
+        "PREMIUM_AGENT",
+        "STANDARD_AGENT",
+        "ANALYZER_ADMINISTRATOR",
+        "ANALYZER_SUPERVISOR",
+        "ANALYZER_USER"
+      ],
+      "example": "ADMINISTRATOR"
+    },
+    "description": {
+      "type": "string",
+      "description": "User Profile Description.",
+      "example": "User Profile Description"
+    },
+    "active": {
+      "type": "boolean",
+      "description": "Indicates whether the user profile is active.",
+      "example": true
+    },
+    "permissionAccessLevel": {
+      "type": "string",
+      "description": "Permissions Access Level for user profile level.",
+      "enum": [
+        "SPECIFIC",
+        "ALL",
+        "PROVISIONED_VALUE",
+        "NONE"
+      ],
+      "example": "ALL"
+    },
+    "resourceAccessLevel": {
+      "type": "string",
+      "description": "Resource Access Level for resource collection level.",
+      "enum": [
+        "SPECIFIC",
+        "ALL",
+        "PROVISIONED_VALUE",
+        "NONE"
+      ],
+      "example": "ALL"
+    },
+    "editableFolderIds": {
+      "type": "array",
+      "description": "Set of editable folder IDs that are part of user profile.",
+      "example": [
+        1,
+        2,
+        3
+      ],
+      "items": {
+        "type": "integer",
+        "format": "int32"
+      },
+      "uniqueItems": true
+    },
+    "viewableFolderIds": {
+      "type": "array",
+      "description": "Set of viewable folder IDs that the part of user profile.",
+      "example": [
+        4,
+        5,
+        6
+      ],
+      "items": {
+        "type": "integer",
+        "format": "int32"
+      },
+      "uniqueItems": true
+    },
+    "nonViewableFolderIds": {
+      "type": "array",
+      "description": "Set of non-viewable folder IDs that are part of user profile.",
+      "example": [
+        7,
+        8,
+        9
+      ],
+      "items": {
+        "type": "integer",
+        "format": "int32"
+      },
+      "uniqueItems": true
+    },
+    "defaultResourceCollectionId": {
+      "type": "string",
+      "description": "Default Resource Collection ID.",
+      "example": "123e4567-e89b-12d3-a456-426614174000"
+    },
+    "resourceCollections": {
+      "type": "array",
+      "description": "Set of resource collections associated with the User Profile.",
+      "items": {
+        "$ref": "#/components/schemas/ResourceCollectionDTO"
+      },
+      "uniqueItems": true
+    },
+    "permissions": {
+      "type": "array",
+      "description": "Set of permissions associated with the User Profile.",
+      "items": {
+        "$ref": "#/components/schemas/UserProfilePermissionsDTO"
+      },
+      "uniqueItems": true
+    },
+    "resources": {
+      "type": "array",
+      "description": "Set of resources associated with the Resource Collection.",
+      "items": {
+        "$ref": "#/components/schemas/ResourceTypesDTO"
+      },
+      "uniqueItems": true
+    },
+    "createdTime": {
+      "type": "integer",
+      "format": "int64",
+      "description": "This is the created time of the entity.",
+      "example": 123456789
+    },
+    "lastUpdatedTime": {
+      "type": "integer",
+      "format": "int64",
+      "description": "This is the updated time of the entity.",
+      "example": 123456789
+    }
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/AutoAttendantCallForwardSettingsDetailsObject",
+  "title": "AutoAttendantCallForwardSettingsDetailsObject",
+  "type": "object",
+  "required": [
+    "always",
+    "selective",
+    "rules"
+  ],
+  "properties": {
+    "always": {
+      "$ref": "#/components/schemas/GetCallForwardAlwaysSettingObject",
+      "description": "Settings for forwarding all incoming calls to the destination you choose."
+    },
+    "selective": {
+      "$ref": "#/components/schemas/GetCallForwardSelectiveSettingObject",
+      "description": "Selectively forward calls to a designated number, depending on criteria rules. You'll need to have at least one rule for forwarding applied for call forwarding to be active."
+    },
+    "rules": {
+      "type": "array",
+      "items": {
+        "$ref": "#/components/schemas/CallForwardRulesObject"
+      },
+      "description": "Rules for selectively forwarding calls."
+    },
+    "operatingModes": {
+      "type": "object",
+      "required": [
+        "enabled",
+        "currentOperatingModeId",
+        "exceptionType"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "example": true,
+          "description": "Operating modes are enabled or disabled."
+        },
+        "currentOperatingModeId": {
+          "type": "string",
+          "example": "Y2lzY29zcGFyazovL3VzL09QRVJBVElOR19NT0RFL2JiOTc1OTcxLTBjZWYtNDdhNi05Yzc5LTliZWFjY2IwYjg4Mg",
+          "description": "The ID of the current operating mode."
+        },
+        "exceptionType": {
+          "type": "string",
+          "enum": [
+            "MANUAL_SWITCH_BACK",
+            "AUTOMATIC_SWITCH_BACK_EARLY_START",
+            "AUTOMATIC_SWITCH_BACK_EXTENSION",
+            "AUTOMATIC_SWITCH_BACK_STANDARD"
+          ],
+          "description": "The exception type.\n * `MANUAL_SWITCH_BACK` - The mode was switched to or extended by the user for manual switch back and runs as an exception until the user manual switches the feature back to normal operation or a different mode.\n * `AUTOMATIC_SWITCH_BACK_EARLY_START` - The mode was switched to by the user before its start time and runs as an exception until its end time is reached at which point it automatically switches the feature back to normal operation.\n * `AUTOMATIC_SWITCH_BACK_EXTENSION` - The current mode was extended by the user before its end time and runs as an exception until the extension end time (mode's end time + extension of up to 12 hours) is reached at which point it automatically switches the feature back to normal operation.\n * `AUTOMATIC_SWITCH_BACK_STANDARD` - The mode will remain the current operating mode for the feature until its normal end time is reached.\n"
+        },
+        "modes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/ModesGet"
+          },
+          "description": "Operating modes."
+        }
+      },
+      "description": "Settings related to operating modes."
+    }
+  }
+}

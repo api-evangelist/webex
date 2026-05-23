@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/GetCallQueueStrandedCallsObject",
+  "title": "GetCallQueueStrandedCallsObject",
+  "type": "object",
+  "required": [
+    "action",
+    "audioMessageSelection"
+  ],
+  "properties": {
+    "action": {
+      "type": "string",
+      "enum": [
+        "NONE",
+        "BUSY",
+        "TRANSFER",
+        "NIGHT_SERVICE",
+        "RINGING",
+        "ANNOUNCEMENT"
+      ],
+      "description": "The call processing action type.\n * `NONE` - Call remains in the queue.\n * `BUSY` - Calls are removed from the queue and are provided with the Busy treatment. If the queue is configured with the Call Forwarding Busy or the Voice Messaging service, then the call is handled accordingly.\n * `TRANSFER` - Calls are removed from the queue and are transferred to the configured `transferPhoneNumber`.\n * `NIGHT_SERVICE` - Calls are handled according to the Night Service configuration. If the Night Service action is set to `none`, then this is equivalent to this policy being set to `none` (that is, calls remain in the queue).\n * `RINGING` - Calls are removed from the queue and are provided with ringing until the caller releases the call. The ringback tone played to the caller is localized according to the country code of the caller.\n * `ANNOUNCEMENT` - Calls are removed from the queue and are provided with an announcement that is played in a loop until the caller releases the call.\n"
+    },
+    "transferPhoneNumber": {
+      "type": "string",
+      "example": "1235557890",
+      "description": "Call gets transferred to this number when action is set to `TRANSFER`. This can also be an extension."
+    },
+    "audioMessageSelection": {
+      "type": "string",
+      "enum": [
+        "DEFAULT",
+        "CUSTOM"
+      ],
+      "description": "The type of announcement to be played.\n * `DEFAULT` - Default Audio Message Selection.\n * `CUSTOM` - Custom Audio Message Selection.\n"
+    },
+    "audioFiles": {
+      "type": "array",
+      "items": {
+        "$ref": "#/components/schemas/AudioAnnouncementFileFeatureGetObject"
+      },
+      "description": "List of Announcement Audio Files when `audioMessageSelection` is `CUSTOM`."
+    }
+  }
+}

@@ -1,0 +1,352 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/CallQueueQueueSettingsGetObject",
+  "title": "CallQueueQueueSettingsGetObject",
+  "type": "object",
+  "required": [
+    "queueSize",
+    "overflow"
+  ],
+  "properties": {
+    "queueSize": {
+      "type": "number",
+      "example": 50,
+      "description": "The maximum number of calls for this call queue. Once this number is reached, the `overflow` settings are triggered."
+    },
+    "callOfferToneEnabled": {
+      "type": "boolean",
+      "example": true,
+      "description": "Play ringing tone to callers when their call is set to an available agent."
+    },
+    "resetCallStatisticsEnabled": {
+      "type": "boolean",
+      "description": "Reset caller statistics upon queue entry."
+    },
+    "overflow": {
+      "type": "object",
+      "required": [
+        "action",
+        "greeting"
+      ],
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": [
+            "PERFORM_BUSY_TREATMENT",
+            "PLAY_RINGING_UNTIL_CALLER_HANGS_UP",
+            "TRANSFER_TO_PHONE_NUMBER"
+          ],
+          "description": "Indicates how to handle new calls when the queue is full.\n * `PERFORM_BUSY_TREATMENT` - The caller hears a fast-busy tone.\n * `PLAY_RINGING_UNTIL_CALLER_HANGS_UP` - The caller hears ringing until they disconnect.\n * `TRANSFER_TO_PHONE_NUMBER` - Number where you want to transfer overflow calls.\n"
+        },
+        "sendToVoicemail": {
+          "type": "boolean",
+          "description": "When `true`, forwards all calls to a voicemail service of an internal number. This option is ignored when an external `transferNumber` is entered."
+        },
+        "transferNumber": {
+          "type": "string",
+          "example": "+15555551212",
+          "description": "Destination number for overflow calls when `action` is set to `TRANSFER_TO_PHONE_NUMBER`."
+        },
+        "overflowAfterWaitEnabled": {
+          "type": "boolean",
+          "example": true,
+          "description": "After calls wait for the configured number of seconds and no agent is available, the overflow treatment is triggered."
+        },
+        "overflowAfterWaitTime": {
+          "type": "number",
+          "example": 20,
+          "description": "Number of seconds to wait before the overflow treatment is triggered when no agent is available. The minimum value 0, The maximum value is 7200 seconds."
+        },
+        "playOverflowGreetingEnabled": {
+          "type": "boolean",
+          "example": true,
+          "description": "Indicate overflow audio to be played, otherwise, callers will hear the hold music until the call is answered by a user."
+        },
+        "greeting": {
+          "type": "string",
+          "enum": [
+            "CUSTOM",
+            "DEFAULT"
+          ],
+          "description": "Indicates how to handle new calls when the queue is full.\n * `CUSTOM` - Play the custom announcement specified by the `fileName` field.\n * `DEFAULT` - Play default announcement.\n"
+        },
+        "audioAnnouncementFiles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/AnnouncementAudioFileGet"
+          },
+          "description": "Array of announcement files to be played as `overflow` greetings. These files are from the list of announcement files associated with this call queue. For `CUSTOM` announcement, a minimum of 1 file is mandatory, and the maximum is 4."
+        }
+      },
+      "description": "Settings for incoming calls exceed queueSize."
+    },
+    "welcomeMessage": {
+      "type": "object",
+      "required": [
+        "greeting"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "example": true,
+          "description": "If enabled play entrance message. The default value is `true`."
+        },
+        "alwaysEnabled": {
+          "type": "boolean",
+          "description": "Mandatory entrance message. The default value is `false`."
+        },
+        "greeting": {
+          "type": "string",
+          "enum": [
+            "CUSTOM",
+            "DEFAULT"
+          ],
+          "description": "Indicates how to handle new calls when the queue is full.\n * `CUSTOM` - Play the custom announcement specified by the `fileName` field.\n * `DEFAULT` - Play default announcement.\n"
+        },
+        "audioAnnouncementFiles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/AnnouncementAudioFileGet"
+          },
+          "description": "Array of announcement files to be played as `welcomeMessage` greetings. These files are from the list of announcement files associated with this call queue. For `CUSTOM` announcement, a minimum of 1 file is mandatory, and the maximum is 4."
+        }
+      },
+      "description": "Play a message when callers first reach the queue. For example, \u201cThank you for calling. An agent will be with you shortly.\u201d It can be set as mandatory. If the mandatory option is not selected and a caller reaches the call queue while there is an available agent, the caller will not hear this announcement and is transferred to an agent. The welcome message feature is enabled by default."
+    },
+    "waitMessage": {
+      "type": "object",
+      "required": [
+        "waitMode"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "example": true,
+          "description": "If enabled play Wait Message."
+        },
+        "waitMode": {
+          "type": "string",
+          "enum": [
+            "TIME",
+            "POSITION"
+          ],
+          "description": "Estimated wait message operating mode. Supported values `TIME` and `POSITION`.\n * `TIME` - Announce the waiting time.\n * `POSITION` - Announce queue position.\n"
+        },
+        "handlingTime": {
+          "type": "number",
+          "example": 100,
+          "description": "The number of minutes for which the estimated wait is played. The minimum time is 10 minutes. The maximum time is 100 minutes."
+        },
+        "defaultHandlingTime": {
+          "type": "number",
+          "example": 100,
+          "description": "The default number of call handling minutes. The minimum time is 1 minutes, The maximum time is 100 minutes."
+        },
+        "queuePosition": {
+          "type": "number",
+          "example": 100,
+          "description": "The number of the position for which the estimated wait is played. The minimum positions are 10, The maximum positions are 100."
+        },
+        "highVolumeMessageEnabled": {
+          "type": "boolean",
+          "description": "Play time / Play position High Volume."
+        },
+        "estimatedWaitingTime": {
+          "type": "number",
+          "example": 600,
+          "description": "The number of estimated waiting times in seconds. The minimum time is 10 seconds. The maximum time is 600 seconds."
+        },
+        "callbackOptionEnabled": {
+          "type": "boolean",
+          "description": "Callback options enabled/disabled. Default value is false."
+        },
+        "minimumEstimatedCallbackTime": {
+          "type": "number",
+          "example": 10,
+          "description": "The minimum estimated callback times in minutes. The default value is 30."
+        },
+        "internationalCallbackEnabled": {
+          "type": "boolean",
+          "description": "The international numbers for callback is enabled/disabled. The default value is `false`."
+        },
+        "playUpdatedEstimatedWaitMessage": {
+          "type": "boolean",
+          "example": true,
+          "description": "Play updated estimated wait message."
+        }
+      },
+      "description": "Notify the caller with either their estimated wait time or position in the queue. If this option is enabled, it plays after the welcome message and before the comfort message. By default, it is not enabled."
+    },
+    "comfortMessage": {
+      "type": "object",
+      "required": [
+        "greeting"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "example": true,
+          "description": "If enabled play periodic comfort message."
+        },
+        "timeBetweenMessages": {
+          "type": "number",
+          "example": 10,
+          "description": "The interval in seconds between each repetition of the comfort message played to queued users. The minimum time is 10 seconds.The maximum time is 600 seconds."
+        },
+        "greeting": {
+          "type": "string",
+          "enum": [
+            "CUSTOM",
+            "DEFAULT"
+          ],
+          "description": "Indicates how to handle new calls when the queue is full.\n * `CUSTOM` - Play the custom announcement specified by the `fileName` field.\n * `DEFAULT` - Play default announcement.\n"
+        },
+        "audioAnnouncementFiles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/AnnouncementAudioFileGet"
+          },
+          "description": "Array of announcement files to be played as `comfortMessage` greetings. These files are from the list of announcement files associated with this call queue. For `CUSTOM` announcement, a minimum of 1 file is mandatory, and the maximum is 4."
+        }
+      },
+      "description": "Play a message after the welcome message and before hold music. This is typically a `CUSTOM` announcement that plays information, such as current promotions or information about products and services."
+    },
+    "comfortMessageBypass": {
+      "type": "object",
+      "required": [
+        "greeting"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "example": true,
+          "description": "If enabled play comfort bypass message."
+        },
+        "callWaitingAgeThreshold": {
+          "type": "number",
+          "example": 10,
+          "description": "The interval in seconds between each repetition of the comfort bypass message played to queued users. The minimum time is 1 seconds. The maximum time is 120 seconds."
+        },
+        "greeting": {
+          "type": "string",
+          "enum": [
+            "CUSTOM",
+            "DEFAULT"
+          ],
+          "description": "Indicates how to handle new calls when the queue is full.\n * `CUSTOM` - Play the custom announcement specified by the `fileName` field.\n * `DEFAULT` - Play default announcement.\n"
+        },
+        "audioAnnouncementFiles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/AnnouncementAudioFileGet"
+          },
+          "description": "Array of announcement files to be played as `comfortMessageBypass` greetings. These files are from the list of announcements files associated with this call queue. For `CUSTOM` announcement, a minimum of 1 file is mandatory, and the maximum is 4."
+        }
+      },
+      "description": "Play a shorter comfort message instead of the usual Comfort or Music On Hold announcement to all the calls that should be answered quickly. This feature prevents a caller from hearing a short portion of the standard comfort message that abruptly ends when they are connected to an agent."
+    },
+    "mohMessage": {
+      "type": "object",
+      "required": [
+        "normalSource",
+        "alternateSource"
+      ],
+      "properties": {
+        "normalSource": {
+          "type": "object",
+          "required": [
+            "greeting"
+          ],
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "example": true,
+              "description": "Enable media on hold for queued calls."
+            },
+            "greeting": {
+              "type": "string",
+              "enum": [
+                "CUSTOM",
+                "DEFAULT"
+              ],
+              "description": "Indicates how to handle new calls when the queue is full.\n * `CUSTOM` - Play the custom announcement specified by the `fileName` field.\n * `DEFAULT` - Play default announcement.\n"
+            },
+            "audioAnnouncementFiles": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/AnnouncementAudioFileGet"
+              },
+              "description": "Array of announcement files to be played as `mohMessage` greetings. These files are from the list of announcement files associated with this call queue. For `CUSTOM` announcement, a minimum of 1 file is mandatory, and the maximum is 4."
+            },
+            "audioPlaylistId": {
+              "type": "string",
+              "description": "Identifier of the playlist used for this MOH source."
+            }
+          }
+        },
+        "alternateSource": {
+          "type": "object",
+          "required": [
+            "greeting"
+          ],
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "example": true,
+              "description": "Enable media on hold for queued calls."
+            },
+            "greeting": {
+              "type": "string",
+              "enum": [
+                "CUSTOM",
+                "DEFAULT"
+              ],
+              "description": "Indicates how to handle new calls when the queue is full.\n * `CUSTOM` - Play the custom announcement specified by the `fileName` field.\n * `DEFAULT` - Play default announcement.\n"
+            },
+            "audioAnnouncementFiles": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/AnnouncementAudioFileGet"
+              },
+              "description": "Array of announcement files to be played as `mohMessage` greetings. These files are from the list of announcement files associated with this call queue. For `CUSTOM` announcement, a minimum of 1 file is mandatory, and the maximum is 4."
+            },
+            "audioPlaylistId": {
+              "type": "string",
+              "description": "Identifier of the playlist used for this MOH source."
+            }
+          }
+        }
+      },
+      "description": "Play music after the comforting message in a repetitive loop."
+    },
+    "whisperMessage": {
+      "type": "object",
+      "required": [
+        "greeting"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "example": true,
+          "description": "If enabled play the Whisper Message."
+        },
+        "greeting": {
+          "type": "string",
+          "enum": [
+            "CUSTOM",
+            "DEFAULT"
+          ],
+          "description": "Indicates how to handle new calls when the queue is full.\n * `CUSTOM` - Play the custom announcement specified by the `fileName` field.\n * `DEFAULT` - Play default announcement.\n"
+        },
+        "audioAnnouncementFiles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/AnnouncementAudioFileGet"
+          },
+          "description": "Array of announcement files to be played as `whisperMessage` greetings. These files are from the list of announcement files associated with this call queue. For `CUSTOM` announcement, a minimum of 1 file is mandatory, and the maximum is 4."
+        }
+      },
+      "description": "Play a message to the agent immediately before the incoming call is connected. The message typically announces the identity of the call queue from which the call is coming."
+    }
+  }
+}

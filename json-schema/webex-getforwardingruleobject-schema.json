@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/GetForwardingRuleObject",
+  "title": "GetForwardingRuleObject",
+  "type": "object",
+  "required": [
+    "name",
+    "id",
+    "callsFrom",
+    "callsTo"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "example": "New Selective Rule",
+      "description": "Unique name for the selective rule in the hunt group."
+    },
+    "id": {
+      "type": "string",
+      "example": "Y2lzY29zcGFyazovL3VzL0NBTExfRk9SV0FSRElOR19TRUxFQ1RJVkVfUlVMRS9kR1Z6ZEZKMWJHVTA",
+      "description": "Unique ID for the rule."
+    },
+    "enabled": {
+      "type": "boolean",
+      "example": true,
+      "description": "Reflects if rule is enabled."
+    },
+    "holidaySchedule": {
+      "type": "string",
+      "example": "HolidayScheduleOne",
+      "description": "Name of the location's holiday schedule which determines when this selective call forwarding rule is in effect."
+    },
+    "businessSchedule": {
+      "type": "string",
+      "example": "BusinessScheduleTwo",
+      "description": "Name of the location's business schedule which determines when this selective call forwarding rule is in effect."
+    },
+    "forwardTo": {
+      "type": "object",
+      "required": [
+        "selection"
+      ],
+      "properties": {
+        "selection": {
+          "type": "string",
+          "enum": [
+            "FORWARD_TO_DEFAULT_NUMBER",
+            "FORWARD_TO_SPECIFIED_NUMBER",
+            "DO_NOT_FORWARD"
+          ],
+          "description": "Controls what happens when the rule matches.\n * `FORWARD_TO_DEFAULT_NUMBER` - When the rule matches, forward to the destination for the hunt group.\n * `FORWARD_TO_SPECIFIED_NUMBER` - When the rule matches, forward to the destination for this rule.\n * `DO_NOT_FORWARD` - When the rule matches, do not forward to another number.\n"
+        },
+        "phoneNumber": {
+          "type": "string",
+          "example": "+15558675309",
+          "description": "Phone number used if selection is `FORWARD_TO_SPECIFIED_NUMBER`."
+        }
+      },
+      "description": "Controls what happens when the rule matches including the destination number for the call forwarding."
+    },
+    "callsFrom": {
+      "type": "object",
+      "required": [
+        "selection",
+        "customNumbers"
+      ],
+      "properties": {
+        "selection": {
+          "type": "string",
+          "enum": [
+            "ANY",
+            "CUSTOM"
+          ],
+          "description": "If `CUSTOM`, use `customNumbers` to specify which incoming caller ID values cause this rule to match. `ANY` means any incoming call matches assuming the rule is in effect based on the associated schedules.\n * `ANY` - Rule matches for calls from any number.\n * `CUSTOM` - Rule matches based on the numbers and options in `customNumbers`.\n"
+        },
+        "customNumbers": {
+          "type": "object",
+          "required": [
+            "privateNumberEnabled",
+            "unavailableNumberEnabled"
+          ],
+          "properties": {
+            "privateNumberEnabled": {
+              "type": "boolean",
+              "description": "Match if caller ID indicates the call is from a private number."
+            },
+            "unavailableNumberEnabled": {
+              "type": "boolean",
+              "description": "Match if caller ID is unavailable."
+            },
+            "numbers": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Array of number strings to be matched against incoming caller ID."
+            }
+          },
+          "description": "Custom rules for matching incoming caller ID information."
+        }
+      },
+      "description": "Settings related to the rule matching based on incoming caller ID."
+    },
+    "callsTo": {
+      "type": "object",
+      "properties": {
+        "numbers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/CallForwardingNumbers"
+          },
+          "description": "Array of numbers to be matched against the calling destination number."
+        }
+      },
+      "description": "Settings related to the rule matching based on the destination number."
+    }
+  }
+}

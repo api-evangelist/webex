@@ -1,0 +1,168 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/PMRObject",
+  "title": "PMRObject",
+  "type": "object",
+  "required": [
+    "topic",
+    "hostPin",
+    "personalMeetingRoomLink",
+    "enabledAutoLock",
+    "enabledNotifyHost",
+    "supportCoHost",
+    "sipAddress",
+    "dialInIpAddress",
+    "telephony"
+  ],
+  "properties": {
+    "topic": {
+      "type": "string",
+      "example": "John's PMR",
+      "description": "Personal Meeting Room topic. The length of `topic` is between 1 and 128. This attribute can be modified with the [Update Personal Meeting Room Options](/docs/api/v1/meeting-preferences/update-personal-meeting-room-options) API."
+    },
+    "hostPin": {
+      "type": "string",
+      "example": "4325",
+      "description": "PIN for joining the room as host. The host PIN must be digits of a predefined length, e.g. 4 digits. It cannot contain sequential digits, such as 1234 or 4321, or repeated digits of the predefined length, such as 1111. The predefined length for host PIN can be viewed in user's `My Personal Room` page and it can only be changed by site administrator. This attribute can be modified with the [Update Personal Meeting Room Options](/docs/api/v1/meeting-preferences/update-personal-meeting-room-options) API."
+    },
+    "personalMeetingRoomLink": {
+      "type": "string",
+      "example": "https://site4-example.webex.com/meet/john",
+      "description": "Personal Meeting Room link. It cannot be empty. ***Note***: This is a read-only attribute."
+    },
+    "enabledAutoLock": {
+      "type": "boolean",
+      "description": "Option to automatically lock the Personal Room a number of minutes after a meeting starts. When a room is locked, invitees cannot enter until the owner admits them. The period after which the meeting is locked is defined by `autoLockMinutes`. This attribute can be modified with the [Update Personal Meeting Room Options](/docs/api/v1/meeting-preferences/update-personal-meeting-room-options) API."
+    },
+    "autoLockMinutes": {
+      "type": "number",
+      "description": "Number of minutes after which the Personal Room is locked if `enabledAutoLock` is enabled. Valid options are 0, 5, 10, 15 and 20. This attribute can be modified with the [Update Personal Meeting Room Options](/docs/api/v1/meeting-preferences/update-personal-meeting-room-options) API."
+    },
+    "enabledNotifyHost": {
+      "type": "boolean",
+      "description": "Flag to enable notifying the owner of a Personal Room when someone enters the Personal Room lobby while the owner is not in the room. This attribute can be modified with the [Update Personal Meeting Room Options](/docs/api/v1/meeting-preferences/update-personal-meeting-room-options) API."
+    },
+    "supportCoHost": {
+      "type": "boolean",
+      "description": "Flag allowing other invitees to host a meeting in the Personal Room without the owner. This attribute can be modified with the [Update Personal Meeting Room Options](/docs/api/v1/meeting-preferences/update-personal-meeting-room-options) API."
+    },
+    "supportAnyoneAsCoHost": {
+      "type": "boolean",
+      "description": "Whether or not to allow any attendee with a host account on the target site to become a cohost when joining the Personal Room. The target site is user's preferred site. This attribute can be modified with the [Update Personal Meeting Room Options](/docs/api/v1/meeting-preferences/update-personal-meeting-room-options) API."
+    },
+    "allowFirstUserToBeCoHost": {
+      "type": "boolean",
+      "description": "Whether or not to allow the first attendee with a host account on the target site to become a cohost when joining the Personal Room. The target site is user's preferred site. This attribute can be modified with the [Update Personal Meeting Room Options](/docs/api/v1/meeting-preferences/update-personal-meeting-room-options) API."
+    },
+    "allowAuthenticatedDevices": {
+      "type": "boolean",
+      "description": "Whether or not to allow authenticated video devices in the user's organization to start or join the meeting without a prompt. This attribute can be modified with the [Update Personal Meeting Room Options](/docs/api/v1/meeting-preferences/update-personal-meeting-room-options) API."
+    },
+    "coHosts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "email",
+          "displayName"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "john.andersen@example.com",
+            "description": "Email address for cohost. This attribute can be modified with the [Update Personal Meeting Room Options](/docs/api/v1/meeting-preferences/update-personal-meeting-room-options) API."
+          },
+          "displayName": {
+            "type": "string",
+            "example": "John Andersen",
+            "description": "Display name for cohost. This attribute can be modified with the [Update Personal Meeting Room Options](/docs/api/v1/meeting-preferences/update-personal-meeting-room-options) API."
+          }
+        }
+      },
+      "description": "Array defining cohosts for the room if both `supportAnyoneAsCoHost` and `allowFirstUserToBeCoHost` are `false`. This attribute can be modified with the [Update Personal Meeting Room Options](/docs/api/v1/meeting-preferences/update-personal-meeting-room-options) API."
+    },
+    "sipAddress": {
+      "type": "string",
+      "example": "john.andersen@example.com",
+      "description": "SIP address for callback from a video system."
+    },
+    "dialInIpAddress": {
+      "type": "string",
+      "example": "192.168.100.100",
+      "description": "IP address for callback from a video system."
+    },
+    "telephony": {
+      "type": "object",
+      "required": [
+        "accessCode",
+        "callInNumbers"
+      ],
+      "properties": {
+        "accessCode": {
+          "type": "string",
+          "example": "1234567890",
+          "description": "Code for authenticating a user to join teleconference. Users join the teleconference using the call-in number or the global call-in number, followed by the value of the `accessCode`."
+        },
+        "callInNumbers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "label",
+              "callInNumber",
+              "tollType"
+            ],
+            "properties": {
+              "label": {
+                "type": "string",
+                "example": "Call-in toll-free number (US/Canada)",
+                "description": "Label for call-in number."
+              },
+              "callInNumber": {
+                "type": "string",
+                "example": "123456789",
+                "description": "Call-in number to join teleconference from a phone."
+              },
+              "tollType": {
+                "type": "string",
+                "enum": [
+                  "toll",
+                  "tollFree"
+                ],
+                "description": "Type of toll for the call-in number."
+              }
+            }
+          },
+          "description": "Array of call-in numbers for joining teleconference from a phone."
+        },
+        "links": {
+          "type": "object",
+          "required": [
+            "rel",
+            "href",
+            "method"
+          ],
+          "properties": {
+            "rel": {
+              "type": "string",
+              "example": "globalCallinNumbers",
+              "description": "Link relation describing how the target resource is related to the current context (conforming with [RFC5998](https://tools.ietf.org/html/rfc5988))."
+            },
+            "href": {
+              "type": "string",
+              "example": "/api/v1/meetings/2c87cf8ece4e414a9fe5516e4a0aac76/globalCallinNumbers",
+              "description": "Target resource URI (conforming with [RFC5998](https://tools.ietf.org/html/rfc5988))."
+            },
+            "method": {
+              "type": "string",
+              "example": "GET",
+              "description": "Target resource method (conforming with [RFC5998](https://tools.ietf.org/html/rfc5988))."
+            }
+          },
+          "description": "[HATEOAS](https://en.wikipedia.org/wiki/HATEOAS) information of global call-in numbers for joining teleconference from a phone."
+        }
+      },
+      "description": "Information for callbacks from meeting to phone or for joining a teleconference using a phone."
+    }
+  }
+}

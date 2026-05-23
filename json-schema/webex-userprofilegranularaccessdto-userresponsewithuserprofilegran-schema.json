@@ -1,0 +1,228 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/UserProfileGranularAccessDTO_UserResponseWithUserProfileGranularAccess",
+  "title": "UserProfileGranularAccessDTO_UserResponseWithUserProfileGranularAccess",
+  "type": "object",
+  "description": "Data Transfer Object for creating or updating a user profile with granular access controls.",
+  "example": {
+    "organizationId": "f53c8b54-46ca-43f6-ba05-08426a46e23d",
+    "id": "93912f11-6017-404b-bf14-5331890b1797",
+    "version": 1,
+    "name": "Contact Center Admin Profile",
+    "description": "This profile should be applied only to contact center admins.",
+    "profileType": "PREMIUM_AGENT",
+    "active": true,
+    "permissionAccessLevel": "ALL",
+    "resourceAccessLevel": "ALL",
+    "permissions": [
+      {
+        "id": "00734874-4732-43bb-bfff-d1e75d309eb1",
+        "name": "sites",
+        "access": "NONE"
+      }
+    ],
+    "editableFolderIds": [
+      1,
+      2
+    ],
+    "viewableFolderIds": [
+      1,
+      2
+    ],
+    "nonViewableFolderIds": [
+      1,
+      2
+    ],
+    "systemDefault": false,
+    "defaultResourceCollectionId": "80f49a6e-11d7-4651-b730-99ed2f726f61",
+    "resourceCollections": [
+      {
+        "id": "80f49a6e-11d7-4651-b730-99ed2f726f61",
+        "name": "Department1",
+        "description": "Department1 description.",
+        "resources": [
+          {
+            "name": "team",
+            "accessLevel": "SPECIFIC",
+            "ids": [
+              "00734874-4732-43bb-bfff-d1e75d309eb1",
+              "00734874-4732-43bb-bfff-d1e75d309eb2"
+            ]
+          },
+          {
+            "name": "desktop-profile",
+            "accessLevel": "ALL"
+          },
+          {
+            "name": "desktop-layout",
+            "accessLevel": "NONE"
+          }
+        ],
+        "resourceCount": 2
+      }
+    ],
+    "createdTime": 0,
+    "lastUpdatedTime": 0
+  },
+  "properties": {
+    "organizationId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "ID of the contact center organization. This field is required for all bulk save operations.",
+      "example": "f53c8b54-46ca-43f6-ba05-08426a46e23d",
+      "maxLength": 36,
+      "minLength": 32,
+      "pattern": "^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$"
+    },
+    "id": {
+      "type": "string",
+      "description": "ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.",
+      "example": "93912f11-6017-404b-bf14-5331890b1797"
+    },
+    "version": {
+      "type": "integer",
+      "format": "int32",
+      "description": "The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.",
+      "example": 1
+    },
+    "name": {
+      "type": "string",
+      "description": "The name of the user profile.",
+      "example": "Contact Center Admin Profile",
+      "maxLength": 80,
+      "minLength": 0,
+      "pattern": "^[a-zA-Z0-9,_\\-\\s]*$"
+    },
+    "description": {
+      "type": "string",
+      "description": "An optional description of the profile.",
+      "example": "This profile should be applied only to contact center admins.",
+      "maxLength": 255,
+      "minLength": 0
+    },
+    "profileType": {
+      "type": "string",
+      "description": "The type determines the privileges applicable for a profile.\n\nIt can take one of these values:\n\nSTANDARD_AGENT \u2014 Has access to Agent Desktop[m_agent_desktop] module.\n\nPREMIUM_AGENT \u2014 Has access to Agent Desktop[m_agent_desktop] and Multimedia[m_multimedia] module.\n\nSUPERVISOR \u2014 Has access to all modules except to manage tenants in the Provisioning[m_provisioning] module.\n\nADMINISTRATOR \u2014 Has access to all modules.\n\nADMINISTRATOR_ONLY \u2014 Has access to Provisioning[m_provisioning], Real Time Reports[m_real_time_reports], Call Recording[m_call_recording], IMI Digital Channels[m_imi_digital_channels], and Routing Strategy[m_routing_strategy] modules.\n\nIt is required only during a create operation. \n\nThe profile type cannot be changed for an existing user profile.\n\n",
+      "enum": [
+        "ADMINISTRATOR",
+        "ADMINISTRATOR_ONLY",
+        "SUPERVISOR",
+        "PREMIUM_AGENT",
+        "STANDARD_AGENT",
+        "ANALYZER_ADMINISTRATOR",
+        "ANALYZER_SUPERVISOR",
+        "ANALYZER_USER"
+      ],
+      "example": "PREMIUM_AGENT"
+    },
+    "active": {
+      "type": "boolean",
+      "description": "Specify whether the User profile is active or not.",
+      "example": true
+    },
+    "permissionAccessLevel": {
+      "type": "string",
+      "description": "This can be used to allow users of this profile access to specific or all the Webex Contact Center permissions.\n\nIt can take one of these values:\n\nALL \u2014 A contact center user with this profile can access all Contact Center permissions.\n\nSPECIFIC \u2014 A contact center user with this profile can access only specific permissions.\n\n",
+      "enum": [
+        "SPECIFIC",
+        "ALL",
+        "PROVISIONED_VALUE",
+        "NONE"
+      ],
+      "example": "ALL"
+    },
+    "resourceAccessLevel": {
+      "type": "string",
+      "description": "This can be used to allow users of this profile access to specific or all the Webex Contact Center resources.\n\nIt can take one of these values:\n\nALL \u2014 A contact center user with this profile can access all Contact Center resources.\n\nSPECIFIC \u2014 A contact center user with this profile can access only specific resources.\n\n",
+      "enum": [
+        "SPECIFIC",
+        "ALL",
+        "PROVISIONED_VALUE",
+        "NONE"
+      ],
+      "example": "ALL"
+    },
+    "permissions": {
+      "type": "array",
+      "description": "Specifies the permissions(s) a user of this profile has access to.\n\nIt should be chosen when permission access is SPECIFIC.\n\nPlease specify all the following permissions and their respective access type.\n\n",
+      "items": {
+        "$ref": "#/components/schemas/UserProfilePermissionsDTO_UserResponseWithUserProfileGranularAccess"
+      },
+      "uniqueItems": true
+    },
+    "editableFolderIds": {
+      "type": "array",
+      "description": "Indicates the id(s) of the reporting folders a user of this profile has read and write access to. \n",
+      "example": [
+        1,
+        2
+      ],
+      "items": {
+        "type": "integer",
+        "format": "int32"
+      },
+      "uniqueItems": true
+    },
+    "viewableFolderIds": {
+      "type": "array",
+      "description": "Indicates the id(s) of the reporting folders a user of this profile has read access to. \n",
+      "example": [
+        1,
+        2
+      ],
+      "items": {
+        "type": "integer",
+        "format": "int32"
+      },
+      "uniqueItems": true
+    },
+    "nonViewableFolderIds": {
+      "type": "array",
+      "description": "Indicates the id(s) of the restricted reporting folders for a user of this profile. \n",
+      "example": [
+        1,
+        2
+      ],
+      "items": {
+        "type": "integer",
+        "format": "int32"
+      },
+      "uniqueItems": true
+    },
+    "systemDefault": {
+      "type": "boolean",
+      "description": "Indicates whether the created resource is system created or not",
+      "example": false
+    },
+    "defaultResourceCollectionId": {
+      "type": "string",
+      "description": "Specifies the default resource collection for this profile",
+      "example": "80f49a6e-11d7-4651-b730-99ed2f726f61"
+    },
+    "resourceCollections": {
+      "type": "array",
+      "description": "Specifies the resource collection(s) a user of this profile has access to.\n\nresource collection(s) needs to be specified when resourceAccessLevel is SPECIFIC",
+      "items": {
+        "$ref": "#/components/schemas/ResourceCollectionDTO_UserResponseWithUserProfileGranularAccess"
+      },
+      "uniqueItems": true
+    },
+    "createdTime": {
+      "type": "integer",
+      "format": "int64",
+      "description": "This is the created time of the entity."
+    },
+    "lastUpdatedTime": {
+      "type": "integer",
+      "format": "int64",
+      "description": "This is the updated time of the entity."
+    }
+  },
+  "required": [
+    "active",
+    "name",
+    "permissionAccessLevel",
+    "profileType",
+    "resourceAccessLevel"
+  ]
+}

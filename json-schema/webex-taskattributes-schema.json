@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/TaskAttributes",
+  "title": "TaskAttributes",
+  "required": [
+    "channelType",
+    "createdTime",
+    "lastUpdatedTime",
+    "owner",
+    "queue",
+    "status"
+  ],
+  "type": "object",
+  "properties": {
+    "owner": {
+      "$ref": "#/components/schemas/TaskOwner"
+    },
+    "queue": {
+      "$ref": "#/components/schemas/TaskQueue"
+    },
+    "channelType": {
+      "type": "string",
+      "description": "Task channel type(s) permitted in the response. Must be lowercase. By default, there is no channel type filtering.",
+      "example": "email"
+    },
+    "status": {
+      "type": "string",
+      "description": "Current status of the task.",
+      "example": "created",
+      "enum": [
+        "created",
+        "queued",
+        "offered",
+        "assigned",
+        "abandoned",
+        "completed"
+      ]
+    },
+    "createdTime": {
+      "type": "integer",
+      "description": "Created time of the task (epoch milliseconds).",
+      "format": "int64",
+      "example": 1591702170000
+    },
+    "lastUpdatedTime": {
+      "type": "integer",
+      "description": "Last updated time of the task (epoch milliseconds). Updates whenever the underlying data is modified, even if the Task view of the data is the same. May also update after task \"closure\", so not suitable for finding a task's \"closed time\"",
+      "format": "int64",
+      "example": 1591712170099
+    },
+    "captureRequested": {
+      "type": "boolean",
+      "description": "Whether a capture has been requested for this Task. If this is true, a capture should eventually be available. False indicates no capture will be made available. If null, it is not yet known whether a capture has been requested.",
+      "example": false
+    },
+    "origin": {
+      "type": "string",
+      "description": "Customer's channel-specific identifier. For telephony, this is the phone number. For email and chat, this is the email address.",
+      "example": "chatuser@email.com"
+    },
+    "destination": {
+      "type": "string",
+      "description": "Destination the customer contacted. For telephony, this is the number the contact called. For chat, this is the URL of the page where the chat takes place. For email, it is the email address contacted.",
+      "example": "+18005555555"
+    },
+    "direction": {
+      "type": "string",
+      "description": "Indicates which party initiated the Task. If \"inbound\", call was initiated by customer. If \"outbound\", was initiated by system as part of campaign. If \"outdial\", was initiated by an agent.",
+      "example": "inbound"
+    },
+    "reasonCode": {
+      "type": "string",
+      "description": "Reason code specified by customer to indicate main aim of the task",
+      "example": "Credit"
+    }
+  },
+  "description": "Attributes of the task."
+}

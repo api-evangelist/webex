@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/SubscriptionRequestUpdate",
+  "title": "SubscriptionRequestUpdate",
+  "type": "object",
+  "properties": {
+    "description": {
+      "maxLength": 1024,
+      "minLength": 0,
+      "type": "string",
+      "description": "Client-defined string describing the subscription.",
+      "example": "The subscription my integration uses to synchronize with WxCC"
+    },
+    "eventTypes": {
+      "maxItems": 32,
+      "minItems": 1,
+      "type": "array",
+      "description": "Types of events to which the subscription will listen.",
+      "example": [
+        "agent:login",
+        "agent:logout"
+      ],
+      "items": {
+        "type": "string"
+      }
+    },
+    "destinationUrl": {
+      "pattern": "^(https?)://.*$",
+      "type": "string",
+      "description": "URL to which webhooks will be posted. Must be HTTPS on an IANA-listed top-level domain name (e.g. .com) with a path (at least /). No query parameters, userinfo, non-443 ports, or fragments allowed. We do not treat this field as sensitive data, so do not use secrets in this URL such as tokens or API keys.",
+      "format": "uri",
+      "example": "https://www.cisco.com/"
+    },
+    "status": {
+      "pattern": "(active|inactive)",
+      "type": "string",
+      "description": "Status of the subscription. Can be \"active\" or \"inactive\". The system may change the status to \"inactive\" in error scenarios.",
+      "example": "inactive",
+      "enum": [
+        "active",
+        "inactive"
+      ]
+    },
+    "secret": {
+      "maxLength": 256,
+      "minLength": 32,
+      "type": "string",
+      "description": "Secret string used to sign payloads sent to the destination URL.",
+      "example": "my-32-plus-character-long-secret"
+    },
+    "orgId": {
+      "type": "string",
+      "description": "Organization ID to be used for this operation. If unspecified, the Organization ID is inferred from the token. The token must have permission to interact with the organization.",
+      "format": "uuid",
+      "example": "97cdbf45-ebe2-4687-8341-44d5c7abf101"
+    }
+  }
+}

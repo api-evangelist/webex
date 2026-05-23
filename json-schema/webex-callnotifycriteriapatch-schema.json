@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/CallNotifyCriteriaPatch",
+  "title": "CallNotifyCriteriaPatch",
+  "type": "object",
+  "description": "Request body for updating call notify criteria settings.",
+  "properties": {
+    "scheduleName": {
+      "type": "string",
+      "description": "Name of the schedule to be associated with the criteria.",
+      "example": "Holiday V2"
+    },
+    "scheduleType": {
+      "type": "string",
+      "enum": [
+        "businessHours",
+        "holidays"
+      ],
+      "description": "Type of the schedule.\n * `businessHours` - Business hours schedule type.\n * `holidays` - Holidays schedule type.\n"
+    },
+    "scheduleLevel": {
+      "type": "string",
+      "enum": [
+        "PEOPLE",
+        "LOCATION"
+      ],
+      "description": " * `PEOPLE` - The schedule is at the user level.\n * `LOCATION` - The schedule is at the location level.\n"
+    },
+    "callsFrom": {
+      "type": "string",
+      "enum": [
+        "ANY_PHONE_NUMBER",
+        "SELECT_PHONE_NUMBERS"
+      ],
+      "description": "Specifies the type of callsFrom, categorizing incoming data based on callsFrom types or numbers that match the current criteria.\n * `ANY_PHONE_NUMBER` - The criteria applies to any phone number.\n* `SELECT_PHONE_NUMBERS` - The criteria applies to selected phone numbers.\n"
+    },
+    "anonymousCallersEnabled": {
+      "type": "boolean",
+      "description": "Indicates whether anonymous callers are included in this criteria. Required if `callsFrom` is `SELECT_PHONE_NUMBERS`.",
+      "example": true
+    },
+    "unavailableCallersEnabled": {
+      "type": "boolean",
+      "description": "Indicates whether unavailable callers are included in this criteria. Required if `callsFrom` is `SELECT_PHONE_NUMBERS`.",
+      "example": true
+    },
+    "phoneNumbers": {
+      "type": "array",
+      "description": "List of phone numbers to update for this criteria. Required if `callsFrom` is `SELECT_PHONE_NUMBERS`.",
+      "items": {
+        "type": "string",
+        "description": "Phone number that the criteria applies to."
+      }
+    },
+    "notificationEnabled": {
+      "type": "boolean",
+      "description": "Determines whether call notification is applied for calls matching this criteria. If `true`, call notify is applied. If `false`, this criteria acts as a 'Don't Notify Me' rule, preventing call notification. Criteria with `notificationEnabled` set to `false` (Don't Notify Me) take precedence over criteria with `notificationEnabled` set to `true` (Notify).",
+      "example": false
+    }
+  }
+}

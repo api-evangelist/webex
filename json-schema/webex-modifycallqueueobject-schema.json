@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/ModifyCallQueueObject",
+  "title": "ModifyCallQueueObject",
+  "type": "object",
+  "required": [
+    "queueSettings"
+  ],
+  "properties": {
+    "enabled": {
+      "type": "boolean",
+      "example": true,
+      "description": "Whether or not the call queue is enabled."
+    },
+    "name": {
+      "type": "string",
+      "example": "CallQueue-1",
+      "description": "Unique name for the call queue."
+    },
+    "languageCode": {
+      "type": "string",
+      "example": "en-US",
+      "description": "Language code."
+    },
+    "firstName": {
+      "type": "string",
+      "example": "Hakim",
+      "description": "First name to be shown when calls are forwarded out of this call queue. Defaults to `.`. This field has been deprecated. Please use `directLineCallerIdName` and `dialByName` instead."
+    },
+    "lastName": {
+      "type": "string",
+      "example": "Smith",
+      "description": "Last name to be shown when calls are forwarded out of this call queue. Defaults to the `phoneNumber` if set, otherwise defaults to call group name. This field has been deprecated. Please use `directLineCallerIdName` and `dialByName` instead."
+    },
+    "timeZone": {
+      "type": "string",
+      "example": "America/Chicago",
+      "description": "Time zone for the hunt group."
+    },
+    "phoneNumber": {
+      "type": "string",
+      "example": "+12225555309",
+      "description": "Primary phone number of the call queue."
+    },
+    "extension": {
+      "type": "string",
+      "example": "5309",
+      "description": "Extension of the call queue."
+    },
+    "alternateNumberSettings": {
+      "type": "object",
+      "properties": {
+        "distinctiveRingEnabled": {
+          "type": "boolean",
+          "example": true,
+          "description": "Distinctive Ringing selected for the alternate numbers in the call queue overrides the normal ringing patterns set for Alternate Numbers."
+        },
+        "alternateNumbers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/AlternateNumbersWithPattern"
+          },
+          "description": "Allows up to 10 numbers, each with an optional distinctive ring setting override."
+        }
+      },
+      "description": "The alternate numbers feature allows you to assign multiple phone numbers or extensions to a call queue. Each number will reach the same greeting and each menu will function identically to the main number. The alternate numbers option enables you to have up to ten (10) phone numbers ring into the call queue."
+    },
+    "callPolicies": {
+      "$ref": "#/components/schemas/ModifyCallQueueCallPolicyObject",
+      "description": "Policy controlling how calls are routed to agents."
+    },
+    "callingLineIdPolicy": {
+      "type": "string",
+      "enum": [
+        "DIRECT_LINE",
+        "LOCATION_NUMBER",
+        "CUSTOM"
+      ],
+      "description": "Which type of Calling Line ID Policy Selected for Call Queue.\n * `DIRECT_LINE` - Calling Line ID Policy will show the caller's direct line number.\n * `LOCATION_NUMBER` - Calling Line ID Policy will show the main number for the location.\n * `CUSTOM` - Calling Line ID Policy will show the value from the `callingLineIdPhoneNumber` field.\n"
+    },
+    "callingLineIdPhoneNumber": {
+      "type": "string",
+      "example": "+12072342368",
+      "description": "Calling line ID Phone number which will be shown if CUSTOM is selected."
+    },
+    "queueSettings": {
+      "$ref": "#/components/schemas/CallQueueQueueSettingsObject",
+      "description": "Overall call queue settings."
+    },
+    "allowCallWaitingForAgentsEnabled": {
+      "type": "boolean",
+      "description": "Flag to indicate whether call waiting is enabled for agents."
+    },
+    "agents": {
+      "type": "array",
+      "items": {
+        "$ref": "#/components/schemas/ModifyPersonPlaceVirtualLineCallQueueObject"
+      },
+      "description": "People, workspaces and virtual lines that are eligible to receive calls."
+    },
+    "allowAgentJoinEnabled": {
+      "type": "boolean",
+      "description": "Whether or not to allow agents to join or unjoin a queue."
+    },
+    "phoneNumberForOutgoingCallsEnabled": {
+      "type": "boolean",
+      "example": true,
+      "description": "When `true`, indicates that the agent's configuration allows them to use the queue's Caller ID for outgoing calls."
+    },
+    "directLineCallerIdName": {
+      "$ref": "#/components/schemas/DirectLineCallerIdNameObjectForPut",
+      "description": "Settings for the direct line caller ID name to be shown for this call queue."
+    },
+    "dialByName": {
+      "type": "string",
+      "example": "Hakim Smith",
+      "description": "Sets or clears the name to be used for dial by name functions. To clear the `dialByName`, the attribute must be set to null or empty string. Characters of `%`,  `+`, `\\`, `\"` and Unicode characters are not allowed."
+    }
+  }
+}

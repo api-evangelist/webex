@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/GetHuntGroupCallPolicyObject",
+  "title": "GetHuntGroupCallPolicyObject",
+  "type": "object",
+  "required": [
+    "policy",
+    "noAnswer"
+  ],
+  "properties": {
+    "policy": {
+      "$ref": "#/components/schemas/HuntPolicySelection",
+      "description": "Call routing policy used to dispatch calls to agents."
+    },
+    "waitingEnabled": {
+      "type": "boolean",
+      "example": true,
+      "description": "If `false`, then the option is treated as \"Advance when busy\". The hunt group won't ring agents when they're on a call and advances to the next agent. If a hunt group agent has call waiting enabled and the call is advanced to them, the call waits until that hunt group agent isn't busy."
+    },
+    "groupBusyEnabled": {
+      "type": "boolean",
+      "example": true,
+      "description": "When `true`, the hunt group busy status will be set to busy. All new calls will get busy treatment. If `busyRedirect` is enabled, the calls are routed to the destination specified in `busyRedirect`."
+    },
+    "allowMembersToControlGroupBusyEnabled": {
+      "type": "boolean",
+      "example": true,
+      "description": "When `true`, agents can change the hunt group busy status."
+    },
+    "noAnswer": {
+      "type": "object",
+      "required": [
+        "nextAgentEnabled",
+        "nextAgentRings",
+        "forwardEnabled",
+        "numberOfRings",
+        "systemMaxNumberOfRings",
+        "destinationVoicemailEnabled"
+      ],
+      "properties": {
+        "nextAgentEnabled": {
+          "type": "boolean",
+          "example": true,
+          "description": "If enabled, advance to next agent after the `nextAgentRings` has occurred."
+        },
+        "nextAgentRings": {
+          "type": "number",
+          "example": 3,
+          "description": "Number of rings before call will be forwarded if unanswered and `nextAgentEnabled` is true."
+        },
+        "forwardEnabled": {
+          "type": "boolean",
+          "description": "If `true`, forwards unanswered calls to the destination after the number of rings occurs."
+        },
+        "destination": {
+          "type": "string",
+          "example": "2225551212",
+          "description": "Destination if `forwardEnabled` is True."
+        },
+        "numberOfRings": {
+          "type": "number",
+          "example": 15,
+          "description": "Number of rings before forwarding calls if `forwardEnabled` is true."
+        },
+        "systemMaxNumberOfRings": {
+          "type": "number",
+          "example": 15,
+          "description": "System-wide maximum number of rings allowed for `numberOfRings` setting."
+        },
+        "destinationVoicemailEnabled": {
+          "type": "boolean",
+          "description": "If `destinationVoicemailEnabled` is true, enables and disables sending incoming to destination number's voicemail if the destination is an internal phone number and that number has the voicemail service enabled."
+        }
+      },
+      "description": "Settings for when the call into the hunt group is not answered."
+    },
+    "busyRedirect": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "example": true,
+          "description": "If `true`, calls are diverted to a defined phone number when all agents are busy, or when the hunt group busy status is set to busy."
+        },
+        "destination": {
+          "type": "string",
+          "example": "2225551212",
+          "description": "Destination for busy redirect."
+        },
+        "destinationVoicemailEnabled": {
+          "type": "boolean",
+          "description": "The enabled or disabled state of sending diverted incoming calls to the `destination` number's voicemail if the `destination` is an internal phone number and that number has the voicemail service enabled."
+        }
+      },
+      "description": "Settings for sending calls to a specified destination when all agents are busy or when the hunt group busy status is set to busy."
+    },
+    "businessContinuityRedirect": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "example": true,
+          "description": "If `true`, unreachable, unanswered calls are diverted to a defined phone number. For persons with only a mobile device, calls won't be diverted if there is a network outage."
+        },
+        "destination": {
+          "type": "string",
+          "example": "2225551212",
+          "description": "Destination for business continuity redirect."
+        },
+        "destinationVoicemailEnabled": {
+          "type": "boolean",
+          "description": "The enabled or disabled state of sending diverted incoming calls to the `destination` number's voicemail if the `destination` is an internal phone number and that number has the voicemail service enabled."
+        }
+      },
+      "description": "Settings for sending calls to a specified destination if the phone is not connected to the network for any reason, such as a power outage, failed internet connection, or wiring problem."
+    }
+  }
+}

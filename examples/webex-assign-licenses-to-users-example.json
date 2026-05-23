@@ -1,0 +1,326 @@
+{
+  "operationId": "Assign_Licenses_to_Users",
+  "method": "PATCH",
+  "path": "/licenses/users",
+  "summary": "Assign Licenses to Users",
+  "requestExamples": [
+    {
+      "contentType": "application/json",
+      "example": {
+        "email": "john.andersen@example.com",
+        "personId": "Y2lzY29zcGFyazovL3VzL1BFT1BMRS9mNWIzNjE4Ny1jOGRkLTQ3MjctOGIyZi1mOWM0NDdmMjkwNDY",
+        "orgId": "Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE",
+        "licenses": [
+          {
+            "id": "Y2lzY29zcGFyazovL3VzL0xJQ0VOU0UvOTZhYmMyYWEtM2RjYy0xMWU1LWExNTItZmUzNDgxOWNkYzlh",
+            "operation": "add",
+            "properties": {
+              "locationId": "Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzYzNzE1",
+              "phoneNumber": "+14085267209",
+              "extension": "133"
+            }
+          },
+          {
+            "id": "Y2lzY29zcGFyazovL3VzL0xJQ0VOU0UvOTZhYmMyYWEtM2RjYy0xMWU1LTU2eTctMGY0NTU2YWRleWhu",
+            "operation": "remove"
+          },
+          {
+            "id": "Y2lzY29zcGFyazovL3VzL0xJQ0VOU0UvOTZhYmMyYWEtM2RjYy0xMWU1LTIzNDItMGY0NTU2YWRlZXJm",
+            "operation": "add"
+          }
+        ],
+        "siteUrls": [
+          {
+            "siteUrl": "mysite.webex.com",
+            "accountType": "attendee",
+            "operation": "add"
+          }
+        ]
+      }
+    }
+  ],
+  "responseExamples": [
+    {
+      "status": "200",
+      "contentType": "application/json",
+      "example": {
+        "orgId": "Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE",
+        "personId": "Y2lzY29zcGFyazovL3VzL1BFT1BMRS9mNWIzNjE4Ny1jOGRkLTQ3MjctOGIyZi1mOWM0NDdmMjkwNDY",
+        "email": "john.andersen@example.com",
+        "licenses": [
+          "Y2lzY29zcGFyazovL3VzL0xJQ0VOU0UvOTZhYmMyYWEtM2RjYy0xMWU1LWExNTItZmUzNDgxOWNkYzlh",
+          "Y2lzY29zcGFyazovL3VzL0xJQ0VOU0UvOTZhYmMyYWEtM2RjYy0xMWU1LWIyNjMtMGY0NTkyYWRlZmFi",
+          "Y2lzY29zcGFyazovL3VzL0xJQ0VOU0UvOTZhYmMyYWEtM2RjYy0xMWU1LTIzNDItMGY0NTU2YWRlZXJm"
+        ],
+        "siteUrls": [
+          {
+            "siteUrl": "mysite.webex.com",
+            "accountType": "attendee"
+          },
+          {
+            "siteUrl": "myhostsite.webex.com",
+            "accountType": "host"
+          }
+        ]
+      }
+    },
+    {
+      "status": "206",
+      "contentType": "application/json",
+      "example": {
+        "orgId": "Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE",
+        "personId": "Y2lzY29zcGFyazovL3VzL1BFT1BMRS9mNWIzNjE4Ny1jOGRkLTQ3MjctOGIyZi1mOWM0NDdmMjkwNDY",
+        "email": "john.andersen@example.com",
+        "licenses": [
+          "Y2lzY29zcGFyazovL3VzL0xJQ0VOU0UvOTZhYmMyYWEtM2RjYy0xMWU1LWExNTItZmUzNDgxOWNkYzlh"
+        ],
+        "siteUrls": [
+          {
+            "siteUrl": "mysite.webex.com",
+            "accountType": "attendee"
+          }
+        ]
+      }
+    },
+    {
+      "status": "400",
+      "contentType": "application/json",
+      "name": "locationNotFound",
+      "example": {
+        "message": "Unable to find location",
+        "errors": [
+          {
+            "errorCode": 400,
+            "description": "Unable to find location."
+          }
+        ],
+        "trackingId": "NA_88b8b4ce-6338-4d3a-8d6c-22b37e62354f"
+      }
+    },
+    {
+      "status": "400",
+      "contentType": "application/json",
+      "name": "licenseNotRecognized",
+      "example": {
+        "message": "License not recognized",
+        "errors": [
+          {
+            "errorCode": 400000,
+            "description": "License not recognized {licenses}"
+          }
+        ],
+        "trackingId": "NA_88b8b4ce-6338-4d3a-8d6c-22b37e62354f"
+      }
+    },
+    {
+      "status": "400",
+      "contentType": "application/json",
+      "name": "callingLicenseDowngrade",
+      "example": {
+        "message": "License assignment failed",
+        "errors": [
+          {
+            "errorCode": 400112,
+            "description": "Changing a user's Webex Calling license from Professional to Standard is not allowed. The following license(s) could not be applied as requested: {licenses}"
+          }
+        ],
+        "trackingId": "NA_88b8b4ce-6338-4d3a-8d6c-22b37e62354f"
+      }
+    },
+    {
+      "status": "400",
+      "contentType": "application/json",
+      "name": "messengerLicenseManagement",
+      "example": {
+        "message": "License management not supported",
+        "errors": [
+          {
+            "errorCode": 400118,
+            "description": "User management of Messenger license {licenses} is not supported"
+          }
+        ],
+        "trackingId": "NA_88b8b4ce-6338-4d3a-8d6c-22b37e62354f"
+      }
+    },
+    {
+      "status": "400",
+      "contentType": "application/json",
+      "name": "invalidSiteUrl",
+      "example": {
+        "message": "Invalid site URL",
+        "errors": [
+          {
+            "errorCode": 400216,
+            "description": "Request contains invalid attendee siteUrls: {siteUrl}"
+          }
+        ],
+        "trackingId": "NA_88b8b4ce-6338-4d3a-8d6c-22b37e62354f"
+      }
+    },
+    {
+      "status": "400",
+      "contentType": "application/json",
+      "name": "conflictingCallingLicenses",
+      "example": {
+        "message": "License conflict",
+        "errors": [
+          {
+            "errorCode": 400404,
+            "description": "User cannot have both Webex Calling Professional and Standard License together. The following license(s) could not be applied as requested: {licenses}"
+          }
+        ],
+        "trackingId": "NA_88b8b4ce-6338-4d3a-8d6c-22b37e62354f"
+      }
+    },
+    {
+      "status": "400",
+      "contentType": "application/json",
+      "name": "callingStandardAttendantConflict",
+      "example": {
+        "message": "License conflict",
+        "errors": [
+          {
+            "errorCode": 400406,
+            "description": "User cannot have both Webex Calling Standard and Webex Attendant Console licenses together. The following license(s) could not be applied as requested: {licenses}"
+          }
+        ],
+        "trackingId": "NA_88b8b4ce-6338-4d3a-8d6c-22b37e62354f"
+      }
+    },
+    {
+      "status": "400",
+      "contentType": "application/json",
+      "name": "callingStandardCXEssentialConflict",
+      "example": {
+        "message": "License conflict",
+        "errors": [
+          {
+            "errorCode": 400407,
+            "description": "User cannot have both Webex Calling Standard and CX Essential licenses together. The following license(s) could not be applied as requested: {licenses}"
+          }
+        ],
+        "trackingId": "NA_88b8b4ce-6338-4d3a-8d6c-22b37e62354f"
+      }
+    },
+    {
+      "status": "400",
+      "contentType": "application/json",
+      "name": "attendantConsolePrerequisite",
+      "example": {
+        "message": "License prerequisite missing",
+        "errors": [
+          {
+            "errorCode": 400408,
+            "description": "User needs Webex Calling Professional license to be assigned before assigning Webex Attendant Console: {licenses}"
+          }
+        ],
+        "trackingId": "NA_88b8b4ce-6338-4d3a-8d6c-22b37e62354f"
+      }
+    },
+    {
+      "status": "400",
+      "contentType": "application/json",
+      "name": "cxEssentialDowngrade",
+      "example": {
+        "message": "License downgrade not allowed",
+        "errors": [
+          {
+            "errorCode": 400410,
+            "description": "Changing a user's license from CX Essential to Webex Calling Standard is not allowed. The following license(s) could not be applied as requested: {licenses}"
+          }
+        ],
+        "trackingId": "NA_88b8b4ce-6338-4d3a-8d6c-22b37e62354f"
+      }
+    },
+    {
+      "status": "400",
+      "contentType": "application/json",
+      "name": "missingCallingProperties",
+      "example": {
+        "message": "License properties missing",
+        "errors": [
+          {
+            "errorCode": 400411,
+            "description": "Each Webex Calling license should contain its own calling properties. The following license(s) do not have properties: {licenses}"
+          }
+        ],
+        "trackingId": "NA_88b8b4ce-6338-4d3a-8d6c-22b37e62354f"
+      }
+    },
+    {
+      "status": "400",
+      "contentType": "application/json",
+      "name": "exclusiveLicenseConflict",
+      "example": {
+        "message": "License conflict",
+        "errors": [
+          {
+            "errorCode": 400413,
+            "description": "Could not apply the following license(s): {licenses} as the user can be assigned only one of licenses with the offer code from the list:"
+          }
+        ],
+        "trackingId": "NA_88b8b4ce-6338-4d3a-8d6c-22b37e62354f"
+      }
+    },
+    {
+      "status": "400",
+      "contentType": "application/json",
+      "name": "freeMessagingPrerequisite",
+      "example": {
+        "message": "License prerequisite missing",
+        "errors": [
+          {
+            "errorCode": 700003,
+            "description": "Free teams messaging mandatory for paid teams messaging license. The following license could not be applied as requested: {licenses}"
+          }
+        ],
+        "trackingId": "NA_88b8b4ce-6338-4d3a-8d6c-22b37e62354f"
+      }
+    },
+    {
+      "status": "400",
+      "contentType": "application/json",
+      "name": "freeMeetingPrerequisite",
+      "example": {
+        "message": "License prerequisite missing",
+        "errors": [
+          {
+            "errorCode": 700004,
+            "description": "Free teams meeting mandatory for paid teams meeting license. The following license could not be applied as requested: {licenses}"
+          }
+        ],
+        "trackingId": "NA_88b8b4ce-6338-4d3a-8d6c-22b37e62354f"
+      }
+    },
+    {
+      "status": "400",
+      "contentType": "application/json",
+      "name": "messagingPrerequisiteForMeeting",
+      "example": {
+        "message": "License prerequisite missing",
+        "errors": [
+          {
+            "errorCode": 700005,
+            "description": "Free teams messaging mandatory for teams meeting license. The following license(s) could not be applied as requested: {licenses}"
+          }
+        ],
+        "trackingId": "NA_88b8b4ce-6338-4d3a-8d6c-22b37e62354f"
+      }
+    },
+    {
+      "status": "400",
+      "contentType": "application/json",
+      "name": "screenShareImplicit",
+      "example": {
+        "message": "License removal not allowed",
+        "errors": [
+          {
+            "errorCode": 700006,
+            "description": "Screen Share {licenses} is implicitly assigned and cannot be removed"
+          }
+        ],
+        "trackingId": "NA_88b8b4ce-6338-4d3a-8d6c-22b37e62354f"
+      }
+    }
+  ]
+}

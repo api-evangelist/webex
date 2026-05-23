@@ -1,0 +1,156 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/WorkspaceUpdateRequest",
+  "title": "WorkspaceUpdateRequest",
+  "type": "object",
+  "properties": {
+    "displayName": {
+      "type": "string",
+      "example": "SFO-12 Capanina",
+      "description": "A friendly name for the workspace."
+    },
+    "locationId": {
+      "type": "string",
+      "example": "YL34GrT...",
+      "description": "Location associated with the workspace. Must be provided when the `floorId` is set."
+    },
+    "workspaceLocationId": {
+      "type": "string",
+      "example": "YL34GrT...",
+      "description": "Legacy workspace location ID associated with the workspace. Prefer `locationId`."
+    },
+    "floorId": {
+      "type": "string",
+      "example": "Y2lzY29z...",
+      "description": "Floor associated with the workspace."
+    },
+    "capacity": {
+      "type": "number",
+      "example": 5,
+      "description": "How many people the workspace is suitable for. If set, must be 0 or higher."
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "notSet",
+        "focus",
+        "huddle",
+        "meetingRoom",
+        "open",
+        "desk",
+        "other"
+      ],
+      "description": "The type that best describes the workspace.\n * `notSet` - No workspace type set.\n * `focus` - High concentration.\n * `huddle` - Brainstorm/collaboration.\n * `meetingRoom` - Dedicated meeting space.\n * `open` - Unstructured agile.\n * `desk` - Individual.\n * `other` - Unspecified.\n"
+    },
+    "calendar": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "microsoft"
+        },
+        "emailAddress": {
+          "type": "string",
+          "example": "workspace@example.com",
+          "description": "Workspace email address. Will not be set when the calendar type is `none`."
+        },
+        "resourceGroupId": {
+          "type": "string",
+          "example": "Y2lzY29zcGFyazovL3VybjpURUFNOk5vcndheS9SRVNPVVJDRV9HUk9VUC9jOGFiMDJhNC01NjI5LTRiNTctOGUyNy03ZDZkZjJlN2YzNzA=",
+          "description": "The `ResourceGroup` ID is associated with the workspace and is only applicable for on-premise MICROSOFT calendar."
+        }
+      },
+      "description": "An empty or null `calendar` field will not cause any changes. Provide a `type` (`microsoft`, `google`, or `none`), an `emailAddress`, and a `resourceGroupId`. To remove a calendar, set the `type` to `none`; this does not require an `emailAddress` or `resourceGroupId`."
+    },
+    "sipAddress": {
+      "type": "string",
+      "description": "The `sipAddress` field can only be provided when calling type is `thirdPartySipCalling`."
+    },
+    "calling": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "freeCalling",
+            "hybridCalling",
+            "webexCalling",
+            "webexEdgeForDevices",
+            "thirdPartySipCalling",
+            "none"
+          ],
+          "description": "The calling type that is supported on the workspace.\n * `freeCalling` - Free Calling (Default).\n * `hybridCalling` - Hybrid Calling.\n * `webexCalling` - Webex Calling.\n * `webexEdgeForDevices` - Webex Edge For Devices.\n * `thirdPartySipCalling` - Third-party SIP URI.\n * `none` - No Calling.\n"
+        },
+        "webexCalling": {
+          "type": "object",
+          "properties": {
+            "phoneNumber": {
+              "type": "string",
+              "example": "+12145654032",
+              "description": "End user phone number."
+            },
+            "extension": {
+              "type": "string",
+              "example": "28278",
+              "description": "End user extension."
+            },
+            "locationId": {
+              "type": "string",
+              "example": "Y2lzY29g4...",
+              "description": "Calling location ID."
+            },
+            "licenses": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "example": "Y2lzY29g4...1,Y2lzY29g4...2,Y2lzY29g4...n"
+              },
+              "description": "A list of Webex Calling license IDs. If multiple license IDs are provided, the oldest suitable one will be applied."
+            }
+          },
+          "description": "The `webexCalling` object only applies when calling type is `webexCalling`."
+        }
+      },
+      "description": "Calling types supported on update are `freeCalling`, `thirdPartySipCalling`, `webexCalling` and `none`."
+    },
+    "notes": {
+      "type": "string",
+      "example": "this is a note",
+      "description": "Notes associated to the workspace."
+    },
+    "hotdeskingStatus": {
+      "type": "string",
+      "enum": [
+        "on",
+        "off"
+      ],
+      "description": "Hot desking status of the workspace.\n * `on` - Workspace supports hotdesking.\n * `off` - Workspace does not support hotdesking.\n"
+    },
+    "deviceHostedMeetings": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "example": true,
+          "description": "Set to `true` to enable or `false` to disable."
+        },
+        "siteUrl": {
+          "type": "string",
+          "example": "'example.webex.com'",
+          "description": "The Webex site for device hosting meetings."
+        }
+      },
+      "description": "To enable device hosted meetings, set a Webex `siteUrl` and the `enabled` flag to `true`."
+    },
+    "indoorNavigation": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "description": "URL of a map locating the workspace. Passing `null` will remove the configuration."
+        }
+      },
+      "description": "Indoor navigation configuration."
+    }
+  }
+}

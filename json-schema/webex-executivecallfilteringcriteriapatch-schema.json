@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/ExecutiveCallFilteringCriteriaPatch",
+  "title": "ExecutiveCallFilteringCriteriaPatch",
+  "type": "object",
+  "description": "Executive call filtering criteria settings request object for updating detailed filter rules and routing configuration.",
+  "properties": {
+    "scheduleName": {
+      "type": "string",
+      "description": "Name of the schedule associated with this criteria."
+    },
+    "scheduleType": {
+      "type": "string",
+      "enum": [
+        "holidays",
+        "businessHours"
+      ],
+      "description": " * `businessHours` - The schedule type that specifies the business or working hours during the day.\n * `holidays` - The schedule type that specifies the day when your organization is not open.\n"
+    },
+    "scheduleLevel": {
+      "type": "string",
+      "enum": [
+        "PEOPLE",
+        "GROUP"
+      ],
+      "description": " * `PEOPLE` - The schedule level that specifies that criteria is of People level.\n * `GROUP` - The schedule level that specifies that criteria is of Group (Location) level.\n"
+    },
+    "callsFrom": {
+      "type": "string",
+      "enum": [
+        "ANY_PHONE_NUMBER",
+        "SELECT_PHONE_NUMBERS",
+        "ANY_INTERNAL",
+        "ANY_EXTERNAL"
+      ],
+      "description": " * `ANY_PHONE_NUMBER` - The criteria applies to any phone number.\n * `SELECT_PHONE_NUMBERS` - The criteria applies to selected phone numbers.\n * `ANY_INTERNAL` - The criteria applies to any internal number.\n * `ANY_EXTERNAL` - The criteria applies to any external number.\n"
+    },
+    "anonymousCallersEnabled": {
+      "type": "boolean",
+      "description": "Set to enable or disable the criteria for anonymous callers."
+    },
+    "unavailableCallersEnabled": {
+      "type": "boolean",
+      "description": "Set to enable or disable the criteria for unavailable callers."
+    },
+    "phoneNumbers": {
+      "type": "array",
+      "description": "The list of phone numbers that this filtering criteria applies to, when `callsFrom` is set to `SELECT_PHONE_NUMBERS`.",
+      "items": {
+        "type": "string",
+        "description": "Phone number that the criteria applies to based on `callsFrom` selection."
+      }
+    },
+    "filterEnabled": {
+      "type": "boolean",
+      "description": "Controls the action when this criteria matches a call. When `true`, matching calls are filtered and will alert the executive's assistants. When `false`, matching calls are not filtered and will not alert the executive's assistants. Criteria with `filterEnabled` as `false` take precedence over other filtering criteria with `filterEnabled` as `true`, allowing exceptions where certain calls are not filtered to the executive's assistants."
+    },
+    "callsToNumbers": {
+      "type": "array",
+      "description": "List of numbers for the executive that will match the criteria when called. This may include the executive\u2019s primary number and/or extension, as well as secondary (alternate) numbers (and associated extensions). If the list is empty, any number or extension for the executive matches the criteria when called. If the list is not empty, only the specified numbers and their extensions match the criteria.",
+      "items": {
+        "type": "object",
+        "description": "Executive phone number that will match the criteria when called.",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "PRIMARY",
+              "ALTERNATE"
+            ],
+            "description": " * `PRIMARY` - Number is assigned as primary to executive.\n * `ALTERNATE` - Number is assigned as alternate (secondary) to the executive.\n"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "description": "The phone number assigned to the executive that will be used to match criteria."
+          }
+        }
+      }
+    }
+  }
+}

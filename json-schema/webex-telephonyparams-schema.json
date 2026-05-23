@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/TelephonyParams",
+  "title": "TelephonyParams",
+  "type": "object",
+  "description": "Telephony channel parameters.",
+  "required": [
+    "type",
+    "outdialEntryPointId",
+    "outboundType"
+  ],
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "telephony"
+      ],
+      "description": "Must be `telephony` for telephony channel parameters.",
+      "example": "telephony"
+    },
+    "outdialEntryPointId": {
+      "type": "string",
+      "description": "UUID of the entry point for the task. For `CALLBACK` and `OUTDIAL`, this must be an outbound entry point. For `EXECUTE_FLOW`, this must be an inbound entry point mapped to the flow to be triggered. **Migrating from v1:** Previously named `entryPointId`.",
+      "example": "aef6455f-ccd6-4261-bb00-e80f845c01b0"
+    },
+    "outboundType": {
+      "type": "string",
+      "description": "The outbound type for the task. Use `OUTDIAL` when the agent needs to make an outbound call to the customer. Use `CALLBACK` when scheduling a callback \u2014 `callback` field is required. Use `EXECUTE_FLOW` to trigger a predefined flow through an inbound entry point. Use `RECORD_GREETING` to record a personalized agent greeting.",
+      "enum": [
+        "CALLBACK",
+        "OUTDIAL",
+        "EXECUTE_FLOW",
+        "RECORD_GREETING"
+      ],
+      "example": "CALLBACK"
+    },
+    "callback": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/CallbackParams"
+        }
+      ],
+      "nullable": true,
+      "description": "Required when `outboundType` is `CALLBACK`. Must be omitted or `null` for `OUTDIAL`, `EXECUTE_FLOW`, and `RECORD_GREETING`. When provided, `type` must be `immediate` and `origin` must be `web`. **Migrating from v1:** Previously a top-level `callback` object with fields `callbackType` and `callbackOrigin`; now nested under `channelParams`."
+    },
+    "sipHeaders": {
+      "type": "object",
+      "nullable": true,
+      "description": "Optional map of SIP headers forwarded to the telephony infrastructure for the call. Supports up to 20 headers (selected alphabetically if more than 20 are provided). Each key is converted to lowercase with hyphens retained. The payload is restricted to 1100 bytes to comply with RFC 3261 (UDP). Header values are not logged to ensure PII protection. **Migrating from v1:** Previously named `customAttributes`.",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "example": {
+        "X-Correlation-Id": "12345"
+      }
+    }
+  }
+}

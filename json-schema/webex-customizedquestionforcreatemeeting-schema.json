@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/CustomizedQuestionForCreateMeeting",
+  "title": "CustomizedQuestionForCreateMeeting",
+  "type": "object",
+  "required": [
+    "question",
+    "type"
+  ],
+  "properties": {
+    "question": {
+      "type": "string",
+      "example": "How are you",
+      "description": "Title of the customized question."
+    },
+    "required": {
+      "type": "boolean",
+      "example": true,
+      "description": "Whether or not the customized question is required to be answered by participants."
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "singleLineTextBox",
+        "multiLineTextBox",
+        "checkbox",
+        "dropdownList",
+        "radioButtons"
+      ],
+      "description": "Type of the question being asked.\n * `singleLineTextBox` - Single line text box.\n * `multiLineTextBox` - Multiple line text box.\n * `checkbox` - Check box which requires `options`.\n * `dropdownList` - Drop down list box which requires `options`.\n * `radioButtons` - Single radio button which requires `options`.\n"
+    },
+    "maxLength": {
+      "type": "number",
+      "description": "The maximum length of a string that can be entered by the user, ranging from `0` to `999`. Only required by `singleLineTextBox` and `multiLineTextBox`."
+    },
+    "options": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "value"
+        ],
+        "properties": {
+          "value": {
+            "type": "string",
+            "example": "green",
+            "description": "The content of the option."
+          }
+        }
+      },
+      "description": "The content of `options`. Required if the question type is one of `checkbox`, `dropdownList`, or `radioButtons`."
+    },
+    "rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "condition",
+          "value",
+          "result"
+        ],
+        "properties": {
+          "condition": {
+            "type": "string",
+            "enum": [
+              "contains",
+              "notContains",
+              "beginsWith",
+              "endsWith",
+              "equals",
+              "notEquals"
+            ],
+            "description": "Judgment expression for approval rules.\n * `contains` - The content of the answer contains the value.\n * `notContains` - The content of the answer does not contain the value\n * `beginsWith` - The content of the answer begins with the value.\n * `endsWith` - The content of the answer ends with the value.\n * `equals` - The content of the answer is the same as the value.\n * `notEquals` - The content of the answer is not the same as the value.\n"
+          },
+          "value": {
+            "type": "string",
+            "example": "tom",
+            "description": "The keyword for the approval rule. If the rule matches the keyword, the corresponding action will be executed."
+          },
+          "result": {
+            "type": "string",
+            "enum": [
+              "approve",
+              "reject"
+            ],
+            "description": "The automatic approval result for the approval rule.\n * `approve` - If the user's registration value meets the criteria, the registration form will be automatically approved.\n * `reject` - If the user's registration value meets the criteria, the registration form will be automatically rejected.\n"
+          },
+          "matchCase": {
+            "type": "boolean",
+            "example": true,
+            "description": "Whether to check the case of values."
+          }
+        }
+      },
+      "description": "The automatic approval rules for customized questions."
+    }
+  }
+}

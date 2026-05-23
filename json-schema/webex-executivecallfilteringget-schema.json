@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/ExecutiveCallFilteringGet",
+  "title": "ExecutiveCallFilteringGet",
+  "type": "object",
+  "description": "Executive call filtering settings response object that contains the filter configuration and criteria.",
+  "required": [
+    "enabled",
+    "filterType"
+  ],
+  "properties": {
+    "enabled": {
+      "type": "boolean",
+      "description": "Indicates whether executive call filtering is enabled."
+    },
+    "filterType": {
+      "type": "string",
+      "enum": [
+        "CUSTOM_CALL_FILTERS",
+        "ALL_CALLS",
+        "ALL_INTERNAL_CALLS",
+        "ALL_EXTERNAL_CALLS"
+      ],
+      "description": " * `CUSTOM_CALL_FILTERS` - Choose this option to ensure that only specific calls are sent to the executive assistant.\n * `ALL_CALLS` - Choose this option to send both internal and external calls to the executive assistant.\n * `ALL_INTERNAL_CALLS` - Choose this option to send all internal calls to the executive assistant.\n * `ALL_EXTERNAL_CALLS` - Choose this option to send all external calls to the executive assistant.\n"
+    },
+    "criteria": {
+      "type": "array",
+      "description": "The list of call filtering criteria configured for executive call filtering.",
+      "items": {
+        "type": "object",
+        "description": "The configuration for an individual call filtering criterion.",
+        "required": [
+          "id",
+          "filterName",
+          "source",
+          "activationEnabled",
+          "filterEnabled"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the filter criteria."
+          },
+          "filterName": {
+            "type": "string",
+            "description": "Name of the criteria."
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "ANY_PHONE_NUMBER",
+              "SELECT_PHONE_NUMBERS",
+              "ANY_INTERNAL",
+              "ANY_EXTERNAL"
+            ],
+            "description": " * `ANY_PHONE_NUMBER` - The criteria applies to any phone number.\n * `SELECT_PHONE_NUMBERS` - The criteria applies to selected phone numbers.\n * `ANY_INTERNAL` - The criteria applies to any internal number.\n * `ANY_EXTERNAL` - The criteria applies to any external number.\n"
+          },
+          "activationEnabled": {
+            "type": "boolean",
+            "description": "Controls whether this filter criteria is active. When `true`, the criteria is evaluated for incoming calls. When `false`, the criteria is completely ignored and has no effect on call filtering."
+          },
+          "filterEnabled": {
+            "type": "boolean",
+            "description": "Controls the action when this criteria matches a call. When `true`, matching calls are filtered and will alert the executive's assistants. When `false`, matching calls are not filtered and will not alert the executive's assistants. Criteria with `filterEnabled` as `false` take precedence over other filtering criteria with `filterEnabled` as `true`, allowing exceptions where certain calls are not filtered to the executive's assistants."
+          }
+        }
+      }
+    }
+  },
+  "example": {
+    "enabled": true,
+    "filterType": "CUSTOM_CALL_FILTERS",
+    "criteria": [
+      {
+        "id": "Y2lzY29zcGFyazovL3VzL0NSSVRFUklBL1FtVjNORE15TXc9PQ",
+        "filterName": "VIP Callers",
+        "source": "SELECT_PHONE_NUMBERS",
+        "activationEnabled": true,
+        "filterEnabled": true
+      }
+    ]
+  }
+}

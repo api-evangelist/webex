@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/MeetingTrackingCodesObject",
+  "title": "MeetingTrackingCodesObject",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "siteUrl",
+    "options",
+    "inputMode",
+    "service",
+    "type"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "example": "1",
+      "description": "Unique identifier for the tracking code."
+    },
+    "name": {
+      "type": "string",
+      "example": "Department",
+      "description": "Name for the tracking code."
+    },
+    "siteUrl": {
+      "type": "string",
+      "example": "example.webex.com",
+      "description": "Site URL for the tracking code."
+    },
+    "options": {
+      "type": "array",
+      "items": {
+        "$ref": "#/components/schemas/OptionsForTrackingCodeObject"
+      },
+      "description": "Tracking code option list. The options here differ from those in the [site-level tracking codes](/docs/api/v1/tracking-codes/get-a-tracking-code) and the [user-level tracking codes](/docs/api/v1/tracking-codes/get-user-tracking-codes). It is the result of a selective combination of the two. If there's user-level value for a tracking code, the user-level value becomes the default option for the tracking code, and the site-level default value becomes non-default."
+    },
+    "inputMode": {
+      "type": "string",
+      "enum": [
+        "text",
+        "select",
+        "editableSelect",
+        "hostProfileSelect"
+      ],
+      "description": "The input mode in which the tracking code value can be assigned.\n * `text` - Text input.\n * `select` - Drop down list which requires `options`.\n * `editableSelect` - Both text input and select from list.\n * `hostProfileSelect` - An input method which is only available for the host profile and sign-up pages.\n"
+    },
+    "service": {
+      "type": "string",
+      "enum": [
+        "All",
+        "MeetingCenter",
+        "EventCenter",
+        "TrainingCenter",
+        "SupportCenter"
+      ],
+      "description": "Service for schedule or sign up pages\n * `All` - Tracking codes apply to all services.\n * `MeetingCenter` - Users can set tracking codes when scheduling a meeting.\n * `EventCenter` - Users can set tracking codes when scheduling an event.\n * `TrainingCenter` - Users can set tracking codes when scheduling a training session.\n * `SupportCenter` - Users can set tracking codes when scheduling a support meeting.\n"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "optional",
+        "required",
+        "adminSet",
+        "notUsed",
+        "notApplicable"
+      ],
+      "description": "Type for meeting scheduler or meeting start pages.\n * `optional` - Available to be chosen but not compulsory.\n * `required` - Officially compulsory.\n * `adminSet` - The value is set by admin.\n * `notUsed` - The value cannot be used.\n * `notApplicable` - This value only applies to the service of `All`. When the type of `All` for a tracking code is `notApplicable`, there are different types for different services. For example, `required` for `MeetingCenter`, `optional` for `EventCenter` and `notUsed` for others.\n"
+    }
+  }
+}

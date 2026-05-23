@@ -1,0 +1,256 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/Workspace",
+  "title": "Workspace",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "example": "Y2lzY29zcGFyazovL3VzL1BMQUNFUy81MTAxQjA3Qi00RjhGLTRFRjctQjU2NS1EQjE5QzdCNzIzRjc",
+      "description": "Unique identifier for the Workspace."
+    },
+    "orgId": {
+      "type": "string",
+      "example": "Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi8xZWI2NWZkZi05NjQzLTQxN2YtOTk3NC1hZDcyY2FlMGUxMGY",
+      "description": "`OrgId` associated with the workspace."
+    },
+    "locationId": {
+      "type": "string",
+      "example": "Y2lzY29...",
+      "description": "Location associated with the workspace (ID to use for the [/locations API](/docs/api/v1/locations))."
+    },
+    "workspaceLocationId": {
+      "type": "string",
+      "example": "YL34GrT...",
+      "description": "Legacy workspace location ID associated with the workspace. Prefer `locationId`."
+    },
+    "floorId": {
+      "type": "string",
+      "example": "Y2lzY29z...",
+      "description": "Floor associated with the workspace."
+    },
+    "displayName": {
+      "type": "string",
+      "example": "SFO-12 Capanina",
+      "description": "A friendly name for the workspace."
+    },
+    "capacity": {
+      "type": "number",
+      "example": 5,
+      "description": "How many people the workspace is suitable for."
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "notSet",
+        "focus",
+        "huddle",
+        "meetingRoom",
+        "open",
+        "desk",
+        "other"
+      ],
+      "description": "The workspace type.\n * `notSet` - No workspace type set.\n * `focus` - High concentration.\n * `huddle` - Brainstorm/collaboration.\n * `meetingRoom` - Dedicated meeting space.\n * `open` - Unstructured agile.\n * `desk` - Individual.\n * `other` - Unspecified.\n"
+    },
+    "sipAddress": {
+      "type": "string",
+      "example": "test_workspace_1@trialorg.room.ciscospark.com",
+      "description": "`SipUrl` to call all the devices associated with the workspace."
+    },
+    "created": {
+      "type": "string",
+      "example": "2016-04-21T17:00:00.000Z",
+      "description": "The date and time that the workspace was registered, in ISO8601 format."
+    },
+    "calling": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "freeCalling",
+            "hybridCalling",
+            "webexCalling",
+            "webexEdgeForDevices",
+            "thirdPartySipCalling",
+            "none"
+          ],
+          "description": "Calling.\n * `freeCalling` - Free Calling.\n * `hybridCalling` - Hybrid Calling.\n * `webexCalling` - Webex Calling.\n * `webexEdgeForDevices` - Webex Edge For Devices.\n * `thirdPartySipCalling` - Third-party SIP URI.\n * `none` - No Calling.\n"
+        },
+        "hybridCalling": {
+          "type": "object",
+          "properties": {
+            "emailAddress": {
+              "type": "string",
+              "example": "workspace@example.com",
+              "description": "End user email address in Cisco Unified CM."
+            }
+          },
+          "description": "The `hybridCalling` object only applies when calling type is `hybridCalling`."
+        },
+        "webexCalling": {
+          "type": "object",
+          "properties": {
+            "licenses": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "example": "Y2lzY29g4..."
+              },
+              "description": "The Webex Calling license associated with this workspace."
+            }
+          },
+          "description": "The `webexCalling` object only applies when calling type is `webexCalling`."
+        }
+      },
+      "description": "Calling type."
+    },
+    "calendar": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "none",
+            "google",
+            "microsoft"
+          ],
+          "description": " * `none` - No calendar.\n * `google` - Google Calendar.\n * `microsoft` - Microsoft Exchange or Office 365.\n"
+        },
+        "emailAddress": {
+          "type": "string",
+          "example": "workspace@example.com",
+          "description": "Workspace email address. Will not be set when the calendar type is `none`."
+        }
+      },
+      "description": "Calendar type. Calendar of type `none` does not include an `emailAddress` field."
+    },
+    "notes": {
+      "type": "string",
+      "example": "this is a note",
+      "description": "Notes associated to the workspace."
+    },
+    "hotdeskingStatus": {
+      "type": "string",
+      "enum": [
+        "on",
+        "off"
+      ],
+      "description": "Hot desking status of the workspace.\n * `on` - Workspace supports hotdesking.\n * `off` - Workspace does not support hotdesking.\n"
+    },
+    "supportedDevices": {
+      "type": "string",
+      "enum": [
+        "collaborationDevices",
+        "phones"
+      ],
+      "description": "The supported devices for the workspace. Default is `collaborationDevices`.\n * `collaborationDevices` - Workspace supports collaboration devices.\n * `phones` - Workspace supports MPP phones.\n"
+    },
+    "deviceHostedMeetings": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "example": true,
+          "description": "`true` if enabled or `false` otherwise."
+        },
+        "siteUrl": {
+          "type": "string",
+          "example": "'example.webex.com'",
+          "description": "The Webex site for the device hosting meetings."
+        }
+      },
+      "description": "Device hosted meetings configuration."
+    },
+    "devicePlatform": {
+      "type": "string",
+      "enum": [
+        "cisco",
+        "microsoftTeamsRoom"
+      ],
+      "description": "The device platform.\n * `cisco` - Cisco.\n * `microsoftTeamsRoom` - Microsoft Teams Room.\n"
+    },
+    "indoorNavigation": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "description": "URL of a map locating the workspace."
+        }
+      },
+      "description": "Indoor navigation configuration."
+    },
+    "health": {
+      "type": "object",
+      "properties": {
+        "level": {
+          "type": "string",
+          "enum": [
+            "error",
+            "warning",
+            "info",
+            "ok"
+          ],
+          "description": "Health level. The level is based on the list of issues associated with the workspace."
+        },
+        "issues": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/WorkspaceIssue"
+          },
+          "description": "A list of workspace issues."
+        }
+      },
+      "description": "The health of the workspace."
+    },
+    "devices": {
+      "type": "array",
+      "items": {
+        "$ref": "#/components/schemas/Device"
+      },
+      "description": "A list of devices associated with the workspace."
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "$ref": "#/components/schemas/CapabilityMap"
+      },
+      "description": "The map of workspace capabilities."
+    },
+    "plannedMaintenance": {
+      "type": "object",
+      "description": "The planned maintenance for the workspace.",
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": [
+            "off",
+            "on",
+            "upcoming"
+          ],
+          "description": "The planned maintenance mode for the workspace"
+        },
+        "startTime": {
+          "type": "string",
+          "example": "2026-10-01T00:00:00.000Z",
+          "description": "The start of the planned maintenance period."
+        },
+        "endTime": {
+          "type": "string",
+          "example": "2026-10-02T00:00:00.000Z",
+          "description": "The end of the planned maintenance period."
+        }
+      }
+    }
+  },
+  "example": {
+    "id": "Y2lzY29zcGFyazovL3VzL1BMQUNFUy81MTAxQjA3Qi00RjhGLTRFRjctQjU2NS1EQjE5QzdCNzIzRjc",
+    "orgId": "Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi8xZWI2NWZkZi05NjQzLTQxN2YtOTk3NC1hZDcyY2FlMGUxMGY",
+    "locationId": "YL34GrT...",
+    "workspaceLocationId": "YL34GrT...",
+    "floorId": "Y2lzY29z...",
+    "displayName": "SFO-12 Capanina",
+    "capacity": 5,
+    "sipAddress": ""
+  }
+}
