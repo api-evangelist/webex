@@ -1,0 +1,162 @@
+aid: webex:asyncapi-review
+name: Cisco Webex AsyncAPI Review
+kind: review
+date: '2026-05-29'
+reviewer: API Evangelist
+subject: Cisco Webex public WebSocket / event-driven API surface
+verdict: no-public-websocket-api
+summary: >-
+  Cisco Webex does not expose a documented, public WebSocket endpoint for the
+  core Webex platform (Messaging, Meetings, Calling, Devices, Admin) that
+  developers are expected to connect to directly. The Webex Developer Portal at
+  developer.webex.com documents event delivery exclusively as HTTP webhooks
+  (resource/event filters such as messages:created, memberships:updated,
+  rooms:updated, attachmentActions:created, meetings:started, telephony events,
+  etc.) signed and validated via a per-webhook secret. The Webex JavaScript SDK
+  and Node bot frameworks (webex-node-bot-framework, webex-js-sdk) can listen
+  for events over a WebSocket transport, but that transport is the internal
+  "Mercury" connection (host pattern wss://mercury-connection-a.wbx2.com/...,
+  with sessionId-scoped subscriptions, KMS-encrypted payloads, and rotating
+  registration URLs) which is NOT published as a public protocol on
+  developer.webex.com. Cisco's own developer blog "Using Websockets with the
+  Webex JavaScript SDK" frames the capability as an SDK convenience, not as a
+  WebSocket API contract: developers call webex.[resource].listen() and
+  on(event) rather than opening a socket. Webex Contact Center
+  (developer.webex-cx.com) does document a Subscribe Notification WebSocket
+  API, but it is a separate product, the wss:// URL is generated per
+  subscription (not a fixed published endpoint), and it is outside the scope
+  requested for this review (core Webex Webhooks / Devices / Calling /
+  Messaging / Mercury). Because there is no documented, fixed, public wss://
+  endpoint for the core Webex platform, no documented WebSocket message
+  schema, and no documented WebSocket auth / subprotocol contract for direct
+  client use, an AsyncAPI 2.6 spec that faithfully describes a Webex-hosted
+  channel cannot be produced without fabrication. An AsyncAPI 2.6 spec was
+  therefore NOT generated.
+findings:
+  - id: webhooks-are-the-documented-event-channel
+    label: Documented Webex event delivery is HTTP webhooks
+    detail: >-
+      The Webex Webhooks guide and /v1/webhooks REST endpoints describe a
+      classic POST-callback model. Developers create a webhook with a name,
+      targetUrl, resource (messages, memberships, rooms, attachmentActions,
+      meetings, recordings, telephony_calls, etc.), event (created, updated,
+      deleted, started, ended), optional filter expression, and a secret used
+      to compute an X-Spark-Signature HMAC-SHA1 over the request body. This is
+      a request/response webhook contract better expressed as OpenAPI callbacks
+      or AsyncAPI's HTTP binding, not a WebSocket binding.
+    documented_resources_events:
+      - messages:created
+      - messages:deleted
+      - memberships:created
+      - memberships:updated
+      - memberships:deleted
+      - rooms:created
+      - rooms:updated
+      - attachmentActions:created
+      - meetings:started
+      - meetings:ended
+      - recordings:created
+      - telephony_calls (call lifecycle resource)
+  - id: mercury-is-internal-undocumented
+    label: Mercury WebSocket is an internal, undocumented transport
+    detail: >-
+      Mercury is Cisco's internal pub/sub WebSocket fabric used by Webex
+      clients and the official SDKs (see @webex/internal-plugin-mercury on
+      npm, and webex-js-sdk source). Observed registration URLs follow the
+      pattern wss://mercury-connection-a.wbx2.com/v1/apps/wx2/registrations/
+      {id}/messages with sessionId-scoped subscriptions, but neither the URL,
+      handshake, frame schema, KMS key exchange, nor lifecycle is published as
+      a stable public API on developer.webex.com. The npm package name itself
+      is namespaced "@webex/internal-plugin-*". Per the project's hard rule
+      against fabrication, Mercury must not be modeled as a public AsyncAPI
+      channel.
+  - id: js-sdk-websockets-are-sdk-sugar
+    label: "Webex JS SDK websockets are SDK sugar over Mercury"
+    detail: >-
+      The developer blog "Using Websockets with the Webex JavaScript SDK"
+      (developer.webex.com/blog/using-websockets-with-the-webex-javascript-sdk)
+      shows webex.memberships.listen(), webex.rooms.listen(),
+      webex.messages.listen(), and webex.attachmentActions.listen() followed by
+      on('created'|'updated'|'deleted') handlers. The post is explicit that
+      "websockets are created programmatically with the help of the JavaScript
+      SDK" - i.e. the contract is the SDK surface, not a documented wire
+      protocol. There is no published wss:// URL, no documented authentication
+      handshake (beyond reusing the OAuth access token through the SDK), and
+      no documented frame schema for third-party WebSocket clients.
+  - id: devices-xapi-uses-rest-and-websocket-via-roomos
+    label: Devices xAPI is documented over HTTPS / RoomOS, not as a public Webex WS
+    detail: >-
+      Webex Device xAPI (developer.webex.com/docs/api/v1/xapi) exposes
+      RoomOS device commands and status via REST endpoints /v1/xapi/command
+      and /v1/xapi/status, plus device-side JSON-RPC. RoomOS itself supports
+      direct device WebSocket / SSH access on the local device for on-prem
+      integrations, but that is a device-local interface, not a Webex-cloud
+      WebSocket endpoint, and is documented as part of RoomOS xAPI, not as a
+      cloud WS API. It is not modelable as a single Webex-hosted AsyncAPI
+      channel.
+  - id: calling-events-are-webhooks
+    label: Webex Calling lifecycle events are delivered via webhooks
+    detail: >-
+      Webex Calling exposes telephony events (call answered, call ended,
+      voicemail, etc.) through the same /v1/webhooks pipeline using the
+      telephony_calls resource family and via Webhooks for Webex Calling user
+      events. No documented public WebSocket channel exists for direct
+      subscription to calling events.
+  - id: contact-center-ws-is-separate-product
+    label: Webex Contact Center WebSocket API is documented but out of scope
+    detail: >-
+      developer.webex-cx.com documents a Subscribe Notification API that, after
+      registration, returns a per-subscription wss:// URL used for Agent
+      Login / Logout / State Change and related agent desktop events. This
+      surface is a separate product (Webex Contact Center / WxCC), the wss
+      URL is dynamically issued per subscription rather than a fixed published
+      endpoint, and the task explicitly scoped the review to "Webhooks, Devices,
+      Calling, Messaging, WS / Cloud Resources Layer / Mercury" on the core
+      Webex platform. If desired, WxCC could be reviewed separately and may
+      warrant its own AsyncAPI 2.6 spec on the Contact Center repo.
+pages_checked:
+  - url: https://developer.webex.com/
+    result: Webex Developer landing page. Navigation lists Messaging, Meetings,
+      Calling, Devices, Webhooks, Bots, Embedded Apps, Admin, Authentication,
+      Contact Center, Instant Connect, Agentic Apps. No dedicated WebSocket /
+      Mercury / Streaming section.
+  - url: https://developer.webex.com/docs
+    result: Getting Started hub. WebSocket / persistent connection is not a
+      top-level documented section for the core platform.
+  - url: https://developer.webex.com/docs/api/v1/webhooks
+    result: REST endpoints for /v1/webhooks (Create, List, Get, Update, Delete).
+      Documents resource, event, filter, targetUrl, secret, status fields and
+      X-Spark-Signature HMAC-SHA1 verification. No WebSocket alternative.
+  - url: https://developer.webex.com/docs/api/guides/webhooks
+    result: Webhooks guide. Confirms HTTP POST delivery model with signed
+      payloads as the standard event channel.
+  - url: https://developer.webex.com/blog/using-websockets-with-the-webex-javascript-sdk
+    result: Blog post showing webex.[resource].listen() + on('created'|...) in
+      the Webex JS SDK. Frames websockets as an SDK convenience; no public
+      wss:// URL, handshake, or message schema is published. Implementation
+      is delegated to the SDK, which internally uses Mercury.
+  - url: https://developer.webex.com/docs/api/v1/xapi
+    result: Devices xAPI documented as REST /v1/xapi/command and /v1/xapi/status,
+      with RoomOS JSON-RPC on-device for local integrations. No Webex-cloud WS
+      endpoint.
+  - url: https://www.npmjs.com/package/@webex/internal-plugin-mercury
+    result: npm package name explicitly marked "internal-plugin". Confirms
+      Mercury is internal SDK plumbing, not a public protocol.
+  - url: https://developer.webex-cx.com/
+    result: Separate Contact Center developer portal. Documents Subscribe
+      Notification API that returns a per-subscription wss:// URL for agent
+      desktop events. Out of scope for this core Webex review.
+recommendation: >-
+  Continue documenting Cisco Webex's core eventing surface as HTTP webhooks
+  (apis.yml already references the webhooks endpoints in OpenAPI). Do NOT
+  publish an AsyncAPI 2.6 spec for Mercury or for the JS SDK websocket
+  convenience - Mercury is internal, undocumented, and subject to change
+  without notice. If Cisco later promotes a public, documented wss:// endpoint
+  on developer.webex.com (for example a public Mercury successor, or a stable
+  streaming API for Calling / Messaging / Devices), revisit and produce an
+  AsyncAPI 2.6 spec at that time. Separately, consider reviewing Webex Contact
+  Center (developer.webex-cx.com) Subscribe Notification API for a dedicated
+  WxCC AsyncAPI spec under a Contact Center scope.
+artifacts_produced:
+  spec: null
+  review: asyncapi/review.yml
