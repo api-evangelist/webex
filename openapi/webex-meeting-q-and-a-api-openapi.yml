@@ -1,0 +1,313 @@
+openapi: 3.0.0
+info:
+  title: Webex Admin Address Book Meeting Q and A API
+  version: 1.0.0
+  description: The Webex Admin APIs provide comprehensive programmatic access to administrative functions for managing Webex organizations, users, licenses, and settings. These APIs enable automation of user provisioning, license assignment, compliance management, and audit event retrieval. Administrators can integrate with enterprise identity systems, enforce security policies, monitor usage, and streamline onboarding/offboarding processes. The APIs support granular control over organizational resources, making them ideal for large-scale deployments and custom admin tooling.
+tags:
+- name: Meeting Q and A
+paths:
+  /meetings/q_and_a:
+    get:
+      responses:
+        '200':
+          description: OK
+          headers:
+            Link:
+              schema:
+                type: string
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/QAObject'
+                    description: An array of Q&A objects.
+              example:
+                items:
+                - id: d513da2b-547b-4c69-b717-d83c6b02b657_M_7b789da198e531ce0c4d84243abd9fee_I_231245894851233679
+                  meetingId: 7b789da198e531ce0c4d84243abd9fee_I_231245894851233679
+                  totalAttendees: 7
+                  totalRespondents: 1
+                  displayName: John Andersen
+                  email: john.andersen@example.com
+                  question: Are you ok?
+                  answers:
+                    links:
+                      prev: https://webexapis.com/v1/meetings/q_and_a/d513da2b-547b-4c69-b717-d83c6b02b657_M_7b789da198e531ce0c4d84243abd9fee_I_231245894851233679/answers?meetingId=7b789da198e531ce0c4d84243abd9fee_I_231245894851233679&offset=0&max=2
+                      self: https://webexapis.com/v1/meetings/q_and_a/d513da2b-547b-4c69-b717-d83c6b02b657_M_7b789da198e531ce0c4d84243abd9fee_I_231245894851233679/answers?meetingId=7b789da198e531ce0c4d84243abd9fee_I_231245894851233679&offset=2&max=2
+                      next: https://webexapis.com/v1/meetings/q_and_a/d513da2b-547b-4c69-b717-d83c6b02b657_M_7b789da198e531ce0c4d84243abd9fee_I_231245894851233679/answers?meetingId=7b789da198e531ce0c4d84243abd9fee_I_231245894851233679&offset=4&max=2
+                    items:
+                    - displayName: John Andersen
+                      email: john.andersen@example.com
+                      answered: false
+                    - displayName: John Andersen
+                      email: john.andersen@example.com
+                      personId: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8xYTY5MmE2Mi00MTNmLTRjYWEtYjdkOS0wYzg0ZDZmMDdlNzY
+                      answer: Fine, thank you.
+                      answered: true
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: Method Not Allowed
+          headers: {}
+          content: {}
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: List Meeting Q and A
+      operationId: List Meeting Q and A
+      description: 'Lists questions and answers from a meeting, when ready.
+
+
+        Notes:
+
+
+        * Only [meeting instances](/docs/meetings#meeting-series-scheduled-meetings-and-meeting-instances) in state `ended` or `inProgress` are supported for `meetingId`.
+
+
+        * Long result sets will be split into [pages](/docs/basics#pagination).
+
+
+        * This API is paginated by the sum of answers in a meeting, These pagination links are returned in the response header.'
+      tags:
+      - Meeting Q and A
+      parameters:
+      - name: meetingId
+        in: query
+        description: A unique identifier for the [meeting instance](/docs/meetings#meeting-series-scheduled-meetings-and-meeting-instances) which the Q&A belongs to.
+        required: true
+        example: 0ed74a1c0551494fb7a04e2881bf50ae_I_166022169160077044
+        schema:
+          type: string
+      - name: max
+        in: query
+        description: Limits the maximum number of answers in the response, up to 100.
+        example: '10'
+        schema:
+          type: number
+          default: 10
+  /meetings/q_and_a/{questionId}/answers:
+    get:
+      responses:
+        '200':
+          description: OK
+          headers:
+            Link:
+              schema:
+                type: string
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AnswerObject'
+                    description: An array of answers to a specific question.
+              example:
+                items:
+                - displayName: John Andersen
+                  email: john.andersen@example.com
+                  answered: false
+                - displayName: John Andersen
+                  email: john.andersen@example.com
+                  personId: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8xYTY5MmE2Mi00MTNmLTRjYWEtYjdkOS0wYzg0ZDZmMDdlNzY
+                  answer: Fine, thank you.
+                  answered: true
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: Method Not Allowed
+          headers: {}
+          content: {}
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: List Answers of a Question
+      operationId: List Answers of a Question
+      description: 'Lists the answers to a specific question asked in a meeting.
+
+
+        * Only [meeting instance](/docs/meetings#meeting-series-scheduled-meetings-and-meeting-instances) in state `ended` or `inProgress` are supported for `meetingId`.
+
+
+        * Long result sets will be split into [pages](/docs/basics#pagination).'
+      tags:
+      - Meeting Q and A
+      parameters:
+      - name: questionId
+        in: path
+        description: The ID of a question.
+        required: true
+        example: d513da2b-547b-4c69-b717-d83c6b02b657_M_7b789da198e531ce0c4d84243abd9fee_I_231245894851233679
+        schema:
+          type: string
+      - name: meetingId
+        in: query
+        description: A unique identifier for the [meeting instance](/docs/meetings#meeting-series-scheduled-meetings-and-meeting-instances) which the Q&A belongs to.
+        required: true
+        example: 0ed74a1c0551494fb7a04e2881bf50ae_I_166022169160077044
+        schema:
+          type: string
+      - name: max
+        in: query
+        description: Limit the maximum number of Q&A's answers in the response, up to 100.
+        example: '100'
+        schema:
+          type: number
+          default: 10
+components:
+  schemas:
+    AnswerObject:
+      type: object
+      properties:
+        displayName:
+          type: string
+          example: John Andersen
+          description: The name of the person who answered the question.
+        email:
+          type: string
+          example: john.andersen@example.com
+          description: The email of the person who answered the question.
+        personId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8xYTY5MmE2Mi00MTNmLTRjYWEtYjdkOS0wYzg0ZDZmMDdlNzY
+          description: The ID of the person who answered the question. Only present for authenticated users.
+        answer:
+          type: array
+          items:
+            type: string
+            example: Fine, thank you.
+          description: The content of the answer.
+        answered:
+          type: boolean
+          example: true
+          description: Whether or not the question was answered.
+    QAObject:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 1aea8390-e375-4547-b7ff-58ecd9e0b03d
+          description: A unique identifier for the question.
+        meetingId:
+          type: string
+          example: a2f95f5073e347489f7611492dbd6ad5_I_199075330905867928
+          description: A unique identifier for the [meeting instance](/docs/meetings#meeting-series-scheduled-meetings-and-meeting-instances) to which the Q&A belongs.
+        totalAttendees:
+          type: number
+          example: 10
+          description: The total number of attendees in the meeting.
+        totalRespondents:
+          type: number
+          example: 10
+          description: The total number of respondents in the meeting.
+        displayName:
+          type: string
+          example: John Andersen
+          description: The name of the user who asked the question.
+        email:
+          type: string
+          example: john.andersen@example.com
+          description: The email of the user who asked the question.
+        question:
+          type: string
+          example: Are you ok?
+          description: The question that was asked.
+        answers:
+          type: object
+          properties:
+            links:
+              type: object
+              properties:
+                prev:
+                  type: string
+                  example: https://webexapis.com/v1/meetings/q_and_a/d513da2b-547b-4c69-b717-d83c6b02b657_M_7b789da198e531ce0c4d84243abd9fee_I_231245894851233679/answers?meetingId=7b789da198e531ce0c4d84243abd9fee_I_231245894851233679&offset=0&max=10
+                  description: Link to the previous page of answers to this question.
+                self:
+                  type: string
+                  example: https://webexapis.com/v1/meetings/q_and_a/d513da2b-547b-4c69-b717-d83c6b02b657_M_7b789da198e531ce0c4d84243abd9fee_I_231245894851233679/answers?meetingId=7b789da198e531ce0c4d84243abd9fee_I_231245894851233679&offset=10&max=10
+                  description: Link to the current page of this answers to this question.
+                next:
+                  type: string
+                  example: https://webexapis.com/v1/meetings/q_and_a/d513da2b-547b-4c69-b717-d83c6b02b657_M_7b789da198e531ce0c4d84243abd9fee_I_231245894851233679/answers?meetingId=7b789da198e531ce0c4d84243abd9fee_I_231245894851233679&offset=20&max=10
+                  description: Link to the next page of answers to this question.
+              description: The pagination links of the question's answers.
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/AnswerObject'
+              description: An array of answer objects for this question.
+          description: Question's answers.
+  securitySchemes:
+    oauth2:
+      flows:
+        authorizationCode:
+          authorizationUrl: /
+          scopes: {}
+          tokenUrl: /
+      type: oauth2
+    bearer-key:
+      type: http
+      description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
+      scheme: bearer
+      bearerFormat: JWT
+    bearerAuth:
+      type: oauth2
+      description: OAuth 2.0 Bearer token authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: https://webexapis.com/v1/authorize
+          tokenUrl: https://webexapis.com/v1/access_token
+          scopes:
+            spark:applications_token: Create access tokens for Service Apps

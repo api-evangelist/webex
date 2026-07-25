@@ -1,0 +1,176 @@
+openapi: 3.0.0
+info:
+  title: Webex Admin Address Book Estimated Wait Time API
+  version: 1.0.0
+  description: The Webex Admin APIs provide comprehensive programmatic access to administrative functions for managing Webex organizations, users, licenses, and settings. These APIs enable automation of user provisioning, license assignment, compliance management, and audit event retrieval. Administrators can integrate with enterprise identity systems, enforce security policies, monitor usage, and streamline onboarding/offboarding processes. The APIs support granular control over organizational resources, making them ideal for large-scale deployments and custom admin tooling.
+tags:
+- name: Estimated Wait Time
+paths:
+  /v1/ewt:
+    get:
+      tags:
+      - Estimated Wait Time
+      summary: Get Estimated Wait Time
+      description: 'Retrieve Estimated Wait Time information for a specified look back interval for a specific orgId and queueId combination, with ability to customomize maxCV and minValidSamples (See description above).
+
+        '
+      operationId: getEwt
+      parameters:
+      - name: queueId
+        in: query
+        description: Id of the queue for which the EWT is to be returned
+        required: true
+        schema:
+          type: string
+        example: AWpEGCi_SVK96XSm20PY
+      - name: lookbackMinutes
+        in: query
+        description: Integer between 5 and 240 (4 hours) signifying how long back to look at the data points to determine EWT for this queue
+        required: true
+        schema:
+          maximum: 240
+          minimum: 5
+          type: integer
+          format: int32
+        example: 15
+      - name: maxCV
+        in: query
+        description: This an optional parameter. Maximum value of Coefficient of Variance in a subset of samples (wait times for tasks that got connected to agent in one minute interval) to determine whether the average of such values should be treated as a valid sample for EWT computation. If its not passed it takes the default value of 40 %
+        required: false
+        schema:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int32
+        example: 40
+      - name: minValidSamples
+        in: query
+        description: This an optional parameter. Minimum value of percentage of valid samples (with respect to total number of samples) in the specified lookbackMinutes minutes. If its not passed it takes the default value of 40 %
+        required: false
+        schema:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int32
+        example: 40
+      - name: TrackingId
+        in: header
+        description: 'Tracking ID to use for this operation, for traceability, debugging, and error reporting purposes. '
+        required: false
+        schema:
+          type: string
+        example: INTEGRATION-9bcdc696-57fa-4e91-b5aa-57a66a347c23
+      - name: orgId
+        in: query
+        description: Organization ID to use for this operation. If unspecified, inferred from token. Token must have permission to interact with this organization.
+        required: false
+        schema:
+          type: string
+        example: 97cdbf45-ebe2-4687-8341-44d5c7abf101
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EWTApiResponse'
+        '204':
+          description: "Not enough valid samples were found to compute the estimate wait time. Refer the parameters, lookbackMinutes, maxCV and minValidSamples to tune the API behavior \n Note : For an Invalid queue value we return a 204"
+          content:
+            application/json: {}
+        '400':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json: {}
+        '500':
+          description: An Unexpected Error Occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '503':
+          description: The service is currently unavailable to serve the requests
+          content:
+            application/json: {}
+components:
+  schemas:
+    OperationError:
+      description: An error message providing details about the operation failure.
+      type: object
+      properties:
+        description:
+          type: string
+          description: A human readable explanation for the occurrence of an error.
+          example: Incorrect Credentials.
+    ApiErrorResponse:
+      description: Response body for an API error.
+      type: object
+      properties:
+        trackingId:
+          type: string
+          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
+          example: c1a4fcef-aee2-4dea-8977-29f594760552
+        error:
+          description: An object containing details about the error.
+          $ref: '#/components/schemas/ErrorDetails'
+    ErrorDetails:
+      description: Details of an error.
+      type: object
+      properties:
+        key:
+          type: string
+          description: An application defined error code.
+          example: '401'
+        message:
+          type: array
+          description: A message providing details about the error.
+          items:
+            $ref: '#/components/schemas/OperationError'
+    EWTApiResponse:
+      type: object
+      properties:
+        estimatedWaitTime:
+          type: number
+          description: The estimated wait time in milli seconds.
+          format: double
+          example: 20349.12
+  securitySchemes:
+    oauth2:
+      flows:
+        authorizationCode:
+          authorizationUrl: /
+          scopes: {}
+          tokenUrl: /
+      type: oauth2
+    bearer-key:
+      type: http
+      description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
+      scheme: bearer
+      bearerFormat: JWT
+    bearerAuth:
+      type: oauth2
+      description: OAuth 2.0 Bearer token authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: https://webexapis.com/v1/authorize
+          tokenUrl: https://webexapis.com/v1/access_token
+          scopes:
+            spark:applications_token: Create access tokens for Service Apps

@@ -1,0 +1,254 @@
+openapi: 3.0.0
+info:
+  title: Webex Admin Address Book Queues API
+  version: 1.0.0
+  description: The Webex Admin APIs provide comprehensive programmatic access to administrative functions for managing Webex organizations, users, licenses, and settings. These APIs enable automation of user provisioning, license assignment, compliance management, and audit event retrieval. Administrators can integrate with enterprise identity systems, enforce security policies, monitor usage, and streamline onboarding/offboarding processes. The APIs support granular control over organizational resources, making them ideal for large-scale deployments and custom admin tooling.
+tags:
+- name: Queues
+paths:
+  /v1/queues/statistics:
+    get:
+      tags:
+      - Queues
+      summary: Get Queue Statistics
+      description: "Retrieve Queue statistics for a given interval of time. \nAn important thing to note is that each stat produced is for a specified time window (last 15, 30, or 60 minutes etc) and is not cumulative. \nContacts that span across intervals will also have stats broken down across intervals. For example: A contact that starts at 12:05 and ends at 12:25 will have stats for Interval A (12:00-12:15) and Interval B (12:15-12:30) assuming the interval window is for 15 minutes. \nStats that only require the start time of the contact like 'totalOfferedTasks' and 'totalAcceptedTasks' will be counted only once and it will be present in the interval where the contact started i.e. Interval A. \nWhereas, stats that require the end time as well for calculations like 'averageHandledTime', will be present in the interval where the contact ended i.e. interval B. \n\nFor this API, response compression using gzip can be enabled by including 'Accept-Encoding' header  in the request with its value as 'gzip'. \nThe response will be compressed only if its size exceeds 1 MB.\nIf the header is not present in the request or if gzip is not listed as one of the encodings in the header's value (comma separated encodings), then API response will not be compressed and this can impact the latency as observed from clients. \n"
+      operationId: getDocumentByQueryParam_1
+      parameters:
+      - name: from
+        in: query
+        description: Start time for the query (in epoch milliseconds). Any epoch time can be passed in the input, from date will be rounded down to nearest 15 minute window. For example, epoch time of 12:05 will be rounded down to 12:00.
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1651395600000
+      - name: to
+        in: query
+        description: "End time for the query (in epoch milliseconds). Any epoch time can be passed in the input, from date will be rounded down to nearest 15 minute window. For example, epoch time of 12:55 will be rounded down to 12:45.\n The difference between to and from time must be less than 24 hours (86400000 milliseconds)."
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1651438800000
+      - name: interval
+        in: query
+        description: Time interval (in minutes) to chunk statistics by i.e. break up the entire from-to timeframe by this interval amount so that statistics can be viewed incrementally. Supported values are 15, 30, or 60.
+        required: false
+        schema:
+          type: integer
+          format: int32
+        example: 15
+      - name: queueIds
+        in: query
+        description: Comma-separated list of queue IDs. A maximum of 100 values is permitted. If values are not provided, all queues for an organization are returned.
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        example: 89cf3b93-f020-42c6-84dc-87db6a92eae7, 89cf3b93-f020-42c6-84dc-87db6a92fae7, 89cf3b93-f020-42c6-84dc-87db4a92eae7
+      - name: orgId
+        in: query
+        description: Organization ID to use for this operation. If unspecified, inferred from token. Token must have permission to interact with this organization.
+        required: false
+        schema:
+          type: string
+        example: 97cdbf45-ebe2-4687-8341-44d5c7abf101
+      - name: TrackingId
+        in: header
+        description: 'Tracking ID to use for this operation, for traceability, debugging, and error reporting purposes. '
+        required: false
+        schema:
+          type: string
+        example: INTEGRATION-9bcdc696-57fa-4e91-b5aa-57a66a347c23
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueueApiResponse'
+        '400':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json: {}
+        '500':
+          description: An Unexpected Error Occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '503':
+          description: The service is currently unavailable to serve the requests
+          content:
+            application/json: {}
+components:
+  schemas:
+    ApiErrorResponse:
+      description: Response body for an API error.
+      type: object
+      properties:
+        trackingId:
+          type: string
+          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
+          example: c1a4fcef-aee2-4dea-8977-29f594760552
+        error:
+          description: An object containing details about the error.
+          $ref: '#/components/schemas/ErrorDetails'
+    ErrorDetails:
+      description: Details of an error.
+      type: object
+      properties:
+        key:
+          type: string
+          description: An application defined error code.
+          example: '401'
+        message:
+          type: array
+          description: A message providing details about the error.
+          items:
+            $ref: '#/components/schemas/OperationError'
+    OperationError:
+      description: An error message providing details about the operation failure.
+      type: object
+      properties:
+        description:
+          type: string
+          description: A human readable explanation for the occurrence of an error.
+          example: Incorrect Credentials.
+    Meta:
+      type: object
+      properties:
+        orgId:
+          type: string
+          description: Organization ID to which resources belong.
+          example: 3dae8fdd-06e2-411a-9035-51f3719f5b65
+      description: Response metadata.
+    OutQueueStatistics:
+      type: object
+      properties:
+        intervalStartTime:
+          type: integer
+          description: Time in GMT (milliseconds)
+          format: int64
+          example: 1591702200000
+        queueId:
+          type: string
+          description: The ID of the Queue.
+          example: 06ce7234-dd3e-49e2-8763-d93766739d
+        queueName:
+          type: string
+          description: Name of the queue.
+          example: main-queue
+        channelType:
+          type: string
+          description: The type of channel associated with this operation.
+          example: telephony
+        totalOfferedTasks:
+          type: integer
+          description: Number of times tasks were offered to the agents in the queue during the interval. This count includes the ones that are accepted or rejected by the agent.
+          format: int32
+          example: 7
+        totalEnqueuedTasks:
+          type: integer
+          description: Number of times tasks were parked in the queue during the interval. Tasks are not parked in queue if they are offered to an agent immediately since one is available.
+          format: int32
+          example: 7
+        totalAssignedTasks:
+          type: integer
+          description: DEPRECATED FIELD, This field always returns 0
+          format: int32
+          example: 1
+          deprecated: true
+        totalAcceptedTasks:
+          type: integer
+          description: Number of assigned tasks that were accepted in the queue.
+          format: int32
+          example: 7
+        totalRejectedTasks:
+          type: integer
+          description: Number of times tasks were rejected by the agents when they were offered during the interval.
+          format: int32
+          example: 2
+        totalAbandonedTasks:
+          type: integer
+          description: Number of assigned tasks that were abandoned in the queue.
+          format: int32
+          example: 1
+        averageEnqueuedTime:
+          type: number
+          description: 'The Queue''s average enqueue time in milli seconds.
+
+            i.e total time in queue / number of calls that were queued'
+          format: double
+          example: 20349.12
+        averageHandledTime:
+          type: number
+          description: 'The Queue''s average handle time in milli seconds.
+
+            i.e total time the call was connected / number of calls that were handled.
+
+            Note :- This does not include wrap-up time'
+          format: double
+          example: 93729.01
+        serviceLevelThresholdPercentage:
+          type: number
+          description: 'The Service Level threshold % is an aggregate percentage based on how many contacts out of
+
+            the total handled have met the service level value and gives an indication of the timely pick-up of contacts by agents.'
+          format: double
+          example: 25.34
+      description: List of Queue statistics records retrieved according to query parameters.
+    QueueApiResponse:
+      required:
+      - data
+      - meta
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: array
+          description: List of Queue statistics records retrieved according to query parameters.
+          items:
+            $ref: '#/components/schemas/OutQueueStatistics'
+  securitySchemes:
+    oauth2:
+      flows:
+        authorizationCode:
+          authorizationUrl: /
+          scopes: {}
+          tokenUrl: /
+      type: oauth2
+    bearer-key:
+      type: http
+      description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
+      scheme: bearer
+      bearerFormat: JWT
+    bearerAuth:
+      type: oauth2
+      description: OAuth 2.0 Bearer token authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: https://webexapis.com/v1/authorize
+          tokenUrl: https://webexapis.com/v1/access_token
+          scopes:
+            spark:applications_token: Create access tokens for Service Apps

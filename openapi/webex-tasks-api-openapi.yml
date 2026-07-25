@@ -1,0 +1,1199 @@
+openapi: 3.0.0
+info:
+  title: Webex Admin Address Book Tasks API
+  version: 1.0.0
+  description: The Webex Admin APIs provide comprehensive programmatic access to administrative functions for managing Webex organizations, users, licenses, and settings. These APIs enable automation of user provisioning, license assignment, compliance management, and audit event retrieval. Administrators can integrate with enterprise identity systems, enforce security policies, monitor usage, and streamline onboarding/offboarding processes. The APIs support granular control over organizational resources, making them ideal for large-scale deployments and custom admin tooling.
+tags:
+- name: Tasks
+paths:
+  /v1/tasks:
+    post:
+      tags:
+      - Tasks
+      summary: Create Task
+      description: This API is to create a task for work or handling assignments. Represents both inbound tasks (originating from customer-facing channels) and outbound tasks (originating from contact center to customer-facing channel). Requires 'cjp:user' scope for authorization. For a list of possible response messages, see the Call Control API Guide.
+      operationId: CreateTaskRoute
+      parameters: []
+      requestBody:
+        description: Request body to create a task.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTaskRequest'
+        required: true
+      responses:
+        '201':
+          description: The new task was successfully requested for creation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateTaskResponse'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized, Token is Invalid
+        '403':
+          description: Forbidden Request
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+    get:
+      tags:
+      - Tasks
+      summary: Get Tasks
+      description: "Retrieve open and closed tasks. Sorted by createdTime ascending. Uses offset-based pagination.\nFor this API, response compression using gzip can be enabled by including 'Accept-Encoding' header  in the request with its value as 'gzip'. \nThe response will be compressed only if its size exceeds 1 MB.\nIf the header is not present in the request or if gzip is not listed as one of the encodings in the header's value (comma separated encodings), then API response will not be compressed and this can impact the latency as observed from clients."
+      operationId: searchTasks
+      parameters:
+      - name: channelTypes
+        in: query
+        description: Task channel type(s) permitted in response. Separate values with commas. Use lowercase. By default, there is no channelType filtering.
+        required: false
+        example:
+        - email
+        - telephony
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - email
+            - chat
+            - telephony
+            - social
+      - name: from
+        in: query
+        description: Filters tasks created after the given epoch timestamp (in milliseconds).
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1591702170000
+      - name: to
+        in: query
+        description: Filters tasks created before the given epoch timestamp (in milliseconds); queries up to the present if timestamp is not specified.
+        required: false
+        schema:
+          type: integer
+          format: int64
+        example: 1591802180000
+      - name: pageSize
+        in: query
+        description: Maximum page size in the response. Maximum allowed value is 1000. Defaults to 100 items per page.
+        required: false
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+          default: 100
+        example: 100
+      - name: orgId
+        in: query
+        description: Organization ID to use for this operation. If unspecified, inferred from token. Token must have permission to interact with this organization.
+        required: false
+        schema:
+          type: string
+        example: 97cdbf45-ebe2-4687-8341-44d5c7abf101
+      - name: TrackingId
+        in: header
+        description: 'Tracking ID to use for this operation, for traceability, debugging, and error reporting purposes. '
+        required: false
+        schema:
+          type: string
+        example: INTEGRATION-9bcdc696-57fa-4e91-b5aa-57a66a347c23
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskApiResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '413':
+          description: Content Too Large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json: {}
+        '500':
+          description: An Unexpected Error Occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '503':
+          description: The service is currently unavailable to serve the requests
+          content:
+            application/json: {}
+  /v1/tasks/{taskId}:
+    patch:
+      tags:
+      - Tasks
+      summary: Update Task
+      description: This API is to update a task. Represents both inbound tasks (originating from customer-facing channels) and outbound tasks (originating from contact center to customer-facing channel). Requires one of the following scopes 'cjp:user' or 'cloud-contact-center:pod_conv' for authorization.. For a list of possible response messages, see the Call Control API Guide.
+      operationId: PatchTaskRoute
+      parameters:
+      - name: taskId
+        in: path
+        description: The unique ID represents the task that the user is currently working on. It will be generated automatically during the creation of a new task.
+        required: true
+        schema:
+          type: string
+          format: UUID
+        example: 315fbb91-2288-427c-9588-ec764cd46ea4
+      requestBody:
+        description: Request body for patching a task.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchTaskRequest'
+        required: true
+      responses:
+        '202':
+          description: The request is accepted for processing
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized, Token is Invalid
+        '403':
+          description: Forbidden Request
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+  /v1/tasks/{taskId}/accept:
+    post:
+      tags:
+      - Tasks
+      summary: Accept Task
+      description: Access this endpoint when the user has to accept either an inbound or an outbound requests. The request can be social, a chat or an email. Requires one of the following scopes 'cjp:user' or 'cloud-contact-center:pod_conv' for authorization. For a list of possible response messages, see the [Call Control API Guide](/docs/contact-control-apis).
+      operationId: acceptTaskRoute
+      parameters:
+      - name: taskId
+        in: path
+        description: The unique ID represents the task that the user is currently working on. It will be generated automatically during the creation of a new task.
+        required: true
+        schema:
+          type: string
+          format: UUID
+        example: 315fbb91-2288-427c-9588-ec764cd46ea4
+      responses:
+        '202':
+          description: The request is accepted for processing
+        '401':
+          description: Unauthorized, Token is Invalid
+        '403':
+          description: Forbidden Request
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+  /v1/tasks/{taskId}/end:
+    post:
+      tags:
+      - Tasks
+      summary: End Task
+      description: Access this endpoint when the user has to end either an inbound or an outbound requests. Requires one of the following scopes 'cjp:user' or 'cloud-contact-center:pod_conv' for authorization. For a list of possible response messages, see the [Call Control API Guide](/docs/contact-control-apis).
+      operationId: endTaskRoute
+      parameters:
+      - name: taskId
+        in: path
+        description: The unique ID represents the task that the user is currently working on. It will be generated automatically during the creation of a new task.
+        required: true
+        schema:
+          type: string
+          format: UUID
+        example: 315fbb91-2288-427c-9588-ec764cd46ea4
+      responses:
+        '202':
+          description: The request is accepted for processing
+        '401':
+          description: Unauthorized, Token is Invalid
+        '403':
+          description: Forbidden Request
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+  /v1/tasks/{taskId}/wrapup:
+    post:
+      tags:
+      - Tasks
+      summary: Wrap Up Task
+      description: Access this endpoint when the user has to wrap up a call. Requires one of the following scopes 'cjp:user' or 'cloud-contact-center:pod_conv' for authorization. For a list of possible response messages, see the [Call Control API Guide](/docs/contact-control-apis).
+      operationId: agentWrapUpRoute
+      parameters:
+      - name: taskId
+        in: path
+        description: The unique ID represents the task that the user is currently working on. It will be generated automatically during the creation of a new task.
+        required: true
+        schema:
+          type: string
+          format: UUID
+        example: 315fbb91-2288-427c-9588-ec764cd46ea4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WrapUpResourceRequest'
+        required: true
+      responses:
+        '202':
+          description: The request is accepted for processing
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized, Token is Invalid
+        '403':
+          description: Forbidden Request
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+  /v1/tasks/{taskId}/hold:
+    post:
+      tags:
+      - Tasks
+      summary: Hold Task
+      description: Access this endpoint when the user has to hold a call. When an user is in consulting state, the task will be put on hold. It is not applicable for chats and emails. Requires one of the following scopes 'cjp:user','cloud-contact-center:pod_conv' for authorization. For a list of possible response messages, see the [Call Control API Guide](/docs/contact-control-apis).
+      operationId: agentHoldRoute
+      parameters:
+      - name: taskId
+        in: path
+        description: The unique ID represents the task that the user is currently working on. It will be generated automatically during the creation of a new task.
+        required: true
+        schema:
+          type: string
+          format: UUID
+        example: 315fbb91-2288-427c-9588-ec764cd46ea4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MediaResourceRequest'
+        required: true
+      responses:
+        '202':
+          description: The request is accepted for processing
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized, Token is Invalid
+        '403':
+          description: Forbidden Request
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+  /v1/tasks/{taskId}/unhold:
+    post:
+      tags:
+      - Tasks
+      summary: Resume Task
+      description: Access this endpoint when the user has to resume a call from hold. When an user is done consulting, the previously held interaction with the customer should be resumed. It is not applicable for chats and emails. Requires one of the following scopes 'cjp:user','cloud-contact-center:pod_conv' for authorization. For a list of possible response messages, see the [Call Control API Guide](/docs/contact-control-apis).
+      operationId: agentUnHoldRoute
+      parameters:
+      - name: taskId
+        in: path
+        description: The unique ID represents the task that the user is currently working on. It will be generated automatically during the creation of a new task.
+        required: true
+        schema:
+          type: string
+          format: UUID
+        example: 315fbb91-2288-427c-9588-ec764cd46ea4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MediaResourceRequest'
+        required: true
+      responses:
+        '202':
+          description: The request is accepted for processing
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized, Token is Invalid
+        '403':
+          description: Forbidden Request
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+  /v1/tasks/{taskId}/reject:
+    post:
+      tags:
+      - Tasks
+      summary: Reject Task
+      description: Access this endpoint when the user has to reject a task. Once a task is rejected, the status of the user goes to idle from available. Requires one of the following scopes 'cjp:user' or 'cloud-contact-center:pod_conv' for authorization. For a list of possible response messages, see the [Call Control API Guide](/docs/contact-control-apis).
+      operationId: rejectTaskRoute
+      parameters:
+      - name: taskId
+        in: path
+        description: The unique ID represents the task that the user is currently working on. It will be generated automatically during the creation of a new task.
+        required: true
+        schema:
+          type: string
+          format: UUID
+        example: 315fbb91-2288-427c-9588-ec764cd46ea4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MediaResourceRequest'
+        required: true
+      responses:
+        '202':
+          description: The request is accepted for processing
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized, Token is Invalid
+        '403':
+          description: Forbidden Request
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+  /v1/tasks/{taskId}/record/pause:
+    post:
+      tags:
+      - Tasks
+      summary: Pause Recording Task
+      description: When configured by the administrator, telephony tasks are often being recorded for various reasons. When an user is handling sensitive customer information, he/she might want to pause the recording and later on resume recording. For a list of possible response messages, see the [Call Control API Guide](/docs/contact-control-apis). Requires OAuth scope cjp:user. The authenticated user must have a UserProfile of type Agent to access this API.
+      operationId: pauseRecordingRoute
+      parameters:
+      - name: taskId
+        in: path
+        description: The unique ID represents the task that the user is currently working on. It will be generated automatically during the creation of a new task.
+        required: true
+        schema:
+          type: string
+          format: UUID
+        example: 315fbb91-2288-427c-9588-ec764cd46ea4
+      responses:
+        '202':
+          description: The request is accepted for processing
+        '401':
+          description: Unauthorized, Token is Invalid
+        '403':
+          description: Forbidden Request
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+  /v1/tasks/{taskId}/record/resume:
+    post:
+      tags:
+      - Tasks
+      summary: Resume Recording Task
+      description: When configured by the administrator, telephony tasks are often being recorded for various reasons. When an user is handling sensitive customer information, he/she might resume the recording after the pause. For a list of possible response messages, see the [Call Control API Guide](/docs/contact-control-apis). Requires OAuth scope cjp:user. The authenticated user must have a UserProfile of type Agent to access this API.
+      operationId: resumeRecordingRoute
+      parameters:
+      - name: taskId
+        in: path
+        description: The unique ID represents the task that the user is currently working on. It will be generated automatically during the creation of a new task.
+        required: true
+        schema:
+          type: string
+          format: UUID
+        example: 315fbb91-2288-427c-9588-ec764cd46ea4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResumeRecordingResourceRequest'
+      responses:
+        '202':
+          description: The request is accepted for processing
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized, Token is Invalid
+        '403':
+          description: Forbidden Request
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+  /v1/tasks/{taskId}/transfer:
+    post:
+      tags:
+      - Tasks
+      summary: Transfer Task
+      description: Access this endpoint when the user has to transfer a call to another user. Requires one of the following scopes 'cjp:user' or 'cloud-contact-center:pod_conv' scope for authorization. For a list of possible response messages, see the [Call Control API Guide](/docs/contact-control-apis).
+      operationId: transferTaskRoute
+      parameters:
+      - name: taskId
+        in: path
+        description: The unique ID represents the task that the user is currently working on. It will be generated automatically during the creation of a new task.
+        required: true
+        schema:
+          type: string
+          format: UUID
+        example: 315fbb91-2288-427c-9588-ec764cd46ea4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransferResourceRequest'
+        required: true
+      responses:
+        '202':
+          description: The request is accepted for processing
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized, Token is Invalid
+        '403':
+          description: Forbidden Request
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+  /v1/tasks/{taskId}/consult:
+    post:
+      tags:
+      - Tasks
+      summary: Consult Task
+      description: Access this endpoint when the user has to consult a call to another user. Requires one of the following scopes 'cjp:user' or 'cloud-contact-center:pod_conv' for authorization. For a list of possible response messages, see the [Call Control API Guide](/docs/contact-control-apis).
+      operationId: consultRoute
+      parameters:
+      - name: taskId
+        in: path
+        description: The unique ID represents the task that the user is currently working on. It will be generated automatically during the creation of a new task.
+        required: true
+        schema:
+          type: string
+          format: UUID
+        example: 315fbb91-2288-427c-9588-ec764cd46ea4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConsultResourceRequest'
+        required: true
+      responses:
+        '202':
+          description: The request is accepted for processing
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized, Token is Invalid
+        '403':
+          description: Forbidden Request
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+  /v1/tasks/{taskId}/consult/conference:
+    post:
+      tags:
+      - Tasks
+      summary: Consult Conference Task
+      description: Access this endpoint when the user has to initiate a conference with the consulting user. Requires one of the following scopes 'cjp:user' or 'cloud-contact-center:pod_conv' for authorization. For a list of possible response messages, see the [Call Control API Guide](/docs/contact-control-apis).
+      operationId: consultConferenceRoute
+      parameters:
+      - name: taskId
+        in: path
+        description: The unique ID represents the task that the user is currently working on. It will be generated automatically during the creation of a new task.
+        required: true
+        schema:
+          type: string
+          format: UUID
+        example: 315fbb91-2288-427c-9588-ec764cd46ea4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConferenceResourceRequest'
+        required: true
+      responses:
+        '202':
+          description: The request is accepted for processing
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized, Token is Invalid
+        '403':
+          description: Forbidden Request
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+  /v1/tasks/{taskId}/consult/transfer:
+    post:
+      tags:
+      - Tasks
+      summary: Consult Transfer Task
+      description: Access this endpoint when the user has to transfer a call to the consulting user. Requires one of the following scopes 'cjp:user' or 'cloud-contact-center:pod_conv' for authorization. For a list of possible response messages, see the [Call Control API Guide](/docs/contact-control-apis).
+      operationId: consultTransferRoute
+      parameters:
+      - name: taskId
+        in: path
+        description: The unique ID represents the task that the user is currently working on. It will be generated automatically during the creation of a new task.
+        required: true
+        schema:
+          type: string
+          format: UUID
+        example: 315fbb91-2288-427c-9588-ec764cd46ea4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConsultTransferResourceRequest'
+        required: true
+      responses:
+        '202':
+          description: The request is accepted for processing
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized, Token is Invalid
+        '403':
+          description: Forbidden Request
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+  /v1/tasks/{taskId}/consult/accept:
+    post:
+      tags:
+      - Tasks
+      summary: Consult Accept Task
+      description: Access this endpoint when the user has to accept a call to the consulting user. Requires one of the following scopes 'cjp:user' or 'cloud-contact-center:pod_conv' for authorization. For a list of possible response messages, see the [Call Control API Guide](/docs/contact-control-apis).
+      operationId: acceptConsultRoute
+      parameters:
+      - name: taskId
+        in: path
+        description: The unique ID represents the task that the user is currently working on. It will be generated automatically during the creation of a new task.
+        required: true
+        schema:
+          type: string
+          format: UUID
+        example: 315fbb91-2288-427c-9588-ec764cd46ea4
+      responses:
+        '202':
+          description: The request is accepted for processing
+        '401':
+          description: Unauthorized, Token is Invalid
+        '403':
+          description: Forbidden Request
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+  /v1/tasks/{taskId}/assign:
+    post:
+      tags:
+      - Tasks
+      summary: Assign Task
+      description: Access this endpoint when users such as administrators, supervisors, or agents with an agent license need to assign tasks to themselves. Authorization requires the `cjp:user` scope. For a list of potential response messages, refer to the [Call Control API Guide](/docs/contact-control-apis).
+      operationId: assignRoute
+      parameters:
+      - name: taskId
+        in: path
+        description: The unique ID represents the task that the user want to assign.
+        required: true
+        schema:
+          type: string
+          format: UUID
+        example: 315fbb91-2288-427c-9588-ec764cd46ea4
+      responses:
+        '202':
+          description: The request is accepted for processing
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden Request
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+  /v1/tasks/{taskId}/consult/end:
+    post:
+      tags:
+      - Tasks
+      summary: Consult End Task
+      description: Access this endpoint when the user has to end a call with the consulting user. Requires one of the following scopes 'cjp:user' or 'cloud-contact-center:pod_conv' for authorization. For a list of possible response messages, see the [Call Control API Guide](/docs/contact-control-apis).
+      operationId: endConsultRoute
+      parameters:
+      - name: taskId
+        in: path
+        description: The unique ID represents the task that the user is currently working on. It will be generated automatically during the creation of a new task.
+        required: true
+        schema:
+          type: string
+          format: UUID
+        example: 315fbb91-2288-427c-9588-ec764cd46ea4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EndConsultRequest'
+        required: true
+      responses:
+        '202':
+          description: The request is accepted for processing
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized, Token is Invalid
+        '403':
+          description: Forbidden Request
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+  /v1/tasks/{taskId}/conference/exit:
+    post:
+      tags:
+      - Tasks
+      summary: Exit Conference Task
+      description: Access this endpoint when the user wants to exit from a conference call. Requires one of the following scopes 'cjp:user' or 'cloud-contact-center:pod_conv' for authorization. For a list of possible response messages, see the [Call Control API Guide](/docs/contact-control-apis).
+      operationId: exitConferenceRoute
+      parameters:
+      - name: taskId
+        in: path
+        description: The taskId represents the task that the user is currently working on. It will be generated automatically during the creation of a new task.
+        required: true
+        schema:
+          type: string
+          format: UUID
+        example: 315fbb91-2288-427c-9588-ec764cd46ea4
+      responses:
+        '202':
+          description: The request is accepted for processing
+        '401':
+          description: Unauthorized, Token is Invalid
+        '402':
+          description: Not Found
+        '403':
+          description: Forbidden Request
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+  /v1/dialer/campaign/{campaignId}/preview-task/{taskId}/accept:
+    post:
+      tags:
+      - Tasks
+      summary: Accept Preview Task
+      description: API to accept the preview campaign task offered to the agent.
+      operationId: acceptPreviewCampaignTaskRoute
+      parameters:
+      - name: taskId
+        in: path
+        description: The unique ID represents the task that the user is currently working on. It will be generated automatically during the creation of a new task.
+        required: true
+        schema:
+          type: string
+          format: UUID
+        example: 315fbb91-2288-427c-9588-ec764cd46ea4
+      - name: campaignId
+        in: path
+        description: The unique ID represents the campaign that the user is currently working on.
+        required: true
+        schema:
+          type: string
+          format: UUID
+        example: 315fbb91-2288-427c-9588-ec764cd46ea4
+      responses:
+        '202':
+          description: The request is accepted for processing
+        '400':
+          description: Bad Request
+        '401':
+          description: Invalid or absent authorization header
+        '403':
+          description: Invalid OAuth 2.0 Bearer Token
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+  /v1/dialer/campaign/{campaignId}/preview-task/{taskId}/skip:
+    post:
+      tags:
+      - Tasks
+      summary: Skip Preview Task
+      description: API to skip the preview campaign task offered to the agent.
+      operationId: skipPreviewCampaignTaskRoute
+      parameters:
+      - name: taskId
+        in: path
+        description: The unique ID represents the task that the user is currently working on. It will be generated automatically during the creation of a new task.
+        required: true
+        schema:
+          type: string
+          format: UUID
+        example: 315fbb91-2288-427c-9588-ec764cd46ea4
+      - name: campaignId
+        in: path
+        description: The unique ID represents the campaign that the user is currently working on.
+        required: true
+        schema:
+          type: string
+          format: UUID
+        example: 315fbb91-2288-427c-9588-ec764cd46ea4
+      responses:
+        '202':
+          description: The request is accepted for processing
+        '400':
+          description: Bad Request
+        '401':
+          description: Invalid or absent authorization header
+        '403':
+          description: Invalid OAuth 2.0 Bearer Token
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+  /v1/dialer/campaign/{campaignId}/preview-task/{taskId}/remove:
+    post:
+      tags:
+      - Tasks
+      summary: Remove Preview Task
+      description: API to remove the preview campaign task offered to the agent
+      operationId: removePreviewCampaignTaskRoute
+      parameters:
+      - name: taskId
+        in: path
+        description: The unique ID represents the task that the user is currently working on. It will be generated automatically during the creation of a new task.
+        required: true
+        schema:
+          type: string
+          format: UUID
+        example: 315fbb91-2288-427c-9588-ec764cd46ea4
+      - name: campaignId
+        in: path
+        description: The unique ID represents the campaign that the user is currently working on.
+        required: true
+        schema:
+          type: string
+          format: UUID
+        example: 315fbb91-2288-427c-9588-ec764cd46ea4
+      responses:
+        '202':
+          description: The request is accepted for processing
+        '400':
+          description: Bad Request
+        '401':
+          description: Invalid or absent authorization header
+        '403':
+          description: Invalid OAuth 2.0 Bearer Token
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+components:
+  schemas:
+    TransferResourceRequest:
+      description: Request body for transferring a task.
+      properties:
+        to:
+          description: The user destination ID or the entry point ID to transfer, maximum length 43 characters.
+          type: string
+          example: 315fbb91-2288-427c-9588-ec764cd46ea4
+        destinationType:
+          description: The user can transfer to another user in the team(```agent```), queue(```queue```), dial number(```dialNumber```), entry point(```entrypointDialNumber```).
+          type: string
+          example: dialNumber
+      required:
+      - to
+      - destinationType
+      type: object
+    EndConsultRequest:
+      description: Request body for ending a consult.
+      properties:
+        queueId:
+          description: The unique ID of a particular queue, maximum length 36 characters.
+          type: string
+          example: 315fbb91-2288-427c-9588-ec764cd46ea4
+      type: object
+    ResumeRecordingResourceRequest:
+      description: Request body for resuming a recording.
+      properties:
+        autoResumed:
+          description: The setting to mention if the recording has to resume automatically.
+          type: boolean
+          example: true
+      required:
+      - autoResumed
+      type: object
+    ApiErrorResponse:
+      description: Response body for an API error.
+      type: object
+      properties:
+        trackingId:
+          type: string
+          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
+          example: c1a4fcef-aee2-4dea-8977-29f594760552
+        error:
+          description: An object containing details about the error.
+          $ref: '#/components/schemas/ErrorDetails'
+    TaskOwner:
+      required:
+      - id
+      - name
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID of the agent last assigned to this task.
+          example: e0c7611b-8035-443a-b7a8-dca9f8b8289b
+        name:
+          type: string
+          description: Name of the agent last assigned to this task.
+          example: Joseph Lambert
+      description: The owner of the task.
+    Meta:
+      type: object
+      properties:
+        orgId:
+          type: string
+          description: Organization ID to which resources belong.
+          example: 3dae8fdd-06e2-411a-9035-51f3719f5b65
+      description: Response metadata.
+    ConferenceResourceRequest:
+      description: Request body for a conference.
+      properties:
+        agentId:
+          description: The unique Id of the user logged in as an agent.
+          type: string
+          format: UUID
+          example: 315fbb91-2288-427c-9588-ec764cd46ea4
+        to:
+          description: The destination ID to consult, maximum length 36 characters.
+          type: string
+          example: 315fbb91-2288-427c-9588-ec764cd46ea4
+        destinationType:
+          description: The user can consult to another user in the team(```agent```), dial number(```dialNumber```), entry point(```entryPoint```).
+          type: string
+          example: agent
+      required:
+      - to
+      type: object
+    WrapUpResourceRequest:
+      description: Request body for wrapping up a task.
+      properties:
+        auxCodeId:
+          description: 'Auxiliary codes are status codes which an agent can select in Webex Contact Center Agent Desktop. They are of two types: ```Idle``` and ```Wrap-Up``` codes, and every agent profile must have one of each for the agent to use. Idle codes are used to explain an agent''s unavailability to take customer contacts, such as during a lunch break or a meeting. Wrap-up codes indicate the result of customer contacts, such as successful resolution or escalation of the contact. Creating and managing auxiliary codes requires an administrator role and the appropriate cjp:config_write or cjp:config_read scopes, maximum length 36 characters.'
+          type: string
+          example: AXUH3oN12eV-WekpnDpl
+        wrapUpReason:
+          description: Every wrap up reason will have an unique auxillary code. Use this field to specify the reason for wrapping up the call, maximum length 128 characters.
+          type: string
+          example: Sales
+      required:
+      - wrapUpReason
+      - auxCodeId
+      type: object
+    Task:
+      required:
+      - attributes
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID of the task.
+          example: 93912f11-6017-404b-bf14-5331890b1797
+        attributes:
+          $ref: '#/components/schemas/TaskAttributes'
+      description: List of tasks retrieved according to query parameters.
+    OperationError:
+      description: An error message providing details about the operation failure.
+      type: object
+      properties:
+        description:
+          type: string
+          description: A human readable explanation for the occurrence of an error.
+          example: Incorrect Credentials.
+    CreateTaskRequest:
+      description: Request body for creating a task.
+      required:
+      - destination
+      - entryPointId
+      - mediaType
+      type: object
+      properties:
+        destination:
+          type: string
+          description: A valid customer DN, on which the response is expected, maximum length 36 characters.
+          example: '2147751365'
+        entryPointId:
+          type: string
+          description: An entryPointId for respective task. For ```CALLBACK``` and ```OUTDIAL``` this should be an outboundEP. For ```EXECUTE_FLOW``` this should be an inboundEP which is mapped to a flow that will be triggered, maximum length 36 characters.
+          example: 510d198d-7aa7-4b75-a5ff-e61759f4f313
+        attributes:
+          type: object
+          description: This is a schema free data tuple to pass-on specific data, depending on the outboundType. Supports a maximum of 30 tuples. Each tuple can have a key up to 200 bytes (up to 200 UTF-8 characters) and a value up to 1024 bytes (up to 1024 UTF-8 characters).
+          example:
+            channel: sales
+        outboundType:
+          type: string
+          description: The outbound type for the task. Supported values are ```CALLBACK```, ```OUTDIAL```, and ```EXECUTE_FLOW```. Use ```OUTDIAL``` when the user is logged into the Agent Desktop and needs to make an outbound call to the customer. Use ```CALLBACK``` when the user is not logged in and needs to schedule a callback to the customer. Use ```EXECUTE_FLOW``` when the task is linked to a predefined flow triggered through an Inbound Entrypoint.
+          example: CALLBACK
+        mediaType:
+          type: string
+          description: The media type for the request. The ```telephony``` type is required for ```EXECUTE_FLOW``` and ```CALLBACK```. The supported value is ```telephony```.
+          example: telephony
+        origin:
+          type: string
+          description: The contact center number, which is an ANI Outdial number, that will be used while making a call to the customer. This field is mandatory for ```EXECUTE_FLOW``` and ```OUTDIAL``` type while it is optional for ```CALLBACK```. If not provided for ```CALLBACK``` type, default out-dial ANI configuration will be used, maximum length 36 characters. The origin value must exactly match one of the configured Outdial ANIs in the agent profile.
+          example: '2147751364'
+        callback:
+          type: object
+          description: Callback details. Required only when outboundType is set to ```CALLBACK```.
+          $ref: '#/components/schemas/CallbackDetails'
+        customAttributes:
+          type: object
+          description: This is a schema-free data tuple to pass on specific SIP header data, Supports a maximum of 20 headers, selected alphabetically if more than 20 are present. Each header key is converted to lowercase, and hyphens are retained. The payload is restricted to 1100 bytes to comply with RFC3261 when using UDP. No header values are logged to ensure PII protection.Ex:The Caller ID Name is included as 'caller_id_name', derived from the appropriate SIP header
+          example:
+            x_custom_header: val
+    PatchTaskRequest:
+      description: Request body for patching a task.
+      required:
+      - attributes
+      type: object
+      properties:
+        attributes:
+          type: object
+          description: This is a schema free data tuple to pass-on specific data, depending on the outboundType. Supports a maximum of 30 tuples. Each tuple can have a key up to 200 bytes (up to 200 UTF-8 characters) and a value up to 1024 bytes (up to 1024 UTF-8 characters).
+          example:
+            channel: sales
+    ConsultResourceRequest:
+      description: Request body for a consult.
+      properties:
+        to:
+          description: The destination ID to consult, maximum length 36 characters.
+          type: string
+          example: 315fbb91-2288-427c-9588-ec764cd46ea4
+        destinationType:
+          description: "The user can consult to another user in the team(```agent```), queue(```queue```), entry point(```entryPoint```) or dial number(```dialNumber```).\n When consulting an Entry Point (EP) that is associated with multiple Directory Numbers (DNs), the consult typically goes to one of the associated DNs."
+          type: string
+          example: dialNumber
+        holdParticipants:
+          description: This allows the caller to specify their preference for whether the main call should be placed on hold or not during consult.
+          type: boolean
+          example: true
+      required:
+      - to
+      - destinationType
+      type: object
+    ErrorDetails:
+      description: Details of an error.
+      type: object
+      properties:
+        key:
+          type: string
+          description: An application defined error code.
+          example: '401'
+        message:
+          type: array
+          description: A message providing details about the error.
+          items:
+            $ref: '#/components/schemas/OperationError'
+    MediaResourceRequest:
+      description: Request body for media resource.
+      properties:
+        mediaResourceId:
+          description: It is an identifier of a media resource, maximum length 36 characters
+          type: string
+          example: 315fbb91-2288-427c-9588-ec764cd46ea4
+      required:
+      - mediaResourceId
+      type: object
+    TaskApiResponse:
+      description: API response for a task.
+      required:
+      - data
+      - meta
+      type: object
+      properties:
+        meta:
+          description: Response metadata.
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: array
+          description: List of tasks retrieved according to query parameters.
+          items:
+            $ref: '#/components/schemas/Task'
+    ConsultTransferResourceRequest:
+      description: Request body for a consult transfer.
+      properties:
+        to:
+          description: The consulted user destination ID to transfer, maximum length 36 characters.
+          type: string
+          example: 315fbb91-2288-427c-9588-ec764cd46ea4
+        destinationType:
+          description: The user can transfer to another consulted user in the team(```agent```), dial number(```dialNumber```), entry point(```entryPoint```)
+          type: string
+          example: dialNumber
+      required:
+      - to
+      - destinationType
+      type: object
+    TaskQueue:
+      description: The queue where the task belongs.
+      required:
+      - id
+      - name
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID of the last queue to which the task was assigned.
+          example: 89cf3b93-f020-42c6-84dc-87db6a92eae7
+        name:
+          type: string
+          description: Name of the last queue to which the task was assigned.
+          example: Technical Support Queue
+    CallbackDetails:
+      description: Details for a callback task.
+      type: object
+      required:
+      - callbackOrigin
+      - callbackType
+      properties:
+        callbackOrigin:
+          type: string
+          description: The source of callback request. The supported value is ```web```.
+          example: web
+        callbackType:
+          type: string
+          description: The type of callback. The supported value is ```immediate```.
+          example: immediate
+    TaskAttributes:
+      required:
+      - channelType
+      - createdTime
+      - lastUpdatedTime
+      - owner
+      - queue
+      - status
+      type: object
+      properties:
+        owner:
+          $ref: '#/components/schemas/TaskOwner'
+        queue:
+          $ref: '#/components/schemas/TaskQueue'
+        channelType:
+          type: string
+          description: Task channel type(s) permitted in the response. Must be lowercase. By default, there is no channel type filtering.
+          example: email
+        status:
+          type: string
+          description: Current status of the task.
+          example: created
+          enum:
+          - created
+          - queued
+          - offered
+          - assigned
+          - abandoned
+          - completed
+        createdTime:
+          type: integer
+          description: Created time of the task (epoch milliseconds).
+          format: int64
+          example: 1591702170000
+        lastUpdatedTime:
+          type: integer
+          description: Last updated time of the task (epoch milliseconds). Updates whenever the underlying data is modified, even if the Task view of the data is the same. May also update after task "closure", so not suitable for finding a task's "closed time"
+          format: int64
+          example: 1591712170099
+        captureRequested:
+          type: boolean
+          description: Whether a capture has been requested for this Task. If this is true, a capture should eventually be available. False indicates no capture will be made available. If null, it is not yet known whether a capture has been requested.
+          example: false
+        origin:
+          type: string
+          description: Customer's channel-specific identifier. For telephony, this is the phone number. For email and chat, this is the email address.
+          example: chatuser@email.com
+        destination:
+          type: string
+          description: Destination the customer contacted. For telephony, this is the number the contact called. For chat, this is the URL of the page where the chat takes place. For email, it is the email address contacted.
+          example: '+18005555555'
+        direction:
+          type: string
+          description: Indicates which party initiated the Task. If "inbound", call was initiated by customer. If "outbound", was initiated by system as part of campaign. If "outdial", was initiated by an agent.
+          example: inbound
+        reasonCode:
+          type: string
+          description: Reason code specified by customer to indicate main aim of the task
+          example: Credit
+      description: Attributes of the task.
+    CreateTaskResponse:
+      description: Response body after successfully requesting a task creation.
+      type: object
+      required:
+      - meta
+      - data
+      properties:
+        meta:
+          type: object
+          description: Response metadata.
+          required:
+          - orgId
+          properties:
+            orgId:
+              type: string
+              format: uuid
+              description: UUID of the organization, inferred from the authorization token.
+              example: 658d1102-8c11-4850-a809-d7a99cc1c22f
+        data:
+          type: object
+          description: Response data.
+          required:
+          - id
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: UUID of the created task. Use this ID to monitor and manage the task lifecycle via subsequent API calls.
+              example: 768d1102-8c11-4850-a809-d7a99cc1c22e
+  securitySchemes:
+    oauth2:
+      flows:
+        authorizationCode:
+          authorizationUrl: /
+          scopes: {}
+          tokenUrl: /
+      type: oauth2
+    bearer-key:
+      type: http
+      description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
+      scheme: bearer
+      bearerFormat: JWT
+    bearerAuth:
+      type: oauth2
+      description: OAuth 2.0 Bearer token authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: https://webexapis.com/v1/authorize
+          tokenUrl: https://webexapis.com/v1/access_token
+          scopes:
+            spark:applications_token: Create access tokens for Service Apps

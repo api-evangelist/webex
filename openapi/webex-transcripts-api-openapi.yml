@@ -1,0 +1,748 @@
+openapi: 3.0.0
+info:
+  title: Webex Admin Address Book Transcripts API
+  version: 1.0.0
+  description: The Webex Admin APIs provide comprehensive programmatic access to administrative functions for managing Webex organizations, users, licenses, and settings. These APIs enable automation of user provisioning, license assignment, compliance management, and audit event retrieval. Administrators can integrate with enterprise identity systems, enforce security policies, monitor usage, and streamline onboarding/offboarding processes. The APIs support granular control over organizational resources, making them ideal for large-scale deployments and custom admin tooling.
+tags:
+- name: Transcripts
+paths:
+  /meetingTranscripts:
+    get:
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TranscriptObject'
+                    description: Transcript array.
+              example:
+                items:
+                - id: 8ce1f918-c138-4041-bb4a-5e01eeaadedb_M_0fc6ec11d9b6c909e04e1f6c76accda9
+                  startTime: '2020-06-02T20:30:15.042Z'
+                  meetingId: 0ed74a1c0551494fb7a04e2881bf50ae_I_166022169160077044
+                  meetingTopic: John's Meeting 01
+                  siteUrl: example.webex.com
+                  scheduledMeetingId: 0ed74a1c0551494fb7a04e2881bf50ae_20210401T232500Z
+                  meetingSeriesId: 0ed74a1c0551494fb7a04e2881bf50ae
+                  hostUserId: Y2lzY29zcGFyazovL3VzL1BFT1BMRS83QkFCQkU5OS1CNDNFLTREM0YtOTE0Ny1BMUU5RDQ2QzlDQTA
+                  vttDownloadLink: http://site-example.webex.com/v1/meetingTranscripts/5e01eeaadedb_M_0fc6ec11d9b6c909e04e1f6c76accda9/download?format=vtt
+                  txtDownloadLink: http://site-example.webex.com/v1/meetingTranscripts/5e01eeaadedb_M_0fc6ec11d9b6c909e04e1f6c76accda9/download?format=txt
+                  status: available
+                - id: 074d892d-c7f7-4864-95db-31f7ae94206f_M_39f4371ca39c4a98b7f6ecc74247151e
+                  startTime: '2020-06-01T20:30:15.042Z'
+                  meetingId: 0ed74a1c0551494fb7a04e2881bf50ae_I_166022169160077044
+                  meetingTopic: John's Meeting 02
+                  siteUrl: example.webex.com
+                  scheduledMeetingId: 0ed74a1c0551494fb7a04e2881bf50ae_20210401T232500Z
+                  meetingSeriesId: 0ed74a1c0551494fb7a04e2881bf50ae
+                  hostUserId: Y2lzY29zcGFyazovL3VzL1BFT1BMRS83QkFCQkU5OS1CNDNFLTREM0YtOTE0Ny1BMUU5RDQ2QzlDQTA
+                  vttDownloadLink: http://site-example.webex.com/v1/meetingTranscripts/31f7ae94206f_M_39f4371ca39c4a98b7f6ecc74247151e/download?format=vtt
+                  txtDownloadLink: http://site-example.webex.com/v1/meetingTranscripts/31f7ae94206f_M_39f4371ca39c4a98b7f6ecc74247151e/download?format=txt
+                  status: available
+        '400':
+          description: Bad Request
+          headers: {}
+          content: {}
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: List Meeting Transcripts
+      operationId: List Meeting Transcripts
+      description: 'Lists available transcripts of an ended [meeting instance](/docs/meetings#meeting-series-scheduled-meetings-and-meeting-instances).
+
+
+        Use this operation to list transcripts of an ended [meeting instance](/docs/meetings#meeting-series-scheduled-meetings-and-meeting-instances) when they are ready. Please note that only **meeting instances** in state `ended` are supported for `meetingId`. **Meeting series**, **scheduled meetings** and `in-progress` **meeting instances** are not supported.
+
+
+        #### Request Header
+
+
+        * `timezone`: [Time zone](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List) in conformance with the [IANA time zone database](https://www.iana.org/time-zones). The default is UTC if `timezone` is not defined.'
+      tags:
+      - Transcripts
+      parameters:
+      - name: max
+        in: query
+        description: Maximum number of transcripts to return in a single page. `max` must be equal to or greater than `1` and equal to or less than `100`.
+        schema:
+          type: number
+          default: 10
+      - name: from
+        in: query
+        description: Starting date and time (inclusive) for transcripts to return, in any [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant format. `from` cannot be after `to`.
+        example: '2020-07-12T09:30:00+08:00'
+        schema:
+          type: string
+          default: If only `to` is specified, the default `from` value is 7 days before `to`; if no `to` or `from` is specified, the default `from` value is 7 days before the current date and time.
+      - name: to
+        in: query
+        description: Ending date and time (exclusive) for List transcripts to return, in any [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant format. `to` cannot be before `from`.
+        example: '2020-07-31T09:30:00+08:00'
+        schema:
+          type: string
+          default: If `from` is specified, the default value is 7 days after `from`; if `from` is not specified, the default value is the current date and time.
+      - name: meetingId
+        in: query
+        description: Unique identifier for the [meeting instance](/docs/meetings#meeting-series-scheduled-meetings-and-meeting-instances) to which the transcript belongs. Please note that currently the meeting ID of a scheduled [personal room](https://help.webex.com/en-us/article/nul0wut/Webex-Personal-Rooms-in-Webex-Meetings) meeting is not supported for this API. If `meetingId` is not specified, the operation returns an array of transcripts for all meetings of the current user.
+        example: 0ed74a1c0551494fb7a04e2881bf50ae_I_166022169160077044
+        schema:
+          type: string
+      - name: hostEmail
+        in: query
+        description: Email address for the meeting host. This parameter is only used if the user or application calling the API has the `admin-level` scopes. If set, the admin may specify the email of a user in a site they manage and the API will return details for a meeting that is hosted by that user. If `meetingId` is not specified, it can not support `hostEmail`.
+        example: john.andersen@example.com
+        schema:
+          type: string
+      - name: siteUrl
+        in: query
+        description: URL of the Webex site from which the API lists transcripts. If not specified, the API lists transcripts from user's preferred site. All available Webex sites and the preferred site of the user can be retrieved by the [Get Site List](/docs/api/v1/meeting-preferences/get-site-list) API.
+        example: example.webex.com
+        schema:
+          type: string
+  /admin/meetingTranscripts:
+    get:
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TranscriptObject'
+                    description: Transcript array
+              example:
+                items:
+                - id: 8ce1f918-c138-4041-bb4a-5e01eeaadedb_M_0fc6ec11d9b6c909e04e1f6c76accda9
+                  startTime: '2020-06-02T20:30:15.042Z'
+                  meetingId: 0ed74a1c0551494fb7a04e2881bf50ae_I_166022169160077044
+                  meetingTopic: John's Meeting 01
+                  siteUrl: example.webex.com
+                  scheduledMeetingId: 0ed74a1c0551494fb7a04e2881bf50ae_20210401T232500Z
+                  meetingSeriesId: 0ed74a1c0551494fb7a04e2881bf50ae
+                  hostUserId: Y2lzY29zcGFyazovL3VzL1BFT1BMRS83QkFCQkU5OS1CNDNFLTREM0YtOTE0Ny1BMUU5RDQ2QzlDQTA
+                  vttDownloadLink: http://site-example.webex.com/v1/meetingTranscripts/5e01eeaadedb_M_0fc6ec11d9b6c909e04e1f6c76accda9/download?format=vtt
+                  txtDownloadLink: http://site-example.webex.com/v1/meetingTranscripts/5e01eeaadedb_M_0fc6ec11d9b6c909e04e1f6c76accda9/download?format=txt
+                  status: available
+                - id: 074d892d-c7f7-4864-95db-31f7ae94206f_M_39f4371ca39c4a98b7f6ecc74247151e
+                  startTime: '2020-06-01T20:30:15.042Z'
+                  meetingId: 0ed74a1c0551494fb7a04e2881bf50ae_I_166022169160077044
+                  meetingTopic: John's Meeting 02
+                  siteUrl: example.webex.com
+                  scheduledMeetingId: 0ed74a1c0551494fb7a04e2881bf50ae_20210401T232500Z
+                  meetingSeriesId: 0ed74a1c0551494fb7a04e2881bf50ae
+                  hostUserId: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9jN2ZkNzNmMi05ZjFlLTQ3ZjctYWEwNS05ZWI5OGJiNjljYzY
+                  vttDownloadLink: http://site-example.webex.com/v1/meetingTranscripts/31f7ae94206f_M_39f4371ca39c4a98b7f6ecc74247151e/download?format=vtt
+                  txtDownloadLink: http://site-example.webex.com/v1/meetingTranscripts/31f7ae94206f_M_39f4371ca39c4a98b7f6ecc74247151e/download?format=txt
+                  status: deleted
+        '400':
+          description: Bad Request
+          headers: {}
+          content: {}
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: List Meeting Transcripts For Compliance Officer
+      operationId: List Meeting Transcripts For Compliance Officer
+      description: 'Lists available or deleted transcripts of an ended [meeting instance](/docs/meetings#meeting-series-scheduled-meetings-and-meeting-instances) for a specific site.
+
+
+        The returned list is sorted in descending order by the date and time that the transcript was created.
+
+
+        #### Request Header
+
+
+        * `timezone`: [Time zone](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List) in conformance with the [IANA time zone database](https://www.iana.org/time-zones). The default is UTC if `timezone` is not defined.'
+      tags:
+      - Transcripts
+      parameters:
+      - name: from
+        in: query
+        description: Starting date and time (inclusive) for transcripts to return, in any [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant format. `from` cannot be after `to`.
+        example: '2020-07-12T09:30:00+08:00'
+        schema:
+          type: string
+          default: If only `to` is specified, the default `from` value is 7 days before `to`; if no `to` or `from` is specified, the default `from` value is 7 days before the current date and time.
+      - name: to
+        in: query
+        description: Ending date and time (exclusive) for List transcripts to return, in any [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant format. `to` cannot be before `from`.
+        example: '2020-07-31T09:30:00+08:00'
+        schema:
+          type: string
+          default: If `from` is specified, the default value is 7 days after `from`; if `from` is not specified, the default value is the current date and time.
+      - name: max
+        in: query
+        description: Maximum number of transcripts to return in a single page. `max` must be equal to or greater than `1` and equal to or less than `100`.
+        schema:
+          type: number
+          default: 10
+      - name: siteUrl
+        in: query
+        description: URL of the Webex site from which the API lists transcripts.
+        required: true
+        example: example.webex.com
+        schema:
+          type: string
+  /meetingTranscripts/{transcriptId}/download:
+    get:
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            text/vtt:
+              example: 'WEBVTT
+
+
+                1
+
+                00:00:20.904 --> 00:00:24.564
+
+                This is an s sample recording.
+
+
+                2
+
+                00:00:31.014 --> 00:00:33.744
+
+                Testing out transcripts.
+
+                '
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Download a Meeting Transcript
+      operationId: Download a Meeting Transcript
+      description: Download a meeting transcript from the meeting transcript specified by `transcriptId`.
+      tags:
+      - Transcripts
+      parameters:
+      - name: transcriptId
+        in: path
+        description: Unique identifier for the meeting transcript.
+        required: true
+        example: 5e01eeaadedb_M_0fc6ec11d9b6c909e04e1f6c76accda9
+        schema:
+          type: string
+      - name: format
+        in: query
+        description: Format for the downloaded meeting transcript.
+        example: vtt
+        schema:
+          type: string
+          default: vtt
+          enum:
+          - vtt
+          - txt
+      - name: hostEmail
+        in: query
+        description: Email address for the meeting host. This parameter is only used if the user or application calling the API has the `admin-level` scopes. If set, the admin may specify the email of a user in a site they manage and the API will return details for a meeting that is hosted by that user.
+        example: john.andersen@example.com
+        schema:
+          type: string
+  /meetingTranscripts/{transcriptId}/snippets:
+    get:
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SnippetObject'
+                    description: Transcript snippet array
+              example:
+                items:
+                - id: 195d64646ad14be2924ea50f541fd91d_00001
+                  text: Hello everyone
+                  personName: John Andersen
+                  personEmail: john.andersen@example.com
+                  offset: 1000
+                  duration: 1500
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: List Snippets of a Meeting Transcript
+      operationId: List Snippets of a Meeting Transcript
+      description: 'Lists snippets of a meeting transcript specified by `transcriptId`.
+
+
+        Use this operation to list snippets of a meeting transcript when they are ready.'
+      tags:
+      - Transcripts
+      parameters:
+      - name: transcriptId
+        in: path
+        description: Unique identifier for the meeting transcript to which the snippets belong.
+        required: true
+        example: 195d64646ad14be2924ea50f541fd91d
+        schema:
+          type: string
+      - name: max
+        in: query
+        description: Maximum snippet items to be returned for this query, to support pagination.
+        example: '10'
+        schema:
+          type: string
+  /meetingTranscripts/{transcriptId}/snippets/{snippetId}:
+    get:
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/SnippetObject'
+              example:
+                id: 195d64646ad14be2924ea50f541fd91d_00001
+                text: Hello everyone
+                personName: John Andersen
+                personEmail: john.andersen@example.com
+                offsetMillisecond: 1000
+                durationMillisecond: 1500
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Get a Transcript Snippet
+      operationId: Get a Transcript Snippet
+      description: Retrieves details for a transcript snippet specified by `snippetId` from the meeting transcript specified by `transcriptId`.
+      tags:
+      - Transcripts
+      parameters:
+      - name: transcriptId
+        in: path
+        description: Unique identifier for the meeting transcript to which the requested snippet belongs.
+        required: true
+        example: 195d64646ad14be2924ea50f541fd91d
+        schema:
+          type: string
+      - name: snippetId
+        in: path
+        description: Unique identifier for the snippet being requested.
+        required: true
+        example: 195d64646ad14be2924ea50f541fd91d_00001
+        schema:
+          type: string
+    put:
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/SnippetObject'
+              example:
+                id: 195d64646ad14be2924ea50f541fd91d_00001
+                text: Hello everybody!
+                personName: John Andersen
+                personEmail: john.andersen@example.com
+                offsetMillisecond: 1000
+                durationMillisecond: 1500
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Update a Transcript Snippet
+      operationId: Update a Transcript Snippet
+      description: Updates details for a transcript snippet specified by `snippetId` from the meeting transcript specified by `transcriptId`.
+      tags:
+      - Transcripts
+      parameters:
+      - name: transcriptId
+        in: path
+        description: Unique identifier for the meeting transcript to which the snippet to be updated belongs.
+        required: true
+        example: 195d64646ad14be2924ea50f541fd91d
+        schema:
+          type: string
+      - name: snippetId
+        in: path
+        description: Unique identifier for the snippet being updated.
+        required: true
+        example: 195d64646ad14be2924ea50f541fd91d_00001
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            example:
+              reason: audit
+              text: Hello everybody!
+            schema:
+              $ref: '#/components/schemas/UpdateSnippetObject'
+  /meetingTranscripts/{transcriptId}:
+    delete:
+      responses:
+        '204':
+          description: No Content
+          headers: {}
+          content: {}
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Delete a Transcript
+      operationId: Delete a Transcript
+      description: Removes a transcript with a specified transcript ID. The deleted transcript cannot be recovered. If a Compliance Officer deletes another user's transcript, the transcript will be inaccessible to regular users (host, attendees), but will be still available to the Compliance Officer.
+      tags:
+      - Transcripts
+      parameters:
+      - name: transcriptId
+        in: path
+        description: Unique identifier for the meeting transcript.
+        required: true
+        example: 195d64646ad14be2924ea50f541fd91d
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            example:
+              reason: audit
+              comment: Violates the company policy
+            schema:
+              $ref: '#/components/schemas/DeleteTranscriptObject'
+components:
+  schemas:
+    TranscriptObject:
+      type: object
+      required:
+      - id
+      - siteUrl
+      - startTime
+      - meetingTopic
+      - meetingId
+      - scheduledMeetingId
+      - hostUserId
+      - vttDownloadLink
+      - txtDownloadLink
+      - status
+      properties:
+        id:
+          type: string
+          example: 195d64646ad14be2924ea50f541fd91d
+          description: A unique identifier for the transcript.
+        siteUrl:
+          type: string
+          example: example.webex.com
+          description: URL of the Webex site from which the API lists meeting transcripts.
+        startTime:
+          type: string
+          example: '2020-06-01T20:30:15.042Z'
+          description: Start time for the meeting transcript in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant format.
+        meetingTopic:
+          type: string
+          example: John's Meeting
+          description: The meeting's topic.
+        meetingId:
+          type: string
+          example: 0ed74a1c0551494fb7a04e2881bf50ae_I_166022169160077044
+          description: Unique identifier for the [meeting instance](/docs/meetings#meeting-series-scheduled-meetings-and-meeting-instances) to which the transcripts belong.
+        scheduledMeetingId:
+          type: string
+          example: 0ed74a1c0551494fb7a04e2881bf50ae_20210401T232500Z
+          description: Unique identifier for scheduled meeting with which the current meeting is associated. Only apples to a meeting instance which is happening or has happened. This is the `id` of the scheduled meeting with which the instance is associated.
+        meetingSeriesId:
+          type: string
+          example: 0ed74a1c0551494fb7a04e2881bf50ae
+          description: Unique identifier for the parent meeting series to which the recording belongs.
+        hostUserId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS83QkFCQkU5OS1CNDNFLTREM0YtOTE0Ny1BMUU5RDQ2QzlDQTA
+          description: Unique identifier for the meeting host.
+        vttDownloadLink:
+          type: string
+          example: http://site-example.webex.com/v1/meetingTranscripts/195d64646ad14be2924ea50f541fd91d/download?format=vtt
+          description: The download link for the transcript vtt file.
+        txtDownloadLink:
+          type: string
+          example: http://site-example.webex.com/v1/meetingTranscripts/195d64646ad14be2924ea50f541fd91d/download?format=txt
+          description: The download link for the transcript txt file.
+        status:
+          type: string
+          enum:
+          - available
+          - deleted
+          description: " * `available` - Transcript is available.\n * `deleted` - Transcript has been deleted.\n"
+    UpdateSnippetObject:
+      type: object
+      required:
+      - text
+      properties:
+        reason:
+          type: string
+          example: audit
+          description: Reason for snippet update; only required for Compliance Officers.
+        text:
+          type: string
+          example: Hello everybody
+          description: Text for the snippet.
+    DeleteTranscriptObject:
+      type: object
+      properties:
+        reason:
+          type: string
+          example: audit
+          description: Reason for deleting a transcript. Only required when a Compliance Officer is operating on another user's transcript.
+        comment:
+          type: string
+          example: Maintain data privacy
+          description: Explanation for deleting a transcript. The comment can be a maximum of 255 characters long.
+    SnippetObject:
+      type: object
+      required:
+      - id
+      - text
+      - personName
+      - personEmail
+      - offsetMillisecond
+      - durationMillisecond
+      properties:
+        id:
+          type: string
+          example: 195d64646ad14be2924ea50f541fd91d_00001
+          description: A unique identifier for the snippet.
+        text:
+          type: string
+          example: Hello everyone
+          description: Text for the snippet.
+        personName:
+          type: string
+          example: John Andersen
+          description: Name of the person generating the speech for the snippet.
+        personEmail:
+          type: string
+          example: john.andersen@example.com
+          description: Email address of the person generating the speech for the snippet.
+        offsetMillisecond:
+          type: number
+          example: 1000
+          description: Offset from the beginning of the parent transcript in milliseconds indicating the start time of the snippet.
+        durationMillisecond:
+          type: number
+          example: 2000
+          description: Duration of the snippet in milliseconds.
+  securitySchemes:
+    oauth2:
+      flows:
+        authorizationCode:
+          authorizationUrl: /
+          scopes: {}
+          tokenUrl: /
+      type: oauth2
+    bearer-key:
+      type: http
+      description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
+      scheme: bearer
+      bearerFormat: JWT
+    bearerAuth:
+      type: oauth2
+      description: OAuth 2.0 Bearer token authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: https://webexapis.com/v1/authorize
+          tokenUrl: https://webexapis.com/v1/access_token
+          scopes:
+            spark:applications_token: Create access tokens for Service Apps

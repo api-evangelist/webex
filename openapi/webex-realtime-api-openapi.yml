@@ -1,0 +1,103 @@
+openapi: 3.0.0
+info:
+  title: Webex Admin Address Book Realtime API
+  version: 1.0.0
+  description: The Webex Admin APIs provide comprehensive programmatic access to administrative functions for managing Webex organizations, users, licenses, and settings. These APIs enable automation of user provisioning, license assignment, compliance management, and audit event retrieval. Administrators can integrate with enterprise identity systems, enforce security policies, monitor usage, and streamline onboarding/offboarding processes. The APIs support granular control over organizational resources, making them ideal for large-scale deployments and custom admin tooling.
+tags:
+- name: Realtime
+paths:
+  /v1/realtime/subscribe:
+    post:
+      tags:
+      - Realtime
+      summary: Subscribe Realtime Notification
+      description: Access this endpoint when the user has to register for a WebSocket Session to receive realtime events. Requires 'cjp:user' scope or roles 'id_full_admin', 'id_readonly_admin', 'atlas-portal.partner.salesadmin', 'atlas-portal.partner.helpdesk', 'cjp.supervisor', 'cjp.admin', 'atlas-portal.partner.provision_admin' for authorization
+      operationId: subscribeRealtimeRoute
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RealtimeRequest'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RealtimeResponse'
+          description: OK
+        '401':
+          description: Unauthorized, Token is Invalid
+        '403':
+          description: Forbidden Request
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+components:
+  schemas:
+    RealtimeRequest:
+      properties:
+        isKeepAliveEnabled:
+          description: This represents that a json message {\"keepalive\":\"true\"} is expected over the websocket connection from Client. This should be sent periodically (usually 4s). If there are no keep-alive messages from the client for a period of 15 seconds, the server will drop the websocket.
+          example: true
+          default: true
+          type: boolean
+        clientType:
+          description: ClientType is used to identify a web application differently from other web applications. It is used to group connections together for a specific user coming from that specific web application.
+          example: ExtensiveSupervisoryDesktop
+          default: DefaultClient
+          type: string
+          maxLength: 64
+          minLength: 4
+        allowMultiLogin:
+          description: This cannot be used without providing \"clientType\". When set to true, it informs the server to allow multiple logins for this user coming from the same clientType. Upto 10 multiple logins will be allowed.
+          example: false
+          default: false
+          maxLength: 64
+          minLength: 4
+          type: boolean
+        force:
+          description: When true, will drop a random connection and then subscribes if connections for a user exceed maximum limit. When allowMultiLogin is false and a multi-login is attempted, if set to true will drop all connections for that user of that clientType & then subscribes.
+          example: false
+          default: false
+          maxLength: 64
+          minLength: 4
+          type: boolean
+      type: object
+    RealtimeResponse:
+      properties:
+        webSocketUrl:
+          description: Url used by the client to setup websocket.
+          example: wss://api.wxcc-us1.cisco.com/v1/realtime/subscription/ExtensiveSupervisoryDesktop-ffffffac0f-39fa-4122-80d8-f2c2266e6391
+          type: string
+        subscriptionId:
+          description: Id used by client to subscribe to interested events.
+          example: ExtensiveSupervisoryDesktop-ffffffac0f-39fa-4122-80d8-f2c2266e6391
+          format: uuid
+      required:
+      - webSocketUrl
+      - subscriptionId
+      type: object
+  securitySchemes:
+    oauth2:
+      flows:
+        authorizationCode:
+          authorizationUrl: /
+          scopes: {}
+          tokenUrl: /
+      type: oauth2
+    bearer-key:
+      type: http
+      description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
+      scheme: bearer
+      bearerFormat: JWT
+    bearerAuth:
+      type: oauth2
+      description: OAuth 2.0 Bearer token authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: https://webexapis.com/v1/authorize
+          tokenUrl: https://webexapis.com/v1/access_token
+          scopes:
+            spark:applications_token: Create access tokens for Service Apps

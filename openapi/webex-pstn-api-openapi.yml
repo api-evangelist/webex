@@ -1,0 +1,844 @@
+openapi: 3.0.0
+info:
+  title: Webex Admin Address Book PSTN API
+  version: 1.0.0
+  description: The Webex Admin APIs provide comprehensive programmatic access to administrative functions for managing Webex organizations, users, licenses, and settings. These APIs enable automation of user provisioning, license assignment, compliance management, and audit event retrieval. Administrators can integrate with enterprise identity systems, enforce security policies, monitor usage, and streamline onboarding/offboarding processes. The APIs support granular control over organizational resources, making them ideal for large-scale deployments and custom admin tooling.
+tags:
+- name: PSTN
+paths:
+  /telephony/pstn/locations/{locationId}/connectionOptions:
+    get:
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectionOptionsListResponse'
+              example:
+                items:
+                - id: Y2lzY29zcGFyazovL3VzL1BTVE5fQ09OTkVDVElPTi81MWRlNDg5Yy1hYTYwLTRjMjUtOWFmNi1jYzRjYjE3MTczMGU
+                  displayName: Premises-based PSTN
+                  pstnServices:
+                  - GEOGRAPHIC_NUMBERS
+                - id: Y2lzY29zcGFyazovL3VzL1BTVE5fQ09OTkVDVElPTi9kMDk0MTc4Zi04MThlLTQ1YmMtYjEwMS1hOGRkNDhjMTM5MjE
+                  displayName: SI CCP Bandwidth
+                  pstnServices:
+                  - GEOGRAPHIC_NUMBERS
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Retrieve PSTN Connection Options for a Location
+      operationId: Retrieve PSTN Connection Options for a Location
+      description: 'Retrieve the list of PSTN connection options available for a location.
+
+
+        PSTN location connection settings enables the admin to configure or change the PSTN provider for a location.
+
+
+        Retrieving this list requires a full or read-only administrator auth token with a scope of `spark-admin:telephony_pstn_read`.'
+      tags:
+      - PSTN
+      parameters:
+      - name: locationId
+        in: path
+        description: Return the list of List PSTN location connection options for this location.
+        required: true
+        example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzEyMzQ1
+        schema:
+          type: string
+      - name: orgId
+        in: query
+        description: List PSTN location connection options for this organization.
+        example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE
+        schema:
+          type: string
+      - name: serviceTypes
+        in: query
+        description: 'Use the `serviceTypes` parameter to fetch connections for the following services
+
+          * `MOBILE_NUMBERS`'
+        style: form
+        schema:
+          type: array
+          items:
+            $ref: '#/components/schemas/AllowedServiceTypesFromHydra'
+        example:
+        - MOBILE_NUMBERS
+  /telephony/pstn/locations/{locationId}/connection:
+    put:
+      responses:
+        '204':
+          description: No Content
+          headers: {}
+          content: {}
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Setup PSTN Connection for a Location
+      operationId: Setup PSTN Connection for a Location
+      description: 'Set up or update the PSTN connection details for a location.
+
+
+        PSTN location connection settings enables the admin to configure or change the PSTN provider for a location.
+
+
+        Setting up PSTN connection on a location requires a full administrator auth token with scopes of `spark-admin:telephony_pstn_write` and `spark-admin:telephony_pstn_read`.'
+      tags:
+      - PSTN
+      parameters:
+      - name: locationId
+        in: path
+        description: Setup PSTN location connection options for this location.
+        required: true
+        example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzEyMzQ1
+        schema:
+          type: string
+      - name: orgId
+        in: query
+        description: Setup PSTN location connection for this organization.
+        example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            example:
+              id: Y2lzY29zcGFyazovL3VzL1BTVE5fQ09OTkVDVElPTi81MWRlNDg5Yy1hYTYwLTRjMjUtOWFmNi1jYzRjYjE3MTczMGU
+              premiseRouteType: TRUNK
+              premiseRouteId: Y2lzY29zcGFyazovL3VzL1RSVU5LLzUxZGU0ODljLWFhNjAtNGMyNS05YWY2LWNjNGNiMTcxNzMxZg
+            schema:
+              $ref: '#/components/schemas/SetUpPSTNLocationConnectionObject'
+    get:
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectionResponse'
+              example:
+                id: Y2lzY29zcGFyazovL3VzL1BTVE5fQ09OTkVDVElPTi81MWRlNDg5Yy1hYTYwLTRjMjUtOWFmNi1jYzRjYjE3MTczMGU
+                displayName: Premises-based PSTN
+                pstnServices:
+                - GEOGRAPHIC_NUMBERS
+                pstnConnectionType: LOCAL_GATEWAY
+                routeType: TRUNK
+                routeId: Y2lzY29zcGFyazovL3VzL1RSVU5LL2Y1YTU4MzAwLTVmZTYtNGNjMS1hODA3LTRlN2E5OTMzN2Q0ZA
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Retrieve PSTN Connection for a Location
+      operationId: Retrieve PSTN Connection for a Location
+      description: 'Retrieves the current configured PSTN connection details for a location.
+
+
+        PSTN location connection settings enables the admin to configure or change the PSTN provider for a location.
+
+
+        Retrieving the PSTN connection details for a location requires a full or read-only administrator auth token with a scope of `spark-admin:telephony_pstn_read`.'
+      tags:
+      - PSTN
+      parameters:
+      - name: locationId
+        in: path
+        description: Retrieve PSTN location connection details for this location.
+        required: true
+        example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzEyMzQ1
+        schema:
+          type: string
+      - name: orgId
+        in: query
+        description: Retrieve PSTN location connection details for this organization.
+        example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE
+        schema:
+          type: string
+  /telephony/pstn/numbers/{phoneNumber}/emergencyAddress:
+    put:
+      responses:
+        '204':
+          description: No Content
+          headers: {}
+          content: {}
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Update the Emergency Address for a Phone Number
+      operationId: updateEmergencyAddressForPhoneNumber
+      description: 'Update the emergency address for a phone number.
+
+
+        Emergency address settings allow the admin to configure or update the physical address associated with a phone number or a location.
+
+
+        Updating the emergency address for a phone number requires a full administrator auth token with scope of `spark-admin:telephony_pstn_write`.'
+      tags:
+      - PSTN
+      parameters:
+      - name: phoneNumber
+        in: path
+        description: Update the emergency address for this phone number.
+        required: true
+        example: Y2lzY29zcGFyazovL3VzL1BIT05FX05VTUJFUi8rMTk4NzY1NDMyMTA
+        schema:
+          type: string
+      - name: orgId
+        in: query
+        description: Update the emergency address of phone number in this organization.
+        example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE
+        schema:
+          type: string
+      requestBody:
+        required: true
+        description: JSON object containing emergency address information to be updated for the number. Using an empty JSON object deletes the custom emergency address for the number and replaces it with the location's default emergency address.
+        content:
+          application/json:
+            examples:
+              samplePayload:
+                summary: Sample JSON with values
+                value:
+                  emergencyAddress:
+                    address1: 3487 Chase Ave
+                    address2: Apt 112
+                    city: Miami Beach
+                    state: FL
+                    postalCode: '33140'
+                    country: US
+              emptyPayload:
+                summary: Empty JSON
+                value: {}
+            schema:
+              type: object
+              description: Object containing emergency address details to be updated for the phone number.
+              properties:
+                emergencyAddress:
+                  $ref: '#/components/schemas/EmergencyAddressObject'
+  /telephony/pstn/locations/{locationId}/emergencyAddress/lookup:
+    post:
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  addresses:
+                    type: array
+                    description: List of suggested addresses based on the input address. If the input address is valid and unchanged, no errors are returned. If the input address requires corrections, the response includes a suggested address along with error details.
+                    items:
+                      $ref: '#/components/schemas/SuggestedEmergencyAddressObject'
+              examples:
+                validAddressExample:
+                  summary: Valid address, no errors
+                  value:
+                    addresses:
+                    - address1: 3487 Chase Ave
+                      address2: Apt 112
+                      city: Miami Beach
+                      state: FL
+                      postalCode: '33140'
+                      country: US
+                      meta:
+                        houseNumber: '3487'
+                        streetName: Chase Ave
+                        country: US
+                        state: FL
+                        city: Miami Beach
+                        zipCode: '33140'
+                        latitude: '25.8131'
+                        longitude: '-80.1300'
+                addressWithErrorsExample:
+                  summary: Address with corrections and errors
+                  value:
+                    addresses:
+                    - address1: 3487 Chase Ave
+                      address2: Apt 112
+                      city: Miami Beach
+                      state: FL
+                      postalCode: '33140'
+                      country: US
+                      meta:
+                        houseNumber: '3487'
+                        streetName: Chase Ave
+                        country: US
+                        state: FL
+                        city: Miami Beach
+                        zipCode: '33140'
+                        latitude: '25.8131'
+                        longitude: '-80.1300'
+                      errors:
+                      - code: PMP4004
+                        title: INVALID_STREET_ADDRESS
+                        detail: The street address provided is invalid.
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Emergency Address Lookup to Verify if Address is Valid
+      operationId: emergencyAddressLookup
+      description: 'Returns a suggested address. If the input address is valid and unchanged, no errors are returned. If the input address requires corrections, the response includes a suggested address along with error details.
+
+
+        Emergency address settings allow the admin to configure or update the physical address associated with a phone number or a location.
+
+
+        Emergency address lookup to verify if address is valid requires a full administrator auth token with scope of `spark-admin:telephony_pstn_read`.'
+      tags:
+      - PSTN
+      parameters:
+      - name: locationId
+        in: path
+        description: Emergency address lookup for this location.
+        required: true
+        example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzAwM2FmYjBhLTBiZWMtNGQ1Yy05Mjc4LTRmMDdhYWY4OTg4ZA
+        schema:
+          type: string
+      - name: orgId
+        in: query
+        description: Emergency address lookup for this organization.
+        example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE
+        schema:
+          type: string
+      requestBody:
+        required: true
+        description: JSON object containing emergency address information to be validated.
+        content:
+          application/json:
+            example:
+              address1: 3487 Chase Ave
+              address2: Apt 112
+              city: Miami Beach
+              state: FL
+              postalCode: '33140'
+              country: US
+            schema:
+              $ref: '#/components/schemas/EmergencyAddressObject'
+  /telephony/pstn/locations/{locationId}/emergencyAddress:
+    post:
+      responses:
+        '201':
+          description: Created
+          headers: {}
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: Unique identifier for the emergency address.
+                required:
+                - id
+              example:
+                id: Y2lzY29zcGFyazovL3VzL0VNRVJHRU5DWV9BRERSRVNTLzk2YWJjMmFhLTNkY2MtMTFlNS1hMTUyLWZlMzQ4MTljZGM5YQ
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Add an Emergency Address to a Location
+      operationId: addEmergencyAddressToLocation
+      description: 'Adds a new emergency address to the specified location. On success, returns the unique identifier of the newly created emergency address.
+
+
+        Emergency address settings allow the admin to configure or update the physical address associated with a phone number or a location.
+
+
+        Adding emergency address to a location requires a full administrator auth token with scope of `spark-admin:telephony_pstn_write`.'
+      tags:
+      - PSTN
+      parameters:
+      - name: locationId
+        in: path
+        description: Location to which the emergency address will be added.
+        required: true
+        example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzAwM2FmYjBhLTBiZWMtNGQ1Yy05Mjc4LTRmMDdhYWY4OTg4ZA
+        schema:
+          type: string
+      - name: orgId
+        in: query
+        description: Adding emergency address for a location in this organization.
+        example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE
+        schema:
+          type: string
+      requestBody:
+        required: true
+        description: JSON object containing emergency address information to be added to the specified location.
+        content:
+          application/json:
+            example:
+              address1: 3487 Chase Ave
+              address2: Apt 112
+              city: Miami Beach
+              state: FL
+              postalCode: '33140'
+              country: US
+            schema:
+              $ref: '#/components/schemas/EmergencyAddressObject'
+  /telephony/pstn/locations/{locationId}/emergencyAddresses/{addressId}:
+    put:
+      responses:
+        '204':
+          description: No Content
+          headers: {}
+          content: {}
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Update the Emergency Address of a Location
+      operationId: updateEmergencyAddressOfLocation
+      description: 'Updates the emergency address of the specified location.
+
+
+        Emergency address settings allow the admin to configure or update the physical address associated with a phone number or a location.
+
+
+        Updating the emergency address of a location requires a full administrator auth token with scope of `spark-admin:telephony_pstn_write`.'
+      tags:
+      - PSTN
+      parameters:
+      - name: locationId
+        in: path
+        description: Location for which the emergency address will be updated.
+        required: true
+        example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzAwM2FmYjBhLTBiZWMtNGQ1Yy05Mjc4LTRmMDdhYWY4OTg4ZA
+        schema:
+          type: string
+      - name: addressId
+        in: path
+        description: Unique identifier for the emergency address that will be updated.
+        required: true
+        example: Y2lzY29zcGFyazovL3VzL0VNRVJHRU5DWV9BRERSRVNTLzhiMjdlM2JiLWY5Y2EtNDkyYi05YWM5LWVkZGEzN2EwY2IzZA
+        schema:
+          type: string
+      - name: orgId
+        in: query
+        description: Updating the emergency address of a location in this organization.
+        example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE
+        schema:
+          type: string
+      requestBody:
+        required: true
+        description: JSON object containing emergency address information to be updated for the specified location.
+        content:
+          application/json:
+            example:
+              address1: 3487 Chase Ave
+              address2: Apt 112
+              city: Miami Beach
+              state: FL
+              postalCode: '33140'
+              country: US
+            schema:
+              $ref: '#/components/schemas/EmergencyAddressObject'
+components:
+  schemas:
+    EmergencyAddressObject:
+      type: object
+      description: Object containing emergency address details.
+      properties:
+        address1:
+          type: string
+          example: 3487 Chase Ave
+          description: Primary street information for the emergency address.
+        address2:
+          type: string
+          example: Apt 112
+          description: Apartment number or any other secondary information for the emergency address.
+        city:
+          type: string
+          example: Miami Beach
+          description: City for the emergency address.
+        state:
+          type: string
+          example: FL
+          description: State or Province or Region for the emergency address.
+        postalCode:
+          type: string
+          example: '33140'
+          description: Postal code for the emergency address.
+        country:
+          type: string
+          example: US
+          description: Country for the emergency address.
+    SuggestedEmergencyAddressObject:
+      type: object
+      description: Object containing suggested address details.
+      properties:
+        address1:
+          type: string
+          example: 3487 Chase Ave
+          description: Primary street information for the emergency address.
+        address2:
+          type: string
+          example: Apt 112
+          description: Apartment number or any other secondary information for the emergency address.
+        city:
+          type: string
+          example: Miami Beach
+          description: City for the emergency address.
+        state:
+          type: string
+          example: FL
+          description: State or Province or Region for the emergency address.
+        postalCode:
+          type: string
+          example: '33140'
+          description: Postal code for the emergency address.
+        country:
+          type: string
+          example: US
+          description: Country for the emergency address.
+        meta:
+          type: object
+          description: Additional metadata for the emergency address.
+          additionalProperties:
+            type: string
+          example:
+            houseNumber: '3487'
+            streetName: Chase Ave
+            country: US
+            state: FL
+            city: Miami Beach
+            zipCode: '33140'
+            latitude: '55.21913'
+            longitude: '-118.80616'
+        errors:
+          type: array
+          description: List of errors encountered during address validation. Returned only when the input address was corrected and a suggested address was provided. Each error describes a specific issue with the original input.
+          items:
+            $ref: '#/components/schemas/AddressLookupErrorObject'
+          example:
+          - code: PMP4004
+            title: INVALID_STREET_ADDRESS
+            detail: The street address provided is invalid.
+    PSTNServiceType:
+      type: string
+      enum:
+      - GEOGRAPHIC_NUMBERS
+      - TOLLFREE_NUMBERS
+      - BUSINESS_TEXTING
+      - CONTACT_CENTER
+      - SERVICE_NUMBERS
+      - NON_GEOGRAPHIC_NUMBERS
+      - MOBILE_NUMBERS
+      description: " * `GEOGRAPHIC_NUMBERS` - PSTN service type for geographic numbers.\n * `TOLLFREE_NUMBERS` - PSTN service type for toll-free numbers.\n * `BUSINESS_TEXTING` - PSTN service type for business texting.\n * `CONTACT_CENTER` - PSTN service type for contact center services.\n * `SERVICE_NUMBERS` - PSTN service type for service numbers.\n * `NON_GEOGRAPHIC_NUMBERS` - PSTN service type for non-geographic numbers.\n * `MOBILE_NUMBERS` - PSTN service type for mobile numbers.\n"
+    ConnectionOptionsResponse:
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0NBTExfUElDS1VQL1kyRnNiRkJwWTJ0MWNERT0
+          description: A unique identifier for the connection.
+        displayName:
+          type: string
+          example: Premises-based PSTN
+          description: The display name of the PSTN connection.
+        pstnServices:
+          type: array
+          items:
+            $ref: '#/components/schemas/PSTNServiceType'
+          description: The PSTN services available for this connection.
+    ConnectionOptionsListResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConnectionOptionsResponse'
+          description: The list of PSTN connection options available for this location.
+    PremiseRouteType:
+      type: string
+      enum:
+      - ROUTE_GROUP
+      - TRUNK
+      description: " * `ROUTE_GROUP` - A route group has been selected for premises-based PSTN.\n * `TRUNK` - A trunk group has been selected for premises-based PSTN.\n"
+    PSTNType:
+      type: string
+      enum:
+      - LOCAL_GATEWAY
+      - NON_INTEGRATED_CCP
+      - INTEGRATED_CCP
+      - CISCO_PSTN
+      description: " * `LOCAL_GATEWAY` - PSTN connection type for a premises-based connection.\n * `NON_INTEGRATED_CCP` - PSTN connection type for a Non-Integrated Cloud Connected PSTN connection.\n * `INTEGRATED_CCP` - PSTN connection type for an Integrated Cloud Connected PSTN connection. Updating the location with this connection type is currently not supported using the API.\n * `CISCO_PSTN` - PSTN connection type for a Cisco PSTN connection. Updating the location with this connection type is currently not supported using the API.\n"
+    AllowedServiceTypesFromHydra:
+      type: string
+      enum:
+      - MOBILE_NUMBERS
+      description: ' * `MOBILE_NUMBERS` - PSTN service type for mobile numbers.
+
+        '
+    ConnectionResponse:
+      type: object
+      required:
+      - id
+      - pstnConnectionType
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0NBTExfUElDS1VQL1kyRnNiRkJwWTJ0MWNERT0
+          description: A unique identifier for the connection.
+        displayName:
+          type: string
+          example: Premises-based PSTN
+          description: The display name of the PSTN connection.
+        pstnServices:
+          type: array
+          items:
+            $ref: '#/components/schemas/PSTNServiceType'
+          description: The PSTN services available for this connection.
+        pstnConnectionType:
+          $ref: '#/components/schemas/PSTNType'
+          description: The PSTN connection type set for the location.
+        routeType:
+          $ref: '#/components/schemas/PremiseRouteType'
+          description: Premise route type. This is required if connection type is LOCAL_GATEWAY.
+        routeId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1RSVU5LL2Y1YTU4MzAwLTVmZTYtNGNjMS1hODA3LTRlN2E5OTMzN2Q0ZA
+          description: Premise route ID. This refers to either a Trunk ID or a Route Group ID. This field is optional but required if the connection type is LOCAL_GATEWAY.
+    AddressLookupErrorObject:
+      type: object
+      description: Object containing details about an error encountered during address lookup.
+      properties:
+        code:
+          type: string
+          description: Error code.
+          example: PMP4004
+        title:
+          type: string
+          description: Error title.
+          example: INVALID_STREET_ADDRESS
+        detail:
+          type: string
+          description: Detailed error message.
+          example: The street address provided is invalid.
+    SetUpPSTNLocationConnectionObject:
+      type: object
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0NBTExfUElDS1VQL1kyRnNiRkJwWTJ0MWNERT0
+          description: A unique identifier for the connection. This is required for non-integrated CCP.
+        premiseRouteType:
+          type: string
+          example: TRUNK
+          description: Premise route type. The possible types are TRUNK and ROUTE_GROUP. This is required for the local gateway.
+        premiseRouteId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1RSVU5LLzUxZGU0ODljLWFhNjAtNGMyNS05YWY2LWNjNGNiMTcxNzMxZg
+          description: Premise route ID. This refers to either a Trunk ID or a Route Group ID and is required for the local gateway.
+  securitySchemes:
+    oauth2:
+      flows:
+        authorizationCode:
+          authorizationUrl: /
+          scopes: {}
+          tokenUrl: /
+      type: oauth2
+    bearer-key:
+      type: http
+      description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
+      scheme: bearer
+      bearerFormat: JWT
+    bearerAuth:
+      type: oauth2
+      description: OAuth 2.0 Bearer token authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: https://webexapis.com/v1/authorize
+          tokenUrl: https://webexapis.com/v1/access_token
+          scopes:
+            spark:applications_token: Create access tokens for Service Apps

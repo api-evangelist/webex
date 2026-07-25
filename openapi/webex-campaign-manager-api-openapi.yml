@@ -1,0 +1,347 @@
+openapi: 3.0.0
+info:
+  title: Webex Admin Address Book Campaign Manager API
+  version: 1.0.0
+  description: The Webex Admin APIs provide comprehensive programmatic access to administrative functions for managing Webex organizations, users, licenses, and settings. These APIs enable automation of user provisioning, license assignment, compliance management, and audit event retrieval. Administrators can integrate with enterprise identity systems, enforce security policies, monitor usage, and streamline onboarding/offboarding processes. The APIs support granular control over organizational resources, making them ideal for large-scale deployments and custom admin tooling.
+tags:
+- name: Campaign Manager
+paths:
+  /v1/dialer/campaign:
+    post:
+      tags:
+      - Campaign Manager
+      summary: Start Campaign Request
+      description: 'A start campaign API allows businesses to programmatically start outbound campaigns using their own software applications. This type of API typically allows businesses to set up the parameters for a campaign, such as the list of phone numbers to call, the message or script to deliver, and the time of day or day of the week to call. Requires ''cjp.config_write'' scope and one of the following roles: ''cjp.admin'',''id_full_admin'',''atlas-portal.partner.salesadmin'',''atlas-portal.partner.provision_admin'' for authorization.'
+      operationId: startCampaignRoute
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StartCampaignRequest'
+      responses:
+        '202':
+          description: The campaign was started for processing.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignListResponse'
+        '400':
+          description: Incorrect fields in request
+        '401':
+          description: Invalid or absent Authorization header
+        '403':
+          description: Invalid OAuth 2.0 Bearer Token
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+  /v1/dialer/campaign/{campaignId}:
+    put:
+      tags:
+      - Campaign Manager
+      summary: Update Campaign Request
+      description: 'By using an update campaign API, businesses can automate the process of modifying and managing outbound campaigns, and integrate campaign updates into their existing workflows or applications. This can help to improve efficiency and reduce errors, as well as allow for greater flexibility and control over outbound campaigns. Requires ''cjp.config_write'' scope and one of the following roles: ''cjp.admin'',''id_full_admin'',''atlas-portal.partner.salesadmin'',''atlas-portal.partner.provision_admin'' for authorization.'
+      operationId: updateCampaignRoute
+      parameters:
+      - name: campaignId
+        in: path
+        description: The unique request id of the campaign that needs to be updated
+        required: true
+        schema:
+          type: string
+        example: Campaign1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCampaignRequest'
+      responses:
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignListResponse'
+          description: The campaign was updated successfully
+        '400':
+          description: Incorrect fields in request
+        '401':
+          description: Invalid or absent Authorization header
+        '403':
+          description: Invalid OAuth 2.0 Bearer Token
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+    delete:
+      tags:
+      - Campaign Manager
+      summary: Stop Campaign Request
+      description: 'The stop campaign API enables businesses to automate the process of managing outbound campaigns and integrate campaign deletion into their existing workflows or applications. Requires ''cjp.config_write'' scope and one of the following roles: ''cjp.admin'',''id_full_admin'',''atlas-portal.partner.salesadmin'',''atlas-portal.partner.provision_admin'' for authorization.'
+      operationId: stopCampaignRoute
+      parameters:
+      - name: campaignId
+        in: path
+        description: The unique request id of the campaign that needs to be stopped
+        required: true
+        schema:
+          type: string
+        example: Campaign1
+      responses:
+        '204':
+          description: The campaign was stopped.
+        '400':
+          description: Incorrect fields in request
+        '401':
+          description: Invalid or absent Authorization header
+        '403':
+          description: Invalid OAuth 2.0 Bearer Token
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+components:
+  schemas:
+    CampaignURLResponse:
+      properties:
+        location:
+          description: Returns the url for performing subsequent campaign updates or campaign stop
+          example: https://api.wxcc-<dc>.cisco.com/v1/dialer/campaign/<campaignId>
+          format: url
+          type: string
+      required:
+      - location
+      type: object
+    StartCampaignRequest:
+      required:
+      - id
+      - vendorVersion
+      - campaignType
+      - dialingRate
+      - entryPointId
+      - dialingListFetchURL
+      - outdialANI
+      - recordCount
+      type: object
+      properties:
+        id:
+          type: string
+          description: The id represents the unique id with which the Campaign Request will be started, maximum length 64 characters.
+          example: SalesCampaign_Prog
+        vendorVersion:
+          type: string
+          description: Vendor specific information, maximum length 32 characters.
+          example: myCampaignManager
+        campaignType:
+          type: string
+          description: 'Type of campaign and campaignType should be one of "progressive", "campaign", "predictive", "progressive_ivr", "predictive_ivr" , "preview_standard", "preview_direct" '
+          example: Progressive
+        campaignName:
+          type: string
+          description: (Optional) Used if different than id, maximum length 64 characters.
+          example: campaign1
+        authToken:
+          type: string
+          description: (Not in use) The token needed by the dialer for querying records.
+          example: Bearer <AuthToken>
+        dialingRate:
+          type: number
+          format: float
+          description: Number of contacts to be dialed out per available Agent. For Progressive 1:1 Dialer, it will support for only 1 contact and for Progressive 1:N Dialer it can support upto 10 contacts to be dialed out per available Agent
+          example: 1
+        entryPointId:
+          type: string
+          description: Webex Contact Center outdial entry point, maximum length 36 characters.
+          example: 510d198d-7aa7-4b75-a5ff-e61759f4f313
+        dialingListFetchURL:
+          type: string
+          description: URL the dialer will use to fetch the list of contacts to dial for the campaign from campaign manager, maximum length 1024 characters.
+          example: campaignMgr/v1/<campaignId>/dialinglist/
+        outdialANI:
+          type: string
+          description: The ANI (E164)  that will be presented to the customer. These must be restricted to the configured outdial Eps in Webex Contact Center, maximum length 50 characters.
+          example: '9784330011'
+        recordCount:
+          type: integer
+          description: Value to indicate the recordCount the Campaign Manager expects the dialer to be able to request, the maximum is 400. If the value is greater than 400 it will be set to the maximum when the request is processed.
+          example: 50
+        noAnswerRingLimit:
+          type: integer
+          description: (Optional) Number of seconds before a dialed call from the dialer is considered not answered, The range is from 16 to 80, default is 32. This field is not applicable for Direct preview campaigns.
+          example: 32
+        maxDialingRate:
+          type: number
+          format: float
+          description: Caps the maximum dialing rate per agent at this value. The range is from 1.0 to 10.0 , default is 1.0.
+          example: 10
+        abandonRatePercentage:
+          type: number
+          format: float
+          description: The percentage of calls that are allowed to be abandoned. The range is from 1.0 to 100.0 with a granularity of 0.1. The Default is 3.0
+          example: 3
+        predictiveCorrectionPace:
+          type: integer
+          description: A count of the number of live voice connections that must occur before the dialer adjusts. Increasing this number results in less frequent adjustments based on a larger sample size. The range is from 10 to 5000 , default is 70.
+          example: 70
+        predictiveGain:
+          type: number
+          format: float
+          description: The size of the adjustment to lines per agent each time an adjustment is made. Increasing this number results in larger per-agent adjustments. The range is 0.1 to 3.0 , default is 1.0.
+          example: 2
+        reservationPercentage:
+          type: integer
+          description: (Not in use) The percentage of agents to reserve within the queue associated with the campaign. The range is from 0 to 100 , default is 100
+          example: 50
+        callProgressAnalysisParams:
+          $ref: '#/components/schemas/CallProgressAnalysisParamsRequest'
+        ivrPorts:
+          type: integer
+          description: The number of IVR ports to use for this campaign. IVR ports are in use when calling a customer until the call is either ended or transferred to an agent. One IVR port can be considered equivalent to an agent in an agent based campaign.The range is from 1 to 1000.
+          example: 10
+        previewOfferTimeout:
+          type: integer
+          description: (Required if previewOfferTimeoutAutoAction is provided, optional otherwise) The number of seconds dialer waits for an agent to act on a preview campaign record, before performing the provided previewOfferTimeoutAutoAction. The range is from 0 to 7200(2 hours) for ACCEPT auto-action and 10 to 7200(2 hours) for other auto-actions. The default is 600(10 minutes).
+          example: 300
+        previewOfferTimeoutAutoAction:
+          type: string
+          description: (Required if previewOfferTimeout is provided, optional otherwise) The automatic action to be performed after the previewOfferTimeout duration has elapsed, if agent takes no action on the preview campaign record offered. Should be one of "ACCEPT", "SKIP", "REMOVE". The default is "SKIP".
+          example: ACCEPT
+        previewActionsDisabled:
+          type: array
+          items:
+            type: string
+          description: (Optional) The list of preview actions to be disabled for the agent when a preview campaign record is offered. Can be empty if no action should be disabled, otherwise should be one of "SKIP", "REMOVE" or both. The default is an empty list
+          example: '["SKIP", "REMOVE"]'
+    MetaSubInfo:
+      properties:
+        orgId:
+          description: Organization ID used for this operation.
+          example: 97cdbf45-ebe2-4687-8341-44d5c7abf101
+          format: uuid
+          type: string
+      type: object
+    CallProgressAnalysisParamsRequest:
+      type: object
+      description: (Optional) Call Progressive Params details. This is used for Progressive 1:N Dialer.
+      properties:
+        cpaEnabled:
+          type: boolean
+          description: (Optional) Determines if CPA should execute the campaign, default is false.
+          example: true
+        amdEnabled:
+          type: boolean
+          description: (Optional) Determines if CPA should enable answering machine detection algorithm. cpaEnabled must be true when amdEnabled is set to true, default is false.
+          example: true
+        minSilencePeriod:
+          type: integer
+          description: (Optional) The minimum silence period (in ms) is required to classify a call as voice detected. The range is from 100 to 1000, default is 608.
+          example: 608
+        analysisPeriod:
+          type: integer
+          description: (Optional) The number of ms spent analyzing the call. The range is 1000 to 10000, default is 1000.
+          example: 1000
+        minimumValidSpeech:
+          type: integer
+          description: (Optional) The minimum number of ms of voice required to classify a call as voice detected. The range is from 50 to 500, default is 112.
+          example: 112
+        maxTimeAnalysis:
+          type: integer
+          description: (Optional) The maximum number of ms allowed for analysis before identifying a problem as dead air. The range is from 1000 to 10000, default is 3000.
+          example: 3000
+        maxTermToneAnalysis:
+          type: integer
+          description: (Optional) The maximum number of ms the dialer analyzes an answering machine voice message looking for a termination tone. The range is 1000 to 60000, default is 30000.
+          example: 30000
+        terminatingToneDetect:
+          type: boolean
+          description: (Optional) Determines if CPA should wait for the terminating tone of a voicemail before concluding. amdEnabled must be true when terminatingToneDetect is set to true, default is false.
+          example: true
+    CampaignListResponse:
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/CampaignURLResponse'
+          type: string
+        meta:
+          $ref: '#/components/schemas/MetaSubInfo'
+      required:
+      - data
+      - meta
+      type: object
+    UpdateCampaignRequest:
+      required:
+      - dialingRate
+      - dialingListFetchURL
+      - outdialANI
+      type: object
+      properties:
+        dialingRate:
+          type: number
+          format: float
+          description: Number of contacts to be dialed out per available Agent. For Progressive 1:1 Dialer, it will support for only 1 contact and for Progressive 1:N Dialer it can support upto 10 contacts to be dialed out per available Agent
+          example: 1
+        campaignName:
+          type: string
+          description: (Optional) Used if different than id, maximum length 64 characters.
+          example: campaign1
+        authToken:
+          type: string
+          description: (Not in use) The token needed by the dialer for querying records.
+          example: Bearer <AuthToken>
+        dialingListFetchURL:
+          type: string
+          description: URL the dialer will use to fetch the list of contacts to dial for the campaign from campaign manager, maximum length 1024 characters.
+          example: campaignMgr/v1/<campaignId>/dialinglist/
+        outdialANI:
+          type: string
+          description: The ANI (E164)  that will be presented to the customer. These must be restricted to the configured outdial Eps in Webex Contact Center, maximum length 50 characters.
+          example: '9784330011'
+        noAnswerRingLimit:
+          type: integer
+          description: (Optional) Number of seconds before a dialed call from the dialer is considered not answered. The range is from 16 to 80, default is 32. This field is not applicable for Direct preview campaigns.
+          example: 32
+        maxDialingRate:
+          type: number
+          format: float
+          description: Caps the maximum dialing rate per agent at this value. The range is from 1.0 to 10.0, default is 1.0.
+          example: 10
+        reservationPercentage:
+          type: integer
+          description: (Not in use) The percentage of agents to reserve within the queue associated with the campaign. The range is from 0 to 100 , default is 100.
+          example: 50
+        previewOfferTimeout:
+          type: integer
+          description: (Required only if previewOfferTimeoutAutoAction is provided) The number of seconds dialer waits for an agent to act on a preview campaign record, before performing the provided previewOfferTimeoutAutoAction. The range is from 0 to 7200 seconds(2 hours) for ACCEPT auto-action, and from 10 to 7200 seconds(2 hours) for other auto-actions. The default value is 600 seconds(10 minutes).
+          example: 300
+        previewOfferTimeoutAutoAction:
+          type: string
+          description: (Required only if previewOfferTimeout is provided) The automatic action to be performed after the previewOfferTimeout duration has elapsed, if agent takes no action on the preview campaign record offered. The action can be "ACCEPT", "SKIP" or "REMOVE". The default action is "SKIP".
+          example: ACCEPT
+        previewActionsDisabled:
+          type: array
+          items:
+            type: string
+          description: (Optional) The list of preview actions to be disabled for the agent when a preview campaign record is offered. The list can be empty if no action should be disabled, otherwise it can be either "SKIP" or "REMOVE" or both. The default is an empty list
+          example: '["SKIP", "REMOVE"]'
+  securitySchemes:
+    oauth2:
+      flows:
+        authorizationCode:
+          authorizationUrl: /
+          scopes: {}
+          tokenUrl: /
+      type: oauth2
+    bearer-key:
+      type: http
+      description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
+      scheme: bearer
+      bearerFormat: JWT
+    bearerAuth:
+      type: oauth2
+      description: OAuth 2.0 Bearer token authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: https://webexapis.com/v1/authorize
+          tokenUrl: https://webexapis.com/v1/access_token
+          scopes:
+            spark:applications_token: Create access tokens for Service Apps

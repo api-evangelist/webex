@@ -1,0 +1,804 @@
+openapi: 3.0.0
+info:
+  title: Webex Admin Address Book Agents API
+  version: 1.0.0
+  description: The Webex Admin APIs provide comprehensive programmatic access to administrative functions for managing Webex organizations, users, licenses, and settings. These APIs enable automation of user provisioning, license assignment, compliance management, and audit event retrieval. Administrators can integrate with enterprise identity systems, enforce security policies, monitor usage, and streamline onboarding/offboarding processes. The APIs support granular control over organizational resources, making them ideal for large-scale deployments and custom admin tooling.
+tags:
+- name: Agents
+paths:
+  /v1/agents/login:
+    post:
+      tags:
+      - Agents
+      summary: Login
+      description: Allows the user to login to their desktop. It does not allow a duplicate login and sends an error message over websocket, if an active session already exists. Requires 'cjp:user' scope for authorization. For a list of possible response messages, see the [Call Control API Guide](/docs/contact-control-apis).
+      operationId: loginRoute
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LogInResourceRequest'
+      responses:
+        '202':
+          description: The login request was accepted for processing
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized, Token is Invalid
+        '403':
+          description: Forbidden Request
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+  /v1/agents/logout:
+    put:
+      tags:
+      - Agents
+      summary: Logout
+      description: Allows the user to logout from their Desktop. This API needs to be called once the WSS session has been successfully established. Requires 'cjp:user','id_full_admin','id_readonly_admin','atlas-portal.partner.salesadmin','cjp.admin','cjp.supervisor','atlas-portal.partner.provision_admin' scope for authorization. For a list of possible response messages, see the [Call Control API Guide](/docs/contact-control-apis).
+      operationId: logoutRoute
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LogOutResourceRequest'
+      responses:
+        '202':
+          description: The logout request was accepted for processing
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized, Token is Invalid
+        '403':
+          description: Forbidden Request
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+  /v1/agents/session/state:
+    put:
+      tags:
+      - Agents
+      summary: State Change
+      description: Allows the user to toggle between the Idle and Available states. An Administrator within the organization having an Agent license can perform a self state change when they have an active agent session. Supervisors can perform a self state change as well as state changes for agents and admin users within their authorized teams when 'Change Agent States' module is enabled. Requires 'cjp:user' scope for authorization.For a list of possible response messages, see the [Call Control API Guide](/docs/contact-control-apis).
+      operationId: stateRoute
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StateResourceRequest'
+      responses:
+        '202':
+          description: The state change request was accepted for processing
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized, Token is Invalid
+        '403':
+          description: Forbidden Request
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+  /v1/agents/reload:
+    post:
+      tags:
+      - Agents
+      summary: Reload
+      description: Allows the user to receive all the contact assigned to particular agent and state. Requires 'cjp:user' scope for authorization.
+      operationId: reloadRoute
+      parameters: []
+      responses:
+        '202':
+          description: The reload request was accepted for processing
+        '401':
+          description: Unauthorized, Token is Invalid
+        '403':
+          description: Forbidden Request
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+  /v1/agents/buddyList:
+    post:
+      tags:
+      - Agents
+      summary: Buddy Agents List
+      description: Returns the list of agents in the given state and media according to agent profile settings. Requires 'cjp:user' scope for authorization.
+      operationId: buddyAgentsRoute
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BuddyAgentRequest'
+      responses:
+        '202':
+          description: The buddy agents request was accepted for processing
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized, Token is Invalid
+        '403':
+          description: Forbidden Request
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+  /v1/agents/activities:
+    get:
+      tags:
+      - Agents
+      summary: Get Agent Activities
+      description: "Retrieve agent activities. Sorted by start time ascending.\nMaximum number of records that can be fetched for the given from and to is 10,000. \nFor this API, response compression using gzip can be enabled by including 'Accept-Encoding' header  in the request with its value as 'gzip'. \nThe response will be compressed only if its size exceeds 1 MB.\nIf the header is not present in the request or if gzip is not listed as one of the encodings in the header's value (comma separated encodings), then API response will not be compressed and this can impact the latency as observed from clients."
+      operationId: getAgentActivities
+      parameters:
+      - name: agentIds
+        in: query
+        description: Filter agent activities by agent ids separated with commas if more than one value (max 100). By default, there is no agent filtering.
+        required: false
+        schema:
+          maxItems: 100
+          minItems: 0
+          type: array
+          items:
+            type: string
+        example:
+        - 89cf3b93-f020-42c6-84dc-87db6a92eae7
+        - 89cf3b93-f020-42c6-84dc-87db6a92fae7
+        - 89cf3b93-f020-42c6-84dc-87db4a92eae7
+      - name: teamIds
+        in: query
+        description: Filter agent activities by team ids separated with commas if more than one value (max 100). By default, there is no team filtering.
+        required: false
+        schema:
+          maxItems: 100
+          minItems: 0
+          type: array
+          items:
+            type: string
+        example:
+        - 89cf3b93-f020-42c6-84dc-87db6a92eae7
+        - 89cf3b93-f020-42c6-84dc-87db6a92fae7
+        - 89cf3b93-f020-42c6-84dc-87db4a92eae7
+      - name: channelTypes
+        in: query
+        description: Channel type(s) permitted in response. Separate values with commas. Must be lowercase. By default, there is no channelType filtering.
+        required: false
+        example:
+        - email
+        - chat
+        - telephony
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - email
+            - chat
+            - telephony
+            - social
+      - name: from
+        in: query
+        description: Filter agent activities created after given epoch timestamp in UTC (in milliseconds).
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1591702170000
+      - name: to
+        in: query
+        description: "Filter agent activities created before given epoch timestamp in UTC (in milliseconds). If unspecified, queries up to the present.\n The difference between to and from timestamps must be less than 24 hours (86400000 milli seconds)"
+        required: false
+        schema:
+          type: integer
+          format: int64
+        example: 1591802180000
+      - name: pageSize
+        in: query
+        description: Maximum page size in response. Maximum allowed value is 1000. Defaults to 100 items per page.
+        required: false
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+          default: 100
+        example: 100
+      - name: page
+        in: query
+        description: Page number to be passed. Maximum number of records that can be fetched for the given from and to is 10,000. So maximum page number allowed is based on it. Defaults to 0.
+        required: false
+        schema:
+          minimum: 0
+          type: integer
+          format: int32
+          default: 0
+        example: 1
+      - name: orgId
+        in: query
+        description: Organization ID to use for this operation. If unspecified, inferred from token. Token must have permission to interact with this organization.
+        required: false
+        schema:
+          type: string
+        example: 97cdbf45-ebe2-4687-8341-44d5c7abf101
+      - name: TrackingId
+        in: header
+        description: 'Tracking ID to use for this operation, for traceability, debugging, and error reporting purposes. '
+        required: false
+        schema:
+          type: string
+        example: INTEGRATION-9bcdc696-57fa-4e91-b5aa-57a66a347c23
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgentActivitiesApiResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '413':
+          description: Content Too Large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json: {}
+        '500':
+          description: An Unexpected Error Occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '503':
+          description: The service is currently unavailable to serve the requests
+          content:
+            application/json: {}
+  /v1/agents/statistics:
+    get:
+      tags:
+      - Agents
+      summary: Get Agent Statistics
+      description: "Retrieve Agent statistics information for specified time duration and interval.\nFor this API, response compression using gzip can be enabled by including 'Accept-Encoding' header  in the request with its value as 'gzip'. \nThe response will be compressed only if its size exceeds 1 MB.\nIf the header is not present in the request or if gzip is not listed as one of the encodings in the header's value (comma separated encodings), then API response will not be compressed and this can impact the latency as observed from clients."
+      operationId: getDocumentByQueryParam
+      parameters:
+      - name: from
+        in: query
+        description: Start time for the query (in epoch milliseconds). Any epoch time can be passed in the input, from date will be rounded down to nearest 15 minute window. For example, epoch time of 12:05 will be rounded down to 12:00.
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1651395600000
+      - name: to
+        in: query
+        description: "End time for the query (in epoch milliseconds). Any epoch time can be passed in the input, from date will be rounded down to nearest 15 minute window. For example, epoch time of 12:55 will be rounded down to 12:45.\n The difference between to and from time must be less than 24 hours (86400000 milliseconds)."
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1651438800000
+      - name: interval
+        in: query
+        description: Time interval (in minutes) to chunk statistics by i.e. break up the entire from-to timeframe by this interval amount so that statistics can be viewed incrementally. Supported values are 15, 30, or 60.
+        required: false
+        schema:
+          type: integer
+          format: int32
+        example: 15
+      - name: agentIds
+        in: query
+        description: Comma-separated list of agent IDs. A maximum of 100 values is permitted. If values are not provided, all agents of an organization are returned.
+        required: false
+        schema:
+          maxItems: 100
+          minItems: 0
+          type: array
+          items:
+            type: string
+        example:
+        - 89cf3b93-f020-42c6-84dc-87db6a92eae7
+        - 89cf3b93-f020-42c6-84dc-87db6a92fae7
+        - 89cf3b93-f020-42c6-84dc-87db4a92eae7
+      - name: orgId
+        in: query
+        description: Organization ID to use for this operation. If unspecified, inferred from token. Token must have permission to interact with this organization.
+        required: false
+        schema:
+          type: string
+        example: 97cdbf45-ebe2-4687-8341-44d5c7abf101
+      - name: TrackingId
+        in: header
+        description: 'Tracking ID to use for this operation, for traceability, debugging, and error reporting purposes. '
+        required: false
+        schema:
+          type: string
+        example: INTEGRATION-9bcdc696-57fa-4e91-b5aa-57a66a347c23
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgentApiResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json: {}
+        '500':
+          description: An Unexpected Error Occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '503':
+          description: The service is currently unavailable to serve the requests
+          content:
+            application/json: {}
+components:
+  schemas:
+    AgentActivitiesApiResponse:
+      required:
+      - data
+      - meta
+      type: object
+      properties:
+        meta:
+          description: Response metadata.
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: array
+          description: List of agent activities retrieved according to query parameters.
+          items:
+            $ref: '#/components/schemas/AgentActivity'
+      description: Response wrapper for agent activities.
+    AgentActivity:
+      required:
+      - active
+      - agentDn
+      - agentId
+      - agentLogin
+      - agentName
+      - agentSessionId
+      - channelId
+      - channelType
+      - currentState
+      - endTime
+      - idleCode
+      - idleCodeName
+      - isLogin
+      - mmProfileType
+      - queueId
+      - queueName
+      - reason
+      - siteId
+      - siteName
+      - startTime
+      - subChannelType
+      - taskId
+      - teamId
+      - teamName
+      - wrapupCodeName
+      type: object
+      properties:
+        active:
+          type: boolean
+          description: Active indicates whether the activity is completed (false) or in progress (true).
+          example: true
+        agentId:
+          type: string
+          description: Unique identifier of an agent.
+          example: AWn8XmdC-MmYjwcdYK2i
+        agentDn:
+          type: string
+          description: Dialed number for the agent.
+          example: '5555555'
+        agentLogin:
+          type: string
+          description: Login username of the agent.
+          example: agent@mailinator.com
+        agentSessionId:
+          type: string
+          description: Agent Session Id
+          example: 72a79e8b-6d2e-4423-869a-01bfebc081e6
+        agentName:
+          type: string
+          description: The name of the agent.
+          example: John Smith
+        currentState:
+          type: string
+          description: The activity state (e.g. idle, available, connected, etc.).
+          example: idle
+        siteId:
+          type: string
+          description: Unique identifier for a site.
+          example: AWn8XmdC-MmYjwcdYK2i
+        siteName:
+          type: string
+          description: The name of the site.
+          example: Austin
+        teamId:
+          type: string
+          description: Unique identifier for a team.
+          example: AWn8XmdC-MmYjwcdYK2i
+        teamName:
+          type: string
+          description: The name of the team.
+          example: email
+        isLogin:
+          type: integer
+          description: Indicates whether the activity was the login event (1) or not (0).
+          format: int32
+          example: 1
+        taskId:
+          type: string
+          description: Unique identifier for a task.
+          example: 35d88b03-6c43-45e4-9fba-99b728ad4750
+        channelId:
+          type: string
+          description: Unique identifier for the channel.
+          example: 35d88b03-6c43-45e4-9fba-99b728ad4750
+        channelType:
+          type: string
+          description: Channel type for the activity (e.g. email, telephony, chat, etc.).
+          example: email
+        subChannelType:
+          type: string
+          description: SubChannel type for the activity.
+          example: email
+        idleCodeName:
+          type: string
+          description: In case of an idle activity, it will have an idle code attached with it (e.g. Break, Meeting, Lunch, etc.).
+          example: Break
+        idleCode:
+          type: string
+          description: Unique identifier for the idle code.
+          example: AWn8XmdC-MmYjwcdYK2i
+        queueId:
+          type: string
+          description: Unique identifier for the queue.
+          example: AWn8XmdC-MmYjwcdYK2i
+        queueName:
+          type: string
+          description: The name of the Queue.
+          example: Support Queue
+        wrapupCodeName:
+          type: string
+          description: Selected wrapup code upon finished task.
+          example: Sale
+        reason:
+          type: string
+          description: Reason
+          example: reason
+        startTime:
+          type: integer
+          description: Epoch timestamp in milliseconds of the start of the activity.
+          format: int64
+          example: 1605169648658
+        endTime:
+          type: integer
+          description: Epoch timestamp in milliseconds of the end of the activity. If active, it will be -1.
+          format: int64
+          example: 1605169648658
+        mmProfileType:
+          type: string
+          description: Multimedia profile type
+          example: blended
+      description: List of agent activities retrieved according to query parameters.
+    ApiErrorResponse:
+      description: Response body for an API error.
+      type: object
+      properties:
+        trackingId:
+          type: string
+          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
+          example: c1a4fcef-aee2-4dea-8977-29f594760552
+        error:
+          description: An object containing details about the error.
+          $ref: '#/components/schemas/ErrorDetails'
+    AgentApiResponse:
+      required:
+      - data
+      - meta
+      type: object
+      properties:
+        meta:
+          description: Response metadata.
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: array
+          description: List of Agent Statistics records retrieved according to query parameters.
+          items:
+            $ref: '#/components/schemas/OutAgentStatistics'
+      description: Response wrapper for agent statistics.
+    BuddyAgentRequest:
+      properties:
+        agentProfileId:
+          description: The profile ID of a particular agent. Can be obtained from [Users API](/docs/users), maximum length 36 characters.
+          type: string
+          example: 315fbb91-2288-427c-9588-ec764cd46ea4
+        mediaType:
+          description: The media type for the request. The supported values are ```telephony```, ```chat```, ```social```, ```email``` and ```workItem```.
+          type: string
+          example: telephony
+        state:
+          description: It represents the current state of the returned agents which can be either ```Available``` or ```Idle```. If state is omitted from the payload, the API will return a list of both available and idle agents. This is useful for consult scenarios, since consulting an idle agent is also supported.
+          type: string
+          example: Available
+      required:
+      - agentProfileId
+      - mediaType
+      type: object
+      description: Request payload to retrieve buddy agents.
+    ErrorDetails:
+      description: Details of an error.
+      type: object
+      properties:
+        key:
+          type: string
+          description: An application defined error code.
+          example: '401'
+        message:
+          type: array
+          description: A message providing details about the error.
+          items:
+            $ref: '#/components/schemas/OperationError'
+    ChannelResponse:
+      type: object
+      properties:
+        channelType:
+          type: string
+          description: Channel Type
+          example: chat
+        totalAssignedTasks:
+          type: integer
+          description: Number of tasks assigned within the channel during the agent session.
+          format: int32
+          example: 3
+        totalOfferedTasks:
+          type: integer
+          description: Number of offered tasks within this channel during the agent's session.
+          format: int32
+          example: 3
+        totalAcceptedTasks:
+          type: integer
+          description: Number of assigned tasks that were accepted by the agent.
+          format: int32
+          example: 3
+        totalRejectedTasks:
+          type: integer
+          description: Number of assigned tasks that were rejected by the agent.
+          format: int32
+          example: 3
+        totalTransferredTasks:
+          type: integer
+          description: Number of tasks that the agent transferred to another agent.
+          format: int32
+          example: 2
+        totalEngagedDuration:
+          type: integer
+          description: 'The amount of time the agent was engaged with a customer (in milliseconds).
+
+            Note :-
+
+            - Does not include wrap-up time and consult duration
+
+            - Includes conferencing duration since the customer is involved'
+          format: int32
+          example: 40302
+        totalHoldDuration:
+          type: integer
+          description: The amount of time for which the customer(s) was put on hold (in milliseconds).
+          format: int64
+          example: 10198
+        totalWrapUpDuration:
+          type: integer
+          description: 'The amount of time spent by the agent wrapping up customer interactions (in milliseconds).
+
+            i.e Sum of all wrap-up time metric for a given agent'
+          format: int64
+          example: 3552
+        totalAvailableTime:
+          type: integer
+          description: Duration of time(in milliseconds) outside of the idle time when an agent was available and handling contacts after logging in.
+          format: int64
+          example: 234947
+        totalUnAvailableTime:
+          type: integer
+          description: Amount of time the agent was unavailable (in milliseconds).
+          format: int64
+          example: 22300
+        averageHandledTime:
+          type: number
+          description: 'This is the average of the total handle time by an agent (in milliseconds)
+
+            i.e avg(engagedDuration(connected state) + hold-duration  + wrap-up time)'
+          format: double
+          example: 22300
+      description: Statistics for a specific channel.
+    LogOutResourceRequest:
+      properties:
+        logoutReason:
+          description: The reason for performing logout operation, maximum length 128 characters.
+          type: string
+          example: Logout initiated by user abcd@xyz.com
+        agentId:
+          description: Unique ID of the user who is being logged out, maximum length 36 characters.
+          type: string
+          example: faedfcc8-035a-41e3-ad53-ee9fad4ca286
+      required:
+      - logoutReason
+      type: object
+    StateResourceRequest:
+      properties:
+        state:
+          description: It represents the current state of the user. Can be set to ```Available``` or ```Idle```.
+          type: string
+          example: Available
+        auxCodeId:
+          description: 'Auxiliary Codes are status codes which an agent can select in Webex Contact Center Agent Desktop. They are of two types: ```Idle``` and ```Wrap-Up``` codes, and every agent profile must have one of each for the agent to use. Idle codes are used to explain an agent''s unavailability to take customer contacts, such as during a lunch break or a meeting. Wrap-up codes indicate the result of customer contacts, such as successful resolution or escalation of the contact. Creating and managing auxiliary codes requires an administrator role and the appropriate cjp:config_write or cjp:config_read scopes, maximum length 36 characters.'
+          type: string
+          example: AXUH3oN12eV-WekpnDpl
+        lastStateChangeReason:
+          description: It represents the reason of the last state change request, maximum length 128 characters.
+          type: string
+          example: Lunch
+        agentId:
+          description: User for which state change is initiated, maximum length 36 characters.
+          type: string
+          example: 1a80ba23-194b-49af-9b93-074b3ecc852a
+      required:
+      - state
+      - auxCodeId
+      type: object
+      description: Request payload to update an agent state.
+    OperationError:
+      description: An error message providing details about the operation failure.
+      type: object
+      properties:
+        description:
+          type: string
+          description: A human readable explanation for the occurrence of an error.
+          example: Incorrect Credentials.
+    Meta:
+      type: object
+      properties:
+        orgId:
+          type: string
+          description: Organization ID to which resources belong.
+          example: 3dae8fdd-06e2-411a-9035-51f3719f5b65
+      description: Response metadata.
+    LogInResourceRequest:
+      properties:
+        dialNumber:
+          description: A dialNumber field contains the number to dial such as a route point or extension, maximum length 43 characters.
+          type: string
+          example: '5678956899'
+        teamId:
+          description: The unique ID representing a team of users. Leaving this field blank is valid for supervisor role but invalid for agent role, maximum length 36 characters.
+          type: string
+          example: 5c8e24ff-a31a-422d-b7a7-b56c6739081d
+        isExtension:
+          description: It indicates if the dialNumber field is full number or extension. It is set to false by default.
+          type: boolean
+          example: 'false'
+        roles:
+          description: It represents the current role of the user. The user can either be an ```agent``` or a ```supervisor```.
+          type: array
+          items:
+            type: string
+          example:
+          - agent
+          - supervisor
+        deviceType:
+          description: It represents the way to differentiate type of login request (```AGENT_DN```, ```EXTENSION```, ```BROWSER```). Leaving this field is valid for supervisor role but invalid for agent role.
+          type: string
+          example: AGENT_DN
+        deviceId:
+          description: It is equal to dialNumber for AGENT_DN & EXTENSION deviceType and for BROWSER it is populated as webrtc-AgentUUID, maximum length 43 characters.
+          type: string
+          example: '5678956899'
+      required:
+      - dialNumber
+      - roles
+      type: object
+    OutAgentStatistics:
+      required:
+      - channels
+      type: object
+      properties:
+        intervalStartTime:
+          type: integer
+          description: Time in GMT
+          format: int64
+          example: 1591702200000
+        agentId:
+          type: string
+          description: The ID of the agent.
+          example: 06ce7234-dd3e-49e2-8763-d93766739d
+        agentName:
+          type: string
+          description: The name of the agent
+          example: Daniel Garrett
+        teamId:
+          type: string
+          description: The ID of the team.
+          example: fbf80248-b328-4c37-9ea5-4c2ec8b4d52c
+        teamName:
+          type: string
+          description: Name of the team to which agent belongs.
+          example: Collaboration
+        channels:
+          type: array
+          description: Channel-level statistics for the agent.
+          items:
+            $ref: '#/components/schemas/ChannelResponse'
+      description: List of Agent Statistics records retrieved according to query parameters.
+  securitySchemes:
+    oauth2:
+      flows:
+        authorizationCode:
+          authorizationUrl: /
+          scopes: {}
+          tokenUrl: /
+      type: oauth2
+    bearer-key:
+      type: http
+      description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
+      scheme: bearer
+      bearerFormat: JWT
+    bearerAuth:
+      type: oauth2
+      description: OAuth 2.0 Bearer token authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: https://webexapis.com/v1/authorize
+          tokenUrl: https://webexapis.com/v1/access_token
+          scopes:
+            spark:applications_token: Create access tokens for Service Apps

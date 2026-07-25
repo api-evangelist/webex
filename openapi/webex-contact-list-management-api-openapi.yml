@@ -1,0 +1,587 @@
+openapi: 3.0.0
+info:
+  title: Webex Admin Address Book Contact List Management API
+  version: 1.0.0
+  description: The Webex Admin APIs provide comprehensive programmatic access to administrative functions for managing Webex organizations, users, licenses, and settings. These APIs enable automation of user provisioning, license assignment, compliance management, and audit event retrieval. Administrators can integrate with enterprise identity systems, enforce security policies, monitor usage, and streamline onboarding/offboarding processes. The APIs support granular control over organizational resources, making them ideal for large-scale deployments and custom admin tooling.
+tags:
+- name: Contact List Management
+  description: Operations for managing contact lists and contacts
+paths:
+  /v3/campaign-management/campaigns/{campaignId}/contact-list:
+    post:
+      tags:
+      - Contact List Management
+      summary: Create contact list
+      operationId: createContactList
+      description: Creates and activates a contact list for a campaign. The system can activate a contact list even if there are no contact records within it.
+      parameters:
+      - name: campaignId
+        in: path
+        required: true
+        description: Campaign ID to which the contact list belongs.
+        schema:
+          type: string
+        example: CCV_123456789
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateContactListRequest'
+            examples:
+              basic:
+                value:
+                  supportedChannels:
+                  - Voice
+                  - SMS
+                  activationTimeLagMinutes: 180
+              withTimestamp:
+                value:
+                  supportedChannels:
+                  - Email
+                  activationDateTime: '2025-09-24T18:47:00Z'
+      responses:
+        '201':
+          description: Contact list created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateContactListResponse'
+              examples:
+                success:
+                  value:
+                    outcome: Success
+                    statusCode: 0
+                    contactListId: '501'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v3/campaign-management/campaigns/{campaignId}/contact-list/{contactListId}/contacts:
+    post:
+      tags:
+      - Contact List Management
+      summary: Create contacts within a contact list
+      operationId: createContactsInContactList
+      description: Creates contacts within a contact list (only if that contact list was created using API method). If the contact record is invalid, it will be added as INVALID and reflected in the 'Processed' and 'Invalid' counts. This is an Asynchronous operation. The values within the 'contactAttributes' param should conform to datatypes of the contact attributes as specified in the 'Field mapping' associated with the campaign.
+      parameters:
+      - name: campaignId
+        in: path
+        required: true
+        description: Campaign ID to which the contact list belongs.
+        schema:
+          type: string
+        example: CCV_123456789
+      - name: contactListId
+        in: path
+        required: true
+        description: Contact List ID (as a number string).
+        schema:
+          type: string
+          pattern: ^\d+$
+        example: '501'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateContactRequest'
+      responses:
+        '202':
+          description: Request accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateContactResponse'
+              example:
+                outcome: Queued
+                statusCode: 0
+                summary: Queued for adding to the contact list
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v3/campaign-management/campaigns/{campaignId}/contact-list/{contactListId}/contacts/{contactId}:
+    patch:
+      tags:
+      - Contact List Management
+      summary: Update a contact's status within a contact list
+      operationId: updateContactStatusInContactList
+      description: Updates a contact's status within a contact list. After update, system overwrites 'Latest Telephony Outcome' to blank and 'Latest Business Outcome' to 'Closed via API call' if status is CLOSED. This is an Asynchronous operation.
+      parameters:
+      - name: campaignId
+        in: path
+        required: true
+        description: Campaign ID.
+        schema:
+          type: string
+        example: CCV_123456789
+      - name: contactListId
+        in: path
+        required: true
+        description: Contact List ID (as a number string).
+        schema:
+          type: string
+          pattern: ^\d+$
+        example: '501'
+      - name: contactId
+        in: path
+        required: true
+        description: Contact Unique ID (Customer Unique ID or Account Unique ID or Contact_Phone)
+        schema:
+          type: string
+        example: CUST12345
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateContactRequest'
+            example:
+              contactStatus: CLOSED
+      responses:
+        '202':
+          description: Request queued
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateContactResponse'
+              example:
+                outcome: Queued
+                statusCode: 0
+                summary: Queued for updating the contact status
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v3/campaign-management/campaigns/{campaignId}/contact-list/{contactListId}/status:
+    patch:
+      tags:
+      - Contact List Management
+      summary: Update contact list status
+      operationId: updateContactListStatus
+      description: 'Updates the status of a contact list (e.g., EXPIRED). Note: This value is not case-sensitive.'
+      parameters:
+      - name: campaignId
+        in: path
+        required: true
+        description: Campaign ID.
+        schema:
+          type: string
+        example: CCV_123456789
+      - name: contactListId
+        in: path
+        required: true
+        description: Contact List ID (as a number string).
+        schema:
+          type: string
+          pattern: ^\d+$
+        example: '501'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateContactListStatusRequest'
+            example:
+              contactListStatus: EXPIRED
+      responses:
+        '200':
+          description: Contact list status updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateContactListStatusResponse'
+              example:
+                outcome: Success
+                statusCode: 0
+                summary: Contact list status updated successfully
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v3/campaign-management/campaigns/{campaignId}/contact-lists:
+    get:
+      tags:
+      - Contact List Management
+      summary: Get Contact Lists within a Campaign
+      operationId: getContactListsInCampaign
+      description: Retrieves all contact lists within a campaign, with optional filters for status and source.
+      parameters:
+      - name: campaignId
+        in: path
+        required: true
+        description: Campaign ID.
+        schema:
+          type: string
+        example: CCV_123456789
+      - name: status
+        in: query
+        required: false
+        description: Contact List Status filter (Active, Expired, UploadFailed, etc.)
+        schema:
+          type: string
+          enum:
+          - Active
+          - Expired
+          - UploadFailed
+        example: Active
+      - name: source
+        in: query
+        required: false
+        description: Contact List Source filter (API, SFTP, ManualFile, GlobalUpload, GlobalSFTP)
+        schema:
+          type: string
+          enum:
+          - API
+          - SFTP
+          - ManualFile
+          - GlobalUpload
+          - GlobalSFTP
+        example: API
+      responses:
+        '200':
+          description: Contact lists retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetContactListsResponse'
+              example:
+                outcome: Success
+                statusCode: 0
+                contactLists:
+                - contactListId: '501'
+                  contactListStatus: Active
+                  contactListRecordCount: 100
+                  contactListSource: API
+                  dateOfCreation: '2025-08-01T10:00:00Z'
+                  dateOfActivation: '2025-08-01T12:00:00Z'
+                  dateOfExpiry: '2025-09-01T00:00:00Z'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    CreateContactResponse:
+      type: object
+      properties:
+        outcome:
+          type: string
+          enum:
+          - Queued
+          - Failed
+          description: Outcome of the operation
+          example: Queued
+        statusCode:
+          type: integer
+          description: 0 for Queued, non-zero for Failed
+          example: 0
+        summary:
+          type: string
+          description: Summary of the operation
+          example: Queued for adding to the contact list
+      example:
+        outcome: Queued
+        statusCode: 0
+        summary: Queued for adding to the contact list
+    GetContactListsResponse:
+      type: object
+      description: Response containing a list of contact lists
+      properties:
+        outcome:
+          type: string
+          enum:
+          - Success
+          - Failure
+          description: Outcome of the operation
+        statusCode:
+          type: integer
+          description: 0 for success, non-zero for failure or validation failure
+        contactLists:
+          type: array
+          description: List of contact lists
+          items:
+            type: object
+            properties:
+              contactListId:
+                type: string
+                description: Contact List ID
+                example: '501'
+              contactListStatus:
+                type: string
+                description: Contact List Status
+                example: Active
+              contactListRecordProcessed:
+                type: integer
+                description: Number of records in the contact list
+                example: 100
+              contactListSource:
+                type: string
+                description: Source of the contact list
+                example: API
+              dateOfCreation:
+                type: string
+                format: date-time
+                description: Date of creation
+                example: '2025-08-01T10:00:00Z'
+              dateOfActivation:
+                type: string
+                format: date-time
+                description: Date of activation
+                example: '2025-08-01T12:00:00Z'
+              dateOfExpiry:
+                type: string
+                format: date-time
+                description: Date of expiry
+                example: '2025-09-01T00:00:00Z'
+      example:
+        outcome: Success
+        statusCode: 0
+        contactLists:
+        - contactListId: '501'
+          contactListStatus: Active
+          contactListRecordProcessed: 100
+          contactListSource: API
+          dateOfCreation: '2025-08-01T10:00:00'
+          dateOfActivation: '2025-08-01T12:00:00'
+          dateOfExpiry: '2025-09-01T00:00:00'
+    UpdateContactResponse:
+      type: object
+      properties:
+        outcome:
+          type: string
+          enum:
+          - Queued
+          - Failed
+          description: Outcome of the operation
+          example: Queued
+        statusCode:
+          type: integer
+          description: 0 for Queued, non-zero for Failed
+          example: 0
+        summary:
+          type: string
+          description: Summary of the operation
+          example: Queued for updating the contact status
+      example:
+        outcome: Queued
+        statusCode: 0
+        summary: Queued for updating the contact status
+    CreateContactListRequest:
+      type: object
+      required:
+      - supportedChannels
+      properties:
+        supportedChannels:
+          type: array
+          items:
+            type: string
+            enum:
+            - Voice
+            - SMS
+            - Email
+          description: Supported channels for the contact list
+        activationTimeLagMinutes:
+          type: integer
+          description: Contact list activation time lag in minutes (0 = immediate activation, 180 = 3 hours delay). Required if activationDateTime is not provided.
+          example: 180
+        activationDateTime:
+          type: string
+          description: 'Contact list activation DateTimeStamp (format: YYYY-MM-DDTHH:MM). Required if activationTimeLagMinutes is not provided.'
+          example: 2025-09-24T18:47
+      example:
+        supportedChannels:
+        - Voice
+        activationTimeLagMinutes: 180
+        activationDateTime: '2025-09-24T18:47:00Z'
+    CreateContactRequest:
+      type: object
+      properties:
+        contacts:
+          type: array
+          description: Array of contact attributes, max 10 contacts per request
+          items:
+            type: object
+            required:
+            - contactAttributes
+            properties:
+              contactAttributes:
+                type: array
+                description: Array of field mapping field name & value pairs.
+                items:
+                  type: object
+                  properties:
+                    fieldName:
+                      type: string
+                      description: Field name
+                    value:
+                      type: string
+                      description: Field value
+                  example:
+                    fieldName: FirstName
+                    value: John
+                example:
+                - fieldName: FirstName
+                  value: John
+                - fieldName: LastName
+                  value: Doe
+                - fieldName: AccountStatus
+                  value: Active
+    UpdateContactRequest:
+      type: object
+      properties:
+        contactStatus:
+          type: string
+          enum:
+          - CLOSED
+          description: Contact status (CLOSED)
+          example: CLOSED
+    UpdateContactListStatusRequest:
+      type: object
+      properties:
+        contactListStatus:
+          type: string
+          description: 'Contact List Status (e.g., EXPIRED). Note: This value is not case-sensitive.'
+          example: EXPIRED
+    ErrorResponse:
+      type: object
+      description: Error response
+      properties:
+        code:
+          type: string
+          description: Error code
+        message:
+          type: string
+          description: Error description
+      example:
+        code: InvalidRequest
+        message: The contact list ID is missing
+    CreateContactListResponse:
+      type: object
+      properties:
+        outcome:
+          type: string
+          enum:
+          - Success
+          - Failure
+          description: Outcome of the operation
+          example: Success
+        statusCode:
+          type: integer
+          description: 0 for success, non-zero for failure or validation failure
+          example: 0
+        contactListId:
+          type: string
+          description: Contact List ID within the campaign (number only)
+          example: '501'
+      example:
+        success:
+          summary: Contact list created successfully
+          value:
+            outcome: Success
+            statusCode: 0
+            contactListId: '501'
+        failure:
+          summary: Failed to create contact list
+          value:
+            outcome: Failure
+            statusCode: 400
+            error:
+              code: InvalidRequest
+              message: Invalid request parameters
+    UpdateContactListStatusResponse:
+      type: object
+      properties:
+        outcome:
+          type: string
+          enum:
+          - Success
+          - Failure
+          description: Outcome of the operation
+        statusCode:
+          type: integer
+          description: 0 for success, non-zero for failure or validation failure
+        contactLists:
+          type: array
+          description: List of contact lists
+          items:
+            type: object
+            properties:
+              contactListId:
+                type: string
+                description: Contact List ID
+                example: '501'
+              contactListStatus:
+                type: string
+                description: Contact List Status
+                example: Active
+              contactListRecordCount:
+                type: integer
+                description: Number of records in the contact list
+                example: 100
+              contactListSource:
+                type: string
+                description: Source of the contact list
+                example: API
+              dateOfCreation:
+                type: string
+                format: date-time
+                description: Date of creation
+                example: '2025-08-01T10:00:00Z'
+              dateOfActivation:
+                type: string
+                format: date-time
+                description: Date of activation
+                example: '2025-08-01T12:00:00Z'
+              dateOfExpiry:
+                type: string
+                format: date-time
+                description: Date of expiry
+                example: '2025-09-01T00:00:00Z'
+      example:
+        success:
+          summary: Contact list status updated successfully
+          value:
+            outcome: Success
+            statusCode: 0
+        failure:
+          summary: Failed to update contact list status
+          value:
+            outcome: Failure
+            statusCode: 400
+            error:
+              code: InvalidStatus
+              message: Contact list status is invalid
+  securitySchemes:
+    oauth2:
+      flows:
+        authorizationCode:
+          authorizationUrl: /
+          scopes: {}
+          tokenUrl: /
+      type: oauth2
+    bearer-key:
+      type: http
+      description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
+      scheme: bearer
+      bearerFormat: JWT
+    bearerAuth:
+      type: oauth2
+      description: OAuth 2.0 Bearer token authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: https://webexapis.com/v1/authorize
+          tokenUrl: https://webexapis.com/v1/access_token
+          scopes:
+            spark:applications_token: Create access tokens for Service Apps

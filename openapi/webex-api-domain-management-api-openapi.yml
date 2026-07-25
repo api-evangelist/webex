@@ -1,0 +1,680 @@
+openapi: 3.0.0
+info:
+  title: Webex Admin Address Book API - Domain Management API
+  version: 1.0.0
+  description: The Webex Admin APIs provide comprehensive programmatic access to administrative functions for managing Webex organizations, users, licenses, and settings. These APIs enable automation of user provisioning, license assignment, compliance management, and audit event retrieval. Administrators can integrate with enterprise identity systems, enforce security policies, monitor usage, and streamline onboarding/offboarding processes. The APIs support granular control over organizational resources, making them ideal for large-scale deployments and custom admin tooling.
+tags:
+- name: API - Domain Management
+paths:
+  /identity/organizations/{orgId}/actions/getDomainVerificationToken:
+    post:
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DomainVerificationToken'
+              example:
+                domain: cisco.com
+                token: f5014515-6559-4a30-9d68-0deb028f27b7
+                verificationMethod: DNS_TXT
+                url: https://identity.webex.com/organization/bf732c85-68ca-4867-94e4-937286ad2fd4/v1/actions/DomainVerification/GetToken/invoke
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Get Domain Verification Token
+      operationId: Get Domain Verification Token
+      description: 'This endpoint helps generate a token for a given domain within the specified organization. The user needs to add this token as a ''TXT'' record to the DNS server.
+
+
+        **Possible Error:**
+
+
+        - 409: The request encountered a resource conflict. This error occurs if the domain is either claimed by another organization or by the same organization.
+
+
+        **Authorization:**
+
+
+        An ''OAuth'' token issued by the ''Identity Broker'' is required to access this endpoint. The token must include one of the following scopes:
+
+
+        - `Identity:Organization`
+
+
+        - `identity:organizations_rw`
+
+
+        **Administrator Roles:**
+
+
+        The following administrators can use this API:
+
+
+        - `id_full_admin`'
+      tags:
+      - API - Domain Management
+      parameters:
+      - name: orgId
+        in: path
+        description: The Webex Identity-assigned organization identifier for a user's organization.
+        required: true
+        example: bf732c85-68ca-4867-94e4-937286ad2fd4
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            example:
+              domain: cisco.com
+            schema:
+              $ref: '#/components/schemas/PostDomainVerificationToken'
+  /identity/organizations/{orgId}/actions/verifyDomain:
+    post:
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DomainVerification'
+              example:
+                verifiedDomains:
+                - cisco.com
+                - webex.com
+                claimedDomains:
+                - cisco.com
+                - webex.com
+                url: https://identity.webex.com/organization/bf732c85-68ca-4867-94e4-937286ad2fd4/v1/actions/DomainVerification/Verify/invoke
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Verify Domain
+      operationId: Verify Domain
+      description: 'This endpoint helps verify a given domain within the specified organization. This API verifies domain ownership by looking up and validating the ''TXT'' record for the domain.
+
+        Once verified, domain enforcement will be applied to the organization. Any users in the organization whose email domain doesn''t match one of the verified domains will be marked as transient.
+
+
+        If you want to verify and claim the domain, just set the ''claimDomain'' parameter to true. By default, it''s set to false, which will only verify the domain.
+
+
+        **Possible Errors:**
+
+
+        - 400: The request was a Bad Request. The domain can''t be verified. This error happens if the user didn''t request a token before trying to verify the domain.
+
+
+        - 409: The request resulted in a resource conflict. This error occurs if the domain has already been claimed by another organization.
+
+
+        **Authorization:**
+
+
+        An ''OAuth'' token issued by the ''Identity Broker'' is required to access this endpoint. The token must include one of the following scopes:
+
+
+        - `Identity:Organization`
+
+
+        - `identity:organizations_rw`
+
+
+        **Administrator Roles:**
+
+
+        The following administrators can use this API:
+
+
+        - `id_full_admin`'
+      tags:
+      - API - Domain Management
+      parameters:
+      - name: orgId
+        in: path
+        description: The Webex Identity-assigned organization identifier for a user's organization.
+        required: true
+        example: bf732c85-68ca-4867-94e4-937286ad2fd4
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            example:
+              domain: cisco.com
+              claimDomain: false
+              reserveDomain: false
+            schema:
+              $ref: '#/components/schemas/PostDomainVerification'
+  /identity/organizations/{orgId}/actions/claimDomain:
+    post:
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ClaimDomain'
+              example:
+                data:
+                - domain: cisco.com
+                  url: https://identity.webex.com/organizations/bf732c85-68ca-4867-94e4-937286ad2fd4/v1/domains/ZXhhbXBsZTMuY29t
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Claim Domain
+      operationId: Claim Domain
+      description: 'This endpoint helps claim the given domain within the specified organization. The domain needs to be verified before it can be claimed.
+
+
+        **Note**
+
+        <callout type="warning">
+
+
+        There''s an organization-level boolean flag called ''enforceVerifiedDomains''. If this flag is set to false, we won''t put any user in the organization into a transient state when verifying or claiming a domain.
+
+        Customers can still create users within the organization who don''t use the verified domains as their email. However, if the flag is set to true, all users in the organization must use one of the verified domains as their email.
+
+        This flag defines whether the organization enforces user email verification within the organization. If set to true, all users inside the organization must use one of the verified domains.
+
+        This flag is effective only after the admin has verified at least one email domain.
+
+        </callout>
+
+
+        **Possible Error:**
+
+
+        - 400: The request was a Bad Request. This error occurs if the domain is not verified.
+
+
+        **Authorization:**
+
+
+        An ''OAuth'' token issued by the ''Identity Broker'' is required to access this endpoint. The token must include one of the following scopes:
+
+
+        - `Identity:Organization`
+
+
+        - `identity:organizations_rw`
+
+
+        **Administrator Roles:**
+
+
+        The following administrators can use this API:
+
+
+        - `id_full_admin`'
+      tags:
+      - API - Domain Management
+      parameters:
+      - name: orgId
+        in: path
+        description: The Webex Identity-assigned organization identifier for a user's organization.
+        required: true
+        example: bf732c85-68ca-4867-94e4-937286ad2fd4
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            example:
+              data:
+              - domain: cisco.com
+              forceDomainClaim: true
+              claimDomainOnly: false
+            schema:
+              $ref: '#/components/schemas/PostClaimDomain'
+  /identity/organizations/{orgId}/actions/unverifyDomain:
+    post:
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DomainUnverification'
+              example:
+                verifiedDomains:
+                - cisco.com
+                - webex.com
+                claimedDomains:
+                - cisco.com
+                - webex.com
+                url: https://identity.webex.com/organization/bf732c85-68ca-4867-94e4-937286ad2fd4/v1/actions/DomainVerification/Unverify/invoke
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Unverify Domain
+      operationId: Unverify Domain
+      description: 'After you unclaim the domain, it will still be verified. Domain enforcement will still apply to the organization. The unverify endpoint helps to remove the domain ownership verification for the organization.
+
+
+        **Possible Error:**
+
+
+        - 400: The request was a Bad Request. The domain cannot be unverified. This error occurs if the domain is still claimed.
+
+
+        - 404: The request was Not Found. This error occurs if the domain is not associated with the organization.
+
+
+        **Authorization:**
+
+
+        An ''OAuth'' token issued by the ''Identity Broker'' is required to access this endpoint. The token must include one of the following scopes:
+
+
+        - `Identity:Organization`
+
+
+        - `identity:organizations_rw`
+
+
+        **Administrator Roles:**
+
+
+        The following administrators can use this API:
+
+
+        - `id_full_admin`'
+      tags:
+      - API - Domain Management
+      parameters:
+      - name: orgId
+        in: path
+        description: The Webex Identity-assigned organization identifier for a user's organization.
+        required: true
+        example: bf732c85-68ca-4867-94e4-937286ad2fd4
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            example:
+              domain: abc.com
+              removePending: false
+            schema:
+              $ref: '#/components/schemas/PostDomainUnverification'
+  /identity/organizations/{orgId}/actions/unclaimDomain:
+    post:
+      responses:
+        '204':
+          description: No Content
+          headers: {}
+          content: {}
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Unclaim Domain
+      operationId: Unclaim Domain
+      description: 'This API is used to unclaim a domain for the organization. The domain will remain verified, and domain enforcement will still apply to the given organization.
+
+
+        **Possible Error:**
+
+
+        - 400: The request was a Bad Request. The domain cannot be unclaimed. This error occurs if the requested parameter is invalid.
+
+
+        **Authorization:**
+
+
+        An ''OAuth'' token issued by the ''Identity Broker'' is required to access this endpoint. The token must include one of the following scopes:
+
+
+        - `Identity:Organization`
+
+
+        - `identity:organizations_rw`
+
+
+        **Administrator Roles:**
+
+
+        The following administrators can use this API:
+
+
+        - `id_full_admin`'
+      tags:
+      - API - Domain Management
+      parameters:
+      - name: orgId
+        in: path
+        description: The Webex Identity-assigned organization identifier for a user's organization.
+        required: true
+        example: bf732c85-68ca-4867-94e4-937286ad2fd4
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            example:
+              domain: test.dc-01.com
+            schema:
+              $ref: '#/components/schemas/UnclaimDomain'
+components:
+  schemas:
+    PostDomainUnverification:
+      type: object
+      required:
+      - domain
+      properties:
+        domain:
+          type: string
+          example: abc.com
+          description: Domain name to be verified.
+        removePending:
+          type: boolean
+          description: Specify whether to remove pending domain. Default is false (backward compatibility). If true, domains will be deleted from pending domain list.
+    PostDomainVerification:
+      type: object
+      required:
+      - domain
+      properties:
+        domain:
+          type: string
+          example: cisco.com
+          description: The domain name to be verified.
+        claimDomain:
+          type: boolean
+          description: A boolean to specify whether the domain needs to be claimed. The default value is false. If false, the domain will be verified but not claimed.
+        reserveDomain:
+          type: boolean
+          description: 'For FedRAMP only: If true, add the domain to the FedRAMP reserved domain list. The default value is false.'
+    UnclaimDomain:
+      type: object
+      required:
+      - domain
+      properties:
+        domain:
+          type: string
+          example: test.dc-01.com
+          description: A claimed domain.
+    DomainUnverification:
+      type: object
+      required:
+      - verifiedDomains
+      - claimedDomains
+      - url
+      properties:
+        verifiedDomains:
+          type: array
+          items:
+            type: string
+            example: cisco.com,webex.com
+          description: A list of verified domains for a given organization.
+        claimedDomains:
+          type: array
+          items:
+            type: string
+            example: cisco.com,webex.com
+          description: A list of claimed domains for a given organization.
+        url:
+          type: string
+          example: https://identity.webex.com/organization/bf732c85-68ca-4867-94e4-937286ad2fd4/v1/actions/DomainVerification/Unverify/invoke
+          description: Use this URL for unverifying domain ownership and managing the domain lifecycle within the organization.
+    PostDomainVerificationToken:
+      type: object
+      required:
+      - domain
+      properties:
+        domain:
+          type: string
+          example: cisco.com
+          description: A valid domain name.
+    DomainVerificationToken:
+      type: object
+      required:
+      - domain
+      - token
+      - verificationMethod
+      - url
+      properties:
+        domain:
+          type: string
+          example: cisco.com
+          description: The domain name for which the token is generated.
+        token:
+          type: string
+          example: f5014515-6559-4a30-9d68-0deb028f27b7
+          description: 'A token needs to be added as a TXT record in your domain''s DNS settings. You should add the following string: ''cisco-ci-domain-verification=<token>'' as a TXT record in your DNS settings.'
+        verificationMethod:
+          type: string
+          example: DNS_TXT
+          description: 'Domain verification method: Currently, we only support the DNS_TXT method for domain verification.'
+        url:
+          type: string
+          example: https://identity.webex.com/organization/bf732c85-68ca-4867-94e4-937286ad2fd4/v1/actions/DomainVerification/GetToken/invoke
+          description: Use this URL for retrieving an authentication token needed to interact with the Domain Verification API.
+    ClaimDomain:
+      type: object
+      required:
+      - domain
+      - url
+      properties:
+        domain:
+          type: string
+          example: cisco.com
+          description: A list of verified domains for a given organizations.
+        url:
+          type: string
+          example: https://identity.webex.com/organizations/bf732c85-68ca-4867-94e4-937286ad2fd4/v1/domains/ZXhhbXBsZTMuY29t
+          description: Use this location URL for the domain resource. The resource component of the URL will be the base64 encoded domain name.
+    Domain:
+      type: object
+      required:
+      - domain
+      properties:
+        domain:
+          type: string
+          example: cisco.com
+          description: A valid domain name that is already verified by the organization.
+    PostClaimDomain:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Domain'
+          description: A List of valid domain name that is already verified by the organization.
+        forceDomainClaim:
+          type: boolean
+          example: true
+          description: Indicate if the domain should be claimed when there are users outside the organization using the same domain. The default is true.
+        claimDomainOnly:
+          type: boolean
+          description: Indicate to just claim the domain only without searching/marking external users as transient. The default is false.
+    DomainVerification:
+      type: object
+      required:
+      - verifiedDomains
+      - claimedDomains
+      - url
+      properties:
+        verifiedDomains:
+          type: array
+          items:
+            type: string
+            example: cisco.com,webex.com
+          description: A list of verified domains for a given organization.
+        claimedDomains:
+          type: array
+          items:
+            type: string
+            example: cisco.com,webex.com
+          description: A list of claimed domains for a given organization.
+        url:
+          type: string
+          example: https://identity.webex.com/organization/bf732c85-68ca-4867-94e4-937286ad2fd4/v1/actions/DomainVerification/Verify/invoke
+          description: Use this URL for verifying domain ownership and managing the domain lifecycle within the organization.
+  securitySchemes:
+    oauth2:
+      flows:
+        authorizationCode:
+          authorizationUrl: /
+          scopes: {}
+          tokenUrl: /
+      type: oauth2
+    bearer-key:
+      type: http
+      description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
+      scheme: bearer
+      bearerFormat: JWT
+    bearerAuth:
+      type: oauth2
+      description: OAuth 2.0 Bearer token authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: https://webexapis.com/v1/authorize
+          tokenUrl: https://webexapis.com/v1/access_token
+          scopes:
+            spark:applications_token: Create access tokens for Service Apps

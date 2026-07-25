@@ -1,0 +1,379 @@
+openapi: 3.0.0
+info:
+  title: Webex Admin Address Book Workspace Metrics API
+  version: 1.0.0
+  description: The Webex Admin APIs provide comprehensive programmatic access to administrative functions for managing Webex organizations, users, licenses, and settings. These APIs enable automation of user provisioning, license assignment, compliance management, and audit event retrieval. Administrators can integrate with enterprise identity systems, enforce security policies, monitor usage, and streamline onboarding/offboarding processes. The APIs support granular control over organizational resources, making them ideal for large-scale deployments and custom admin tooling.
+tags:
+- name: Workspace Metrics
+paths:
+  /workspaceMetrics:
+    get:
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkspaceMetricsResponse'
+              example:
+                workspaceId: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE
+                metricName: temperature
+                aggregation: hourly
+                from: '2020-10-21T13:33:37.789Z'
+                to: '2020-10-31T16:00:00.532Z'
+                unit: celsius
+                sortBy: newestFirst
+                items: []
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Workspace Metrics
+      operationId: Workspace Metrics
+      description: 'Get metric data for the specified workspace and metric name, optionally aggregated over a specified time period.
+
+
+        * The `workspaceId` and `metricName` parameters indicate which workspace to fetch metrics for and what kind of metrics to get.
+
+
+        * When executing an aggregated query, the result bucket start times will be truncated to the start of an hour or a day, depending on
+
+        the aggregation interval. However, the buckets will not contain data from outside the requested time range. For example, when
+
+        passing `from=2020-10-21T10:34:56.000Z` and `aggregation=hourly`, the first output bucket would start at `2020-10-21T10:00:00.000Z`,
+
+        but the bucket would only aggregate data timestamped after `10:34:56`.
+
+
+        * For aggregation modes `none` and `hourly`, the maximum time span is 48 hours. For aggregation mode `daily`, the maximum
+
+        time span is 30 days.
+
+
+        * If the aggregation mode query parameter is set to `none`, the returned data in the response will be an array of items with the `deviceId`, `timestamp` and the raw `value`.
+
+
+        * If the aggregation mode is `hourly` or `daily`, the returned data in the response will be an array of items with the `start` and `end` of the aggregation time bucket, and the `mean`, `max` and `min` values of the requested value. Note that zeroes and negative values are ignored. For example, this means that the `peopleCount` mean value should be interpreted as the average number of people in the room _when it is in use_.'
+      tags:
+      - Workspace Metrics
+      parameters:
+      - name: workspaceId
+        in: query
+        description: ID of the workspace to get metrics for.
+        required: true
+        example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE
+        schema:
+          type: string
+      - name: metricName
+        in: query
+        description: The type of data to extract.
+        required: true
+        example: temperature
+        schema:
+          type: string
+          enum:
+          - soundLevel
+          - ambientNoise
+          - temperature
+          - humidity
+          - tvoc
+          - peopleCount
+      - name: aggregation
+        in: query
+        description: Time unit over which to aggregate measurements.
+        example: hourly
+        schema:
+          type: string
+          default: hourly
+          enum:
+          - none
+          - hourly
+          - daily
+      - name: from
+        in: query
+        description: List only data points after a specific date and time (ISO 8601 timestamp)
+        example: '2020-10-21T13:33:37.789Z'
+        schema:
+          type: string
+      - name: to
+        in: query
+        description: List data points before a specific date and time (ISO 8601 timestamp)
+        example: '2020-10-31T16:00:00.532Z'
+        schema:
+          type: string
+      - name: unit
+        in: query
+        description: Output data unit (only a valid parameter if `metricName` is `temperature`).
+        example: celsius
+        schema:
+          type: string
+          default: Celsius if the metricName parameter is set to "temperature". No default value is provided for other metric names.
+          enum:
+          - celsius
+          - fahrenheit
+      - name: sortBy
+        in: query
+        description: Sort results.
+        example: newestFirst
+        schema:
+          type: string
+          default: newestFirst
+          enum:
+          - newestFirst
+          - oldestFirst
+  /workspaceDurationMetrics:
+    get:
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkspaceDurationMetricsResponse'
+              example:
+                workspaceId: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE
+                aggregation: hourly
+                measurement: timeBooked
+                from: '2020-10-21T13:33:37.789Z'
+                to: '2020-10-31T16:00:00.532Z'
+                unit: minutes
+                items:
+                - start: '2021-10-21T12:00:00Z'
+                  end: '2021-10-21T13:00:00Z'
+                  duration: 13
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Workspace Duration Metrics
+      operationId: Workspace Duration Metrics
+      description: 'Get metrics for how much time a workspace has been in the state given by the `measurement` parameter.
+
+
+        For example, if the measurement is  `timeBooked` then the duration for which the workspace has been booked is returned. The `workspaceId` parameter indicates which workspace to fetch metrics for. If no `measurement` is given, the default value is `timeUsed`.
+
+
+        * When executing a query, the result bucket start times will default to the start of an hour or a day, depending on
+
+        the aggregation interval. However, the buckets will not contain data from outside the requested time range. For example, when
+
+        passing `from=2020-10-21T10:34:56.000Z` and `aggregation=hourly`, the first output bucket would start at `2020-10-21T10:00:00.000Z`,
+
+        but the bucket would only aggregate data timestamped after `10:34:56`.
+
+
+        * For aggregation mode `hourly`, the maximum time span is 48 hours. For aggregation mode `daily`, the maximum
+
+        time span is 30 days.'
+      tags:
+      - Workspace Metrics
+      parameters:
+      - name: workspaceId
+        in: query
+        description: ID of the workspace to get metrics for.
+        required: true
+        example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE
+        schema:
+          type: string
+      - name: aggregation
+        in: query
+        description: Unit of time over which to aggregate measurements.
+        example: hourly
+        schema:
+          type: string
+          default: hourly
+          enum:
+          - hourly
+          - daily
+      - name: measurement
+        in: query
+        description: The measurement to return duration for.
+        example: timeBooked
+        schema:
+          type: string
+          default: timeUsed
+          enum:
+          - timeUsed
+          - timeBooked
+      - name: from
+        in: query
+        description: Include data points after a specific date and time (ISO 8601 timestamp).
+        example: '2020-10-21T13:33:37.789Z'
+        schema:
+          type: string
+      - name: to
+        in: query
+        description: Include data points before a specific date and time (ISO 8601 timestamp).
+        example: '2020-10-31T16:00:00.532Z'
+        schema:
+          type: string
+components:
+  schemas:
+    WorkspaceDurationMetricsResponse:
+      type: object
+      required:
+      - workspaceId
+      properties:
+        workspaceId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE
+        aggregation:
+          type: string
+          enum:
+          - hourly
+          - daily
+        measurement:
+          type: string
+          enum:
+          - timeUsed
+          - timeBooked
+        from:
+          type: string
+          example: '2020-10-21T13:33:37.789Z'
+        to:
+          type: string
+          example: '2020-10-31T16:00:00.532Z'
+        unit:
+          type: string
+          example: minutes
+          description: The time unit.
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/DurationMetric'
+    DurationMetric:
+      type: object
+      properties:
+        start:
+          type: string
+          example: '2021-10-21T12:00:00Z'
+          description: Timestamp indicating the start of the aggregation bucket (ISO 8601).
+        end:
+          type: string
+          example: '2021-10-21T13:00:00Z'
+          description: Timestamp indicating the end of the aggregation bucket (ISO 8601).
+        duration:
+          type: number
+          example: 13
+          description: The time duration (in a given state) in the bucket.
+    WorkspaceMetricsResponse:
+      type: object
+      required:
+      - workspaceId
+      - metricName
+      properties:
+        workspaceId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE
+        metricName:
+          type: string
+          enum:
+          - soundLevel
+          - ambientNoise
+          - temperature
+          - humidity
+          - tvoc
+          - peopleCount
+        aggregation:
+          type: string
+          enum:
+          - none
+          - hourly
+          - daily
+        from:
+          type: string
+          example: '2020-10-21T13:33:37.789Z'
+        to:
+          type: string
+          example: '2020-10-31T16:00:00.532Z'
+        unit:
+          type: string
+          enum:
+          - celsius
+          - fahrenheit
+          description: Output data unit (only present if `metricName` is `temperature`).
+        sortBy:
+          type: string
+          enum:
+          - newestFirst
+          - oldestFirst
+        items:
+          type: array
+          items: {}
+          description: The structure of the elements will depend on whether or not aggregated data was requested
+  securitySchemes:
+    oauth2:
+      flows:
+        authorizationCode:
+          authorizationUrl: /
+          scopes: {}
+          tokenUrl: /
+      type: oauth2
+    bearer-key:
+      type: http
+      description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
+      scheme: bearer
+      bearerFormat: JWT
+    bearerAuth:
+      type: oauth2
+      description: OAuth 2.0 Bearer token authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: https://webexapis.com/v1/authorize
+          tokenUrl: https://webexapis.com/v1/access_token
+          scopes:
+            spark:applications_token: Create access tokens for Service Apps

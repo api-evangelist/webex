@@ -1,0 +1,1623 @@
+openapi: 3.0.0
+info:
+  title: Webex Admin Address Book Holiday List API
+  version: 1.0.0
+  description: The Webex Admin APIs provide comprehensive programmatic access to administrative functions for managing Webex organizations, users, licenses, and settings. These APIs enable automation of user provisioning, license assignment, compliance management, and audit event retrieval. Administrators can integrate with enterprise identity systems, enforce security policies, monitor usage, and streamline onboarding/offboarding processes. The APIs support granular control over organizational resources, making them ideal for large-scale deployments and custom admin tooling.
+tags:
+- name: Holiday List
+paths:
+  /organization/{orgid}/holiday-list:
+    get:
+      tags:
+      - Holiday List
+      summary: List Holiday List(s)
+      description: "Retrieve a list of Holiday List(s) in a given organization.\n Note: Array fields are removed from List API. If all fields are required please fetch Id's and use get-by-id API."
+      operationId: getAllConfig_7
+      parameters:
+      - name: orgid
+        in: path
+        description: Organization ID to be used for this operation. The specified security token must have permission to interact with the organization.
+        required: true
+        schema:
+          type: string
+        example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+      - name: filter
+        in: query
+        description: "Specify a filter based on which the results will be fetched. Supported filterable fields:  id. \n\nThe examples below show some search queries\n- id==\"57efb0e6-5af0-4245-a67d-d3c5045cdb6e\"\n- id!=\"57efb0e6-5af0-4245-a67d-d3c5045cdb6e\"\n- id=in=(\"57efb0e6-5af0-4245-a67d-d3c5045cdb6e\",\"a421e0b2-732e-46f3-a057-39160a53afb9\")\n- id=out=(\"57efb0e6-5af0-4245-a67d-d3c5045cdb6e\",\"a421e0b2-732e-46f3-a057-39160a53afb9\")\nThis parameter uses the RSQL query syntax, a URI-friendly format for expressing criteria for filtering REST entities. For more information about RSQL in general, see  <a href=\"https://www.here.com/docs/bundle/data-client-library-developer-guide-java-scala/page/client/rsql.html\">this reference</a>. For a list of supported operators, see <a href=\"https://github.com/perplexhub/rsql-jpa-specification#rsql-syntax-reference\">this syntax guide</a>.\n\nNote: values to be used in the filter syntax should not contain spaces. If they do, please enclose them in quotes to apply the filter.\n"
+        required: false
+        schema:
+          type: string
+        example: id=="2f9eecc5-0472-4549-9a83-2afdae0d4ba1"
+      - name: attributes
+        in: query
+        description: Specify the attributes to be returned. By default, all attributes are returned along with the specified columns. All attributes are supported. except holidays
+        required: false
+        schema:
+          type: string
+          format: string
+        example: id
+      - name: page
+        in: query
+        description: Defines the number of displayed page. The page number starts from 0.
+        schema:
+          type: integer
+          default: 0
+          example: 0
+        example: 0
+      - name: pageSize
+        in: query
+        description: Defines the number of items to be displayed on a page. If the number specified is more than allowed max page size, the API will automatically adjust the page size to the max page size.
+        schema:
+          type: integer
+          default: 100
+          example: 100
+        example: 100
+      - name: singleObjectResponse
+        in: query
+        description: Specifiy whether to include array fields in the response, This query param should use only if the response contain single record, if we are using for multiple objects response query param not supported and throws an exception.
+        schema:
+          type: boolean
+          default: false
+          example: false
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HolidayListDTOList'
+              example:
+              - organizationId: f53c8b54-46ca-43f6-ba05-08426a46e23d
+                name: Holiday List 2022
+                description: This is a holiday list for year 2022.
+                holidaysCount: 2
+                createdTime: 123456789
+                lastUpdatedTime: 123456789
+                id: 93912f11-6017-404b-bf14-5331890b1797
+                version: 1
+        '401':
+          description: Unauthorized Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '401'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '401'
+                    entity: cc_user
+                    references: []
+        '403':
+          description: Operation is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '403'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '403'
+                    entity: cc_user
+                    references: []
+        '404':
+          description: Resource not found or URI is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '404'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '404'
+                    entity: cc_user
+                    references: []
+        '429':
+          description: Too many requests have been sent in a given amount of time and the request has been rate limited
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '429'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '429'
+                    entity: cc_user
+                    references: []
+        '500':
+          description: An Unexpected Error Occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '500'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '500'
+                    entity: cc_user
+                    references: []
+      deprecated: false
+    post:
+      tags:
+      - Holiday List
+      summary: Create a new Holiday List
+      description: Create a new Holiday List in a given organization.
+      operationId: createConfig_10
+      parameters:
+      - name: orgid
+        in: path
+        description: Organization ID to be used for this operation. The specified security token must have permission to interact with the organization.
+        required: true
+        schema:
+          type: string
+        example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HolidayListDTO'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/HolidayListDTO'
+        '400':
+          description: The request was invalid and cannot be served. An accompanying error message will explain further
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '400'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '400'
+                    entity: cc_user
+                    references: []
+        '401':
+          description: Unauthorized Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '401'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '401'
+                    entity: cc_user
+                    references: []
+        '403':
+          description: Operation is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '403'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '403'
+                    entity: cc_user
+                    references: []
+        '409':
+          description: Similar entity is already present
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '409'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '409'
+                    entity: cc_user
+                    references: []
+        '429':
+          description: Too many requests have been sent in a given amount of time and the request has been rate limited
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '429'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '429'
+                    entity: cc_user
+                    references: []
+        '500':
+          description: An Unexpected Error Occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '500'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '500'
+                    entity: cc_user
+                    references: []
+      deprecated: false
+  /organization/{orgid}/holiday-list/bulk:
+    post:
+      tags:
+      - Holiday List
+      summary: Bulk save Holiday List(s)
+      description: Create, Update or delete Holiday List(s) in bulk in a given organization.
+      operationId: saveAllConfig_9
+      parameters:
+      - name: orgid
+        in: path
+        description: Organization ID to be used for this operation. The specified security token must have permission to interact with the organization.
+        required: true
+        schema:
+          type: string
+        example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkRequestDTOHolidayListDTO'
+        required: true
+      responses:
+        '207':
+          description: Multi-Status
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/BulkResponseDTO'
+        '400':
+          description: The request was invalid and cannot be served. An accompanying error message will explain further
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '400'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '400'
+                    entity: cc_user
+                    references: []
+        '401':
+          description: Unauthorized Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '401'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '401'
+                    entity: cc_user
+                    references: []
+        '403':
+          description: Operation is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '403'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '403'
+                    entity: cc_user
+                    references: []
+        '409':
+          description: Similar entity is already present
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '409'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '409'
+                    entity: cc_user
+                    references: []
+        '429':
+          description: Too many requests have been sent in a given amount of time and the request has been rate limited
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '429'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '429'
+                    entity: cc_user
+                    references: []
+        '500':
+          description: An Unexpected Error Occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '500'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '500'
+                    entity: cc_user
+                    references: []
+      deprecated: false
+  /organization/{orgid}/holiday-list/{id}:
+    get:
+      tags:
+      - Holiday List
+      summary: Get specific Holiday List by ID
+      description: Retrieve an existing Holiday List by ID in a given organization.
+      operationId: getConfig_10
+      parameters:
+      - name: orgid
+        in: path
+        description: Organization ID to be used for this operation. The specified security token must have permission to interact with the organization.
+        required: true
+        schema:
+          type: string
+        example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+      - name: id
+        in: path
+        description: Resource ID of the Holiday List.
+        required: true
+        schema:
+          type: string
+        example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba2
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/HolidayListDTO'
+        '401':
+          description: Unauthorized Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '401'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '401'
+                    entity: cc_user
+                    references: []
+        '403':
+          description: Operation is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '403'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '403'
+                    entity: cc_user
+                    references: []
+        '404':
+          description: Resource not found or URI is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '404'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '404'
+                    entity: cc_user
+                    references: []
+        '429':
+          description: Too many requests have been sent in a given amount of time and the request has been rate limited
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '429'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '429'
+                    entity: cc_user
+                    references: []
+        '500':
+          description: An Unexpected Error Occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '500'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '500'
+                    entity: cc_user
+                    references: []
+      deprecated: false
+    put:
+      tags:
+      - Holiday List
+      summary: Update specific Holiday List by ID
+      description: Update an existing Holiday List by ID in a given organization.
+      operationId: updateConfig_10
+      parameters:
+      - name: orgid
+        in: path
+        description: Organization ID to be used for this operation. The specified security token must have permission to interact with the organization.
+        required: true
+        schema:
+          type: string
+        example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+      - name: id
+        in: path
+        description: Resource ID of the Holiday List.
+        required: true
+        schema:
+          type: string
+        example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba2
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HolidayListDTO'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/HolidayListDTO'
+        '400':
+          description: The request was invalid and cannot be served. An accompanying error message will explain further
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '400'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '400'
+                    entity: cc_user
+                    references: []
+        '401':
+          description: Unauthorized Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '401'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '401'
+                    entity: cc_user
+                    references: []
+        '403':
+          description: Operation is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '403'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '403'
+                    entity: cc_user
+                    references: []
+        '404':
+          description: Resource not found or URI is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '404'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '404'
+                    entity: cc_user
+                    references: []
+        '412':
+          description: Resource referred in other entity(s). Please get all the reference entities info by invoking Get incoming-references api.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '412'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '412'
+                    entity: cc_user
+                    references: []
+        '429':
+          description: Too many requests have been sent in a given amount of time and the request has been rate limited
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '429'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '429'
+                    entity: cc_user
+                    references: []
+        '500':
+          description: An Unexpected Error Occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '500'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '500'
+                    entity: cc_user
+                    references: []
+      deprecated: false
+    delete:
+      tags:
+      - Holiday List
+      summary: Delete specific Holiday List by ID
+      description: Delete an existing Holiday List by ID in a given organization.
+      operationId: deleteConfig_10
+      parameters:
+      - name: orgid
+        in: path
+        description: Organization ID to be used for this operation. The specified security token must have permission to interact with the organization.
+        required: true
+        schema:
+          type: string
+        example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+      - name: id
+        in: path
+        description: Resource ID of the Holiday List.
+        required: true
+        schema:
+          type: string
+        example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba2
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '401'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '401'
+                    entity: cc_user
+                    references: []
+        '403':
+          description: Operation is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '403'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '403'
+                    entity: cc_user
+                    references: []
+        '404':
+          description: Resource not found or URI is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '404'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '404'
+                    entity: cc_user
+                    references: []
+        '412':
+          description: Resource referred in other entity(s). Please get all the reference entities info by invoking Get incoming-references api.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '412'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '412'
+                    entity: cc_user
+                    references: []
+        '429':
+          description: Too many requests have been sent in a given amount of time and the request has been rate limited
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '429'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '429'
+                    entity: cc_user
+                    references: []
+        '500':
+          description: An Unexpected Error Occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '500'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '500'
+                    entity: cc_user
+                    references: []
+      deprecated: false
+  /organization/{orgid}/holiday-list/{id}/incoming-references:
+    get:
+      tags:
+      - Holiday List
+      summary: List references for a specific Holiday List
+      description: Retrieve a list of all entities that have reference to an existing Holiday List by ID in a given organization.
+      operationId: getIncomingReferences_8
+      parameters:
+      - name: orgid
+        in: path
+        description: Organization ID to be used for this operation. The specified security token must have permission to interact with the organization.
+        required: true
+        schema:
+          type: string
+        example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+      - name: id
+        in: path
+        description: ID of this contact center resource.
+        required: true
+        schema:
+          type: string
+        example: af9eecc5-0472-4549-9a83-2afdae0d4ba0
+      - name: type
+        in: query
+        description: Entity type of the other entity that has a reference to this specific entity.
+        required: false
+        schema:
+          type: string
+        example: type_text
+      - name: page
+        in: query
+        description: Defines the number of displayed page. The page number starts from 0.
+        schema:
+          type: integer
+          default: 0
+          example: 0
+        example: 0
+      - name: pageSize
+        in: query
+        description: Defines the number of items to be displayed on a page. If the number specified is more than allowed max page size, the API will automatically adjust the page size to the max page size.
+        schema:
+          type: integer
+          default: 100
+          example: 100
+        example: 100
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/EntityReferenceInfoDTO'
+        '401':
+          description: Unauthorized Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '401'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '401'
+                    entity: cc_user
+                    references: []
+        '403':
+          description: Operation is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '403'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '403'
+                    entity: cc_user
+                    references: []
+        '404':
+          description: Resource not found or URI is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '404'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '404'
+                    entity: cc_user
+                    references: []
+        '429':
+          description: Too many requests have been sent in a given amount of time and the request has been rate limited
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '429'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '429'
+                    entity: cc_user
+                    references: []
+        '500':
+          description: An Unexpected Error Occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '500'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '500'
+                    entity: cc_user
+                    references: []
+      deprecated: false
+  /organization/{orgid}/v2/holiday-list:
+    get:
+      tags:
+      - Holiday List
+      summary: List Holiday List(s)
+      description: "Retrieve a list of Holiday List(s) in a given organization.\n Note: Array fields are removed from List API. If all fields are required please fetch Id's and use get-by-id API."
+      operationId: getAllConfigWithMetaData_11
+      parameters:
+      - name: orgid
+        in: path
+        description: Organization ID to be used for this operation. The specified security token must have permission to interact with the organization.
+        required: true
+        schema:
+          type: string
+        example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+      - name: filter
+        in: query
+        description: "Specify a filter based on which the results will be fetched. All the fields are supported except: organizationId, holidays, createdTime, lastUpdatedTime \n\nThe examples below show some search queries\n- id==\"57efb0e6-5af0-4245-a67d-d3c5045cdb6e\"\n- id!=\"57efb0e6-5af0-4245-a67d-d3c5045cdb6e\"\n- id=in=(\"57efb0e6-5af0-4245-a67d-d3c5045cdb6e\",\"a421e0b2-732e-46f3-a057-39160a53afb9\")\n- id=out=(\"57efb0e6-5af0-4245-a67d-d3c5045cdb6e\",\"a421e0b2-732e-46f3-a057-39160a53afb9\")\nThis parameter uses the RSQL query syntax, a URI-friendly format for expressing criteria for filtering REST entities. For more information about RSQL in general, see  <a href=\"https://www.here.com/docs/bundle/data-client-library-developer-guide-java-scala/page/client/rsql.html\">this reference</a>. For a list of supported operators, see <a href=\"https://github.com/perplexhub/rsql-jpa-specification#rsql-syntax-reference\">this syntax guide</a>.\n\nNote: values to be used in the filter syntax should not contain spaces. If they do, please enclose them in quotes to apply the filter.\n"
+        required: false
+        schema:
+          type: string
+        example: id=="2f9eecc5-0472-4549-9a83-2afdae0d4ba1"
+      - name: attributes
+        in: query
+        description: Specify the attributes to be returned. By default, all attributes are returned along with the specified columns. All attributes are supported. except holidays
+        required: false
+        schema:
+          type: string
+          format: string
+        example: id
+      - name: search
+        in: query
+        description: 'Filter data based on the search keyword.Supported search columns(name)
+
+
+          The examples below show some search queries
+
+          - "Cisco"
+
+          - field=="name";value=="Cisco"
+
+          - fields=in=("name");value=="Cisco"
+
+          '
+        required: false
+        schema:
+          type: string
+        example: contact center
+      - name: page
+        in: query
+        description: Defines the number of displayed page. The page number starts from 0.
+        schema:
+          type: integer
+          default: 0
+          example: 0
+        example: 0
+      - name: pageSize
+        in: query
+        description: Defines the number of items to be displayed on a page. If the number specified is more than allowed max page size, the API will automatically adjust the page size to the max page size.
+        schema:
+          type: integer
+          default: 100
+          example: 100
+        example: 100
+      - name: sort
+        in: query
+        description: "Sorting criteria in the format: property(, asc | desc). Default sort order is ascending. Supported sortable fields (name, createdTime, lastUpdatedTime). \n\n\nThe examples below show some sort queries\n- name,asc\n- createdTime,desc\n"
+        schema:
+          type: string
+          default: name
+          example: name
+      - name: includeCount
+        in: query
+        description: Enable the flag to get the count of holidays
+        schema:
+          type: boolean
+          default: false
+          example: false
+      - name: singleObjectResponse
+        in: query
+        description: Specifiy whether to include array fields in the response, This query param should use only if the response contain single record, if we are using for multiple objects response query param not supported and throws an exception.
+        schema:
+          type: boolean
+          default: false
+          example: false
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ResponseEnvelopeHolidayListDTO'
+              example:
+                data:
+                - organizationId: f53c8b54-46ca-43f6-ba05-08426a46e23d
+                  name: Holiday List 2022
+                  description: This is a holiday list for year 2022.
+                  holidaysCount: string
+                  createdTime: 123456789
+                  lastUpdatedTime: 123456789
+                  id: 93912f11-6017-404b-bf14-5331890b1797
+                  version: 1
+                meta:
+                  additionalProp3: string
+                  additionalProp2: string
+                  additionalProp1: string
+        '401':
+          description: Unauthorized Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '401'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '401'
+                    entity: cc_user
+                    references: []
+        '403':
+          description: Operation is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '403'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '403'
+                    entity: cc_user
+                    references: []
+        '404':
+          description: Resource not found or URI is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '404'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '404'
+                    entity: cc_user
+                    references: []
+        '429':
+          description: Too many requests have been sent in a given amount of time and the request has been rate limited
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '429'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '429'
+                    entity: cc_user
+                    references: []
+        '500':
+          description: An Unexpected Error Occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '500'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '500'
+                    entity: cc_user
+                    references: []
+      deprecated: false
+components:
+  schemas:
+    ApiErrorResponse:
+      description: Response body for an API error.
+      type: object
+      properties:
+        trackingId:
+          type: string
+          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
+          example: c1a4fcef-aee2-4dea-8977-29f594760552
+        error:
+          description: An object containing details about the error.
+          $ref: '#/components/schemas/ErrorDetails'
+    HolidayListDTO:
+      type: object
+      properties:
+        organizationId:
+          type: string
+          format: uuid
+          description: ID of the contact center organization. This field is required for all bulk save operations.
+          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+          maxLength: 36
+          minLength: 32
+          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
+        id:
+          type: string
+          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
+          example: 93912f11-6017-404b-bf14-5331890b1797
+        version:
+          type: integer
+          format: int32
+          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
+          example: 1
+        name:
+          type: string
+          description: Enter a name for the holiday list.
+          example: Holiday List 2022
+          maxLength: 80
+          minLength: 0
+          pattern: ^[a-zA-Z0-9_-]+(\s?[a-zA-Z0-9_-]+)*$
+        description:
+          type: string
+          description: (Optional) Enter a description of the holiday list.
+          example: This is a holiday list for year 2022.
+          maxLength: 255
+          minLength: 0
+        holidays:
+          type: array
+          description: Holiday list.
+          example:
+            name: My Holiday List
+            description: My Holiday List Desc
+            holidays:
+            - name: Holi
+              startDate: '2022-04-16'
+              endDate: '2022-04-16'
+              frequency: Yearly
+              recurrence:
+                interval: 1
+                specificDayOfMonth: 16
+                specificMonth: APR
+                endDate: '2030-12-24'
+            - name: Good Friday
+              startDate: '2022-05-24'
+              endDate: '2022-05-24'
+              frequency: Yearly
+              recurrence:
+                interval: 1
+                specificDayOfMonth: 24
+                specificMonth: MAY
+                endDate: '2030-12-24'
+            id: 93912f11-6017-404b-bf14-5331890b1797
+            organizationId: f53c8b54-46ca-43f6-ba05-08426a46e23d
+            createdTime: 1628231177000
+            lastUpdatedTime: 1628231177000
+          items:
+            $ref: '#/components/schemas/HolidaysDTO'
+          minItems: 1
+        holidaysCount:
+          type: integer
+          format: int64
+        createdTime:
+          type: integer
+          format: int64
+          description: This is the created time of the entity.
+          example: 123456789
+        lastUpdatedTime:
+          type: integer
+          format: int64
+          description: This is the updated time of the entity.
+          example: 123456789
+      required:
+      - holidays
+      - name
+    HolidaysDTO:
+      type: object
+      description: Holiday list.
+      example:
+        name: My Holiday List
+        description: My Holiday List Desc
+        holidays:
+        - name: Holi
+          startDate: '2022-04-16'
+          endDate: '2022-04-16'
+          frequency: Yearly
+          recurrence:
+            interval: 1
+            specificDayOfMonth: 16
+            specificMonth: APR
+            endDate: '2030-12-24'
+        - name: Good Friday
+          startDate: '2022-05-24'
+          endDate: '2022-05-24'
+          frequency: Yearly
+          recurrence:
+            interval: 1
+            specificDayOfMonth: 24
+            specificMonth: MAY
+            endDate: '2030-12-24'
+        id: 93912f11-6017-404b-bf14-5331890b1797
+        organizationId: f53c8b54-46ca-43f6-ba05-08426a46e23d
+        createdTime: 1628231177000
+        lastUpdatedTime: 1628231177000
+      properties:
+        name:
+          type: string
+          maxLength: 80
+          minLength: 0
+          pattern: ^[a-zA-Z0-9_-]+(\s?[a-zA-Z0-9_-]+)*$
+        startDate:
+          type: string
+        endDate:
+          type: string
+        startTime:
+          type: string
+        endTime:
+          type: string
+        frequency:
+          type: string
+          enum:
+          - DontRepeat
+          - Daily
+          - Weekly
+          - Monthly
+          - Yearly
+        recurrence:
+          $ref: '#/components/schemas/RecurrenceDTO'
+        overlapsWith:
+          type: array
+          description: (Optional) Used to list the overlapping holidays.
+          example: holidays
+          items:
+            type: string
+            description: (Optional) Used to list the overlapping holidays.
+            example: '"holidays": [
+
+              {
+
+              "name": "Hol1",
+
+              "startDate": "2025-09-06",
+
+              "endDate": "2025-09-06"
+
+              },
+
+              {
+
+              "name": "Hol2",
+
+              "startDate": "2025-09-05",
+
+              "endDate": "2025-09-05",
+
+              "overlapsWith":["Hol3"]
+
+              },
+
+              {
+
+              "name": "Hol3",
+
+              "startDate": "2025-09-05",
+
+              "endDate": "2025-09-05",
+
+              "overlapsWith":["Hol2"]
+
+              }'
+      required:
+      - name
+    BulkRequestDTOHolidayListDTO:
+      type: object
+      properties:
+        items:
+          type: array
+          description: List of items in the bulk request.
+          items:
+            $ref: '#/components/schemas/BulkRequestItemDTOHolidayListDTO'
+    ErrorDetails:
+      description: Details of an error.
+      type: object
+      properties:
+        key:
+          type: string
+          description: An application defined error code.
+          example: '401'
+        message:
+          type: array
+          description: A message providing details about the error.
+          items:
+            $ref: '#/components/schemas/OperationError'
+    BulkResponseItemDTO:
+      type: object
+      properties:
+        itemIdentifier:
+          type: integer
+          description: Unique item identifier for a bulk operation.
+          format: int32
+          example: 10
+        status:
+          type: integer
+          description: Indicates the error status code.
+          format: int32
+          example: 400
+        operationType:
+          type: string
+          description: The kind of operation desired of an entity.
+          example: CREATE
+          enum:
+          - CREATE
+          - UPDATE
+          - DELETE
+          - GET
+        href:
+          type: string
+          description: The resource URI of an entity.
+          example: /api/organization/6705c69d-4585-42ad-bfc3-79cc485dfb15/team/7b26d174-0016-4682-9858-65918e05f85
+        apiError:
+          $ref: '#/components/schemas/ApiErrorResponse'
+      example:
+        apiError:
+          error:
+            key: '400'
+            message:
+            - description: 'siteId: not found for given orgId.'
+              entity: string
+              references:
+              - id: string
+                name: string
+            reason: dependency exists
+          trackingId: ccconfig_c1a4fcef-aee2-4dea-8977-29f594760552
+        href: /api/organization/6705c69d-4585-42ad-bfc3-79cc485dfb15/team/7b26d174-0016-4682-9858-65918e05f85
+        itemIdentifier: 10
+        operationType: CREATE
+        status: 400
+    ResponseEnvelopeHolidayListDTO:
+      type: object
+      properties:
+        meta:
+          type: object
+          additionalProperties: {}
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/HolidayListDTO'
+    HolidayListDTOList:
+      type: object
+      description: Holiday List data transfer object with condensed fields for list operations.
+      properties:
+        organizationId:
+          type: string
+          format: uuid
+          description: ID of the contact center organization. This field is required for all bulk save operations.
+          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+          maxLength: 36
+          minLength: 32
+          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
+        id:
+          type: string
+          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
+          example: 93912f11-6017-404b-bf14-5331890b1797
+        version:
+          type: integer
+          format: int32
+          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
+          example: 1
+        name:
+          type: string
+          description: Enter a name for the holiday list.
+          example: Holiday List 2022
+          maxLength: 80
+          minLength: 0
+          pattern: ^[a-zA-Z0-9_-]+(\s?[a-zA-Z0-9_-]+)*$
+        description:
+          type: string
+          description: (Optional) Enter a description of the holiday list.
+          example: This is a holiday list for year 2022.
+          maxLength: 255
+          minLength: 0
+        holidaysCount:
+          type: integer
+          format: int64
+          description: The total number of holidays in this holiday list.
+        createdTime:
+          type: integer
+          format: int64
+          description: This is the created time of the entity.
+          example: 123456789
+        lastUpdatedTime:
+          type: integer
+          format: int64
+          description: This is the updated time of the entity.
+          example: 123456789
+    OperationError:
+      description: An error message providing details about the operation failure.
+      type: object
+      properties:
+        description:
+          type: string
+          description: A human readable explanation for the occurrence of an error.
+          example: Incorrect Credentials.
+    BulkResponseDTO:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BulkResponseItemDTO'
+    RecurrenceDTO:
+      type: object
+      properties:
+        interval:
+          type: integer
+          format: int32
+          minimum: 1
+        occurrenceInTheMonth:
+          type: string
+          enum:
+          - FIRST
+          - SECOND
+          - THIRD
+          - FOURTH
+          - LAST
+        daysOfWeek:
+          type: array
+          items:
+            type: string
+            enum:
+            - SUN
+            - MON
+            - TUE
+            - WED
+            - THU
+            - FRI
+            - SAT
+          maxItems: 7
+          minItems: 0
+        specificDayOfMonth:
+          type: integer
+          format: int32
+          maximum: 31
+          minimum: 1
+        specificMonth:
+          type: string
+          enum:
+          - JAN
+          - FEB
+          - MAR
+          - APR
+          - MAY
+          - JUN
+          - JUL
+          - AUG
+          - SEP
+          - OCT
+          - NOV
+          - DEC
+        endDate:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}$
+      required:
+      - interval
+    MetaDataReferencesPagingInfo:
+      title: MetaDataReferencesPagingInfo
+      type: object
+      properties:
+        orgid:
+          maxLength: 36
+          minLength: 32
+          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
+          type: string
+          description: Org ID
+          format: uuid
+          example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+        page:
+          type: integer
+          description: Current page number
+          format: int32
+          example: 1
+        pageSize:
+          type: integer
+          description: Page size for current data set
+          format: int32
+          example: 100
+        totalPages:
+          type: integer
+          description: Number of pages
+          format: int32
+          example: 1
+        totalRecords:
+          type: integer
+          description: Total number of items
+          format: int32
+          example: 1000
+        links:
+          type: object
+          description: Map of pagination links with self, next, prev, last and first
+          example:
+            next: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=2&pageSize=10
+            last: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=3&pageSize=10
+            prev: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=0&pageSize=10
+            self: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=1&pageSize=10
+            first: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=0&pageSize=10
+        referencedEntities:
+          type: array
+          description: List of referenced entities
+          example:
+          - agent-profile
+          - entrypoint
+          items:
+            type: string
+        currentEntity:
+          type: string
+          description: Name of current entity
+          example: entity_name
+      description: Metadata of response for references with paging information
+    EntityInfo:
+      type: object
+      properties:
+        id:
+          type: string
+          description: id
+          example: id.
+        name:
+          type: string
+          description: name
+          example: name.
+        additionalAttributes:
+          type: object
+          additionalProperties:
+            type: string
+            description: A map containing additional attributes of entity where both the key and value are Strings.
+            example: '{"key1":"value1","key2":"value2"}'
+          description: A map containing additional attributes of entity where both the key and value are Strings.
+          example:
+            key1: value1
+            key2: value2
+        createdDate:
+          type: string
+        lastModifiedDate:
+          type: string
+        version:
+          type: integer
+          format: int32
+    BulkRequestItemDTOHolidayListDTO:
+      type: object
+      description: List of items in the bulk request.
+      properties:
+        itemIdentifier:
+          type: integer
+          format: int32
+          description: Unique item identifier for a bulk operation.
+          example: 10
+        item:
+          $ref: '#/components/schemas/HolidayListDTO'
+          description: The Holiday List data for this bulk request item.
+        requestAction:
+          type: string
+          description: Identifier for action type. Possible values are `SAVE` and `DELETE`.
+          example: SAVE
+    EntityReferenceInfoDTO:
+      type: object
+      properties:
+        description:
+          type: string
+          description: Description about reference info.
+          example: list of referenced entities
+        meta:
+          $ref: '#/components/schemas/MetaDataReferencesPagingInfo'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityInfo'
+  securitySchemes:
+    oauth2:
+      flows:
+        authorizationCode:
+          authorizationUrl: /
+          scopes: {}
+          tokenUrl: /
+      type: oauth2
+    bearer-key:
+      type: http
+      description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
+      scheme: bearer
+      bearerFormat: JWT
+    bearerAuth:
+      type: oauth2
+      description: OAuth 2.0 Bearer token authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: https://webexapis.com/v1/authorize
+          tokenUrl: https://webexapis.com/v1/access_token
+          scopes:
+            spark:applications_token: Create access tokens for Service Apps

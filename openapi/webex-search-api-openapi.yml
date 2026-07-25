@@ -1,0 +1,197 @@
+openapi: 3.0.0
+info:
+  title: Webex Admin Address Book Search API
+  version: 1.0.0
+  description: The Webex Admin APIs provide comprehensive programmatic access to administrative functions for managing Webex organizations, users, licenses, and settings. These APIs enable automation of user provisioning, license assignment, compliance management, and audit event retrieval. Administrators can integrate with enterprise identity systems, enforce security policies, monitor usage, and streamline onboarding/offboarding processes. The APIs support granular control over organizational resources, making them ideal for large-scale deployments and custom admin tooling.
+tags:
+- name: Search
+paths:
+  /search:
+    post:
+      tags:
+      - Search
+      summary: Search tasks
+      description: 'The /search API is a GraphQL endpoint that enables customers to fetch data from Webex Contact Center.
+
+
+        **Authentication & Authorization:**
+
+        - **Required Scopes:** `cjp:config` or `cjp:config_read`
+
+        - **Required Roles:** Administrator or Supervisor
+
+
+        Mandatory parameters are FROM and TO, which accept datetime in epoch format. The FROM parameter cannot be older than 36 months from the current time. The TO parameter, if given as a future time, will be set to the current time. Optional parameters such as filter and aggregation are accepted for each query.
+
+
+        Response Compression: For this API, response compression using gzip can be enabled by including the ''Accept-Encoding'' header in the request with its value as ''gzip''. The response will be compressed only if its size exceeds 1 MB. If the header is not present in the request or if gzip is not listed as one of the encodings in the header''s value (comma-separated encodings), then the API response will not be compressed, impacting latency as observed from clients.'
+      operationId: getSearchResults
+      parameters:
+      - name: orgId
+        in: query
+        description: Organization ID to use for this operation. If unspecified, inferred from token. Token must have permission to interact with this organization.
+        required: false
+        schema:
+          type: string
+          example: null
+        example: 97cdbf45-ebe2-4687-8341-44d5c7abf101
+      - name: TrackingId
+        in: header
+        description: 'Tracking ID to use for this operation, for traceability, debugging, and error reporting purposes. '
+        required: false
+        schema:
+          type: string
+          example: null
+        example: INTEGRATION-9bcdc696-57fa-4e91-b5aa-57a66a347c23
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+                example:
+                  data:
+                    task:
+                      tasks:
+                      - id: fb53f6d1-5535-4ac8-b081-53834e17d6f5
+                        channelType: telephony
+                        createdTime: 1629450000000
+                        endedTime: 1630380960406
+                        captureRequested: true
+                        isActive: false
+                        status: ended
+                        queue:
+                        - id: e434a654-df4c-42dc-908b-3d9d0206a616
+                          name: cb_outdial_queue
+                        owner:
+                          name: callbackorg2user1 callbackorg2user1
+                          id: 74ab6507-a32a-479c-bda7-15ff0b6c6c3c
+        '400':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '403':
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '409':
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '413':
+          description: Content Too Large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json: {}
+        '500':
+          description: An Unexpected Error Occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '503':
+          description: The service is currently unavailable to serve the requests
+          content:
+            application/json: {}
+components:
+  schemas:
+    OperationError:
+      description: An error message providing details about the operation failure.
+      type: object
+      properties:
+        description:
+          type: string
+          description: A human readable explanation for the occurrence of an error.
+          example: Incorrect Credentials.
+    ApiErrorResponse:
+      description: Response body for an API error.
+      type: object
+      properties:
+        trackingId:
+          type: string
+          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
+          example: c1a4fcef-aee2-4dea-8977-29f594760552
+        error:
+          description: An object containing details about the error.
+          $ref: '#/components/schemas/ErrorDetails'
+    SearchRequest:
+      type: object
+      properties:
+        variables:
+          type: object
+          description: "The variables definition are the part that looks like task(from: $startTime, to: $endTime) in the query. \n It works just like the argument definitions for a function in a typed language. These variables are applicable only for persisted queries that has these variables. An example of persisted query with variables - {\n  task (from: $startTime, to: $endTime, filter: {\n    and : [\n      {channelType : {equals: telephony}}\n     ]\n  } , pagination: {cursor:\"0\"}) {\n      tasks {\n        id\n        channelType\n      }\n  }\n}"
+          example:
+            startTime: 1629369769066
+            endTime: 1629458280000
+        query:
+          type: string
+          description: 'A graphQL query specifying the task attributes needed in the response for the specified time window. from: Start time for the query (in epoch milliseconds) and it cannot be older than 36 months from the current time. to: End time for the query (in epoch milliseconds) and it cannot be greater than the current time. The duration between to and from must not be more than 365 days.
+
+            '
+          example: 'query($startTime: Long!,$endTime: Long!) { task (from: $startTime, to: $endTime, filter: { and : [ {channelType : {equals: telephony}} {status: {equals: "created"}} {owner: {equals: {id: "owner-id"}}} {customer: {equals: {name: "customer-name"}}} ]} , pagination: {cursor:"0"}) { tasks { id channelType}}}'
+      example: null
+    ErrorDetails:
+      description: Details of an error.
+      type: object
+      properties:
+        key:
+          type: string
+          description: An application defined error code.
+          example: '401'
+        message:
+          type: array
+          description: A message providing details about the error.
+          items:
+            $ref: '#/components/schemas/OperationError'
+  securitySchemes:
+    oauth2:
+      flows:
+        authorizationCode:
+          authorizationUrl: /
+          scopes: {}
+          tokenUrl: /
+      type: oauth2
+    bearer-key:
+      type: http
+      description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
+      scheme: bearer
+      bearerFormat: JWT
+    bearerAuth:
+      type: oauth2
+      description: OAuth 2.0 Bearer token authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: https://webexapis.com/v1/authorize
+          tokenUrl: https://webexapis.com/v1/access_token
+          scopes:
+            spark:applications_token: Create access tokens for Service Apps

@@ -1,0 +1,221 @@
+openapi: 3.0.0
+info:
+  title: Webex Admin Address Book Security Audit Events API
+  version: 1.0.0
+  description: The Webex Admin APIs provide comprehensive programmatic access to administrative functions for managing Webex organizations, users, licenses, and settings. These APIs enable automation of user provisioning, license assignment, compliance management, and audit event retrieval. Administrators can integrate with enterprise identity systems, enforce security policies, monitor usage, and streamline onboarding/offboarding processes. The APIs support granular control over organizational resources, making them ideal for large-scale deployments and custom admin tooling.
+tags:
+- name: Security Audit Events
+paths:
+  /admin/securityAudit/events:
+    get:
+      responses:
+        '200':
+          description: OK
+          headers:
+            link:
+              schema:
+                type: string
+            Content-Disposition:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SecurityAuditEventCollectionResponse'
+              example:
+                items:
+                - data:
+                    actorOrgName: Acme Inc.
+                    eventDescription: An Admin logged in
+                    actorName: Joe Smith
+                    actorEmail: joe@example.com
+                    actorUserAgent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36
+                    trackingId: ATLAS_6f23a878-bcd4-c204-a4db-e701b42b0e5c_0
+                    eventCategory: LOGINS
+                    actorIp: 128.107.241.191
+                    actionText: Joe Smith logged into organization Acme Inc.
+                  created: '2019-01-02T16:58:36.845Z'
+                  actorOrgId: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE
+                  id: MjQ0ODhiZTYtY2FiMS00ZGRkLTk0NWQtZDFlYjkzOGQ4NGUy
+                  actorId: Y2lzY29zcGFyazovL3VzL1BFT1BMRS82ZWVmOGE4ZS1lNzg3LTQzMWUtOWM3ZC1hOGVjZmU1MjM5Nzc
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: List Security Audit Events
+      operationId: List Security Audit Events
+      description: 'List Security Audit Events. This API currently returns user sign-in and sign-out data.
+
+        To call this API the `audit:events_read` scope must be selected for the Integration or Service App and authorized by a Full Admin.
+
+
+        Several query parameters are available to filter the response.
+
+
+        Long result sets will be split into multiple [pages](/docs/basics#pagination)
+
+
+        **NOTE**: A maximum of one year of audit events can be returned per request.'
+      tags:
+      - Security Audit Events
+      parameters:
+      - name: orgId
+        in: query
+        description: List events in this organization, by ID.
+        required: true
+        example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE
+        schema:
+          type: string
+      - name: startTime
+        in: query
+        description: List events which occurred after a specific date and time.
+        required: true
+        example: '2018-01-01T13:12:11.789Z'
+        schema:
+          type: string
+      - name: endTime
+        in: query
+        description: List events which occurred before a specific date and time.
+        required: true
+        example: '2018-01-01T14:12:11.789Z'
+        schema:
+          type: string
+      - name: actorId
+        in: query
+        description: List events performed by this person, by ID.
+        example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9iYzQ1YTdiMC00OTg1LTQzYzktYjI1OS00Y2MzOTgzYzY4NjQ
+        schema:
+          type: string
+      - name: max
+        in: query
+        description: Limit the maximum number of events in the response. The maximum value is `1000`.
+        example: '100'
+        schema:
+          type: number
+          default: 100
+      - name: eventCategories
+        in: query
+        description: List events, by event categories.
+        example: LOGINS
+        schema:
+          type: array
+          items:
+            type: string
+            example: LOGINS
+          description: List events, by event categories.
+components:
+  schemas:
+    SecurityAuditEventCollectionResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/SecurityAuditEvent'
+          description: array of monitoring Audit events
+    SecurityAuditEvent:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            actorOrgName:
+              type: string
+              example: Acme Inc.
+              description: The display name of the organization.
+            eventDescription:
+              type: string
+              example: An Admin logged in
+              description: A description for the event.
+            actorName:
+              type: string
+              example: Joe Smith
+              description: The name of the person who performed the action.
+            actorEmail:
+              type: string
+              example: joe@example.com
+              description: The email of the person who performed the action.
+            actorUserAgent:
+              type: string
+              example: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36
+              description: The browser user agent of the person who performed the action.
+            trackingId:
+              type: string
+              example: ATLAS_6f23a878-bcd4-c204-a4db-e701b42b0e5c_0
+              description: A tracking identifier for the event.
+            eventCategory:
+              type: string
+              example: LOGINS
+              description: The category of resource changed by the event.
+            actorIp:
+              type: string
+              example: 128.107.241.191
+              description: The IP address of the person who performed the action.
+            actionText:
+              type: string
+              example: Joe Smith logged into organization Acme Inc.
+              description: A more detailed description of the change made by the person.
+        created:
+          type: string
+          example: '2019-01-02T16:58:36.845Z'
+          description: The date and time the event took place.
+        actorOrgId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE
+          description: The `orgId` of the person who made the change.
+        id:
+          type: string
+          example: MjQ0ODhiZTYtY2FiMS00ZGRkLTk0NWQtZDFlYjkzOGQ4NGUy
+          description: A unique identifier for the event.
+        actorId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS82ZWVmOGE4ZS1lNzg3LTQzMWUtOWM3ZC1hOGVjZmU1MjM5Nzc
+          description: The `personId` of the person who made the change.
+  securitySchemes:
+    oauth2:
+      flows:
+        authorizationCode:
+          authorizationUrl: /
+          scopes: {}
+          tokenUrl: /
+      type: oauth2
+    bearer-key:
+      type: http
+      description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
+      scheme: bearer
+      bearerFormat: JWT
+    bearerAuth:
+      type: oauth2
+      description: OAuth 2.0 Bearer token authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: https://webexapis.com/v1/authorize
+          tokenUrl: https://webexapis.com/v1/access_token
+          scopes:
+            spark:applications_token: Create access tokens for Service Apps

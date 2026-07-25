@@ -1,0 +1,1096 @@
+openapi: 3.0.0
+info:
+  title: Webex Admin Address Book Participants API
+  version: 1.0.0
+  description: The Webex Admin APIs provide comprehensive programmatic access to administrative functions for managing Webex organizations, users, licenses, and settings. These APIs enable automation of user provisioning, license assignment, compliance management, and audit event retrieval. Administrators can integrate with enterprise identity systems, enforce security policies, monitor usage, and streamline onboarding/offboarding processes. The APIs support granular control over organizational resources, making them ideal for large-scale deployments and custom admin tooling.
+tags:
+- name: Participants
+paths:
+  /meetingParticipants:
+    get:
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Participant'
+              example:
+                items:
+                - id: 560d7b784f5143e3be2fc3064a5c4999_3c2e2338-e950-43bf-b588-573773ee43d1
+                  orgId: 1eb65fdf-9643-417f-9974-ad72cae0e10f
+                  host: true
+                  coHost: false
+                  spaceModerator: false
+                  email: joeDoe@cisco.com
+                  displayName: Joe Doe
+                  invitee: false
+                  muted: false
+                  meetingStartTime: '2020-10-02T17:31:00Z'
+                  video: 'on'
+                  state: lobby
+                  breakoutSessionId: 2e373567-465b-8530-a18a-7025e1871d40
+                  joinedTime: '2022-10-25T09:00:00Z'
+                  leftTime: '2022-10-25T09:30:00Z'
+                  siteUrl: example.webex.com
+                  meetingId: 3a688f62840346e8b87dde2b50703511_I_197977258267247872
+                  hostEmail: janeDoe@cisco.com
+                  devices:
+                  - correlationId: 8ccced6c-b812-4dff-a5dd-4c5c28f8d47d
+                    deviceType: webex_meeting_center_mac
+                    audioType: pstn
+                    joinedTime: '2019-04-23T17:31:00.000Z'
+                    leftTime: '2019-04-23T17:32:00.000Z'
+                    durationSecond: 60
+                    callType: callIn
+                    phoneNumber: '745273328'
+                  breakoutSessionsAttended:
+                  - id: c84ba778-2f46-4dc6-9459-398694732d70
+                    name: Breakout session 1
+                    joinedTime: '2022-10-25T09:05:00Z'
+                    leftTime: '2022-10-25T09:10:00Z'
+                  sourceId: cisco
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: List Meeting Participants
+      operationId: List Meeting Participants
+      description: 'List all participants in an in-progress meeting or an ended meeting. The `meetingId` parameter is required, which is the unique identifier for the meeting.
+
+
+        The authenticated user calling this API must either have an Administrator role with the `meeting:admin_participants_read` scope, or be the meeting host.
+
+
+        * If the `meetingId` value specified is for a meeting series, the operation returns participants'' details for the last instance in the meeting series. If the `meetingStartTimeFrom` value and the `meetingStartTimeTo` value are specified, the operation returns participants'' details for the last instance in the meeting series in the time range.
+
+
+        * If the `meetingId` value specified is for a scheduled meeting from a meeting series, the operation returns participants'' details for that scheduled meeting. If the `meetingStartTimeFrom` value and the `meetingStartTimeTo` value are specified, the operation returns participants'' details for the last instance in the scheduled meeting in the time range.
+
+
+        * If the `meetingId` value specified is for a meeting instance which is in progress or ended, the operation returns participants'' details for that meeting instance.
+
+
+        * If the meeting is in progress, the operation returns all the real-time participants. If the meeting is ended, the operation returns all the participants that have joined the meeting.
+
+
+        * If the `breakoutSessionId` parameter is specified, the operation returns participants who joined the specified breakout session. It only applies to end meeting instances.
+
+
+        * The `breakoutSessionsAttended` attribute is only returned for a participant of an ended meeting instance if the participant joined breakout sessions in the meeitng.
+
+
+        * The `meetingStartTimeFrom` and `meetingStartTimeTo` only apply when `meetingId` is a series ID or an occurrence ID.
+
+
+        * If the webinar is in progress when the attendee has ever been unmuted to speak in the webinar, this attendee becomes a panelist. The operation returns include the people who have been designated as panelists when the webinar is created and have joined the webinar, and the attendees who have joined the webinar and are unmuted to speak in the webinar temporarily. If the webinar is ended, the operation returns all the participants, including all panelists and all attendees who are not panelists.
+
+
+        #### Request Header
+
+
+        * `timezone`: Time zone for time stamps in the response body, defined in conformance with the [IANA time zone database](https://www.iana.org/time-zones).'
+      tags:
+      - Participants
+      parameters:
+      - name: max
+        in: query
+        description: Limit the maximum number of participants in the response, up to 100.
+        example: '100'
+        schema:
+          type: number
+          default: 10
+      - name: meetingId
+        in: query
+        description: The unique identifier for the meeting. Please note that currently meeting ID of a scheduled [personal room](https://help.webex.com/en-us/article/nul0wut/Webex-Personal-Rooms-in-Webex-Meetings) meeting is not supported for this API.
+        required: true
+        example: 560d7b784f5143e3be2fc3064a5c4999
+        schema:
+          type: string
+      - name: breakoutSessionId
+        in: query
+        description: The unique identifier for a breakout session which happened during an ended meeting instance. If the `breakoutSessionId` is specified, the operation returns participants who joined the breakout session. Only applies to ended meeting instances.
+        example: c84ba778-2f46-4dc6-9459-398694732d70
+        schema:
+          type: string
+      - name: meetingStartTimeFrom
+        in: query
+        description: Meetings start from the specified date and time(exclusive) in any [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant format. If `meetingStartTimeFrom` is not specified, it equals `meetingStartTimeTo` minus 1 month; if `meetingStartTimeTo` is also not specified, the default value for `meetingStartTimeFrom` is 1 month before current date and time.
+        example: '2022-10-02T17:31:00Z'
+        schema:
+          type: string
+      - name: meetingStartTimeTo
+        in: query
+        description: Meetings start before the specified date and time(exclusive) in any [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant format. If `meetingStartTimeTo` is not specified, it equals the result of a comparison, `meetingStartTimeFrom` plus one month and the current time, and the result is the earlier of the two; if `meetingStartTimeFrom` is also not specified, the default value for `meetingStartTimeTo` is current date and time minus 1 month.
+        example: '2022-10-30T09:30:00Z'
+        schema:
+          type: string
+      - name: hostEmail
+        in: query
+        description: Email address for the meeting host. This parameter is only used if the user or application calling the API has the admin-level scopes, the admin may specify the email of a user in a site they manage and the API will return meeting participants of the meetings that are hosted by that user.
+        example: john.andersen@example.com
+        schema:
+          type: string
+      - name: joinTimeFrom
+        in: query
+        description: The time participants join a meeting starts from the specified date and time (inclusive) in any [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant format. If `joinTimeFrom` is not specified, it equals `joinTimeTo` minus 7 days.
+        example: '2022-10-22T09:30:00'
+        schema:
+          type: string
+      - name: joinTimeTo
+        in: query
+        description: The time participants join a meeting before the specified date and time (exclusive) in any [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant format. If `joinTimeTo` is not specified, it equals `joinTimeFrom` plus 7 days. The interval between `joinTimeFrom` and `joinTimeTo` must be within 90 days.
+        example: '2022-10-25T09:30:00'
+        schema:
+          type: string
+      - name: timezone
+        in: header
+        description: e.g. UTC
+        required: false
+        schema:
+          type: string
+        example: UTC
+  /meetingParticipants/query:
+    post:
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Participant'
+              example:
+                items:
+                - id: 560d7b784f5143e3be2fc3064a5c4999_3c2e2338-e950-43bf-b588-573773ee43d1
+                  orgId: 1eb65fdf-9643-417f-9974-ad72cae0e10f
+                  host: true
+                  coHost: false
+                  spaceModerator: false
+                  email: joeDoe@cisco.com
+                  displayName: Joe Doe
+                  invitee: false
+                  muted: false
+                  meetingStartTime: '2020-10-02T17:31:00Z'
+                  video: 'on'
+                  state: lobby
+                  breakoutSessionId: 2e373567-465b-8530-a18a-7025e1871d40
+                  joinedTime: '2022-10-25T09:00:00Z'
+                  leftTime: '2022-10-25T09:30:00Z'
+                  siteUrl: example.webex.com
+                  meetingId: 3a688f62840346e8b87dde2b50703511_I_197977258267247872
+                  hostEmail: janeDoe@cisco.com
+                  devices:
+                  - correlationId: 8ccced6c-b812-4dff-a5dd-4c5c28f8d47d
+                    deviceType: webex_meeting_center_mac
+                    audioType: pstn
+                    joinedTime: '2019-04-23T17:31:00.000Z'
+                    leftTime: '2019-04-23T17:32:00.000Z'
+                    durationSecond: 60
+                    callType: callIn
+                    phoneNumber: '745273328'
+                  breakoutSessionsAttended:
+                  - id: c84ba778-2f46-4dc6-9459-398694732d70
+                    name: Breakout session 1
+                    joinedTime: '2022-10-25T09:05:00Z'
+                    leftTime: '2022-10-25T09:10:00Z'
+                  sourceId: cisco
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Query Meeting Participants with Email
+      operationId: Query Meeting Participants with Email
+      description: 'Query participants in a live meeting, or after the meeting, using participant''s email. The `meetingId` parameter is the unique identifier for the meeting and is required.
+
+
+        The authenticated user calling this API must either have an Administrator role with the `meeting:admin_participants_read` scope, or be the meeting host.
+
+
+        * If the `meetingId` value specified is for a meeting series, the operation returns participants'' details for the last instance in the meeting series. If the `meetingStartTimeFrom` value and the `meetingStartTimeTo` value are specified, the operation returns participants'' details for the last instance in the meeting series in the time range.
+
+
+        * If the `meetingId` value specified is for a scheduled meeting from a meeting series, the operation returns participants'' details for that scheduled meeting. If the `meetingStartTimeFrom` value and the `meetingStartTimeTo` value are specified, the operation returns participants'' details for the last instance in the scheduled meeting in the time range.
+
+
+        * If the `meetingId` value specified is for a meeting instance which is in progress or ended, the operation returns participants'' details for that meeting instance.
+
+
+        * The `meetingStartTimeFrom` and `meetingStartTimeTo` only apply when `meetingId` is a series ID or an occurrence ID.
+
+
+        #### Request Header
+
+
+        * `timezone`: Time zone for time stamps in the response body, defined in conformance with the [IANA time zone database](https://www.iana.org/time-zones).'
+      tags:
+      - Participants
+      parameters:
+      - name: meetingId
+        in: query
+        description: The unique identifier for the meeting.
+        required: true
+        example: 560d7b784f5143e3be2fc3064a5c4999
+        schema:
+          type: string
+      - name: meetingStartTimeFrom
+        in: query
+        description: Meetings start from the specified date and time(exclusive) in any [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant format. If `meetingStartTimeFrom` is not specified, it equals `meetingStartTimeTo` minus 1 month; if `meetingStartTimeTo` is also not specified, the default value for `meetingStartTimeFrom` is 1 month before current date and time.
+        example: '2022-10-02T17:31:00Z'
+        schema:
+          type: string
+      - name: meetingStartTimeTo
+        in: query
+        description: Meetings start before the specified date and time(exclusive) in any [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant format. If `meetingStartTimeTo` is not specified, it equals the result of a comparison, `meetingStartTimeFrom` plus one month and the current time, and the result is the earlier of the two; if `meetingStartTimeFrom` is also not specified, the default value for `meetingStartTimeTo` is current date and time minus 1 month.
+        example: '2022-10-25T09:30:00Z'
+        schema:
+          type: string
+      - name: hostEmail
+        in: query
+        description: Email address for the meeting host. This parameter is only used if the user or application calling the API has the admin-level scopes, the admin may specify the email of a user in a site they manage and the API will return meeting participants of the meetings that are hosted by that user.
+        example: john.andersen@example.com
+        schema:
+          type: string
+      - name: timezone
+        in: header
+        description: e.g. UTC
+        required: false
+        schema:
+          type: string
+        example: UTC
+      requestBody:
+        content:
+          application/json:
+            example:
+              emails:
+              - john.andersen@example.com
+              - brenda.song@example.com
+              - alex.yang@example.com
+              joinTimeFrom: '2022-10-22T09:30:00'
+              joinTimeTo: '2022-10-25T09:30:00'
+            schema:
+              type: object
+              properties:
+                emails:
+                  type: array
+                  items:
+                    type: string
+                    example: john.andersen@example.com
+                  description: List of participant email addresses.
+                joinTimeFrom:
+                  type: string
+                  example: '2022-10-22T09:30:00'
+                  description: The time participants join a meeting starts from the specified date and time (inclusive) in any [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant format. If `joinTimeFrom` is not specified, it equals `joinTimeTo` minus 7 days.
+                joinTimeTo:
+                  type: string
+                  example: '2022-10-30T09:30:00'
+                  description: The time participants join a meeting before the specified date and time (exclusive) in any [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant format. If `joinTimeTo` is not specified, it equals `joinTimeFrom` plus 7 days. The interval between `joinTimeFrom` and `joinTimeTo` must be within 90 days.
+  /meetingParticipants/{participantId}:
+    get:
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Participant'
+              example:
+                id: 560d7b784f5143e3be2fc3064a5c4999_3c2e2338-e950-43bf-b588-573773ee43d1
+                orgId: 1eb65fdf-9643-417f-9974-ad72cae0e10f
+                host: true
+                coHost: false
+                spaceModerator: false
+                email: joeDoe@cisco.com
+                displayName: Joe Doe
+                invitee: false
+                muted: false
+                meetingStartTime: '2020-10-02T17:31:00Z'
+                video: 'on'
+                state: lobby
+                breakoutSessionId: 2e373567-465b-8530-a18a-7025e1871d40
+                joinedTime: '2022-10-25T09:00:00Z'
+                leftTime: '2022-10-25T09:30:00Z'
+                siteUrl: example.webex.com
+                meetingId: 3a688f62840346e8b87dde2b50703511_I_197977258267247872
+                hostEmail: janeDoe@cisco.com
+                devices:
+                - correlationId: 8ccced6c-b812-4dff-a5dd-4c5c28f8d47d
+                  deviceType: webex_meeting_center_mac
+                  audioType: pstn
+                  joinedTime: '2019-04-23T17:31:00.000Z'
+                  leftTime: '2019-04-23T17:32:00.000Z'
+                  durationSecond: 60
+                  callType: callIn
+                  phoneNumber: '745273328'
+                breakoutSessionsAttended:
+                - id: c84ba778-2f46-4dc6-9459-398694732d70
+                  name: Breakout session 1
+                  joinedTime: '2022-10-25T09:05:00Z'
+                  leftTime: '2022-10-25T09:10:00Z'
+                sourceId: cisco
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Get Meeting Participant Details
+      operationId: Get Meeting Participant Details
+      description: 'Get a meeting participant details of a live or post meeting. The `participantId` is required to identify the meeting and the participant.
+
+
+        The authenticated user calling this API must either have an Administrator role with the `meeting:admin_participants_read` scope, or be the meeting host.'
+      tags:
+      - Participants
+      parameters:
+      - name: participantId
+        in: path
+        description: The unique identifier for the meeting and the participant.
+        required: true
+        example: 560d7b784f5143e3be2fc3064a5c4999_3c2e2338-e950-43bf-b588-573773ee43d1
+        schema:
+          type: string
+      - name: hostEmail
+        in: query
+        description: Email address for the meeting host. This parameter is only used if the user or application calling the API has the admin-level scopes, the admin may specify the email of a user in a site they manage and the API will return meeting participants of the meetings that are hosted by that user.
+        example: john.andersen@example.com
+        schema:
+          type: string
+    put:
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InProgressParticipant'
+              example:
+                id: 560d7b784f5143e3be2fc3064a5c4999_3c2e2338-e950-43bf-b588-573773ee43d1
+                orgId: 1eb65fdf-9643-417f-9974-ad72cae0e10f
+                host: true
+                coHost: false
+                spaceModerator: false
+                email: joeDoe@cisco.com
+                displayName: Joe Doe
+                invitee: false
+                video: 'on'
+                muted: false
+                state: lobby
+                siteUrl: example.webex.com
+                meetingId: 3a688f62840346e8b87dde2b50703511_I_197977258267247872
+                hostEmail: janeDoe@cisco.com
+                devices:
+                - correlationId: 8ccced6c-b812-4dff-a5dd-4c5c28f8d47d
+                  deviceType: mac
+                  audioType: pstn
+                  joinedTime: '2019-04-23T17:31:00.000Z'
+                  leftTime: '2019-04-23T17:32:00.000Z'
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Update a Participant
+      operationId: Update a Participant
+      description: 'Mute, un-mute, expel, or admit a participant in a live meeting. The `participantId` is required to identify the meeting and the participant.
+
+
+        Notes:
+
+
+        * The owner of the OAuth token calling this API needs to be the meeting host or co-host.
+
+
+        * The `expel` attribute always takes precedence over `admit` and `muted`. The request can have all `expel`, `admit` and `muted` or any of them.
+
+
+        <div><Callout type="warning">There is an inconsistent behavior in Webex Meetings App when all active meeting participants join using Webex Meetings App and the host attempts to change meeting participant status using this API. Requests to mute, un-mute, admit, or expel a meeting participant return a successful response and update the state in the API, but the changes will not be applied to the Webex Meetings App participants. The inconsistent behavior in Webex Meetings App will be corrected in a future release.
+
+        **Workaround**: [Enable closed captions](https://help.webex.com/en-us/article/WBX47352/How-Do-I-Enable-Closed-Captions?) or enable the [Webex Assistant](https://help.webex.com/en-us/article/n91uf2x/Turn-on-or-turn-off-Webex-Assistant-during-a-meeting-or-webinar).</Callout></div>'
+      tags:
+      - Participants
+      parameters:
+      - name: participantId
+        in: path
+        description: The unique identifier for the meeting and the participant.
+        required: true
+        example: 560d7b784f5143e3be2fc3064a5c4999_3c2e2338-e950-43bf-b588-573773ee43d1
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            example:
+              muted: false
+            schema:
+              type: object
+              properties:
+                muted:
+                  type: boolean
+                  description: If `true`, participant is muted.
+                admit:
+                  type: boolean
+                  description: If `true` the participant admit a participant in the lobby to the meeting. Has no effect if the participant is not in the lobby or when the value is set to `false`.
+                expel:
+                  type: boolean
+                  description: If `true` the participant is expelled from the meeting.
+  /meetingParticipants/admit:
+    post:
+      responses:
+        '204':
+          description: No Content
+          headers: {}
+          content: {}
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Admit Participants
+      operationId: Admit Participants
+      description: 'Admit multiple participants to a meeting in progress.
+
+
+        This API limits the maximum size of `items` in the request body to 100.
+
+
+        Each `participantId` of `items` in the request body should have the same prefix of `meetingId`.'
+      tags:
+      - Participants
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            example:
+              items:
+              - participantId: 560d7b784f5143e3be2fc3064a5c4999_I_204252993233618782_23e16d67-17f3-3ef1-b830-f33d17c0232e
+              - participantId: 560d7b784f5143e3be2fc3064a5c4999_I_204252993233618782_23e16d67-17f3-3ef1-b830-f33d17c0233d
+            schema:
+              $ref: '#/components/schemas/AdmitParticipantsObject'
+  /meetingParticipants/callout:
+    post:
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CalloutResponse'
+              example:
+                participantId: d8c3347d7ec04242ba9b856184b334ac_I_630641605678082408_57514861-50f7-3f5b-864f-ce0e308bf653
+                invitationCorrelationId: 871ab255-64e6-4cd2-a5af-d33953898356
+                meetingNumber: '79100342367'
+                meetingId: d8c3347d7ec04242ba9b856184b334ac
+                address: SIP:9053523155@examplezone.cisco.com
+                addressType: sipAddress
+                displayName: Brenda DX80
+                state: pending
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Call Out a SIP Participant
+      operationId: Call Out a SIP Participant
+      description: 'Initiate a call to a SIP participant to join a meeting.
+
+
+        If a user invoking the API is not a [Service App](/docs/service-apps), the user must join the meeting before invoking the API. If a user is a [Service App](/docs/service-apps), the service app can invoke the API without joining the meeting. In both cases, the normal user or the service app that invokes the API must be the meeting host or cohost. If the meeting is created by the service app on behalf of the real host, the service app cannot use the admin on behalf function to invoke this API. Instead the host or cohost must execute the action.
+
+
+        The authenticated user calling this API must have the `meeting:participants_write` scope.
+
+
+        The ringing on the invited SIP device stops in 30 seconds if there is no response.'
+      tags:
+      - Participants
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            example:
+              meetingId: d8c3347d7ec04242ba9b856184b334ac
+              address: SIP:9053523155@examplezone.cisco.com
+              addressType: sipAddress
+              invitationCorrelationId: 871ab255-64e6-4cd2-a5af-d33953898356
+              displayName: Brenda DX80
+            schema:
+              $ref: '#/components/schemas/CalloutRequest'
+  /meetingParticipants/cancelCallout:
+    post:
+      responses:
+        '204':
+          description: No Content
+          headers: {}
+          content: {}
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Cancel Calling Out a SIP Participant
+      operationId: Cancel Calling Out a SIP Participant
+      description: 'Cancel the call to a SIP participant before the ringing on the invited SIP device stops. The ringing on the invited SIP device stops in 30 seconds if there is no response.
+
+
+        If a user invoking the API is not a [Service App](/docs/service-apps), the user must join the meeting before invoking the API. If a user is a [Service App](/docs/service-apps), the service app can invoke the API without joining the meeting. In both cases, the normal user or the service app that invokes the API must be the meeting host or cohost. If the meeting is created by the service app on behalf of the real host, the service app cannot use the admin on behalf function to invoke this API. Instead the host or cohost must execute the action.
+
+
+        The authenticated user calling this API must have the `meeting:participants_write` scope.'
+      tags:
+      - Participants
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            example:
+              participantId: d8c3347d7ec04242ba9b856184b334ac_I_630641605678082408_57514861-50f7-3f5b-864f-ce0e308bf653
+            schema:
+              $ref: '#/components/schemas/CancelCalloutRequest'
+components:
+  schemas:
+    InProgressParticipant:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 560d7b784f5143e3be2fc3064a5c4999_3c2e2338-e950-43bf-b588-573773ee43d1
+          description: The participant ID that identifies the meeting and the participant.
+        orgId:
+          type: string
+          example: 1eb65fdf-9643-417f-9974-ad72cae0e10f
+          description: The ID that identifies the organization.
+        host:
+          type: boolean
+          example: true
+          description: Whether or not the participant is the host of the meeting.
+        coHost:
+          type: boolean
+          description: Whether or not the participant has host privilege in the meeting.
+        spaceModerator:
+          type: boolean
+          description: Whether or not the participant is the team space moderator. This field returns only if the meeting is associated with a Webex space.
+        email:
+          type: string
+          example: joeDoe@cisco.com
+          description: The email address of the participant.
+        displayName:
+          type: string
+          example: Joe Doe
+          description: The name of the participant.
+        invitee:
+          type: boolean
+          description: Whether or not the participant is invited to the meeting.
+        video:
+          type: string
+          enum:
+          - 'on'
+          - 'off'
+          description: "The status of the participant's video.\n * `on` - The video is turned on.\n * `off` - The video is turned off.\n"
+        muted:
+          type: boolean
+          description: Whether or not the participant's audio is muted.
+        state:
+          type: string
+          enum:
+          - lobby
+          - joined
+          description: "The status of the participant in the meeting.\n * `lobby` - The participant is waiting in the meeting lobby.\n * `joined` - The participant has joined the meeting.\n"
+        siteUrl:
+          type: string
+          example: example.webex.com
+          description: The site URL.
+        meetingId:
+          type: string
+          example: 3a688f62840346e8b87dde2b50703511_I_197977258267247872
+          description: A unique identifier for the meeting which the participant belongs to.
+        hostEmail:
+          type: string
+          example: janeDoe@cisco.com
+          description: The email address of the host.
+        devices:
+          type: array
+          items:
+            $ref: '#/components/schemas/InProgressDevice'
+    InProgressDevice:
+      type: object
+      properties:
+        correlationId:
+          type: string
+          example: 8ccced6c-b812-4dff-a5dd-4c5c28f8d47d
+          description: An internal ID that is associated with each join.
+        deviceType:
+          type: string
+          example: mac
+          description: The type of device.
+        audioType:
+          type: string
+          enum:
+          - pstn
+          - voip
+          - inactive
+          description: "The audio type that the participant is using.\n * `pstn` - `PSTN`\n * `voip` - `VoIP`\n * `inactive` - The participant is not connected to audio.\n"
+        joinedTime:
+          type: string
+          example: '2019-04-23T17:31:00.000Z'
+          description: The time the device joined the meeting. If the field is non-existent or shows `1970-01-01T00:00:00.000Z` the meeting may be still ongoing and the `joinedTime` will be filled in after the meeting ended. If you need real-time joined events, please refer to the webhooks guide.
+        leftTime:
+          type: string
+          example: '2019-04-23T17:32:00.000Z'
+          description: The time the device left the meeting, `leftTime` is the exact moment when a specific device left the meeting. If the field is non-existent or shows `1970-01-01T00:00:00.000Z` the meeting may be still ongoing and the `leftTime` will be filled in after the meeting ended. If you need real-time left events, please refer to the webhooks guide.
+    AdmitParticipantsObject:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdmitParticipant'
+    CancelCalloutRequest:
+      type: object
+      required:
+      - participantId
+      properties:
+        participantId:
+          type: string
+          example: d8c3347d7ec04242ba9b856184b334ac_I_630641605678082408_57514861-50f7-3f5b-864f-ce0e308bf653
+          description: ID of the SIP participant on whom the callout is to be cancelled. It can be retrieved from the response of the "Call Out a SIP Participant" API.
+    Participant:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 560d7b784f5143e3be2fc3064a5c4999_3c2e2338-e950-43bf-b588-573773ee43d1
+          description: The ID that identifies the meeting and the participant.
+        orgId:
+          type: string
+          example: 1eb65fdf-9643-417f-9974-ad72cae0e10f
+          description: The ID that identifies the organization. It only applies to participants of ongoing meetings.
+        host:
+          type: boolean
+          example: true
+          description: Whether or not the participant is the host of the meeting.
+        coHost:
+          type: boolean
+          description: Whether or not the participant has host privilege in the meeting.
+        spaceModerator:
+          type: boolean
+          description: Whether or not the participant is the team space moderator. This field returns only if the meeting is associated with a Webex space.
+        email:
+          type: string
+          example: joeDoe@cisco.com
+          description: The email address of the participant.
+        displayName:
+          type: string
+          example: Joe Doe
+          description: The name of the participant.
+        invitee:
+          type: boolean
+          description: Whether or not the participant is invited to the meeting.
+        muted:
+          type: boolean
+          description: Whether or not the participant's audio is muted.
+        meetingStartTime:
+          type: string
+          example: '2020-10-02T17:31:00Z'
+          description: The time the meeting started.
+        video:
+          type: string
+          enum:
+          - 'on'
+          - 'off'
+          description: "The status of the participant's video.\n * `on` - The video is turned on.\n * `off` - The video is turned off.\n"
+        state:
+          type: string
+          enum:
+          - lobby
+          - end
+          - joined
+          - breakoutSession
+          description: "The status of the participant in the meeting. The value of `state` is `breakoutSession` which is only returned when the meeting is in progress and the breakout session is enabled.\n * `lobby` - The participant is waiting in the meeting lobby.\n * `end` - The participant has left the meeting.\n * `joined` - The participant has joined the meeting and is in the main session.\n * `breakoutSession` - The participant has joined a breakout session.\n"
+        breakoutSessionId:
+          type: string
+          example: 2e373567-465b-8530-a18a-7025e1871d40
+          description: The ID of the breakout session including the participant.
+        joinedTime:
+          type: string
+          example: '2022-10-25T09:00:00Z'
+          description: The time the participant joined the meeting. If the field is non-existent or shows `1970-01-01T00:00:00.000Z` the meeting may be still ongoing and the `joinedTime` will be filled in after the meeting ended. If you need real-time join events, please refer to the webhooks guide.
+        leftTime:
+          type: string
+          example: '2022-10-25T09:30:00Z'
+          description: The time the participant left the meeting. If the field is non-existent or shows `1970-01-01T00:00:00.000Z` the meeting may be still ongoing and the `leftTime` will be filled in after the meeting ended. If you need real-time left events, please refer to the webhooks guide.
+        siteUrl:
+          type: string
+          example: example.webex.com
+          description: The site URL.
+        meetingId:
+          type: string
+          example: 3a688f62840346e8b87dde2b50703511_I_197977258267247872
+          description: A unique identifier for the meeting which the participant belongs to.
+        hostEmail:
+          type: string
+          example: janeDoe@cisco.com
+          description: The email address of the host.
+        devices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Device'
+        breakoutSessionsAttended:
+          type: array
+          items:
+            $ref: '#/components/schemas/BreakoutSessionAttended'
+          description: The breakout sessions attended by the participant. Only applies to ended meeting instances.
+        sourceId:
+          type: string
+          example: cisco
+          description: The source ID of the participant. The `sourceId` is from the [Create Invitation Sources](/docs/api/v1/meetings/create-invitation-sources) API.
+    BreakoutSessionAttended:
+      type: object
+      properties:
+        id:
+          type: string
+          example: c84ba778-2f46-4dc6-9459-398694732d70
+          description: Unique identifier for the breakout session the participant attended.
+        name:
+          type: string
+          example: Breakout session 1
+          description: Name of the breakout session the participant attended.
+        joinedTime:
+          type: string
+          example: '2022-10-25T09:05:00Z'
+          description: The time the participant joined the breakout session.
+        leftTime:
+          type: string
+          example: '2022-10-25T09:10:00Z'
+          description: The time the participant left the breakout session.
+    AdmitParticipant:
+      type: object
+      properties:
+        participantId:
+          type: string
+          example: 560d7b784f5143e3be2fc3064a5c4999_I_204252993233618782_23e16d67-17f3-3ef1-b830-f33d17c0232e
+          description: The ID that identifies the meeting participant.
+        breakoutSessionId:
+          type: string
+          example: 23e16d67-17f3-3ef1-b830-f33d17c0232e
+          description: The breakout session ID that identifies which breakout session to admit the participant into. Admit into the main session if the value is empty.
+    Device:
+      type: object
+      properties:
+        correlationId:
+          type: string
+          example: 8ccced6c-b812-4dff-a5dd-4c5c28f8d47d
+          description: An internal ID that is associated with each join.
+        deviceType:
+          type: string
+          example: webex_meeting_center_mac
+          description: The type of the device.
+        audioType:
+          type: string
+          enum:
+          - pstn
+          - voip
+          - inactive
+          description: "The audio type that the participant is using.\n * `pstn` - `PSTN`\n * `voip` - `VoIP`\n * `inactive` - The participant is not connected to audio.\n"
+        joinedTime:
+          type: string
+          example: '2019-04-23T17:31:00.000Z'
+          description: The time the device joined the meeting. If the field is non-existent or shows `1970-01-    01T00:00:00.000Z` the meeting may be still ongoing and the `joinedTime` will be filled in after the meeting ended. If you need real-time joined     events, please refer to the webhooks guide.
+        leftTime:
+          type: string
+          example: '2019-04-23T17:32:00.000Z'
+          description: The time the device left the meeting, `leftTime` is the exact moment when a specific devi    ce left the meeting. If the field is non-existent or shows `1970-01-01T00:00:00.000Z` the meeting may be still ongoing and the `leftTime` will     be filled in after the meeting ended. If you need real-time left events, please refer to the webhooks guide.
+        durationSecond:
+          type: number
+          example: 60
+          description: The duration in seconds the device stayed in the meeting.
+        callType:
+          type: string
+          enum:
+          - callIn
+          - callBack
+          description: "The PSTN call type in which the device joined the meeting.\n * `callIn` - Connect audio by dialing a toll or toll-free phone number provided by the meeting.\n * `callBack` - Connect audio by dialing out a phone number from the meeting.\n"
+        phoneNumber:
+          type: string
+          example: '745273328'
+          description: 'The PSTN phone number from which the device joined the meeting. Only [compliance officer](/docs/compliance#compliance) can retrieve the `phoneNumber`. The meeting host and admin users cannot retrieve it. NOTE: The `phoneNumber` will be returned after the meeting ends; it is not returned while the meeting is in progress.'
+    CalloutRequest:
+      type: object
+      required:
+      - address
+      - displayName
+      properties:
+        meetingId:
+          type: string
+          example: d8c3347d7ec04242ba9b856184b334ac
+          description: Unique identifier of the meeting to which the SIP participant is to be called out. Either `meetingId` or `meetingNumber` must be specified.
+        meetingNumber:
+          type: string
+          example: '79100342367'
+          description: Number of the meeting to which the SIP participant is to be called out. Either `meetingId` or `meetingNumber` must be specified.
+        address:
+          type: string
+          example: SIP:9053523155@examplezone.cisco.com
+          description: SIP address of the invited SIP participant.
+        addressType:
+          type: string
+          enum:
+          - sipAddress
+          description: "Type of the `address`. The default value is `sipAddress`.\n * `sipAddress` - SIP address.\n"
+        invitationCorrelationId:
+          type: string
+          example: 871ab255-64e6-4cd2-a5af-d33953898356
+          description: An internal ID that is associated with the call-out invitation. Only UUIDs with hyphens are supported. The letters in the UUID must be in lowercase. A random UUID will be generated automatically if not specified.
+        displayName:
+          type: string
+          example: Brenda DX80
+          description: The display name of the invited SIP participant. The maximum length is 32 characters.
+    CalloutResponse:
+      type: object
+      properties:
+        participantId:
+          type: string
+          example: d8c3347d7ec04242ba9b856184b334ac_I_630641605678082408_57514861-50f7-3f5b-864f-ce0e308bf653
+          description: Participant ID. It can be used in the "Cancel Call Out a SIP Participant" API.
+        invitationCorrelationId:
+          type: string
+          example: 871ab255-64e6-4cd2-a5af-d33953898356
+          description: An internal ID that is associated with the call-out invitation.
+        meetingNumber:
+          type: string
+          example: '79100342367'
+          description: Number of the meeting to which the SIP participant is to be called out.
+        meetingId:
+          type: string
+          example: d8c3347d7ec04242ba9b856184b334ac
+          description: Unique identifier of the meeting to which the SIP participant is to be called out.
+        address:
+          type: string
+          example: SIP:9053523155@examplezone.cisco.com
+          description: SIP address of the invited SIP participant.
+        addressType:
+          type: string
+          enum:
+          - sipAddress
+          description: "Type of the `address`.\n * `sipAddress` - SIP address.\n"
+        displayName:
+          type: string
+          example: Brenda DX80
+          description: The display name of the invited SIP participant.
+        state:
+          type: string
+          enum:
+          - pending
+          description: "The state of the invited SIP participant.\n * `pending` - The invited SIP participant is waiting for approval. Participants in the `pending` state will not be listed by the \"List Meeting Participants\" API.\n"
+  securitySchemes:
+    oauth2:
+      flows:
+        authorizationCode:
+          authorizationUrl: /
+          scopes: {}
+          tokenUrl: /
+      type: oauth2
+    bearer-key:
+      type: http
+      description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
+      scheme: bearer
+      bearerFormat: JWT
+    bearerAuth:
+      type: oauth2
+      description: OAuth 2.0 Bearer token authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: https://webexapis.com/v1/authorize
+          tokenUrl: https://webexapis.com/v1/access_token
+          scopes:
+            spark:applications_token: Create access tokens for Service Apps

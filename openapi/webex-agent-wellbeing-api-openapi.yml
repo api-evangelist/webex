@@ -1,0 +1,818 @@
+openapi: 3.0.0
+info:
+  title: Webex Admin Address Book Agent Wellbeing API
+  version: 1.0.0
+  description: The Webex Admin APIs provide comprehensive programmatic access to administrative functions for managing Webex organizations, users, licenses, and settings. These APIs enable automation of user provisioning, license assignment, compliance management, and audit event retrieval. Administrators can integrate with enterprise identity systems, enforce security policies, monitor usage, and streamline onboarding/offboarding processes. The APIs support granular control over organizational resources, making them ideal for large-scale deployments and custom admin tooling.
+tags:
+- name: Agent Wellbeing
+paths:
+  /v1/agentburnout/subscribe:
+    post:
+      parameters:
+      - name: X-ORGANIZATION-ID
+        in: header
+        description: Organization ID to be used for this operation. The specified security token must have permission to interact with the organization.
+        required: true
+        schema:
+          type: string
+        example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+      tags:
+      - Agent Wellbeing
+      summary: Subscribe for realtime burnout events
+      description: This endpoint provides real-time burnout events that are generated for agents belonging to the organization. It gives us a WebSocket URL to which we can connect to receive the real-time burnout events.
+      operationId: subscribe_agentburnout
+      requestBody:
+        description: Subscribes to the realtime burnout events.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriptionRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionResponse'
+        '400':
+          description: Validation Error
+        '401':
+          description: Unauthorized Operation
+        '403':
+          description: Forbidden Operation
+        '429':
+          description: Too many requests have been sent in a given amount of time and the request has been rate limited.
+        '500':
+          description: An Unexpected Error Occurred
+  /v1/agentburnout/action:
+    post:
+      tags:
+      - Agent Wellbeing
+      parameters:
+      - name: X-ORGANIZATION-ID
+        in: header
+        description: Organization ID to be used for this operation. The specified security token must have permission to interact with the organization.
+        required: true
+        schema:
+          type: string
+        example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+      summary: Record the realtime burnout events
+      description: The endpoint need to be invoked by Partners and Third-Party that will subscribe to the Agent Burnout system, in order to take certain action based on the agent burnout index calculated.
+      operationId: post_action
+      requestBody:
+        description: Record the action taken by integrating partners.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActionRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActionResponse'
+        '400':
+          description: Validation Error
+        '401':
+          description: Unauthorized Operation
+        '403':
+          description: Forbidden Operation
+        '429':
+          description: Too many requests have been sent in a given amount of time and the request has been rate limited.
+        '500':
+          description: An Unexpected Error Occurred
+  /organization/{orgid}/agent-burnout/{id}:
+    get:
+      tags:
+      - Agent Wellbeing
+      summary: Get specific Agent Burnout resource by ID
+      description: Retrieve an existing Agent Burnout resource by ID in a given organization. Deprecated. Use GET /ai-feature/agent-burnout/{id} instead.
+      operationId: getConfigAgentBurnout
+      parameters:
+      - name: orgid
+        in: path
+        description: Organization ID to be used for this operation. The specified security token must have permission to interact with the organization.
+        required: true
+        schema:
+          type: string
+        example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+      - name: id
+        in: path
+        description: Resource ID of the Agent Burnout resource.
+        required: true
+        schema:
+          type: string
+        example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba2
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgentBurnoutDTO'
+        '401':
+          description: Unauthorized Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '401'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '401'
+                    entity: cc_user
+                    references: []
+        '403':
+          description: Operation is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '403'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '403'
+                    entity: cc_user
+                    references: []
+        '404':
+          description: Resource not found or URI is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '404'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '404'
+                    entity: cc_user
+                    references: []
+        '429':
+          description: Too many requests have been sent in a given amount of time and the request has been rate limited
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '429'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '429'
+                    entity: cc_user
+                    references: []
+        '500':
+          description: An Unexpected Error Occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '500'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '500'
+                    entity: cc_user
+                    references: []
+      deprecated: true
+    put:
+      tags:
+      - Agent Wellbeing
+      summary: Update specific Agent Burnout resource by ID
+      description: Update an existing Agent Burnout resource by ID in a given organization. Deprecated. Use PUT /ai-feature/agent-burnout/{id} instead.
+      operationId: updateConfigAgentBurnout
+      parameters:
+      - name: orgid
+        in: path
+        description: Organization ID to be used for this operation. The specified security token must have permission to interact with the organization.
+        required: true
+        schema:
+          type: string
+        example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+      - name: id
+        in: path
+        description: Resource ID of the Agent Burnout resource.
+        required: true
+        schema:
+          type: string
+        example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba2
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AgentBurnoutDTO'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgentBurnoutDTO'
+        '400':
+          description: The request was invalid and cannot be served. An accompanying error message will explain further
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '400'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '400'
+                    entity: cc_user
+                    references: []
+        '401':
+          description: Unauthorized Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '401'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '401'
+                    entity: cc_user
+                    references: []
+        '403':
+          description: Operation is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '403'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '403'
+                    entity: cc_user
+                    references: []
+        '404':
+          description: Resource not found or URI is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '404'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '404'
+                    entity: cc_user
+                    references: []
+        '412':
+          description: Resource referred in other entity(s). Please get all the reference entities info by invoking Get incoming-references api.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '412'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '412'
+                    entity: cc_user
+                    references: []
+        '429':
+          description: Too many requests have been sent in a given amount of time and the request has been rate limited
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '429'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '429'
+                    entity: cc_user
+                    references: []
+        '500':
+          description: An Unexpected Error Occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '500'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '500'
+                    entity: cc_user
+                    references: []
+      deprecated: true
+  /organization/{orgid}/v2/agent-burnout:
+    get:
+      tags:
+      - Agent Wellbeing
+      summary: List Agent Burnout resource(s)
+      description: Retrieve a list of Agent Burnout resource(s) in a given organization.Only one entry per organization can exist for Agent Burnout resource. Deprecated. Use GET /v2/ai-feature/agent-burnout instead.
+      operationId: getAllConfigWithMetaDataAgentBurnout
+      parameters:
+      - name: orgid
+        in: path
+        description: Organization ID to be used for this operation. The specified security token must have permission to interact with the organization.
+        required: true
+        schema:
+          type: string
+        example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+      - name: filter
+        in: query
+        description: "Specify a filter based on which the results will be fetched. All the fields are supported except: organizationId, createdTime, lastUpdatedTime \n\nThe examples below show some search queries\n- id==\"57efb0e6-5af0-4245-a67d-d3c5045cdb6e\"\n- id!=\"57efb0e6-5af0-4245-a67d-d3c5045cdb6e\"\n- id=in=(\"57efb0e6-5af0-4245-a67d-d3c5045cdb6e\",\"a421e0b2-732e-46f3-a057-39160a53afb9\")\n- id=out=(\"57efb0e6-5af0-4245-a67d-d3c5045cdb6e\",\"a421e0b2-732e-46f3-a057-39160a53afb9\")\nThis parameter uses the RSQL query syntax, a URI-friendly format for expressing criteria for filtering REST entities. For more information about RSQL in general, see  <a href=\"https://www.here.com/docs/bundle/data-client-library-developer-guide-java-scala/page/client/rsql.html\">this reference</a>. For a list of supported operators, see <a href=\"https://github.com/perplexhub/rsql-jpa-specification#rsql-syntax-reference\">this syntax guide</a>.\n\nNote: values to be used in the filter syntax should not contain spaces. If they do, please enclose them in quotes to apply the filter.\n"
+        required: false
+        schema:
+          type: string
+        example: id=="2f9eecc5-0472-4549-9a83-2afdae0d4ba1"
+      - name: attributes
+        in: query
+        description: Specify the attributes to be returned. By default, all attributes are returned along with the specified columns. All attributes are supported.
+        required: false
+        schema:
+          type: string
+          format: string
+        example: id
+      - name: page
+        in: query
+        description: Defines the number of displayed page. The page number starts from 0.
+        schema:
+          type: integer
+          default: 0
+          example: 0
+        example: 0
+      - name: pageSize
+        in: query
+        description: Defines the number of items to be displayed on a page. If the number specified is more than allowed max page size, the API will automatically adjust the page size to the max page size.
+        schema:
+          type: integer
+          default: 100
+          example: 100
+        example: 100
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/MetaDataWithPagingInfo'
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AgentBurnoutDTO'
+        '401':
+          description: Unauthorized Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '401'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '401'
+                    entity: cc_user
+                    references: []
+        '403':
+          description: Operation is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '403'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '403'
+                    entity: cc_user
+                    references: []
+        '404':
+          description: Resource not found or URI is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '404'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '404'
+                    entity: cc_user
+                    references: []
+        '429':
+          description: Too many requests have been sent in a given amount of time and the request has been rate limited
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '429'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '429'
+                    entity: cc_user
+                    references: []
+        '500':
+          description: An Unexpected Error Occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '500'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '500'
+                    entity: cc_user
+                    references: []
+      deprecated: true
+components:
+  schemas:
+    ApiErrorResponse:
+      description: Response body for an API error.
+      type: object
+      properties:
+        trackingId:
+          type: string
+          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
+          example: c1a4fcef-aee2-4dea-8977-29f594760552
+        error:
+          description: An object containing details about the error.
+          $ref: '#/components/schemas/ErrorDetails'
+    ActionRequest:
+      type: object
+      properties:
+        interactionId:
+          type: string
+          description: A unique identifier for each interaction or contact within the contact center.
+          example: fb53f6d1-5535-4ac8-b081-53834e17d6f5
+        agentId:
+          type: string
+          description: The identifier for the agent whose burnout index has been calculated.
+          example: fb53f6d1-5535-4ac8-b081-53834e17d6f5
+        clientId:
+          type: string
+          description: The name of the client initiating the action related to the agent burnout index. The name is limited to a maximum of 20 characters.
+          example: Acme
+        actionType:
+          type: string
+          description: Specifies the type of action initiated based on the agent burnout index
+          example: Break Played, Supervisor Notified, etc.
+        actionDateType:
+          type: object
+          description: The Epoch timestamp indicating the precise time at which the action was executed.
+          example: 1617536244000
+    SubscriptionResponse:
+      required:
+      - createdBy
+      - createdTime
+      - destinationUrl
+      - eventTypes
+      - id
+      - lastUpdatedBy
+      - lastUpdatedTime
+      - name
+      - status
+      type: object
+      properties:
+        id:
+          type: string
+          description: Subscription ID.
+          format: uuid
+          example: 41e92806-331d-4802-bc12-674f92d4a6f7
+        name:
+          maxLength: 64
+          minLength: 4
+          type: string
+          description: Client-defined string naming the subscription.
+          example: My Integration's Subscription
+        description:
+          maxLength: 1024
+          type: string
+          description: Client-defined string describing the subscription.
+          example: The subscription my integration uses to synchronize with WxCC
+        eventTypes:
+          maxItems: 32
+          minItems: 1
+          type: array
+          description: Types of events to which the subscription will listen.
+          example:
+          - agent:login
+          - agent:logout
+          items:
+            type: string
+        destinationUrl:
+          type: string
+          description: URL to which webhooks will be posted. Must be HTTPS on an IANA-listed top-level domain name (e.g. .com) with a path (at least /). No query parameters, userinfo, non-443 ports, or fragments allowed. We do not treat this field as sensitive data, so do not use secrets in this URL such as tokens or API keys.
+          format: uri
+          example: https://www.cisco.com/
+        createdTime:
+          type: integer
+          description: Time when subscription was created (epoch milliseconds).
+          format: int64
+          example: 1591702170000
+        createdBy:
+          type: string
+          description: Email address of the user who created the subscription.
+          format: email
+          example: example@example.com
+        status:
+          type: string
+          description: Status of the subscription. Can be "active" or "inactive". The system may change the status to "inactive" in error scenarios.
+          example: active
+          enum:
+          - active
+          - inactive
+        lastUpdatedTime:
+          type: integer
+          description: Time when the subscription was last updated (epoch milliseconds).
+          format: int64
+          example: 1591702170000
+        lastUpdatedBy:
+          type: string
+          description: Email address of the user who updated the subscription most recently.
+          format: email
+          example: example@example.com
+    ErrorDetails:
+      description: Details of an error.
+      type: object
+      properties:
+        key:
+          type: string
+          description: An application defined error code.
+          example: '401'
+        message:
+          type: array
+          description: A message providing details about the error.
+          items:
+            $ref: '#/components/schemas/OperationError'
+    ActionResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          description: The data object contains the details of the action taken.
+          properties:
+            id:
+              type: string
+              description: A unique identifier for the action taken.
+              example: fb53f6d1-5535-4ac8-b081-53834e17d6f5
+            interactionId:
+              type: string
+              description: A unique identifier for each interaction or contact within the contact center.
+              example: fb53f6d1-5535-4ac8-b081-53834e17d6f5
+            orgId:
+              type: string
+              description: The organization ID to which the agent belongs.
+              example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+            agentId:
+              type: string
+              description: The identifier for the agent whose burnout index has been calculated.
+              example: fb53f6d1-5535-4ac8-b081-53834e17d6f5
+            clientId:
+              type: string
+              description: The name of the client initiating the action related to the agent burnout index. The name is limited to a maximum of 20 characters.
+              example: Acme
+            actionType:
+              type: string
+              description: Specifies the type of action initiated based on the agent burnout index
+              example: Break Played, Supervisor Notified, etc.
+            actionDateTime:
+              type: integer
+              description: The Epoch timestamp indicating the precise time at which the action was executed.
+              format: int64
+              example: 1617536244000
+            createdDateTime:
+              type: integer
+              description: The Epoch timestamp indicating the time when the action was created.
+              format: int64
+              example: 1617536244000
+        trackingId:
+          type: string
+          description: The unique tracking ID for this request.
+          example: fb53f6d1-5535-4ac8-b081-53834e17d6f5
+    AgentBurnoutDTO:
+      type: object
+      properties:
+        organizationId:
+          type: string
+          format: uuid
+          description: ID of the contact center organization. This field is required for all bulk save operations.
+          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+          maxLength: 36
+          minLength: 32
+          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
+        id:
+          type: string
+          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
+          example: 93912f11-6017-404b-bf14-5331890b1797
+        version:
+          type: integer
+          format: int32
+          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
+          example: 1
+        enabled:
+          type: boolean
+          description: Used to toggle the state of the agent burnout  configuration from active to inactive and vice-versa. Mandatory for create/update operation.
+          example: true
+        agentInclusionType:
+          type: string
+          description: Provides information whether all or specific agents are selected for Agent Wellbeing. If the value is missing in response, the consumer should assume a value as ALL.
+          enum:
+          - ALL
+          - SPECIFIC
+          example: ALL
+        wellnessBreakReminders:
+          type: string
+          description: Provides information whether Wellness break reminders are enabled or disabled. If the value is missing in response, the consumer should assume a value as DISABLED.
+          enum:
+          - DISABLED
+          - ENABLED
+          example: DISABLED
+        createdTime:
+          type: integer
+          format: int64
+          description: This is the created time of the entity.
+          example: 123456789
+        lastUpdatedTime:
+          type: integer
+          format: int64
+          description: This is the updated time of the entity.
+          example: 123456789
+      required:
+      - agentInclusionType
+      - enabled
+    OperationError:
+      description: An error message providing details about the operation failure.
+      type: object
+      properties:
+        description:
+          type: string
+          description: A human readable explanation for the occurrence of an error.
+          example: Incorrect Credentials.
+    SubscriptionRequest:
+      required:
+      - destinationUrl
+      - eventTypes
+      - name
+      type: object
+      properties:
+        name:
+          maxLength: 64
+          minLength: 4
+          type: string
+          description: Client-defined string naming the subscription.
+          example: My Integration's Subscription
+        description:
+          maxLength: 1024
+          minLength: 0
+          type: string
+          description: Client-defined string describing the subscription.
+          example: The subscription my integration uses to synchronize with WxCC
+        eventTypes:
+          maxItems: 32
+          minItems: 1
+          type: array
+          description: Types of events to which the subscription will listen.
+          example:
+          - agent:login
+          - agent:logout
+          items:
+            type: string
+        destinationUrl:
+          pattern: ^(https?)://.*$
+          type: string
+          description: URL to which webhooks will be posted. Must be HTTPS on an IANA-listed top-level domain name (e.g. .com) with a path (at least /). No query parameters, userinfo, non-443 ports, or fragments allowed. We do not treat this field as sensitive data, so do not use secrets in this URL such as tokens or API keys.
+          format: uri
+          example: https://www.cisco.com/
+        secret:
+          maxLength: 256
+          minLength: 32
+          type: string
+          description: Secret string used to sign payloads sent to the destination URL.
+          example: my-32-plus-character-long-secret
+        orgId:
+          type: string
+          description: Organization ID to be used for this operation. If unspecified, the Organization ID is inferred from the token. The token must have permission to interact with the organization.
+          format: uuid
+          example: 97cdbf45-ebe2-4687-8341-44d5c7abf101
+    MetaDataWithPagingInfo:
+      type: object
+      description: Metadata of response with paging information
+      properties:
+        orgid:
+          type: string
+          format: uuid
+          description: Organization ID.
+          example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+          maxLength: 36
+          minLength: 32
+          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
+        page:
+          type: integer
+          format: int32
+          description: Current page number.
+          example: 1
+        pageSize:
+          type: integer
+          format: int32
+          description: Page size for current data set.
+          example: 100
+        totalPages:
+          type: integer
+          format: int32
+          description: Number of pages.
+          example: 1
+        totalRecords:
+          type: integer
+          format: int32
+          description: Total number of items.
+          example: 1000
+        links:
+          type: object
+          description: Map of pagination links with `self`, `next`, `prev`, `last`, and `first`.
+          example:
+            next: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=2&pageSize=10
+            last: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=3&pageSize=10
+            prev: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=0&pageSize=10
+            self: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=1&pageSize=10
+            first: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=0&pageSize=10
+      title: MetaDataWithPagingInfo
+  securitySchemes:
+    oauth2:
+      flows:
+        authorizationCode:
+          authorizationUrl: /
+          scopes: {}
+          tokenUrl: /
+      type: oauth2
+    bearer-key:
+      type: http
+      description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
+      scheme: bearer
+      bearerFormat: JWT
+    bearerAuth:
+      type: oauth2
+      description: OAuth 2.0 Bearer token authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: https://webexapis.com/v1/authorize
+          tokenUrl: https://webexapis.com/v1/access_token
+          scopes:
+            spark:applications_token: Create access tokens for Service Apps

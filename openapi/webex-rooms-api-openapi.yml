@@ -1,0 +1,714 @@
+openapi: 3.0.0
+info:
+  title: Webex Admin Address Book Rooms API
+  version: 1.0.0
+  description: The Webex Admin APIs provide comprehensive programmatic access to administrative functions for managing Webex organizations, users, licenses, and settings. These APIs enable automation of user provisioning, license assignment, compliance management, and audit event retrieval. Administrators can integrate with enterprise identity systems, enforce security policies, monitor usage, and streamline onboarding/offboarding processes. The APIs support granular control over organizational resources, making them ideal for large-scale deployments and custom admin tooling.
+tags:
+- name: Rooms
+paths:
+  /rooms:
+    get:
+      responses:
+        '200':
+          description: OK
+          headers:
+            Link:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoomCollectionResponse'
+              example:
+                items:
+                - id: Y2lzY29zcGFyazovL3VzL1JPT00vYmJjZWIxYWQtNDNmMS0zYjU4LTkxNDctZjE0YmIwYzRkMTU0
+                  title: Project Unicorn - Sprint 0
+                  type: group
+                  isLocked: true
+                  teamId: Y2lzY29zcGFyazovL3VzL1JPT00vNjRlNDVhZTAtYzQ2Yi0xMWU1LTlkZjktMGQ0MWUzNDIxOTcz
+                  lastActivity: '2016-04-21T19:12:48.920Z'
+                  creatorId: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9mNWIzNjE4Ny1jOGRkLTQ3MjctOGIyZi1mOWM0NDdmMjkwNDY
+                  created: '2016-04-21T19:01:55.966Z'
+                  ownerId: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE
+                  classificationId: Y2lzY29zcGFyazovL3VzL0NMQVNTSUZJQ0FUSU9OL2YyMDUyZTgyLTU0ZjgtMTFlYS1hMmUzLTJlNzI4Y2U4ODEyNQ
+                  isAnnouncementOnly: false
+                  isReadOnly: false
+                  isPublic: true
+                  madePublic: '2022-10-10T17:24:19.388Z'
+                  description: Company Announcements
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: List Rooms
+      operationId: List Rooms
+      description: 'List rooms to which the authenticated user belongs to.
+
+
+        The `title` of the room for 1:1 rooms will be the display name of the other person. Please use the [memberships API](https://developer.webex.com/docs/api/v1/memberships) to list the people in the space.
+
+
+        Long result sets will be split into [pages](/docs/basics#pagination).
+
+
+        Known Limitations:
+
+        The underlying database does not support natural sorting by `lastactivity` and will only sort on limited set of results, which are pulled from the database in order of `roomId`. For users or bots in more than 3000 spaces this can result in anomalies such as spaces that have had recent activity not being returned in the results when sorting by `lastacivity`.'
+      tags:
+      - Rooms
+      parameters:
+      - name: teamId
+        in: query
+        description: List rooms associated with a team, by ID. Cannot be set in combination with `orgPublicSpaces`.
+        example: Y2lzY29zcGFyazovL3VzL1JPT00vNjRlNDVhZTAtYzQ2Yi0xMWU1LTlkZjktMGQ0MWUzNDIxOTcz
+        schema:
+          type: string
+      - name: type
+        in: query
+        description: List rooms by type. Cannot be set in combination with `orgPublicSpaces`.
+        example: group
+        schema:
+          type: string
+          enum:
+          - direct
+          - group
+      - name: orgPublicSpaces
+        in: query
+        description: Shows the org's public spaces joined and unjoined. When set the result list is sorted by the `madePublic` timestamp.
+        example: 'true'
+        schema:
+          type: boolean
+      - name: from
+        in: query
+        description: Filters rooms, that were made public after this time. See `madePublic` timestamp
+        example: '2022-10-10T17:00:00.000Z'
+        schema:
+          type: string
+      - name: to
+        in: query
+        description: Filters rooms, that were made public before this time. See `maePublic` timestamp
+        example: '2022-10-11T17:00:00.000Z'
+        schema:
+          type: string
+      - name: sortBy
+        in: query
+        description: Sort results. Cannot be set in combination with `orgPublicSpaces`.
+        example: id
+        schema:
+          type: string
+          enum:
+          - id
+          - lastactivity
+          - created
+      - name: max
+        in: query
+        description: Limit the maximum number of rooms in the response. Value must be between 1 and 1000, inclusive.
+        example: '100'
+        schema:
+          type: number
+          default: 100
+    post:
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Room'
+              example:
+                id: Y2lzY29zcGFyazovL3VzL1JPT00vYmJjZWIxYWQtNDNmMS0zYjU4LTkxNDctZjE0YmIwYzRkMTU0
+                title: Project Unicorn - Sprint 0
+                type: group
+                isLocked: true
+                teamId: Y2lzY29zcGFyazovL3VzL1JPT00vNjRlNDVhZTAtYzQ2Yi0xMWU1LTlkZjktMGQ0MWUzNDIxOTcz
+                lastActivity: '2016-04-21T19:12:48.920Z'
+                creatorId: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9mNWIzNjE4Ny1jOGRkLTQ3MjctOGIyZi1mOWM0NDdmMjkwNDY
+                created: '2016-04-21T19:01:55.966Z'
+                ownerId: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE
+                classificationId: Y2lzY29zcGFyazovL3VzL0NMQVNTSUZJQ0FUSU9OL2YyMDUyZTgyLTU0ZjgtMTFlYS1hMmUzLTJlNzI4Y2U4ODEyNQ
+                isAnnouncementOnly: false
+                isReadOnly: false
+                isPublic: true
+                madePublic: '2022-10-10T17:24:19.388Z'
+                description: Company Announcements
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Create a Room
+      operationId: Create a Room
+      description: 'Creates a room. The authenticated user is automatically added as a member of the room. See the [Memberships API](/docs/api/v1/memberships) to learn how to add more people to the room.
+
+
+        To create a 1:1 room, use the [Create Messages](/docs/api/v1/messages/create-a-message) endpoint to send a message directly to another person by using the `toPersonId` or `toPersonEmail` parameters.
+
+
+        Bots are not able to create and simultaneously classify a room. A bot may update a space classification after a person of the same owning organization joined the space as the first human user.
+
+        A space can only be put into announcement mode when it is locked.'
+      tags:
+      - Rooms
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            example:
+              title: Project Unicorn - Sprint 0
+              teamId: Y2lzY29zcGFyazovL3VzL1JPT00vNjRlNDVhZTAtYzQ2Yi0xMWU1LTlkZjktMGQ0MWUzNDIxOTcz
+              classificationId: Y2lzY29zcGFyazovL3VzL0NMQVNTSUZJQ0FUSU9OL2YyMDUyZTgyLTU0ZjgtMTFlYS1hMmUzLTJlNzI4Y2U4ODEyNQ
+              isLocked: false
+              isPublic: false
+              description: Company Announcements
+              isAnnouncementOnly: false
+            schema:
+              type: object
+              required:
+              - title
+              properties:
+                title:
+                  type: string
+                  example: Project Unicorn - Sprint 0
+                  description: A user-friendly name for the room.
+                teamId:
+                  type: string
+                  example: Y2lzY29zcGFyazovL3VzL1JPT00vNjRlNDVhZTAtYzQ2Yi0xMWU1LTlkZjktMGQ0MWUzNDIxOTcz
+                  description: The ID for the team with which this room is associated.
+                classificationId:
+                  type: string
+                  example: Y2lzY29zcGFyazovL3VzL0NMQVNTSUZJQ0FUSU9OL2YyMDUyZTgyLTU0ZjgtMTFlYS1hMmUzLTJlNzI4Y2U4ODEyNQ
+                  description: The `classificationId` for the room.
+                isLocked:
+                  type: boolean
+                  description: Set the space as locked/moderated and the creator becomes a moderator
+                isPublic:
+                  type: boolean
+                  description: The room is public and therefore discoverable within the org. Anyone can find and join that room. When `true` the `description` must be filled in.
+                description:
+                  type: string
+                  example: Company Announcements
+                  description: The description of the space.
+                isAnnouncementOnly:
+                  type: boolean
+                  description: Sets the space into announcement Mode.
+  /rooms/{roomId}:
+    get:
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Room'
+              example:
+                id: Y2lzY29zcGFyazovL3VzL1JPT00vYmJjZWIxYWQtNDNmMS0zYjU4LTkxNDctZjE0YmIwYzRkMTU0
+                title: Project Unicorn - Sprint 0
+                type: group
+                isLocked: true
+                teamId: Y2lzY29zcGFyazovL3VzL1JPT00vNjRlNDVhZTAtYzQ2Yi0xMWU1LTlkZjktMGQ0MWUzNDIxOTcz
+                lastActivity: '2016-04-21T19:12:48.920Z'
+                creatorId: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9mNWIzNjE4Ny1jOGRkLTQ3MjctOGIyZi1mOWM0NDdmMjkwNDY
+                created: '2016-04-21T19:01:55.966Z'
+                ownerId: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE
+                classificationId: Y2lzY29zcGFyazovL3VzL0NMQVNTSUZJQ0FUSU9OL2YyMDUyZTgyLTU0ZjgtMTFlYS1hMmUzLTJlNzI4Y2U4ODEyNQ
+                isAnnouncementOnly: false
+                isReadOnly: false
+                isPublic: true
+                madePublic: '2022-10-10T17:24:19.388Z'
+                description: Company Announcements
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Get Room Details
+      operationId: Get Room Details
+      description: 'Shows details for a room, by ID.
+
+
+        The `title` of the room for 1:1 rooms will be the display name of the other person. When a Compliance Officer lists 1:1 rooms, the "other" person cannot be determined. This means that the room''s title may not be filled in and instead shows "Empty Title". Please use the [memberships API](https://developer.webex.com/docs/api/v1/memberships) to list the other person in the space.
+
+
+        Specify the room ID in the `roomId` parameter in the URI.'
+      tags:
+      - Rooms
+      parameters:
+      - name: roomId
+        in: path
+        description: The unique identifier for the room.
+        required: true
+        example: Y2lzY29zcGFyazovL3VzL1JPT00vYmJjZWIxYWQtNDNmMS0zYjU4LTkxNDctZjE0YmIwYzRkMTU0
+        schema:
+          type: string
+    put:
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Room'
+              example:
+                id: Y2lzY29zcGFyazovL3VzL1JPT00vYmJjZWIxYWQtNDNmMS0zYjU4LTkxNDctZjE0YmIwYzRkMTU0
+                title: Project Unicorn - Sprint 0
+                type: group
+                isLocked: true
+                teamId: Y2lzY29zcGFyazovL3VzL1JPT00vNjRlNDVhZTAtYzQ2Yi0xMWU1LTlkZjktMGQ0MWUzNDIxOTcz
+                lastActivity: '2016-04-21T19:12:48.920Z'
+                creatorId: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9mNWIzNjE4Ny1jOGRkLTQ3MjctOGIyZi1mOWM0NDdmMjkwNDY
+                created: '2016-04-21T19:01:55.966Z'
+                ownerId: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE
+                classificationId: Y2lzY29zcGFyazovL3VzL0NMQVNTSUZJQ0FUSU9OL2YyMDUyZTgyLTU0ZjgtMTFlYS1hMmUzLTJlNzI4Y2U4ODEyNQ
+                isAnnouncementOnly: false
+                isReadOnly: false
+                isPublic: true
+                madePublic: '2022-10-10T17:24:19.388Z'
+                description: Company Announcements
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Update a Room
+      operationId: Update a Room
+      description: 'Updates details for a room, by ID.
+
+
+        Specify the room ID in the `roomId` parameter in the URI.
+
+        A space can only be put into announcement mode when it is locked.
+
+        Any space participant or compliance officer can convert a space from public to private. Only a compliance officer can convert a space from private to public and only if the space is classified with the lowest category (usually `public`), and the space has a description.
+
+        To remove a `description` please use a space character ` ` by itself.
+
+
+        <div><Callout type="info">When using this method for moving a space under a team, ensure that all moderators in the space are also team members. If a moderator is not part of the team, demote or remove them as a moderator. Alternatively, add the non-team moderators to the team. This ensures compliance with the requirement that all space moderators must be team members for successful operation execution.
+
+        </Callout></div>
+
+
+        <div><Callout type="info">A Compliance Officer who is not a member of a space can only update the `classificationId`, `isAnnouncementOnly`, `description`, and `isPublic` fields.
+
+        </Callout></div>'
+      tags:
+      - Rooms
+      parameters:
+      - name: roomId
+        in: path
+        description: The unique identifier for the room.
+        required: true
+        example: Y2lzY29zcGFyazovL3VzL1JPT00vYmJjZWIxYWQtNDNmMS0zYjU4LTkxNDctZjE0YmIwYzRkMTU0
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            example:
+              title: Project Unicorn - Sprint 0
+              classificationId: Y2lzY29zcGFyazovL3VzL0NMQVNTSUZJQ0FUSU9OL2YyMDUyZTgyLTU0ZjgtMTFlYS1hMmUzLTJlNzI4Y2U4ODEyNQ
+              teamId: Y2lzY29zcGFyazovL3VzL1RFQU0vZWUwMWIxMzAtMjJlYi0xMWVjLTg5MTktMGY0NjdjMGNlZmFk
+              isLocked: false
+              isPublic: false
+              description: Company Announcements
+              isAnnouncementOnly: false
+              isReadOnly: false
+            schema:
+              type: object
+              required:
+              - title
+              properties:
+                title:
+                  type: string
+                  example: Project Unicorn - Sprint 0
+                  description: A user-friendly name for the room.
+                classificationId:
+                  type: string
+                  example: Y2lzY29zcGFyazovL3VzL0NMQVNTSUZJQ0FUSU9OL2YyMDUyZTgyLTU0ZjgtMTFlYS1hMmUzLTJlNzI4Y2U4ODEyNQ
+                  description: The classificationId for the room.
+                teamId:
+                  type: string
+                  example: Y2lzY29zcGFyazovL3VzL1RFQU0vZWUwMWIxMzAtMjJlYi0xMWVjLTg5MTktMGY0NjdjMGNlZmFk
+                  description: The teamId to which this space should be assigned. Only unowned spaces can be assigned to a team. Assignment between teams is unsupported.
+                isLocked:
+                  type: boolean
+                  description: Set the space as locked/moderated and the creator becomes a moderator
+                isPublic:
+                  type: boolean
+                  description: The room is public and therefore discoverable within the org. Anyone can find and join that room. When `true` the `description` must be filled in.
+                description:
+                  type: string
+                  example: Company Announcements
+                  description: The description of the space.
+                isAnnouncementOnly:
+                  type: boolean
+                  description: Sets the space into Announcement Mode or clears the Anouncement Mode (`false`)
+                isReadOnly:
+                  type: boolean
+                  description: A compliance officer can set a direct room as read-only, which will disallow any new information exchanges in this space, while maintaing historical data.
+    delete:
+      responses:
+        '204':
+          description: No Content
+          headers: {}
+          content: {}
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Delete a Room
+      operationId: Delete a Room
+      description: 'Deletes a room, by ID. Deleted rooms cannot be recovered.
+
+        As a security measure to prevent accidental deletion, when a non moderator deletes the room they are removed from the room instead.
+
+
+        Deleting a room that is part of a team will archive the room instead.
+
+
+        A Compliance Officer has no special privileges, i.e. they cannot delete rooms they are not part of.
+
+
+        Specify the room ID in the `roomId` parameter in the URI.'
+      tags:
+      - Rooms
+      parameters:
+      - name: roomId
+        in: path
+        description: The unique identifier for the room.
+        required: true
+        example: Y2lzY29zcGFyazovL3VzL1JPT00vYmJjZWIxYWQtNDNmMS0zYjU4LTkxNDctZjE0YmIwYzRkMTU0
+        schema:
+          type: string
+  /rooms/{roomId}/meetingInfo:
+    get:
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoomMeetingDetails'
+              example:
+                roomId: Y2lzY29zcGFyazovL3VzL1JPT00vYmJjZWIxYWQtNDNmMS0zYjU4LTkxNDctZjE0YmIwYzRkMTU0
+                meetingLink: https://cisco.webex.com/m/37a7d3a8-6563-487f-9577-cd029101c087
+                sipAddress: 201632887@cisco.webex.com
+                meetingNumber: '201632887'
+                meetingId: c1c30b52501b4d34aa75a57bdb867853
+                callInTollFreeNumber: +1-866-432-9903
+                callInTollNumber: +1-408-525-6800
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Get Room Meeting Details
+      operationId: Get Room Meeting Details
+      description: '<div>
+
+        <callout type="warning">
+
+        The meetingInfo API is deprecated and will be EOL on Jan 31, 2025. Meetings in the WSMP must be scheduled and licensed via the meetings backend.
+
+        The [Create a Meeting](/docs/api/v1/meetings/create-a-meeting) endpoint will provide the SIP address for the meeting to call.
+
+        </callout>
+
+        </div>
+
+
+        Shows Webex meeting details for a room such as the SIP address, meeting URL, toll-free and toll dial-in numbers.
+
+
+        Specify the room ID in the `roomId` parameter in the URI.'
+      tags:
+      - Rooms
+      parameters:
+      - name: roomId
+        in: path
+        description: The unique identifier for the room.
+        required: true
+        example: Y2lzY29zcGFyazovL3VzL1JPT00vYmJjZWIxYWQtNDNmMS0zYjU4LTkxNDctZjE0YmIwYzRkMTU0
+        schema:
+          type: string
+components:
+  schemas:
+    RoomCollectionResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Room'
+    Room:
+      type: object
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1JPT00vYmJjZWIxYWQtNDNmMS0zYjU4LTkxNDctZjE0YmIwYzRkMTU0
+          description: A unique identifier for the room.
+        title:
+          type: string
+          example: Project Unicorn - Sprint 0
+          description: A user-friendly name for the room.
+        type:
+          type: string
+          enum:
+          - direct
+          - group
+          description: "The room type.\n * `direct` - 1:1 room.\n * `group` - Group room.\n"
+        isLocked:
+          type: boolean
+          example: true
+          description: Whether the room is moderated (locked) or not.
+        teamId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1JPT00vNjRlNDVhZTAtYzQ2Yi0xMWU1LTlkZjktMGQ0MWUzNDIxOTcz
+          description: The ID for the team with which this room is associated.
+        lastActivity:
+          type: string
+          example: '2016-04-21T19:12:48.920Z'
+          description: The date and time of the room's last activity.
+        creatorId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9mNWIzNjE4Ny1jOGRkLTQ3MjctOGIyZi1mOWM0NDdmMjkwNDY
+          description: The ID of the person who created this room.
+        created:
+          type: string
+          example: '2016-04-21T19:01:55.966Z'
+          description: The date and time the room was created.
+        ownerId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE
+          description: The ID of the organization which owns this room. See [Webex Data](/docs/api/guides/compliance#webex-teams-data) in the [Compliance Guide](/docs/api/guides/compliance) for more information.
+        classificationId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0NMQVNTSUZJQ0FUSU9OL2YyMDUyZTgyLTU0ZjgtMTFlYS1hMmUzLTJlNzI4Y2U4ODEyNQ
+          description: Space classification ID represents the space's current classification.  It can be attached during space creation time, and can be modified at the request of an authorized user.
+        isAnnouncementOnly:
+          type: boolean
+          description: Indicates when a space is in Announcement Mode where only moderators can post messages
+        isReadOnly:
+          type: boolean
+          description: A compliance officer can set a direct room as read-only, which will disallow any new information exchanges in this space, while maintaing historical data.
+        isPublic:
+          type: boolean
+          example: true
+          description: The room is public and therefore discoverable within the org. Anyone can find and join that room.
+        madePublic:
+          type: string
+          example: '2022-10-10T17:24:19.388Z'
+          description: Date and time when the room was made public.
+        description:
+          type: string
+          example: Company Announcements
+          description: The description of the space.
+    RoomMeetingDetails:
+      type: object
+      properties:
+        roomId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1JPT00vYmJjZWIxYWQtNDNmMS0zYjU4LTkxNDctZjE0YmIwYzRkMTU0
+          description: A unique identifier for the room.
+        meetingLink:
+          type: string
+          example: https://cisco.webex.com/m/37a7d3a8-6563-487f-9577-cd029101c087
+          description: The Webex meeting URL for the room.
+        sipAddress:
+          type: string
+          example: 201632887@cisco.webex.com
+          description: The SIP address for the room.
+        meetingNumber:
+          type: string
+          example: '201632887'
+          description: The Webex meeting number for the room.
+        meetingId:
+          type: string
+          example: c1c30b52501b4d34aa75a57bdb867853
+          description: The Webex meeting ID for the room.
+        callInTollFreeNumber:
+          type: string
+          example: +1-866-432-9903
+          description: The toll-free PSTN number for the room.
+        callInTollNumber:
+          type: string
+          example: +1-408-525-6800
+          description: The toll (local) PSTN number for the room.
+  securitySchemes:
+    oauth2:
+      flows:
+        authorizationCode:
+          authorizationUrl: /
+          scopes: {}
+          tokenUrl: /
+      type: oauth2
+    bearer-key:
+      type: http
+      description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
+      scheme: bearer
+      bearerFormat: JWT
+    bearerAuth:
+      type: oauth2
+      description: OAuth 2.0 Bearer token authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: https://webexapis.com/v1/authorize
+          tokenUrl: https://webexapis.com/v1/access_token
+          scopes:
+            spark:applications_token: Create access tokens for Service Apps

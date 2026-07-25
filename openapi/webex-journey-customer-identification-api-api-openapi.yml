@@ -1,0 +1,1162 @@
+openapi: 3.0.0
+info:
+  title: Webex Admin Address Book Journey - Customer Identification API API
+  version: 1.0.0
+  description: The Webex Admin APIs provide comprehensive programmatic access to administrative functions for managing Webex organizations, users, licenses, and settings. These APIs enable automation of user provisioning, license assignment, compliance management, and audit event retrieval. Administrators can integrate with enterprise identity systems, enforce security policies, monitor usage, and streamline onboarding/offboarding processes. The APIs support granular control over organizational resources, making them ideal for large-scale deployments and custom admin tooling.
+tags:
+- name: Journey - Customer Identification API
+paths:
+  /admin/v1/api/person/workspace-id/{workspaceId}/person-id/{personId}:
+    delete:
+      tags:
+      - Journey - Customer Identification API
+      summary: Delete specific Person by id
+      description: "Delete Person Details searched by Person id in JDS. \n\nRole and Scope: Requires id full admin or any role with cjp:config_write scope"
+      operationId: deletePersonbyId
+      parameters:
+      - name: workspaceId
+        in: path
+        description: Workspace ID
+        required: true
+        schema:
+          type: string
+        example: 63feryn344678998djs878
+      - name: personId
+        in: path
+        description: Person ID
+        required: true
+        schema:
+          type: string
+        example: 638844db13272c52239c525d
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonResponse'
+        '404':
+          description: Not found
+        '500':
+          description: Internal error
+      security:
+      - bearerAuth: []
+    patch:
+      tags:
+      - Journey - Customer Identification API
+      summary: Add/Remove/Replace details of a Person
+      description: "The Patch Api can be used to add/remove identities(email, phone, customerId) or replace firstName and lastName of an Individual. We support only add, replace and remove operations. \n\nFor a more information on Patch Requests, see this  [JSON PATCH guide](https://jsonpatch.com). \n\nRole and Scope: Requires id full admin role with cjp:config_write or any role with cjp:user or cjp:config_write scope."
+      operationId: addRemoveAliases
+      parameters:
+      - name: workspaceId
+        in: path
+        description: Workspace ID
+        required: true
+        schema:
+          type: string
+        example: 63feryn344678998djs878
+      - name: personId
+        in: path
+        description: Person ID
+        required: true
+        schema:
+          type: string
+        example: 638844db13272c52239c525d
+      requestBody:
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: '#/components/schemas/PatchRequest'
+        required: true
+      responses:
+        '202':
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonResponse'
+        '400':
+          description: Bad Request
+        '404':
+          description: Not found
+        '500':
+          description: Internal error
+      security:
+      - bearerAuth: []
+  /admin/v1/api/person/add-identities/workspace-id/{workspaceId}/person-id/{personId}:
+    patch:
+      tags:
+      - Journey - Customer Identification API
+      summary: Add one/more Identities to a person
+      description: 'This Patch Api can be used to add identities(email, phone, customerId) to a person.
+
+
+        Role and Scope: Requires id full admin or any role with cjp:config_write scope.'
+      operationId: addIdentitiesToPerson
+      parameters:
+      - name: workspaceId
+        in: path
+        description: Workspace ID
+        required: true
+        schema:
+          type: string
+        example: 63feryn344678998djs878
+      - name: personId
+        in: path
+        description: Person ID
+        required: true
+        schema:
+          type: string
+        example: 638844db13272c52239c525d
+      requestBody:
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: '#/components/schemas/AddIdentitiesToPersonRequestModel'
+        required: true
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError400'
+        '401':
+          description: UnAuthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError401'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError404'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError500'
+      security:
+      - bearerAuth: []
+  /admin/v1/api/person/remove-identities/workspace-id/{workspaceId}/person-id/{personId}:
+    patch:
+      tags:
+      - Journey - Customer Identification API
+      summary: Remove one/more Identities from a person
+      description: 'This Patch Api can be used to remove identities(email, phone, customerId) from a person.
+
+
+        Role and Scope: Requires id full admin or any role with cjp:config_write scope.'
+      operationId: removeIdentitiesFromPerson
+      parameters:
+      - name: workspaceId
+        in: path
+        description: Workspace ID
+        required: true
+        schema:
+          type: string
+        example: 63feryn344678998djs878
+      - name: personId
+        in: path
+        description: Person ID
+        required: true
+        schema:
+          type: string
+        example: 638844db13272c52239c525d
+      requestBody:
+        description: List Of Identities
+        content:
+          application/json-patch+json:
+            schema:
+              type: array
+              items:
+                type: string
+            example:
+            - ram@cisco.com
+            - 1e4qre2g7
+        required: true
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError400'
+        '401':
+          description: UnAuthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError401'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError404'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError500'
+      security:
+      - bearerAuth: []
+  /admin/v1/api/person/workspace-id/{workspaceId}:
+    get:
+      tags:
+      - Journey - Customer Identification API
+      summary: Get all or a specific Person Details
+      description: "Get Person Details in JDS. If personId is provided by query parameter, this returns the Person whose personId matches the parameter.\nIf not, this will return ALL the Persons within the organization and workspace. \n\nRole and Scope: Requires id full admin role with cjp:config_write or cjp:config_read scope. Or it requires any role with cjp:user, cjp:config_write  or cjp:config_read scope."
+      operationId: getPersonDetails
+      parameters:
+      - name: workspaceId
+        in: path
+        description: Workspace ID
+        required: true
+        schema:
+          type: string
+        example: 63feryn344678998djs878
+      - name: personId
+        in: query
+        description: Person ID
+        required: false
+        schema:
+          type: string
+        example: 1eb65fdfsadw34ae0e10f
+      - name: filter
+        in: query
+        description: "Optional filter which can be applied to the elements to be fetched. \n\nThis parameter uses the RSQL query syntax, a URI-friendly format for expressing criteria for filtering REST entities. For more information about RSQL in general, see [this reference](https://developer.here.com/documentation/data-client-library/dev_guide/client/rsql.html). For a list of supported operators, see this [syntax guide](https://github.com/perplexhub/rsql-jpa-specification#rsql-syntax-reference)."
+        required: false
+        schema:
+          type: string
+        example: firstName==Ram
+      - name: sortBy
+        in: query
+        description: Sort By Field
+        required: false
+        schema:
+          type: string
+        example: firstName
+      - name: sort
+        in: query
+        description: Sort direction
+        required: false
+        schema:
+          type: string
+        example: DESC
+      - name: page
+        in: query
+        description: 'Index of the page of results to be fetched.
+
+
+          Results are returned in blocks of pageSize elements. This parameter specifies which page number to retrieve. The page numbering starts with 0.'
+        required: false
+        schema:
+          type: integer
+        example: 0
+      - name: pageSize
+        in: query
+        description: Number of items to be displayed on a page
+        required: false
+        schema:
+          type: integer
+        example: 10
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonGetResponse'
+        '404':
+          description: Not found
+        '500':
+          description: Internal error
+      security:
+      - bearerAuth: []
+    post:
+      tags:
+      - Journey - Customer Identification API
+      summary: Create a Person
+      description: 'This API helps to create a Person in JDS.
+
+
+        Role and Scope: Requires id full admin OR any role with cjp:config_write scope.'
+      operationId: createPerson
+      parameters:
+      - name: workspaceId
+        in: path
+        description: Workspace ID
+        required: true
+        schema:
+          type: string
+        example: 63feryn344678998djs878
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrUpdatePersonRequestModel'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError400'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError404'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError500'
+      security:
+      - bearerAuth: []
+  /admin/v1/api/person/merge/workspace-id/{workspaceId}/primary-person-id/{primaryPersonId}:
+    post:
+      tags:
+      - Journey - Customer Identification API
+      summary: Merges Identities to a Primary Identity
+      description: "Merges one/more Identities to a **Primary** Individual in JDS. \n\nRole and Scope: Requires id full admin role with cjp:config_write scope."
+      operationId: mergeAliases
+      parameters:
+      - name: workspaceId
+        in: path
+        description: Workspace ID
+        required: true
+        schema:
+          type: string
+        example: 63feryn344678998djs878
+      - name: primaryPersonId
+        in: path
+        description: Primary Person ID
+        required: true
+        schema:
+          type: string
+        example: 638844db13272c52239c525d
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MergePersonsRequest'
+        required: true
+      responses:
+        '202':
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonResponse'
+        '400':
+          description: Bad Request
+        '404':
+          description: Not found
+        '500':
+          description: Internal error
+      security:
+      - bearerAuth: []
+  /admin/v1/api/person/merge-identities/workspace-id/{workspaceId}:
+    post:
+      tags:
+      - Journey - Customer Identification API
+      summary: Creates or merges aliases to an Individual in JDS
+      description: "This API enables you to consolidate multiple customer identifiers into a single, unified profile effortlessly. By integrating it with your Flow Designer, you can automatically retrieve and merge customer identifiers from various systems, such as your CRM or other third-party tools. This integration ensures all relevant data is consolidated into one profile, enhancing personalization and streamlining customer interactions. \n\n**Adding a New Alias** - To associate an additional alias (e.g., a new phone number) with an existing customer profile, simply update the API with the new identifier while leaving the existing identifiers intact. The system will automatically merge the new alias into the current profile, maintaining a comprehensive view of the customer.\n\n**Removing an Alias** - If you need to delete an alias from a customer’s profile, set the override flag to true in your API request. Include only the identifiers you wish to retain in the payload. The system will remove any identifiers not included in the updated payload, keeping the profile streamlined and up-to-date.\n\nRole and Scope: Requires id full admin OR any role with cjp:config_write scope."
+      operationId: mergeIdentities
+      parameters:
+      - name: workspaceId
+        in: path
+        description: Workspace ID
+        required: true
+        schema:
+          type: string
+        example: 63feryn344678998djs878
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MergePersonRequestModel'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonResponse'
+        '400':
+          description: Bad Request
+        '404':
+          description: Not found
+        '500':
+          description: Internal error
+      security:
+      - bearerAuth: []
+  /admin/v1/api/person/workspace-id/{workspaceId}/aliases/{aliases}:
+    get:
+      tags:
+      - Journey - Customer Identification API
+      summary: Search for an Identity via aliases
+      description: 'Get one or more Person Details searched by aliases in JDS. Multiple aliases should be separated by a comma.
+
+
+        Role and Scope: Requires id full admin role with cjp:config_write or cjp:config_read scope. Or it requires any role with cjp:user, cjp:config_write  or cjp:config_read scope.'
+      operationId: getPersonbyAliases
+      parameters:
+      - name: workspaceId
+        in: path
+        description: Workspace ID
+        required: true
+        schema:
+          type: string
+        example: 63feryn344678998djs878
+      - name: aliases
+        in: path
+        description: "Aliases to search for. Multiple aliases should be separated by a comma. \n\n In case the alias(es) contain(s) non-uri-encodable characters, eg: '+', '>' etc, you can URL-encode the same and then pass it as parameter."
+        required: true
+        schema:
+          type: string
+        example: johndoe@domain1.com,2771154
+      - name: sortBy
+        in: query
+        description: Sort By Field
+        required: false
+        schema:
+          type: string
+        example: firstName
+      - name: sort
+        in: query
+        description: Sort direction
+        required: false
+        schema:
+          type: string
+        example: DESC
+      - name: page
+        in: query
+        description: 'Index of the page of results to be fetched.
+
+
+          Results are returned in blocks of pageSize elements. This parameter specifies which page number to retrieve.The page numbering starts with 0.'
+        required: false
+        schema:
+          type: integer
+        example: 0
+      - name: pageSize
+        in: query
+        description: Number of items to be displayed on a page.
+        required: false
+        schema:
+          type: integer
+        example: 10
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonGetResponse'
+        '404':
+          description: Not found
+        '500':
+          description: Internal error
+      security:
+      - bearerAuth: []
+components:
+  schemas:
+    PersonResponseModel:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Profile View Template Id
+          example: 638505f32332c8200dac025e
+        firstName:
+          type: string
+          description: firstName
+          example: John
+        lastName:
+          type: string
+          description: lastName
+          example: Doe
+        phone:
+          type: array
+          description: Phone Number
+          example:
+          - '+12342342345'
+          items:
+            type: string
+        email:
+          type: array
+          description: Email
+          example:
+          - johndoe@gmail.com
+          items:
+            type: string
+        temporaryId:
+          type: array
+          description: Temporary Id
+          example:
+          - 2342s-sdsd-342345
+          items:
+            type: string
+        customerId:
+          type: array
+          description: Customer Id
+          example:
+          - '234'
+          items:
+            type: string
+        aliases:
+          type: array
+          description: Aliases
+          example:
+          - '234'
+          - johndoe@gmail.com
+          - '+12342342345'
+          items:
+            type: string
+      description: Person Response Model
+    ApiError401:
+      required:
+      - trackingId
+      type: object
+      properties:
+        status:
+          type: string
+          description: Http Status Description
+          example: 401 UNAUTHORIZED
+          enum:
+          - 100 CONTINUE
+          - 101 SWITCHING_PROTOCOLS
+          - 102 PROCESSING
+          - 103 EARLY_HINTS
+          - 103 CHECKPOINT
+          - 200 OK
+          - 201 CREATED
+          - 202 ACCEPTED
+          - 203 NON_AUTHORITATIVE_INFORMATION
+          - 204 NO_CONTENT
+          - 205 RESET_CONTENT
+          - 206 PARTIAL_CONTENT
+          - 207 MULTI_STATUS
+          - 208 ALREADY_REPORTED
+          - 226 IM_USED
+          - 300 MULTIPLE_CHOICES
+          - 301 MOVED_PERMANENTLY
+          - 302 FOUND
+          - 302 MOVED_TEMPORARILY
+          - 303 SEE_OTHER
+          - 304 NOT_MODIFIED
+          - 305 USE_PROXY
+          - 307 TEMPORARY_REDIRECT
+          - 308 PERMANENT_REDIRECT
+          - 400 BAD_REQUEST
+          - 401 UNAUTHORIZED
+          - 402 PAYMENT_REQUIRED
+          - 403 FORBIDDEN
+          - 404 NOT_FOUND
+          - 405 METHOD_NOT_ALLOWED
+          - 406 NOT_ACCEPTABLE
+          - 407 PROXY_AUTHENTICATION_REQUIRED
+          - 408 REQUEST_TIMEOUT
+          - 409 CONFLICT
+          - 410 GONE
+          - 411 LENGTH_REQUIRED
+          - 412 PRECONDITION_FAILED
+          - 413 PAYLOAD_TOO_LARGE
+          - 413 REQUEST_ENTITY_TOO_LARGE
+          - 414 URI_TOO_LONG
+          - 414 REQUEST_URI_TOO_LONG
+          - 415 UNSUPPORTED_MEDIA_TYPE
+          - 416 REQUESTED_RANGE_NOT_SATISFIABLE
+          - 417 EXPECTATION_FAILED
+          - 418 I_AM_A_TEAPOT
+          - 419 INSUFFICIENT_SPACE_ON_RESOURCE
+          - 420 METHOD_FAILURE
+          - 421 DESTINATION_LOCKED
+          - 422 UNPROCESSABLE_ENTITY
+          - 423 LOCKED
+          - 424 FAILED_DEPENDENCY
+          - 425 TOO_EARLY
+          - 426 UPGRADE_REQUIRED
+          - 428 PRECONDITION_REQUIRED
+          - 429 TOO_MANY_REQUESTS
+          - 431 REQUEST_HEADER_FIELDS_TOO_LARGE
+          - 451 UNAVAILABLE_FOR_LEGAL_REASONS
+          - 500 INTERNAL_SERVER_ERROR
+          - 501 NOT_IMPLEMENTED
+          - 502 BAD_GATEWAY
+          - 503 SERVICE_UNAVAILABLE
+          - 504 GATEWAY_TIMEOUT
+          - 505 HTTP_VERSION_NOT_SUPPORTED
+          - 506 VARIANT_ALSO_NEGOTIATES
+          - 507 INSUFFICIENT_STORAGE
+          - 508 LOOP_DETECTED
+          - 509 BANDWIDTH_LIMIT_EXCEEDED
+          - 510 NOT_EXTENDED
+          - 511 NETWORK_AUTHENTICATION_REQUIRED
+        message:
+          type: string
+          description: Error Message
+          example: UnAuthorized
+        errors:
+          type: array
+          description: UnAuthorized
+          example:
+          - UnAuthorized to create resource
+          items:
+            type: string
+        timestamp:
+          type: string
+          description: Occurred timestamp
+          format: date-time
+          example: '2023-03-27T20:59:32.376Z'
+        trackingId:
+          type: string
+          description: Unique ID by which a request can be debugged. Please provide if opening a support case.
+          example: 76cd71d0e678a8bb
+    ApiError400:
+      required:
+      - trackingId
+      type: object
+      properties:
+        status:
+          type: string
+          description: Http Status Description
+          example: 400 BAD_REQUEST
+          enum:
+          - 100 CONTINUE
+          - 101 SWITCHING_PROTOCOLS
+          - 102 PROCESSING
+          - 103 EARLY_HINTS
+          - 103 CHECKPOINT
+          - 200 OK
+          - 201 CREATED
+          - 202 ACCEPTED
+          - 203 NON_AUTHORITATIVE_INFORMATION
+          - 204 NO_CONTENT
+          - 205 RESET_CONTENT
+          - 206 PARTIAL_CONTENT
+          - 207 MULTI_STATUS
+          - 208 ALREADY_REPORTED
+          - 226 IM_USED
+          - 300 MULTIPLE_CHOICES
+          - 301 MOVED_PERMANENTLY
+          - 302 FOUND
+          - 302 MOVED_TEMPORARILY
+          - 303 SEE_OTHER
+          - 304 NOT_MODIFIED
+          - 305 USE_PROXY
+          - 307 TEMPORARY_REDIRECT
+          - 308 PERMANENT_REDIRECT
+          - 400 BAD_REQUEST
+          - 401 UNAUTHORIZED
+          - 402 PAYMENT_REQUIRED
+          - 403 FORBIDDEN
+          - 404 NOT_FOUND
+          - 405 METHOD_NOT_ALLOWED
+          - 406 NOT_ACCEPTABLE
+          - 407 PROXY_AUTHENTICATION_REQUIRED
+          - 408 REQUEST_TIMEOUT
+          - 409 CONFLICT
+          - 410 GONE
+          - 411 LENGTH_REQUIRED
+          - 412 PRECONDITION_FAILED
+          - 413 PAYLOAD_TOO_LARGE
+          - 413 REQUEST_ENTITY_TOO_LARGE
+          - 414 URI_TOO_LONG
+          - 414 REQUEST_URI_TOO_LONG
+          - 415 UNSUPPORTED_MEDIA_TYPE
+          - 416 REQUESTED_RANGE_NOT_SATISFIABLE
+          - 417 EXPECTATION_FAILED
+          - 418 I_AM_A_TEAPOT
+          - 419 INSUFFICIENT_SPACE_ON_RESOURCE
+          - 420 METHOD_FAILURE
+          - 421 DESTINATION_LOCKED
+          - 422 UNPROCESSABLE_ENTITY
+          - 423 LOCKED
+          - 424 FAILED_DEPENDENCY
+          - 425 TOO_EARLY
+          - 426 UPGRADE_REQUIRED
+          - 428 PRECONDITION_REQUIRED
+          - 429 TOO_MANY_REQUESTS
+          - 431 REQUEST_HEADER_FIELDS_TOO_LARGE
+          - 451 UNAVAILABLE_FOR_LEGAL_REASONS
+          - 500 INTERNAL_SERVER_ERROR
+          - 501 NOT_IMPLEMENTED
+          - 502 BAD_GATEWAY
+          - 503 SERVICE_UNAVAILABLE
+          - 504 GATEWAY_TIMEOUT
+          - 505 HTTP_VERSION_NOT_SUPPORTED
+          - 506 VARIANT_ALSO_NEGOTIATES
+          - 507 INSUFFICIENT_STORAGE
+          - 508 LOOP_DETECTED
+          - 509 BANDWIDTH_LIMIT_EXCEEDED
+          - 510 NOT_EXTENDED
+          - 511 NETWORK_AUTHENTICATION_REQUIRED
+        message:
+          type: string
+          description: Error Message
+          example: Bad Request
+        errors:
+          type: array
+          description: Bad Request
+          example:
+          - Id cannot be null
+          items:
+            type: string
+        timestamp:
+          type: string
+          description: Occurred timestamp
+          format: date-time
+          example: '2023-03-27T20:59:32.376Z'
+        trackingId:
+          type: string
+          description: Unique ID by which a request can be debugged. Please provide if opening a support case.
+          example: 76cd71d0e678a8bb
+    PersonResponse:
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/BaseMetaResponseEnvelope'
+        data:
+          $ref: '#/components/schemas/PersonResponseModel'
+    PatchRequest:
+      type: array
+      items:
+        $ref: '#/components/schemas/PatchDocument'
+    ApiError500:
+      required:
+      - trackingId
+      type: object
+      properties:
+        status:
+          type: string
+          description: Http Status Description
+          example: 500 INTERNAL_SERVER_ERROR
+          enum:
+          - 100 CONTINUE
+          - 101 SWITCHING_PROTOCOLS
+          - 102 PROCESSING
+          - 103 EARLY_HINTS
+          - 103 CHECKPOINT
+          - 200 OK
+          - 201 CREATED
+          - 202 ACCEPTED
+          - 203 NON_AUTHORITATIVE_INFORMATION
+          - 204 NO_CONTENT
+          - 205 RESET_CONTENT
+          - 206 PARTIAL_CONTENT
+          - 207 MULTI_STATUS
+          - 208 ALREADY_REPORTED
+          - 226 IM_USED
+          - 300 MULTIPLE_CHOICES
+          - 301 MOVED_PERMANENTLY
+          - 302 FOUND
+          - 302 MOVED_TEMPORARILY
+          - 303 SEE_OTHER
+          - 304 NOT_MODIFIED
+          - 305 USE_PROXY
+          - 307 TEMPORARY_REDIRECT
+          - 308 PERMANENT_REDIRECT
+          - 400 BAD_REQUEST
+          - 401 UNAUTHORIZED
+          - 402 PAYMENT_REQUIRED
+          - 403 FORBIDDEN
+          - 404 NOT_FOUND
+          - 405 METHOD_NOT_ALLOWED
+          - 406 NOT_ACCEPTABLE
+          - 407 PROXY_AUTHENTICATION_REQUIRED
+          - 408 REQUEST_TIMEOUT
+          - 409 CONFLICT
+          - 410 GONE
+          - 411 LENGTH_REQUIRED
+          - 412 PRECONDITION_FAILED
+          - 413 PAYLOAD_TOO_LARGE
+          - 413 REQUEST_ENTITY_TOO_LARGE
+          - 414 URI_TOO_LONG
+          - 414 REQUEST_URI_TOO_LONG
+          - 415 UNSUPPORTED_MEDIA_TYPE
+          - 416 REQUESTED_RANGE_NOT_SATISFIABLE
+          - 417 EXPECTATION_FAILED
+          - 418 I_AM_A_TEAPOT
+          - 419 INSUFFICIENT_SPACE_ON_RESOURCE
+          - 420 METHOD_FAILURE
+          - 421 DESTINATION_LOCKED
+          - 422 UNPROCESSABLE_ENTITY
+          - 423 LOCKED
+          - 424 FAILED_DEPENDENCY
+          - 425 TOO_EARLY
+          - 426 UPGRADE_REQUIRED
+          - 428 PRECONDITION_REQUIRED
+          - 429 TOO_MANY_REQUESTS
+          - 431 REQUEST_HEADER_FIELDS_TOO_LARGE
+          - 451 UNAVAILABLE_FOR_LEGAL_REASONS
+          - 500 INTERNAL_SERVER_ERROR
+          - 501 NOT_IMPLEMENTED
+          - 502 BAD_GATEWAY
+          - 503 SERVICE_UNAVAILABLE
+          - 504 GATEWAY_TIMEOUT
+          - 505 HTTP_VERSION_NOT_SUPPORTED
+          - 506 VARIANT_ALSO_NEGOTIATES
+          - 507 INSUFFICIENT_STORAGE
+          - 508 LOOP_DETECTED
+          - 509 BANDWIDTH_LIMIT_EXCEEDED
+          - 510 NOT_EXTENDED
+          - 511 NETWORK_AUTHENTICATION_REQUIRED
+        message:
+          type: string
+          description: Error Message
+          example: Internal server error
+        errors:
+          type: array
+          description: Internal server error
+          example:
+          - 'Internal server error '
+          items:
+            type: string
+        timestamp:
+          type: string
+          description: Occurred timestamp
+          format: date-time
+          example: '2023-03-27T20:59:32.376Z'
+        trackingId:
+          type: string
+          description: Unique ID by which a request can be debugged. Please provide if opening a support case.
+          example: 76cd71d0e678a8bb
+    ApiError404:
+      required:
+      - trackingId
+      type: object
+      properties:
+        status:
+          type: string
+          description: Http Status Description
+          example: 404 NOT_FOUND
+          enum:
+          - 100 CONTINUE
+          - 101 SWITCHING_PROTOCOLS
+          - 102 PROCESSING
+          - 103 EARLY_HINTS
+          - 103 CHECKPOINT
+          - 200 OK
+          - 201 CREATED
+          - 202 ACCEPTED
+          - 203 NON_AUTHORITATIVE_INFORMATION
+          - 204 NO_CONTENT
+          - 205 RESET_CONTENT
+          - 206 PARTIAL_CONTENT
+          - 207 MULTI_STATUS
+          - 208 ALREADY_REPORTED
+          - 226 IM_USED
+          - 300 MULTIPLE_CHOICES
+          - 301 MOVED_PERMANENTLY
+          - 302 FOUND
+          - 302 MOVED_TEMPORARILY
+          - 303 SEE_OTHER
+          - 304 NOT_MODIFIED
+          - 305 USE_PROXY
+          - 307 TEMPORARY_REDIRECT
+          - 308 PERMANENT_REDIRECT
+          - 400 BAD_REQUEST
+          - 401 UNAUTHORIZED
+          - 402 PAYMENT_REQUIRED
+          - 403 FORBIDDEN
+          - 404 NOT_FOUND
+          - 405 METHOD_NOT_ALLOWED
+          - 406 NOT_ACCEPTABLE
+          - 407 PROXY_AUTHENTICATION_REQUIRED
+          - 408 REQUEST_TIMEOUT
+          - 409 CONFLICT
+          - 410 GONE
+          - 411 LENGTH_REQUIRED
+          - 412 PRECONDITION_FAILED
+          - 413 PAYLOAD_TOO_LARGE
+          - 413 REQUEST_ENTITY_TOO_LARGE
+          - 414 URI_TOO_LONG
+          - 414 REQUEST_URI_TOO_LONG
+          - 415 UNSUPPORTED_MEDIA_TYPE
+          - 416 REQUESTED_RANGE_NOT_SATISFIABLE
+          - 417 EXPECTATION_FAILED
+          - 418 I_AM_A_TEAPOT
+          - 419 INSUFFICIENT_SPACE_ON_RESOURCE
+          - 420 METHOD_FAILURE
+          - 421 DESTINATION_LOCKED
+          - 422 UNPROCESSABLE_ENTITY
+          - 423 LOCKED
+          - 424 FAILED_DEPENDENCY
+          - 425 TOO_EARLY
+          - 426 UPGRADE_REQUIRED
+          - 428 PRECONDITION_REQUIRED
+          - 429 TOO_MANY_REQUESTS
+          - 431 REQUEST_HEADER_FIELDS_TOO_LARGE
+          - 451 UNAVAILABLE_FOR_LEGAL_REASONS
+          - 500 INTERNAL_SERVER_ERROR
+          - 501 NOT_IMPLEMENTED
+          - 502 BAD_GATEWAY
+          - 503 SERVICE_UNAVAILABLE
+          - 504 GATEWAY_TIMEOUT
+          - 505 HTTP_VERSION_NOT_SUPPORTED
+          - 506 VARIANT_ALSO_NEGOTIATES
+          - 507 INSUFFICIENT_STORAGE
+          - 508 LOOP_DETECTED
+          - 509 BANDWIDTH_LIMIT_EXCEEDED
+          - 510 NOT_EXTENDED
+          - 511 NETWORK_AUTHENTICATION_REQUIRED
+        message:
+          type: string
+          description: Error Message
+          example: Resource not found
+        errors:
+          type: array
+          description: Resource Already Found
+          example:
+          - Id 3249892348-sdfjsdhf-345hdsf-345345 Not Found
+          items:
+            type: string
+        timestamp:
+          type: string
+          description: Occurred timestamp
+          format: date-time
+          example: '2023-03-27T20:59:32.376Z'
+        trackingId:
+          type: string
+          description: Unique ID by which a request can be debugged. Please provide if opening a support case.
+          example: 76cd71d0e678a8bb
+    MergePersonRequestModel:
+      type: object
+      properties:
+        override:
+          type: boolean
+          description: Override flag which will override the existing person with the new data if set to true. Default is false.
+          example: false
+        firstName:
+          type: string
+          description: firstName
+          example: John
+        lastName:
+          type: string
+          description: lastName
+          example: Doe
+        phone:
+          uniqueItems: true
+          type: array
+          description: Phone Number
+          example:
+          - '+12342342345'
+          items:
+            type: string
+        email:
+          uniqueItems: true
+          type: array
+          description: Email
+          example:
+          - johndoe@gmail.com
+          items:
+            type: string
+        temporaryId:
+          uniqueItems: true
+          type: array
+          description: Temporary Id
+          example:
+          - 2342s-sdsd-342345
+          items:
+            type: string
+        customerId:
+          uniqueItems: true
+          type: array
+          description: Customer Id
+          example:
+          - '234'
+          items:
+            type: string
+        socialId:
+          uniqueItems: true
+          type: array
+          description: Social Id
+          example:
+          - johndoe@gmail.com,+12342342345
+          items:
+            type: string
+      description: Merge Person
+    CreateOrUpdatePersonRequestModel:
+      type: object
+      properties:
+        firstName:
+          type: string
+          description: firstName
+          example: John
+        lastName:
+          type: string
+          description: lastName
+          example: Doe
+        phone:
+          type: array
+          description: Phone Number
+          example:
+          - '+12342342345'
+          items:
+            type: string
+        email:
+          type: array
+          description: Email
+          example:
+          - johndoe@gmail.com
+          items:
+            type: string
+        temporaryId:
+          type: array
+          description: Temporary Id
+          example:
+          - 2342s-sdsd-342345
+          items:
+            type: string
+        customerId:
+          type: array
+          description: Customer Id
+          example:
+          - '234'
+          items:
+            type: string
+      description: Create Or Update Person
+    BaseMetaResponseEnvelope:
+      type: object
+      properties:
+        organizationId:
+          type: string
+          description: Organization ID
+          example: 1eb65fdf-9643-417f-9974-ad72cae0e10f
+      description: Meta information of the response
+      example:
+        organizationId: 1eb65fdf-9643-417f-9974-ad72cae0e10f
+    PersonGetResponse:
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/BaseMetaResponseEnvelope'
+        data:
+          type: array
+          description: Data part of the response
+          items:
+            $ref: '#/components/schemas/PersonResponseModel'
+    PatchDocument:
+      required:
+      - op
+      - path
+      type: object
+      properties:
+        op:
+          type: string
+          description: 'The operation to be performed '
+          example: update
+          enum:
+          - add
+          - update
+          - remove
+        path:
+          type: string
+          description: A JSON-Pointer
+          example: /name
+        value:
+          type: string
+          description: The value to be used within the operations.
+          example: test
+      description: A JSONPatch document as defined by RFC 6902
+    AddIdentitiesToPersonRequestModel:
+      type: object
+      properties:
+        phone:
+          type: array
+          description: Phone Number
+          example:
+          - '+12342342345'
+          items:
+            type: string
+        email:
+          type: array
+          description: Email
+          example:
+          - johndoe@gmail.com
+          items:
+            type: string
+        temporaryId:
+          type: array
+          description: Temporary Id
+          example:
+          - 2342s-sdsd-342345
+          items:
+            type: string
+        customerId:
+          type: array
+          description: Customer Id
+          example:
+          - '234'
+          items:
+            type: string
+      description: Add Identities to Person
+    MergePersonsRequest:
+      required:
+      - personIdsToMerge
+      type: object
+      properties:
+        personIdsToMerge:
+          maxItems: 2147483647
+          minItems: 1
+          type: array
+          description: List of Person Ids to merge
+          example:
+          - 6435e80153802b2a273bae3a
+          - 6435e80153802b2a273bae3b
+          - 6435e80153802b2a273bae3c
+          items:
+            type: string
+      description: Merge two or more persons
+  securitySchemes:
+    oauth2:
+      flows:
+        authorizationCode:
+          authorizationUrl: /
+          scopes: {}
+          tokenUrl: /
+      type: oauth2
+    bearer-key:
+      type: http
+      description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
+      scheme: bearer
+      bearerFormat: JWT
+    bearerAuth:
+      type: oauth2
+      description: OAuth 2.0 Bearer token authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: https://webexapis.com/v1/authorize
+          tokenUrl: https://webexapis.com/v1/access_token
+          scopes:
+            spark:applications_token: Create access tokens for Service Apps

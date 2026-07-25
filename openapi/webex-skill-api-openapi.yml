@@ -1,0 +1,1735 @@
+openapi: 3.0.0
+info:
+  title: Webex Admin Address Book Skill API
+  version: 1.0.0
+  description: The Webex Admin APIs provide comprehensive programmatic access to administrative functions for managing Webex organizations, users, licenses, and settings. These APIs enable automation of user provisioning, license assignment, compliance management, and audit event retrieval. Administrators can integrate with enterprise identity systems, enforce security policies, monitor usage, and streamline onboarding/offboarding processes. The APIs support granular control over organizational resources, making them ideal for large-scale deployments and custom admin tooling.
+tags:
+- name: Skill
+paths:
+  /organization/{orgid}/skill:
+    get:
+      tags:
+      - Skill
+      summary: List Skill(s)
+      description: "Retrieve a list of Skill(s) in a given organization.\n Note: Returning array fields in the List (Get All) API response is deprecated. To retrieve the complete resource with all fields, please use the Get-by-ID API instead."
+      operationId: getAllConfig_2
+      parameters:
+      - name: orgid
+        in: path
+        description: Organization ID to be used for this operation. The specified security token must have permission to interact with the organization.
+        required: true
+        schema:
+          type: string
+        example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+      - name: filter
+        in: query
+        description: "Specify a filter based on which the results will be fetched. Supported filterable fields:  id. \n\nThe examples below show some search queries\n- id==\"57efb0e6-5af0-4245-a67d-d3c5045cdb6e\"\n- id!=\"57efb0e6-5af0-4245-a67d-d3c5045cdb6e\"\n- id=in=(\"57efb0e6-5af0-4245-a67d-d3c5045cdb6e\",\"a421e0b2-732e-46f3-a057-39160a53afb9\")\n- id=out=(\"57efb0e6-5af0-4245-a67d-d3c5045cdb6e\",\"a421e0b2-732e-46f3-a057-39160a53afb9\")\nThis parameter uses the RSQL query syntax, a URI-friendly format for expressing criteria for filtering REST entities. For more information about RSQL in general, see  <a href=\"https://www.here.com/docs/bundle/data-client-library-developer-guide-java-scala/page/client/rsql.html\">this reference</a>. For a list of supported operators, see <a href=\"https://github.com/perplexhub/rsql-jpa-specification#rsql-syntax-reference\">this syntax guide</a>.\n\nNote: values to be used in the filter syntax should not contain spaces. If they do, please enclose them in quotes to apply the filter.\n"
+        required: false
+        schema:
+          type: string
+        example: id=="2f9eecc5-0472-4549-9a83-2afdae0d4ba1"
+      - name: attributes
+        in: query
+        description: Specify the attributes to be returned. By default, all attributes are returned along with the specified columns. All attributes are supported. except (enumSkillValues)
+        required: false
+        schema:
+          type: string
+          format: string
+        example: id
+      - name: page
+        in: query
+        description: Defines the number of displayed page. The page number starts from 0.
+        schema:
+          type: integer
+          default: 0
+          example: 0
+        example: 0
+      - name: pageSize
+        in: query
+        description: Defines the number of items to be displayed on a page. If the number specified is more than allowed max page size, the API will automatically adjust the page size to the max page size.
+        schema:
+          type: integer
+          default: 100
+          example: 100
+        example: 100
+      - name: singleObjectResponse
+        in: query
+        description: Specifiy whether to include array fields in the response, This query param should use only if the response contain single record, if we are using for multiple objects response query param not supported and throws an exception.
+        schema:
+          type: boolean
+          default: false
+          example: false
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SkillDTO'
+        '401':
+          description: Unauthorized Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '401'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '401'
+                    entity: cc_user
+                    references: []
+        '403':
+          description: Operation is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '403'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '403'
+                    entity: cc_user
+                    references: []
+        '404':
+          description: Resource not found or URI is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '404'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '404'
+                    entity: cc_user
+                    references: []
+        '429':
+          description: Too many requests have been sent in a given amount of time and the request has been rate limited
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '429'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '429'
+                    entity: cc_user
+                    references: []
+        '500':
+          description: An Unexpected Error Occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '500'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '500'
+                    entity: cc_user
+                    references: []
+      deprecated: false
+    post:
+      tags:
+      - Skill
+      summary: Create a new Skill
+      description: Create a new Skill in a given organization.
+      operationId: createConfig_3
+      parameters:
+      - name: orgid
+        in: path
+        description: Organization ID to be used for this operation. The specified security token must have permission to interact with the organization.
+        required: true
+        schema:
+          type: string
+        example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+      - name: payloadDTO
+        in: query
+        description: Skill configuration data
+        required: true
+        schema:
+          $ref: '#/components/schemas/SkillDTO'
+        example:
+          name: German Speaking
+          description: Skill to speak fluent German
+          serviceLevelThreshold: 0
+          active: true
+          skillType: Boolean
+      responses:
+        '201':
+          description: Created
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SkillDTO'
+        '400':
+          description: The request was invalid and cannot be served. An accompanying error message will explain further
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '400'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '400'
+                    entity: cc_user
+                    references: []
+        '401':
+          description: Unauthorized Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '401'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '401'
+                    entity: cc_user
+                    references: []
+        '403':
+          description: Operation is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '403'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '403'
+                    entity: cc_user
+                    references: []
+        '409':
+          description: Similar entity is already present
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '409'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '409'
+                    entity: cc_user
+                    references: []
+        '429':
+          description: Too many requests have been sent in a given amount of time and the request has been rate limited
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '429'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '429'
+                    entity: cc_user
+                    references: []
+        '500':
+          description: An Unexpected Error Occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '500'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '500'
+                    entity: cc_user
+                    references: []
+      deprecated: false
+  /organization/{orgid}/skill/bulk:
+    post:
+      tags:
+      - Skill
+      summary: Bulk save Skill(s)
+      description: Create, Update or delete Skill(s) in bulk in a given organization.
+      operationId: saveAllConfig_2
+      parameters:
+      - name: orgid
+        in: path
+        description: Organization ID to be used for this operation. The specified security token must have permission to interact with the organization.
+        required: true
+        schema:
+          type: string
+        example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkRequestDTOSkillDTO'
+        required: true
+      responses:
+        '207':
+          description: Multi-Status
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/BulkResponseDTO'
+        '400':
+          description: The request was invalid and cannot be served. An accompanying error message will explain further
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '400'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '400'
+                    entity: cc_user
+                    references: []
+        '401':
+          description: Unauthorized Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '401'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '401'
+                    entity: cc_user
+                    references: []
+        '403':
+          description: Operation is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '403'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '403'
+                    entity: cc_user
+                    references: []
+        '409':
+          description: Similar entity is already present
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '409'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '409'
+                    entity: cc_user
+                    references: []
+        '429':
+          description: Too many requests have been sent in a given amount of time and the request has been rate limited
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '429'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '429'
+                    entity: cc_user
+                    references: []
+        '500':
+          description: An Unexpected Error Occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '500'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '500'
+                    entity: cc_user
+                    references: []
+      deprecated: false
+  /organization/{orgid}/skill/populate-json-attr/{id}:
+    post:
+      tags:
+      - Skill
+      summary: Populate json-attributes field for a given skill-id of an organization
+      operationId: populateJsonAttributesByOrgIdAndSkillId
+      parameters:
+      - name: orgid
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: The request was invalid and cannot be served. An accompanying error message will explain further
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '400'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '400'
+                    entity: cc_user
+                    references: []
+        '401':
+          description: Unauthorized Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '401'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '401'
+                    entity: cc_user
+                    references: []
+        '403':
+          description: Operation is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '403'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '403'
+                    entity: cc_user
+                    references: []
+        '409':
+          description: Similar entity is already present
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '409'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '409'
+                    entity: cc_user
+                    references: []
+        '429':
+          description: Too many requests have been sent in a given amount of time and the request has been rate limited
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '429'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '429'
+                    entity: cc_user
+                    references: []
+        '500':
+          description: An Unexpected Error Occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '500'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '500'
+                    entity: cc_user
+                    references: []
+  /organization/{orgid}/skill/purge-inactive-entities:
+    post:
+      tags:
+      - Skill
+      summary: Purge inactive Skill(s)
+      description: Purge inactive Skill(s) older than the configured interval for a given organization.
+      operationId: purgeInactiveConfig_2
+      parameters:
+      - name: orgid
+        in: path
+        description: Organization ID to be used for this operation. The specified security token must have permission to interact with the organization.
+        required: true
+        schema:
+          type: string
+        example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+      - name: nextStartId
+        in: query
+        description: This is the entity ID from which items for the next purge batch with be selected.
+        required: false
+        schema:
+          type: string
+          default: ''
+        example: af9eecc5-0472-4549-9a83-2afdae0d4ba0
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Response'
+        '400':
+          description: The request was invalid and cannot be served. An accompanying error message will explain further
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '400'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '400'
+                    entity: cc_user
+                    references: []
+        '401':
+          description: Unauthorized Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '401'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '401'
+                    entity: cc_user
+                    references: []
+        '403':
+          description: Operation is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '403'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '403'
+                    entity: cc_user
+                    references: []
+        '409':
+          description: Similar entity is already present
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '409'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '409'
+                    entity: cc_user
+                    references: []
+        '429':
+          description: Too many requests have been sent in a given amount of time and the request has been rate limited
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '429'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '429'
+                    entity: cc_user
+                    references: []
+        '500':
+          description: An Unexpected Error Occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '500'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '500'
+                    entity: cc_user
+                    references: []
+      deprecated: false
+  /organization/{orgid}/skill/{id}:
+    get:
+      tags:
+      - Skill
+      summary: Get specific Skill by ID
+      description: Retrieve an existing Skill by ID in a given organization.
+      operationId: getConfig_3
+      parameters:
+      - name: orgid
+        in: path
+        description: Organization ID to be used for this operation. The specified security token must have permission to interact with the organization.
+        required: true
+        schema:
+          type: string
+        example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+      - name: id
+        in: path
+        description: Resource ID of the Skill.
+        required: true
+        schema:
+          type: string
+        example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba2
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SkillDTO'
+        '401':
+          description: Unauthorized Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '401'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '401'
+                    entity: cc_user
+                    references: []
+        '403':
+          description: Operation is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '403'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '403'
+                    entity: cc_user
+                    references: []
+        '404':
+          description: Resource not found or URI is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '404'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '404'
+                    entity: cc_user
+                    references: []
+        '429':
+          description: Too many requests have been sent in a given amount of time and the request has been rate limited
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '429'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '429'
+                    entity: cc_user
+                    references: []
+        '500':
+          description: An Unexpected Error Occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '500'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '500'
+                    entity: cc_user
+                    references: []
+      deprecated: false
+    put:
+      tags:
+      - Skill
+      summary: Update specific Skill by ID
+      description: Update an existing Skill by ID in a given organization.
+      operationId: updateConfig_3
+      parameters:
+      - name: orgid
+        in: path
+        description: Organization ID to be used for this operation. The specified security token must have permission to interact with the organization.
+        required: true
+        schema:
+          type: string
+        example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+      - name: id
+        in: path
+        description: Resource ID of the Skill.
+        required: true
+        schema:
+          type: string
+        example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba2
+      - name: payloadDTO
+        in: query
+        description: Skill configuration data for update
+        required: true
+        schema:
+          $ref: '#/components/schemas/SkillDTO'
+        example:
+          name: German Speaking Updated
+          description: Updated skill to speak fluent German
+          serviceLevelThreshold: 5
+          active: true
+          skillType: Boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SkillDTO'
+        '400':
+          description: The request was invalid and cannot be served. An accompanying error message will explain further
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '400'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '400'
+                    entity: cc_user
+                    references: []
+        '401':
+          description: Unauthorized Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '401'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '401'
+                    entity: cc_user
+                    references: []
+        '403':
+          description: Operation is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '403'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '403'
+                    entity: cc_user
+                    references: []
+        '404':
+          description: Resource not found or URI is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '404'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '404'
+                    entity: cc_user
+                    references: []
+        '412':
+          description: Resource referred in other entity(s). Please get all the reference entities info by invoking Get incoming-references api.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '412'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '412'
+                    entity: cc_user
+                    references: []
+        '429':
+          description: Too many requests have been sent in a given amount of time and the request has been rate limited
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '429'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '429'
+                    entity: cc_user
+                    references: []
+        '500':
+          description: An Unexpected Error Occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '500'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '500'
+                    entity: cc_user
+                    references: []
+      deprecated: false
+    delete:
+      tags:
+      - Skill
+      summary: Delete specific Skill by ID
+      description: Delete an existing Skill by ID in a given organization.
+      operationId: deleteConfig_3
+      parameters:
+      - name: orgid
+        in: path
+        description: Organization ID to be used for this operation. The specified security token must have permission to interact with the organization.
+        required: true
+        schema:
+          type: string
+        example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+      - name: id
+        in: path
+        description: Resource ID of the Skill.
+        required: true
+        schema:
+          type: string
+        example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba2
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '401'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '401'
+                    entity: cc_user
+                    references: []
+        '403':
+          description: Operation is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '403'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '403'
+                    entity: cc_user
+                    references: []
+        '404':
+          description: Resource not found or URI is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '404'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '404'
+                    entity: cc_user
+                    references: []
+        '412':
+          description: Resource referred in other entity(s). Please get all the reference entities info by invoking Get incoming-references api.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '412'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '412'
+                    entity: cc_user
+                    references: []
+        '429':
+          description: Too many requests have been sent in a given amount of time and the request has been rate limited
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '429'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '429'
+                    entity: cc_user
+                    references: []
+        '500':
+          description: An Unexpected Error Occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '500'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '500'
+                    entity: cc_user
+                    references: []
+      deprecated: false
+  /organization/{orgid}/skill/{id}/incoming-references:
+    get:
+      tags:
+      - Skill
+      summary: List references for a specific Skill
+      description: Retrieve a list of all entities that have reference to an existing Skill by ID in a given organization.
+      operationId: getIncomingReferences_2
+      parameters:
+      - name: orgid
+        in: path
+        description: Organization ID to be used for this operation. The specified security token must have permission to interact with the organization.
+        required: true
+        schema:
+          type: string
+        example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+      - name: id
+        in: path
+        description: ID of this contact center resource.
+        required: true
+        schema:
+          type: string
+        example: af9eecc5-0472-4549-9a83-2afdae0d4ba0
+      - name: type
+        in: query
+        description: Entity type of the other entity that has a reference to this specific entity.
+        required: false
+        schema:
+          type: string
+        example: type_text
+      - name: page
+        in: query
+        description: Defines the number of displayed page. The page number starts from 0.
+        schema:
+          type: integer
+          default: 0
+          example: 0
+        example: 0
+      - name: pageSize
+        in: query
+        description: Defines the number of items to be displayed on a page. If the number specified is more than allowed max page size, the API will automatically adjust the page size to the max page size.
+        schema:
+          type: integer
+          default: 100
+          example: 100
+        example: 100
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/EntityReferenceInfoDTO'
+        '401':
+          description: Unauthorized Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '401'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '401'
+                    entity: cc_user
+                    references: []
+        '403':
+          description: Operation is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '403'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '403'
+                    entity: cc_user
+                    references: []
+        '404':
+          description: Resource not found or URI is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '404'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '404'
+                    entity: cc_user
+                    references: []
+        '429':
+          description: Too many requests have been sent in a given amount of time and the request has been rate limited
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '429'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '429'
+                    entity: cc_user
+                    references: []
+        '500':
+          description: An Unexpected Error Occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '500'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '500'
+                    entity: cc_user
+                    references: []
+      deprecated: false
+  /organization/{orgid}/v2/skill:
+    get:
+      tags:
+      - Skill
+      summary: List Skill(s)
+      description: "Retrieve a list of Skill(s) in a given organization.\n Note: Returning array fields in the List (Get All) API response is deprecated. To retrieve the complete resource with all fields, please use the Get-by-ID API instead."
+      operationId: getAllConfigWithMetaData_4
+      parameters:
+      - name: orgid
+        in: path
+        description: Organization ID to be used for this operation. The specified security token must have permission to interact with the organization.
+        required: true
+        schema:
+          type: string
+        example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+      - name: filter
+        in: query
+        description: "Specify a filter based on which the results will be fetched. All the fields are supported except: organizationId, enumSkillValues, createdTime, lastUpdatedTime \n\nThe examples below show some search queries\n- id==\"57efb0e6-5af0-4245-a67d-d3c5045cdb6e\"\n- id!=\"57efb0e6-5af0-4245-a67d-d3c5045cdb6e\"\n- id=in=(\"57efb0e6-5af0-4245-a67d-d3c5045cdb6e\",\"a421e0b2-732e-46f3-a057-39160a53afb9\")\n- id=out=(\"57efb0e6-5af0-4245-a67d-d3c5045cdb6e\",\"a421e0b2-732e-46f3-a057-39160a53afb9\")\nThis parameter uses the RSQL query syntax, a URI-friendly format for expressing criteria for filtering REST entities. For more information about RSQL in general, see  <a href=\"https://www.here.com/docs/bundle/data-client-library-developer-guide-java-scala/page/client/rsql.html\">this reference</a>. For a list of supported operators, see <a href=\"https://github.com/perplexhub/rsql-jpa-specification#rsql-syntax-reference\">this syntax guide</a>.\n\nNote: values to be used in the filter syntax should not contain spaces. If they do, please enclose them in quotes to apply the filter.\n"
+        required: false
+        schema:
+          type: string
+        example: id=="2f9eecc5-0472-4549-9a83-2afdae0d4ba1"
+      - name: attributes
+        in: query
+        description: Specify the attributes to be returned. By default, all attributes are returned along with the specified columns. All attributes are supported. except (enumSkillValues)
+        required: false
+        schema:
+          type: string
+          format: string
+        example: id
+      - name: search
+        in: query
+        description: 'Filter data based on the search keyword.Supported search columns(name)
+
+
+          The examples below show some search queries
+
+          - "Cisco"
+
+          - field=="name";value=="Cisco"
+
+          - fields=in=("name");value=="Cisco"
+
+          '
+        required: false
+        schema:
+          type: string
+        example: contact center
+      - name: page
+        in: query
+        description: Defines the number of displayed page. The page number starts from 0.
+        schema:
+          type: integer
+          default: 0
+          example: 0
+        example: 0
+      - name: pageSize
+        in: query
+        description: Defines the number of items to be displayed on a page. If the number specified is more than allowed max page size, the API will automatically adjust the page size to the max page size.
+        schema:
+          type: integer
+          default: 100
+          example: 100
+        example: 100
+      - name: singleObjectResponse
+        in: query
+        description: Specifiy whether to include array fields in the response, This query param should use only if the response contain single record, if we are using for multiple objects response query param not supported and throws an exception.
+        schema:
+          type: boolean
+          default: false
+          example: false
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ResponseEnvelopeSkillDTO'
+        '401':
+          description: Unauthorized Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '401'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '401'
+                    entity: cc_user
+                    references: []
+        '403':
+          description: Operation is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '403'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '403'
+                    entity: cc_user
+                    references: []
+        '404':
+          description: Resource not found or URI is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '404'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '404'
+                    entity: cc_user
+                    references: []
+        '429':
+          description: Too many requests have been sent in a given amount of time and the request has been rate limited
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '429'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '429'
+                    entity: cc_user
+                    references: []
+        '500':
+          description: An Unexpected Error Occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+              example:
+                trackingId: ccconfig_af9eecc5-0472-4549-9a83-2afdae0d4ba0
+                error:
+                  key: '500'
+                  reason: Test reason
+                  message:
+                  - description: Test error
+                    code: '500'
+                    entity: cc_user
+                    references: []
+      deprecated: false
+components:
+  schemas:
+    EntityInfo:
+      type: object
+      properties:
+        id:
+          type: string
+          description: id
+          example: id.
+        name:
+          type: string
+          description: name
+          example: name.
+        additionalAttributes:
+          type: object
+          additionalProperties:
+            type: string
+            description: A map containing additional attributes of entity where both the key and value are Strings.
+            example: '{"key1":"value1","key2":"value2"}'
+          description: A map containing additional attributes of entity where both the key and value are Strings.
+          example:
+            key1: value1
+            key2: value2
+        createdDate:
+          type: string
+        lastModifiedDate:
+          type: string
+        version:
+          type: integer
+          format: int32
+    Response:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        details:
+          type: object
+          additionalProperties:
+            type: object
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'
+    SkillDTO:
+      type: object
+      properties:
+        organizationId:
+          type: string
+          format: uuid
+          description: ID of the contact center organization. This field is required for all bulk save operations.
+          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+          maxLength: 36
+          minLength: 32
+          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
+        id:
+          type: string
+          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
+          example: 93912f11-6017-404b-bf14-5331890b1797
+        version:
+          type: integer
+          format: int32
+          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
+          example: 1
+        name:
+          type: string
+          description: Indicates the name of the skill. Once created, name cannot be modified.
+          example: German Speaking
+          maxLength: 80
+          minLength: 0
+          pattern: ^[a-zA-Z0-9,@_.\-\s]*$
+        description:
+          type: string
+          description: Indicates the description of the skill.
+          example: Skill to speak fluent German.
+          maxLength: 255
+          minLength: 0
+        serviceLevelThreshold:
+          type: integer
+          format: int32
+          description: "Allows to set the time that a customer request can be in a queue before the system flags it as outside the service level. \n\n If the agent completes a customer service request within this time interval, the system considers it within the service level. \nIt is required only for a create or an update operation."
+          example: 0
+        enumSkillValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/EnumSkillValueDTO'
+            description: If skillType is enum, the skill can take different sub-values which are defined with this field. For instance, a skill named "tech support" may have enumSkillValues for "windows", "macOS" and "linux".
+          uniqueItems: true
+        active:
+          type: boolean
+          description: Indicates the status of the skill whether it is active(when true) or not active(when false). It is required only during a create or an update operation.
+          example: true
+        dynamicSkill:
+          type: boolean
+          description: Indicates whether the skill is a dynamic skill or not. Default value is false.
+          example: false
+        skillType:
+          type: string
+          description: 'This can be of the following types
+
+
+            PROFICIENCY: id = 0
+
+
+            BOOLEAN: id = 1
+
+
+            TEXT: id = 2
+
+
+            ENUM: id = 3
+
+
+            Once created, skillType cannot be modified.
+
+            '
+          enum:
+          - Proficiency
+          - Boolean
+          - Text
+          - enum
+          example: BOOLEAN
+        createdTime:
+          type: integer
+          format: int64
+          description: This is the created time of the entity.
+          example: 123456789
+        lastUpdatedTime:
+          type: integer
+          format: int64
+          description: This is the updated time of the entity.
+          example: 123456789
+      required:
+      - active
+      - name
+      - serviceLevelThreshold
+      - skillType
+    ApiErrorResponse:
+      description: Response body for an API error.
+      type: object
+      properties:
+        trackingId:
+          type: string
+          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
+          example: c1a4fcef-aee2-4dea-8977-29f594760552
+        error:
+          description: An object containing details about the error.
+          $ref: '#/components/schemas/ErrorDetails'
+    Link:
+      type: object
+      properties:
+        href:
+          type: string
+        hreflang:
+          type: string
+        title:
+          type: string
+        type:
+          type: string
+        deprecation:
+          type: string
+        profile:
+          type: string
+        name:
+          type: string
+        templated:
+          type: boolean
+    ErrorDetails:
+      description: Details of an error.
+      type: object
+      properties:
+        key:
+          type: string
+          description: An application defined error code.
+          example: '401'
+        message:
+          type: array
+          description: A message providing details about the error.
+          items:
+            $ref: '#/components/schemas/OperationError'
+    BulkResponseItemDTO:
+      type: object
+      properties:
+        itemIdentifier:
+          type: integer
+          description: Unique item identifier for a bulk operation.
+          format: int32
+          example: 10
+        status:
+          type: integer
+          description: Indicates the error status code.
+          format: int32
+          example: 400
+        operationType:
+          type: string
+          description: The kind of operation desired of an entity.
+          example: CREATE
+          enum:
+          - CREATE
+          - UPDATE
+          - DELETE
+          - GET
+        href:
+          type: string
+          description: The resource URI of an entity.
+          example: /api/organization/6705c69d-4585-42ad-bfc3-79cc485dfb15/team/7b26d174-0016-4682-9858-65918e05f85
+        apiError:
+          $ref: '#/components/schemas/ApiErrorResponse'
+      example:
+        apiError:
+          error:
+            key: '400'
+            message:
+            - description: 'siteId: not found for given orgId.'
+              entity: string
+              references:
+              - id: string
+                name: string
+            reason: dependency exists
+          trackingId: ccconfig_c1a4fcef-aee2-4dea-8977-29f594760552
+        href: /api/organization/6705c69d-4585-42ad-bfc3-79cc485dfb15/team/7b26d174-0016-4682-9858-65918e05f85
+        itemIdentifier: 10
+        operationType: CREATE
+        status: 400
+    EntityReferenceInfoDTO:
+      type: object
+      properties:
+        description:
+          type: string
+          description: Description about reference info.
+          example: list of referenced entities
+        meta:
+          $ref: '#/components/schemas/MetaDataReferencesPagingInfo'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityInfo'
+    OperationError:
+      description: An error message providing details about the operation failure.
+      type: object
+      properties:
+        description:
+          type: string
+          description: A human readable explanation for the occurrence of an error.
+          example: Incorrect Credentials.
+    BulkResponseDTO:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BulkResponseItemDTO'
+    MetaDataReferencesPagingInfo:
+      title: MetaDataReferencesPagingInfo
+      type: object
+      properties:
+        orgid:
+          maxLength: 36
+          minLength: 32
+          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
+          type: string
+          description: Org ID
+          format: uuid
+          example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+        page:
+          type: integer
+          description: Current page number
+          format: int32
+          example: 1
+        pageSize:
+          type: integer
+          description: Page size for current data set
+          format: int32
+          example: 100
+        totalPages:
+          type: integer
+          description: Number of pages
+          format: int32
+          example: 1
+        totalRecords:
+          type: integer
+          description: Total number of items
+          format: int32
+          example: 1000
+        links:
+          type: object
+          description: Map of pagination links with self, next, prev, last and first
+          example:
+            next: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=2&pageSize=10
+            last: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=3&pageSize=10
+            prev: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=0&pageSize=10
+            self: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=1&pageSize=10
+            first: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=0&pageSize=10
+        referencedEntities:
+          type: array
+          description: List of referenced entities
+          example:
+          - agent-profile
+          - entrypoint
+          items:
+            type: string
+        currentEntity:
+          type: string
+          description: Name of current entity
+          example: entity_name
+      description: Metadata of response for references with paging information
+    BulkRequestItemDTOSkillDTO:
+      type: object
+      description: List of items in the bulk request.
+      properties:
+        itemIdentifier:
+          type: integer
+          format: int32
+          description: Unique item identifier for a bulk operation.
+          example: 10
+        item:
+          $ref: '#/components/schemas/SkillDTO'
+        requestAction:
+          type: string
+          description: Identifier for action type. Possible values are `SAVE` and `DELETE`.
+          example: SAVE
+    ResponseEnvelopeSkillDTO:
+      type: object
+      properties:
+        meta:
+          type: object
+          additionalProperties: {}
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/SkillDTO'
+    EnumSkillValueDTO:
+      type: object
+      properties:
+        organizationId:
+          type: string
+          format: uuid
+          description: ID of the contact center organization. This field is required for all bulk save operations.
+          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+          maxLength: 36
+          minLength: 32
+          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
+        id:
+          type: string
+          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
+          example: 93912f11-6017-404b-bf14-5331890b1797
+        version:
+          type: integer
+          format: int32
+          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
+          example: 1
+        name:
+          type: string
+          description: Indicates the name of the enumSkillValue.
+          example: MacOS support
+          maxLength: 80
+          minLength: 0
+          pattern: ^[a-zA-Z0-9._\-\s]*$
+        description:
+          type: string
+          description: Indicates the description of the enumSkillValue.
+          example: Ability to troubleshoot macOS issues.
+          maxLength: 255
+          minLength: 0
+        skillId:
+          type: string
+          description: Represents the skillId of the enumSkillValue.
+          example: 93912f11-6017-404b-bf14-5331890b1797
+        createdTime:
+          type: integer
+          format: int64
+          description: This is the created time of the entity.
+          example: 123456789
+        lastUpdatedTime:
+          type: integer
+          format: int64
+          description: This is the updated time of the entity.
+          example: 123456789
+      required:
+      - name
+    BulkRequestDTOSkillDTO:
+      type: object
+      properties:
+        items:
+          type: array
+          description: List of items in the bulk request.
+          items:
+            $ref: '#/components/schemas/BulkRequestItemDTOSkillDTO'
+  securitySchemes:
+    oauth2:
+      flows:
+        authorizationCode:
+          authorizationUrl: /
+          scopes: {}
+          tokenUrl: /
+      type: oauth2
+    bearer-key:
+      type: http
+      description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
+      scheme: bearer
+      bearerFormat: JWT
+    bearerAuth:
+      type: oauth2
+      description: OAuth 2.0 Bearer token authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: https://webexapis.com/v1/authorize
+          tokenUrl: https://webexapis.com/v1/access_token
+          scopes:
+            spark:applications_token: Create access tokens for Service Apps

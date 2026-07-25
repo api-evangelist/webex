@@ -1,0 +1,181 @@
+openapi: 3.0.0
+info:
+  title: Webex Admin Address Book Live Monitoring API
+  version: 1.0.0
+  description: The Webex Admin APIs provide comprehensive programmatic access to administrative functions for managing Webex organizations, users, licenses, and settings. These APIs enable automation of user provisioning, license assignment, compliance management, and audit event retrieval. Administrators can integrate with enterprise identity systems, enforce security policies, monitor usage, and streamline onboarding/offboarding processes. The APIs support granular control over organizational resources, making them ideal for large-scale deployments and custom admin tooling.
+tags:
+- name: Live Monitoring
+paths:
+  /livemonitoring/liveMeetingsByCountry:
+    post:
+      responses:
+        '200':
+          description: OK
+          headers:
+            Link:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LivemeetingByCountryResponse'
+              example:
+                siteUrls:
+                - cisco.webex.com
+                totalLiveMeetingCount: 3
+                totalLiveParticipantCount: 10
+                totalGoodQualityLiveMeetingCount: 3
+                totalGoodQualityLiveParticipantCount: 10
+                totalBadQualityMeetingCount: 0
+                totalBadQualityParticipantCount: 0
+                locations:
+                - badQualityLiveMeetingCount: 0
+                  badQualityLiveParticipantCount: 0
+                  goodQualityLiveMeetingCount: 1
+                  goodQualityLiveParticipantCount: 3
+                  country: South Korea
+                  countryLatitude: 37.55
+                  countryLongitude: 126.98333
+                  liveMeetingCount: 1
+                  liveParticipantCount: 3
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Get Live Meeting metrics categorized by Country
+      operationId: getLiveMeetingMetricsByCountry
+      description: "Retrieve live meeting metrics categorized by country for a specific meeting site or for all meeting sites owned by the customer. \n\nTo retrieve live monitoring information, you must use an administrator token with the `analytics:read_all` [scope](/docs/integrations#scopes). The authenticated user must be a read-only or full administrator of the organization to which the meeting belongs and must not be an external administrator.\n\nTo use this endpoint, the org needs to be licensed for the Webex Pro Pack.\n\nA rate limit of one API call per minute applies to each customer organization"
+      tags:
+      - Live Monitoring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LivemeetingByCountryRequestBody'
+components:
+  schemas:
+    LivemeetingByCountryResponse:
+      type: object
+      properties:
+        siteUrls:
+          type: array
+          items:
+            type: string
+          description: A list of site URLs.
+        totalLiveMeetingCount:
+          type: integer
+          description: Total number of live meetings.
+        totalLiveParticipantCount:
+          type: integer
+          description: Total number of live participants.
+        totalGoodQualityLiveMeetingCount:
+          type: integer
+          description: Total number of good quality live meetings.
+        totalGoodQualityLiveParticipantCount:
+          type: integer
+          description: Total number of good quality live participants.
+        totalBadQualityMeetingCount:
+          type: integer
+          description: Total number of bad quality meetings.
+        totalBadQualityParticipantCount:
+          type: integer
+          description: Total number of bad quality participants.
+        locations:
+          type: array
+          items:
+            type: object
+            properties:
+              badQualityLiveMeetingCount:
+                type: integer
+                description: Bad quality live meeting count.
+              badQualityLiveParticipantCount:
+                type: integer
+                description: Bad quality live participant count.
+              goodQualityLiveMeetingCount:
+                type: integer
+                description: Good quality live meeting count.
+              goodQualityLiveParticipantCount:
+                type: integer
+                description: Good quality live participant count.
+              country:
+                type: string
+                description: Country name.
+              countryLatitude:
+                type: number
+                description: Country latitude.
+              countryLongitude:
+                type: number
+                description: Country longitude.
+              liveMeetingCount:
+                type: integer
+                description: Live meeting count.
+              liveParticipantCount:
+                type: integer
+                description: Live participant count.
+            required:
+            - country
+            - countryLatitude
+            - countryLongitude
+            - liveMeetingCount
+            - liveParticipantCount
+            - badQualityLiveMeetingCount
+            - badQualityLiveParticipantCount
+            - goodQualityLiveMeetingCount
+            - goodQualityLiveParticipantCount
+          description: Location breakdown of live meetings.
+    LivemeetingByCountryRequestBody:
+      type: object
+      description: If neither siteIds nor siteUrl is provided, all customer meeting sites will be included.
+      properties:
+        siteIds:
+          type: array
+          items:
+            type: integer
+          description: A list of meeting site Ids.
+          example:
+          - 1234567
+          - 2345678
+          - 3456789
+        siteUrl:
+          type: string
+          description: A site URL.
+          example: cisco.webex.com
+  securitySchemes:
+    oauth2:
+      flows:
+        authorizationCode:
+          authorizationUrl: /
+          scopes: {}
+          tokenUrl: /
+      type: oauth2
+    bearer-key:
+      type: http
+      description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
+      scheme: bearer
+      bearerFormat: JWT
+    bearerAuth:
+      type: oauth2
+      description: OAuth 2.0 Bearer token authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: https://webexapis.com/v1/authorize
+          tokenUrl: https://webexapis.com/v1/access_token
+          scopes:
+            spark:applications_token: Create access tokens for Service Apps

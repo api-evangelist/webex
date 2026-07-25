@@ -1,0 +1,1801 @@
+openapi: 3.0.0
+info:
+  title: Webex Admin Address Book Journey - Profile Creation & Insights API API
+  version: 1.0.0
+  description: The Webex Admin APIs provide comprehensive programmatic access to administrative functions for managing Webex organizations, users, licenses, and settings. These APIs enable automation of user provisioning, license assignment, compliance management, and audit event retrieval. Administrators can integrate with enterprise identity systems, enforce security policies, monitor usage, and streamline onboarding/offboarding processes. The APIs support granular control over organizational resources, making them ideal for large-scale deployments and custom admin tooling.
+tags:
+- name: Journey - Profile Creation & Insights API
+paths:
+  /admin/v1/api/profile-view-template/workspace-id/{workspaceId}/template-id/{templateId}:
+    get:
+      tags:
+      - Journey - Profile Creation & Insights API
+      summary: Get A specific Template searched by template id
+      description: "Get Template details by template Id in JDS. \n\nRole and Scope: Requires id full admin role with cjp:config_write or cjp:config_read scope. Or requires any role with cjp:user, cjp:config_write or cjp:config_write scope."
+      operationId: getTemplatebyId
+      parameters:
+      - name: workspaceId
+        in: path
+        description: Workspace ID
+        required: true
+        schema:
+          type: string
+        example: 63feryn344678998djs878
+      - name: templateId
+        in: path
+        description: Template ID
+        required: true
+        schema:
+          type: string
+        example: 638844db13272c52239c525d
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileResponse'
+        '404':
+          description: Not found
+        '500':
+          description: Internal error
+      security:
+      - bearerAuth: []
+    put:
+      tags:
+      - Journey - Profile Creation & Insights API
+      summary: Update existing ProfileViewTemplate
+      description: "Update existing Profile View Template in JDS. \n\nRole and Scope: Requires id full admin or any role with cjp:config_write scope."
+      operationId: updateProfileViewTemplate
+      parameters:
+      - name: workspaceId
+        in: path
+        description: Workspace ID
+        required: true
+        schema:
+          type: string
+        example: 63feryn344678998djs878
+      - name: templateId
+        in: path
+        description: Template ID
+        required: true
+        schema:
+          type: string
+        example: 638844db13272c52239c525d
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrUpdateTemplateModel'
+        required: true
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError400'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError500'
+      security:
+      - bearerAuth: []
+    delete:
+      tags:
+      - Journey - Profile Creation & Insights API
+      summary: Delete Template by template Id
+      description: "Delete Template By template id in JDS. \n\nRole and Scope: Requires id full admin or any role with cjp:config_write scope."
+      operationId: deleteTemplatebyId
+      parameters:
+      - name: workspaceId
+        in: path
+        description: Workspace ID
+        required: true
+        schema:
+          type: string
+        example: 63feryn344678998djs878
+      - name: templateId
+        in: path
+        description: Template ID
+        required: true
+        schema:
+          type: string
+        example: 638844db13272c52239c525d
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateResponseModel'
+        '404':
+          description: Not found
+        '500':
+          description: Internal error
+      security:
+      - bearerAuth: []
+  /admin/v1/api/profile-view-template/workspace-id/{workspaceId}:
+    get:
+      tags:
+      - Journey - Profile Creation & Insights API
+      summary: Get All Template Details
+      description: "Get Template details by Organization Id and workspaceId in JDS. \n\nRole and Scope: Requires id full admin role with cjp:config_write or cjp:config_read scope. Or requires any role with cjp:user, cjp:config_write or cjp:config_read scope."
+      operationId: getAllTemplates
+      parameters:
+      - name: workspaceId
+        in: path
+        description: Workspace ID
+        required: true
+        schema:
+          type: string
+        example: 63feryn344678998djs878
+      - name: filter
+        in: query
+        description: "Optional filter which can be applied to the elements to be fetched. \n\nThis parameter uses the RSQL query syntax, a URI-friendly format for expressing criteria for filtering REST entities. For more information about RSQL in general, see [this reference](https://developer.here.com/documentation/data-client-library/dev_guide/client/rsql.html). For a list of supported operators, see this [syntax guide](https://github.com/perplexhub/rsql-jpa-specification#rsql-syntax-reference)."
+        required: false
+        schema:
+          type: string
+        example: createdBy==satjonna@cisco.com
+      - name: sort
+        in: query
+        description: Sort direction
+        required: false
+        schema:
+          type: string
+        example: DESC
+      - name: sortBy
+        in: query
+        description: Sort By Field
+        required: false
+        schema:
+          type: string
+        example: updatedAt
+      - name: page
+        in: query
+        description: 'Index of the page of results to be fetched.
+
+
+          Results are returned in blocks of pageSize elements. This parameter specifies which page number to retrieve.The page numbering starts with 0.'
+        required: false
+        schema:
+          type: integer
+        example: 0
+      - name: pageSize
+        in: query
+        description: Number of items to be displayed on a page.
+        required: false
+        schema:
+          type: integer
+        example: 10
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileGetResponse'
+        '404':
+          description: Not found
+        '500':
+          description: Internal error
+      security:
+      - bearerAuth: []
+    post:
+      tags:
+      - Journey - Profile Creation & Insights API
+      summary: Create Template
+      description: "Creates a Profile View Template in JDS. \n\n **Role and Scope**: Requires id full admin or any role with cjp:config_write scope.\n\n **Template with single rule**: \n  ```\n  {\n    \"name\": \"ClosedCaller\",\n    \"attributes\": [\n      {\n        \"version\": \"0.1\",\n        \"event\": \"Closed Queue\",\n        \"metaDataType\": \"string\",\n        \"metaData\": \"category\",\n        \"limit\": 100,\n        \"displayName\": \"ClosedCaller\",\n        \"lookBackDurationType\": \"minutes\",\n        \"lookBackPeriod\": 5,\n        \"aggregationMode\": \"Count\",\n        \"rules\": {\n          \"logic\": \"SINGLE\",\n          \"condition\": \"Closed Queue,category,string,Value EQ Closed\"\n        },\n        \"widgetAttributes\": {\n          \"type\": \"table\"\n        },\n        \"verbose\": false\n      }\n    ]\n  }\n ```\n\n\n **Example Event:** \n  ```\n  {\n    \"id\": \"{{$guid}}\",\n    \"specversion\": \"1.0\",\n    \"type\": \"Closed Queue\",\n    \"source\": \"Voice%20Contact\",\n    \"identity\": \"jes@gmail.com\",\n    \"identitytype\": \"email\",\n    \"datacontenttype\": \"application/json\",\n    \"data\": {\n      \"Email\": \"jes@gmail.com\",\n      \"CallsQueuedNow\": \"Use GetQueueInfoNode Values\",\n      \"OldestCallTime\": \"Use GetQueueInfoNode Values\",\n      \"LoggedOnAgents\": \"Use GetQueueInfoNode Values\",\n      \"PIQ\": \"Use GetQueueInfoNode Values\",\n      \"EWT\": \"Use GetQueueInfoNode Values\",\n      \"category\": \"Closed\",\n      \"origin\": \"Past Due - 1st Notification\",\n      \"channelType\": \"QueueCall\",\n      \"channelBreakout\": \"voice\"\n    }\n  }\n  ```\n\n\n **Key components of the rule:** \n   * template.event: This refers to the specific event type you want to match (e.g., \"Closed Queue\").\n   * event.type: This refers to the actual event type present in the event data.\n   * event.data: This is the dictionary/object containing all the metadata associated with the event.\n   * template.rules.condition - category: This is the specific metadata field you want to compare within event.data.\n   * template.rules.condition - string: This indicates that the category metadata is a string type.\n   * template.rules.condition - Value EQ Closed: This defines the condition: the value of the category field (as a string) must be equal to \"Closed\".\n\n\n **Evaluation process:** \n  1. The rule checks if template.event matches the event.type in the incoming event.\n  2. If they match, the rule retrieves the value of the category field from event.data.\n  3. It then compares the value of category (treated as a string) to \"Closed\" using an equality operator (EQ).\n  4. If the values are equal, the condition evaluates to True and creates a progressive profile for the identity. Otherwise, it evaluates to False.\n  \n  The template has lookBackPeriod and lookBackDurationType which decide how long to look back for the calculation. In the above template, it fetches events triggered in the last 5 minutes and performs the aggregation mode on the data received from rules.\n  \n  * When the aggregation mode is Value, the profile result will have the value of the rule as the output.\n  * When the aggregation mode is Count, the profile will have the count of events with category closed in the past 5 minutes.\n  * When the aggregation mode is Distinct, the profile will have the value closed.\n  * When aggregation mode is Sum, the data type should be Integer or double and it will be the sum of all matching values in the last 5 minutes.\n  * When aggregation mode is Max, the data type should be Integer or double and it will be the max of all matching values in the last 5 minutes.\n  * When aggregation mode is Min, the data type should be Integer or double and it will be the min of all matching values in the last 5 minutes.\n  * When aggregation mode is Average, the data type should be Integer or double and it will be the average of all matching values in the last 5 minutes.\n\n\n **Example template with multiple rules :** \n  ```\n1. {\n2.   \"name\": \"sample-template-multi-condition\",\n3.   \"attributes\": [\n4.     {\n5.       \"version\": \"0.1\",\n6.       \"event\": \"Quote\",\n7.       \"metaDataType\": \"string\",\n8.       \"metaData\": \"email\",\n9.       \"limit\": 1,\n10.      \"displayName\": \"Email\",\n11.      \"lookBackDurationType\": \"days\",\n12.      \"lookBackPeriod\": 50,\n13.      \"aggregationMode\": \"Value\",\n14.      \"rules\": {\n15.        \"args\": [\n16.          \"Quote,isEV,string,Value EQ Yes\",\n17.          \"Quote,isEV,string,Value EQ No\",\n18.          {\n19.            \"args\": [\n20.              \"Quote,make,string,Value EQ Honda\",\n21.              \"Quote,model,string,Value EQ CR-V\"\n22.            ],\n23.            \"logic\": \"AND\"\n24.          }\n25.        ],\n26.        \"logic\": \"OR\"\n27.      },\n28.      \"widgetAttributes\": {\n29.        \"type\": \"table\"\n30.      },\n31.      \"verbose\": false\n32.    }\n33.  ]\n34. }\n  ```\n1. In the above template we have multiple rules.\n2. The arguments in line 20 and 21 are evaluated with logical AND condition.\n3. Then arguments in line 16 and 17 along with the result for 20 AND 21 are evaluated with logical OR (line 26).\n"
+      operationId: createTemplate
+      parameters:
+      - name: workspaceId
+        in: path
+        description: Workspace ID
+        required: true
+        schema:
+          type: string
+        example: 63feryn344678998djs878
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrUpdateTemplateModel'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError400'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError404'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError500'
+      security:
+      - bearerAuth: []
+  /admin/v1/api/profile-view-template/workspace-id/{workspaceId}/template-name/{templateName}:
+    get:
+      tags:
+      - Journey - Profile Creation & Insights API
+      summary: Get A specific Template searched by template name
+      description: "Get Template details by template Name in JDS. \n\nRole and Scope: Requires id full admin role with cjp:config_write or cjp:config_read scope. Or requires any role with cjp:user, cjp:config_write or cjp:config_read scope."
+      operationId: getTemplatebyName
+      parameters:
+      - name: workspaceId
+        in: path
+        description: Workspace ID
+        required: true
+        schema:
+          type: string
+        example: 63feryn344678998djs878
+      - name: templateName
+        in: path
+        description: Template Name
+        required: true
+        schema:
+          type: string
+        example: sample-template
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileResponse'
+        '404':
+          description: Not found
+        '500':
+          description: Internal error
+      security:
+      - bearerAuth: []
+  /v1/api/progressive-profile-view/workspace-id/{workspaceId}/person-id/{personId}/template-name/{templateName}:
+    get:
+      tags:
+      - Journey - Profile Creation & Insights API
+      summary: Historic Progressive Profile View by Template Name
+      description: "Get Historic Progressive Profile View in JDS. \n\nRole and Scope: Requires id full admin role with cjds:admin_org_write or cjds:admin_org_read scope. Or requires any role with cjp:user, cjp:config_write or cjp:config_read scope."
+      operationId: getProgressiveProfileViewByTemplateName
+      parameters:
+      - name: workspaceId
+        in: path
+        description: Workspace ID
+        required: true
+        schema:
+          type: string
+        example: 6377dafe02e7cc19b03a71b7
+      - name: personId
+        in: path
+        description: Person ID
+        required: true
+        schema:
+          type: string
+        example: 56fghn344678defjs878
+      - name: templateName
+        in: path
+        description: Template Name
+        required: true
+        schema:
+          type: string
+        example: insurance-template
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProgressiveProfileViewStreamModel'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError400'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError404'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError500'
+      security:
+      - bearerAuth: []
+  /v1/api/progressive-profile-view/workspace-id/{workspaceId}/person-id/{personId}/template-id/{templateId}:
+    get:
+      tags:
+      - Journey - Profile Creation & Insights API
+      summary: Historic Progressive Profile View
+      description: "Get Historic Progressive Profile View in JDS. \n\nRole and Scope: Requires id full admin role with cjds:admin_org_write or cjds:admin_org_read scope. Or requires any role with cjp:user, cjp:config_write or cjp:config_read scope."
+      operationId: getProgressiveProfileView
+      parameters:
+      - name: workspaceId
+        in: path
+        description: Workspace ID
+        required: true
+        schema:
+          type: string
+        example: 6377dafe02e7cc19b03a71b7
+      - name: personId
+        in: path
+        description: Person ID
+        required: true
+        schema:
+          type: string
+        example: 56fghn344678defjs878
+      - name: templateId
+        in: path
+        description: Template ID
+        required: true
+        schema:
+          type: string
+        example: 56fghn344678defjs878
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProgressiveProfileViewStreamModel'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError400'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError404'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError500'
+      security:
+      - bearerAuth: []
+  /v1/api/progressive-profile-view/workspace-id/{workspaceId}/identity/{identity}/template-name/{templateName}:
+    get:
+      tags:
+      - Journey - Profile Creation & Insights API
+      summary: Historic Progressive Profile View By Template Name
+      description: Get Historic Progressive Profile View in JDS. Use the cjp scope if you have a contact center license; otherwise, use the cjds scope. It requires the appropriate cjds:admin_org_read or cjds:admin_org_write scopes or cjp:config_read or cjp:config_write scopes
+      operationId: getProgressiveProfileViewByIdentityAndTemplateName
+      parameters:
+      - name: workspaceId
+        in: path
+        description: Workspace ID
+        required: true
+        schema:
+          type: string
+        example: 6377dafe02e7cc19b03a71b7
+      - name: identity
+        in: path
+        description: Identity
+        required: true
+        schema:
+          type: string
+        example: ram@cisco.com
+      - name: templateName
+        in: path
+        description: Template Name
+        required: true
+        schema:
+          type: string
+        example: insurance-template
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProgressiveProfileViewStreamModel'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError400'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError404'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError500'
+      security:
+      - bearerAuth: []
+  /v1/api/progressive-profile-view/workspace-id/{workspaceId}/identity/{identity}/template-id/{templateId}:
+    get:
+      tags:
+      - Journey - Profile Creation & Insights API
+      summary: Historic Progressive Profile View By Template Id
+      description: Get Historic Progressive Profile View in JDS. Use the cjp scope if you have a contact center license; otherwise, use the cjds scope. It requires the appropriate cjds:admin_org_read or cjds:admin_org_write scopes or cjp:config_read or cjp:config_write scopes
+      operationId: getProgressiveProfileViewByIdentityAndTemplateId
+      parameters:
+      - name: workspaceId
+        in: path
+        description: Workspace ID
+        required: true
+        schema:
+          type: string
+        example: 6377dafe02e7cc19b03a71b7
+      - name: identity
+        in: path
+        description: identity
+        required: true
+        schema:
+          type: string
+        example: ram@cisco.com
+      - name: templateId
+        in: path
+        description: Template ID
+        required: true
+        schema:
+          type: string
+        example: 56fghn344678defjs878
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProgressiveProfileViewStreamModel'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError400'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError404'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError500'
+      security:
+      - bearerAuth: []
+  /v1/api/progressive-profile-view/stream/workspace-id/{workspaceId}/identity/{identity}/template-name/{templateName}:
+    get:
+      tags:
+      - Journey - Profile Creation & Insights API
+      summary: Stream Progressive profile Views By Template Name
+      description: "Real-time streaming enables API consumers to listen for Progressive profile Views as it created/updated as part of the Journey; these may be transformed, value-added/enriched, and ready to be consumed or forwarded to another destination. \n\nRole and Scope: Requires id full admin role with cjds:admin_org_write or cjds:admin_org_read scope. Or requires any role with cjp:user, cjp:config_write or cjp:config_read scope."
+      operationId: streamProgressiveProfileViewsByTemplateName
+      parameters:
+      - name: workspaceId
+        in: path
+        description: Workspace ID
+        required: true
+        schema:
+          type: string
+        example: 6377dafe02e7cc19b03a71b7
+      - name: identity
+        in: path
+        description: "Identity to search Progressive Profile View for. \n\n In case the identity contains non-uri-encodable characters, eg: '+', '>' etc, you can URL-encode the same and then pass it as parameter."
+        required: true
+        schema:
+          type: string
+        example: srindura@gmail.com
+      - name: templateName
+        in: path
+        description: Template Name
+        required: true
+        schema:
+          type: string
+        example: insurance-template
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProgressiveProfileViewModel'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError404'
+        '409':
+          description: Resource already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError409'
+        '429':
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError429'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError500'
+      security:
+      - bearerAuth: []
+  /v1/api/progressive-profile-view/stream/workspace-id/{workspaceId}/identity/{identity}/template-id/{templateId}:
+    get:
+      tags:
+      - Journey - Profile Creation & Insights API
+      summary: Stream Progressive profile Views By Template Id
+      description: "Real-time streaming enables API consumers to listen for Progressive profile Views as it created/updated as part of the Journey; these may be transformed, value-added/enriched, and ready to be consumed or forwarded to another destination. \n\nRole and Scope: Requires id full admin role with cjds:admin_org_write or cjds:admin_org_read scope. Or requires any role with cjp:user, cjp:config_write or cjp:config_read scope."
+      operationId: streamProgressiveProfileViews
+      parameters:
+      - name: workspaceId
+        in: path
+        description: Workspace ID
+        required: true
+        schema:
+          type: string
+        example: 6377dafe02e7cc19b03a71b7
+      - name: identity
+        in: path
+        description: "Identity to search Progressive Profile View for. \n\n In case the identity contains non-uri-encodable characters, eg: '+', '>' etc, you can URL-encode the same and then pass it as parameter."
+        required: true
+        schema:
+          type: string
+        example: srindura@gmail.com
+      - name: templateId
+        in: path
+        description: Template ID
+        required: true
+        schema:
+          type: string
+        example: 56fghn344678defjs878
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProgressiveProfileViewModel'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError404'
+        '409':
+          description: Resource already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError409'
+        '429':
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError429'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError500'
+      security:
+      - bearerAuth: []
+  /v1/api/events/workspace-id/{workspaceId}:
+    get:
+      tags:
+      - Journey - Profile Creation & Insights API
+      summary: Historic Journey Events
+      description: "Getting Historic Customer Journey Events from Pinot. These events are append-only, immutable data ledger that can be queried to retrieve snapshot of latest events that moment in time or historically to play-back events as they occurred to understand or analyze Journeys using ML/AI models. \n\nRole and Scope: Requires id full admin role with cjds:admin_org_write or cjds:admin_org_read scope. Or requires any role with cjp:user, cjp:config_write or cjp:config_read scope."
+      operationId: historicEvents
+      parameters:
+      - name: workspaceId
+        in: path
+        description: Workspace ID
+        required: true
+        schema:
+          type: string
+        example: 6377dafe02e7cc19b03a71b7
+      - name: identity
+        in: query
+        description: "Identity to search events for. \n\n In case the identity contains non-uri-encodable characters, eg: '+', '>' etc, you can URL-encode the same and then pass it as parameter."
+        required: false
+        schema:
+          type: string
+        example: ram@cisco.com
+      - name: sortBy
+        in: query
+        description: sort By Field
+        required: false
+        schema:
+          type: string
+        example: identity
+      - name: sort
+        in: query
+        description: sort direction
+        required: false
+        schema:
+          type: string
+        example: desc
+      - name: filter
+        in: query
+        description: 'Optional filter which can be applied to the elements to be fetched.
+
+
+          This parameter uses the RSQL query syntax, a URI-friendly format for expressing criteria for filtering REST entities. For more information about RSQL in general, see [this reference](https://developer.here.com/documentation/data-client-library/dev_guide/client/rsql.html). For a list of supported operators, see this  [syntax guide](https://github.com/perplexhub/rsql-jpa-specification#rsql-syntax-reference).'
+        required: false
+        schema:
+          type: string
+        example: identityType=='phone'
+      - name: data
+        in: query
+        description: 'Optional filter on data filed which can be applied to the elements to be fetched.
+
+
+          This parameter uses the RSQL query syntax, a URI-friendly format for expressing criteria for filtering REST entities. For more information about RSQL in general, see [this reference](https://developer.here.com/documentation/data-client-library/dev_guide/client/rsql.html). For a list of supported operators, see this  [syntax guide](https://github.com/perplexhub/rsql-jpa-specification#rsql-syntax-reference).'
+        required: false
+        schema:
+          type: string
+        example: agentid=='3224343fddfdfdf'
+      - name: page
+        in: query
+        description: 'Index of the page of results to be fetched.
+
+
+          Results are returned in blocks of pageSize elements. This parameter specifies which page number to retrieve.The page numbering starts with 0.'
+        required: false
+        schema:
+          type: integer
+        example: 0
+      - name: pageSize
+        in: query
+        description: Number of items to be displayed on a page.
+        required: false
+        schema:
+          type: integer
+        example: 10
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JourneyEventStreamModel'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError404'
+        '409':
+          description: Resource already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError409'
+        '429':
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError429'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError500'
+      security:
+      - bearerAuth: []
+  /v1/api/events/stream/workspace-id/{workspaceId}/identity/{identity}:
+    get:
+      tags:
+      - Journey - Profile Creation & Insights API
+      summary: Stream Events By Identity
+      description: "Real-time streaming enables API consumers to listen for events as it arrives as part of the Journey; these may be transformed, value-added/enriched, and ready to be consumed or forwarded to another destination. Optionally accepts filter and data parameters slice/dice further. \n\nRole and Scope: Requires id full admin role with cjds:admin_org_write or cjds:admin_org_read scope. Or requires any role with cjp:user, cjp:config_write or cjp:config_read scope."
+      operationId: streamEventsByIdentity
+      parameters:
+      - name: workspaceId
+        in: path
+        description: Workspace ID
+        required: true
+        schema:
+          type: string
+        example: 6377dafe02e7cc19b03a71b7
+      - name: identity
+        in: path
+        description: "Person Identity. \n\n In case the identity contains non-uri-encodable characters, eg: '+', '>' etc, you can URL-encode the same and then pass it as parameter."
+        required: true
+        schema:
+          type: string
+        example: ram@cisco.com
+      - name: filter
+        in: query
+        description: 'Optional filter which can be applied to the elements to be fetched.
+
+
+          This parameter uses the RSQL query syntax, a URI-friendly format for expressing criteria for filtering REST entities. For more information about RSQL in general, see [this reference](https://developer.here.com/documentation/data-client-library/dev_guide/client/rsql.html). For a list of supported operators, see this  [syntax guide](https://github.com/perplexhub/rsql-jpa-specification#rsql-syntax-reference).'
+        required: false
+        schema:
+          type: string
+        example: identityType=='phone'
+      - name: data
+        in: query
+        description: 'Optional filter on data filed which can be applied to the elements to be fetched.
+
+
+          This parameter uses the RSQL query syntax, a URI-friendly format for expressing criteria for filtering REST entities. For more information about RSQL in general, see [this reference](https://developer.here.com/documentation/data-client-library/dev_guide/client/rsql.html). For a list of supported operators, see this [syntax guide](https://github.com/perplexhub/rsql-jpa-specification#rsql-syntax-reference).'
+        required: false
+        schema:
+          type: string
+        example: agentid=='3224343fddfdfdf'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JourneyCloudEventModel'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError404'
+        '409':
+          description: Resource already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError409'
+        '429':
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError429'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError500'
+      security:
+      - bearerAuth: []
+components:
+  schemas:
+    Rules:
+      type: object
+      description: Configuration details of the Rules
+      properties:
+        logic:
+          type: string
+          description: logic
+          example: OR
+        args:
+          type: array
+          description: Arguments
+          example:
+          - item buy,price,integer,Sum GT 100
+          - item buy,sku,integer,Count GT 5
+          items:
+            type: string
+    ProfileResponse:
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/BaseMetaResponseEnvelope'
+        data:
+          $ref: '#/components/schemas/TemplateResponseModel'
+    ApiError400:
+      required:
+      - trackingId
+      type: object
+      properties:
+        status:
+          type: string
+          description: Http Status Description
+          example: 400 BAD_REQUEST
+          enum:
+          - 100 CONTINUE
+          - 101 SWITCHING_PROTOCOLS
+          - 102 PROCESSING
+          - 103 EARLY_HINTS
+          - 103 CHECKPOINT
+          - 200 OK
+          - 201 CREATED
+          - 202 ACCEPTED
+          - 203 NON_AUTHORITATIVE_INFORMATION
+          - 204 NO_CONTENT
+          - 205 RESET_CONTENT
+          - 206 PARTIAL_CONTENT
+          - 207 MULTI_STATUS
+          - 208 ALREADY_REPORTED
+          - 226 IM_USED
+          - 300 MULTIPLE_CHOICES
+          - 301 MOVED_PERMANENTLY
+          - 302 FOUND
+          - 302 MOVED_TEMPORARILY
+          - 303 SEE_OTHER
+          - 304 NOT_MODIFIED
+          - 305 USE_PROXY
+          - 307 TEMPORARY_REDIRECT
+          - 308 PERMANENT_REDIRECT
+          - 400 BAD_REQUEST
+          - 401 UNAUTHORIZED
+          - 402 PAYMENT_REQUIRED
+          - 403 FORBIDDEN
+          - 404 NOT_FOUND
+          - 405 METHOD_NOT_ALLOWED
+          - 406 NOT_ACCEPTABLE
+          - 407 PROXY_AUTHENTICATION_REQUIRED
+          - 408 REQUEST_TIMEOUT
+          - 409 CONFLICT
+          - 410 GONE
+          - 411 LENGTH_REQUIRED
+          - 412 PRECONDITION_FAILED
+          - 413 PAYLOAD_TOO_LARGE
+          - 413 REQUEST_ENTITY_TOO_LARGE
+          - 414 URI_TOO_LONG
+          - 414 REQUEST_URI_TOO_LONG
+          - 415 UNSUPPORTED_MEDIA_TYPE
+          - 416 REQUESTED_RANGE_NOT_SATISFIABLE
+          - 417 EXPECTATION_FAILED
+          - 418 I_AM_A_TEAPOT
+          - 419 INSUFFICIENT_SPACE_ON_RESOURCE
+          - 420 METHOD_FAILURE
+          - 421 DESTINATION_LOCKED
+          - 422 UNPROCESSABLE_ENTITY
+          - 423 LOCKED
+          - 424 FAILED_DEPENDENCY
+          - 425 TOO_EARLY
+          - 426 UPGRADE_REQUIRED
+          - 428 PRECONDITION_REQUIRED
+          - 429 TOO_MANY_REQUESTS
+          - 431 REQUEST_HEADER_FIELDS_TOO_LARGE
+          - 451 UNAVAILABLE_FOR_LEGAL_REASONS
+          - 500 INTERNAL_SERVER_ERROR
+          - 501 NOT_IMPLEMENTED
+          - 502 BAD_GATEWAY
+          - 503 SERVICE_UNAVAILABLE
+          - 504 GATEWAY_TIMEOUT
+          - 505 HTTP_VERSION_NOT_SUPPORTED
+          - 506 VARIANT_ALSO_NEGOTIATES
+          - 507 INSUFFICIENT_STORAGE
+          - 508 LOOP_DETECTED
+          - 509 BANDWIDTH_LIMIT_EXCEEDED
+          - 510 NOT_EXTENDED
+          - 511 NETWORK_AUTHENTICATION_REQUIRED
+        message:
+          type: string
+          description: Error Message
+          example: Bad Request
+        errors:
+          type: array
+          description: Bad Request
+          example:
+          - Id cannot be null
+          items:
+            type: string
+        timestamp:
+          type: string
+          description: Occurred timestamp
+          format: date-time
+          example: '2023-03-27T20:59:32.376Z'
+        trackingId:
+          type: string
+          description: Unique ID by which a request can be debugged. Please provide if opening a support case.
+          example: 76cd71d0e678a8bb
+    eventData:
+      type: object
+      properties:
+        agentId:
+          type: string
+          description: Agent Id
+          example: 109332be-7fc4-4d4d-9488-ebdb8e13b9bbe
+        destination:
+          type: string
+          description: destination
+          example: '+12147651210'
+        profileType:
+          type: string
+          description: profileType
+          example: BLENDED
+        currentState:
+          type: string
+          description: currentState
+          example: idle
+        idleCodeId:
+          type: string
+          description: idleCodeId
+          example: AXUr0jX9H5Tuplm_IxiC
+        createdTime:
+          type: string
+          description: createdTime
+          example: '1645819554383'
+      description: Event Data
+    JourneyEventStreamModel:
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/JourneyEventStreamMetaDataModel'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/JourneyCloudEventModel'
+    ProgressiveProfileViewStreamModel:
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/ProgressiveProfileViewMetaDataModel'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProgressiveProfileViewModel'
+    ProgressiveProfileViewModel:
+      required:
+      - organizationId
+      - personId
+      - templateId
+      - workspaceId
+      type: object
+      properties:
+        workspaceId:
+          type: string
+          description: Workspace ID
+          example: 9ab65fdf-9643-417f-9974-ad72cae0e10f
+        organizationId:
+          type: string
+          description: Organization ID
+          example: 9ab65fdf-9643-417f-9974-ad72cae0e10f
+        personId:
+          type: string
+          description: Person ID
+          example: 6ab65fdf12833j3iu
+        templateId:
+          type: string
+          description: Template ID
+          example: 9ab65fdfcae0e10f
+        searchFilter:
+          type: string
+          description: search Filter
+          example: 9ab65fdfcae0e10f
+        attributes:
+          type: array
+          description: Attributes
+          items:
+            $ref: '#/components/schemas/ProgressiveProfileViewAttributes'
+        systemMetdata:
+          $ref: '#/components/schemas/ProfileViewSystemMetadata'
+        timestamp:
+          type: string
+          description: TimeStamp
+          example: 9ab65fdfcae0e10f
+      description: Create Or Update Progressive Profile View
+    ProfileViewAttributeResponseModel:
+      type: object
+      properties:
+        displayName:
+          type: string
+          description: displayName
+          example: Name
+        version:
+          type: string
+          description: version
+          example: '1.1'
+        event:
+          type: string
+          description: event
+          example: task:new
+        metaDataType:
+          type: string
+          description: metaDataType
+          example: string
+        metaData:
+          type: string
+          description: metaData
+          example: origin
+        limit:
+          type: integer
+          description: limit
+          format: int32
+          example: 30
+        lookBackDurationType:
+          type: string
+          description: lookBackDurationType
+          example: days
+        lookBackPeriod:
+          type: integer
+          description: lookBackPeriod
+          format: int32
+          example: 10
+        aggregationMode:
+          type: string
+          description: aggregationMode
+          example: Count
+        verbose:
+          type: boolean
+          description: verbose
+          example: true
+        widgetAttributes:
+          $ref: '#/components/schemas/WidgetAttributesResponseModel'
+        rules:
+          $ref: '#/components/schemas/RulesDocument'
+      description: Attributes under an ProfileViewTemplate
+    ProgressiveProfileViewAttributes:
+      type: object
+      properties:
+        queryTemplate:
+          $ref: '#/components/schemas/ProfileViewAttributeResponseModel'
+        result:
+          type: string
+          description: Result Object
+          example: '"{"success"}"'
+        error:
+          type: string
+          description: Error data
+          example: failed
+        journeyEvents:
+          type: array
+          description: Journey Events
+          example:
+          - testEvent
+          items:
+            type: string
+    TemplateResponseModel:
+      type: object
+      properties:
+        createdAt:
+          type: string
+          description: Created Timestamp
+          example: '2022-10-18T04:21:34.124Z'
+        createdBy:
+          type: string
+          description: Created By
+          example: 1eb65fdf-9643-417f-9974-ad72cae0e10f
+        updatedAt:
+          type: string
+          description: Updated Timestamp
+          example: '2022-10-18T04:21:34.124Z'
+        updatedBy:
+          type: string
+          description: Updated By
+          example: 1eb65fdf-9643-417f-9974-ad72cae0e10f
+        id:
+          type: string
+          description: Profile View Template Id
+          example: 638505f32332c8200dac025e
+        name:
+          type: string
+          description: Template Name
+          example: sample-template
+        workspaceId:
+          type: string
+          description: Workspace Id
+          example: Customer-Journey-Widget
+        organizationId:
+          type: string
+          description: Organization Id
+          example: Demo Assure
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProfileViewAttributeResponseModel'
+      description: Template Response Model
+    WidgetAttributesRequestModel:
+      type: object
+      properties:
+        type:
+          type: string
+          description: type
+          example: table
+      description: Create or Update WidgetAttributes
+      example:
+        type: table
+    WidgetAttributesResponseModel:
+      type: object
+      properties:
+        type:
+          type: string
+          description: type
+          example: table
+      description: ' WidgetAttributes'
+      example:
+        type: table
+    BaseMetaResponseEnvelope:
+      type: object
+      properties:
+        organizationId:
+          type: string
+          description: Organization ID
+          example: 1eb65fdf-9643-417f-9974-ad72cae0e10f
+      description: Meta information of the response
+      example:
+        organizationId: 1eb65fdf-9643-417f-9974-ad72cae0e10f
+    JourneyEventStreamMetaDataModel:
+      type: object
+      properties:
+        organizationId:
+          type: string
+          description: Organization ID
+          example: 1eb65fdf-9643-417f-9974-ad72cae0e10f
+        workspaceId:
+          type: string
+          description: Workspace ID
+          example: ad72cae0e10f-417f-9974-417f-ad72cae0e10f
+        resultCount:
+          type: integer
+          description: Result Count
+          format: int32
+          example: 10
+        identity:
+          type: string
+          description: identity
+          example: ram@cisco.com
+    ApiError409:
+      required:
+      - trackingId
+      type: object
+      properties:
+        status:
+          type: string
+          description: Http Status Description
+          example: 409 CONFLICT
+          enum:
+          - 100 CONTINUE
+          - 101 SWITCHING_PROTOCOLS
+          - 102 PROCESSING
+          - 103 EARLY_HINTS
+          - 103 CHECKPOINT
+          - 200 OK
+          - 201 CREATED
+          - 202 ACCEPTED
+          - 203 NON_AUTHORITATIVE_INFORMATION
+          - 204 NO_CONTENT
+          - 205 RESET_CONTENT
+          - 206 PARTIAL_CONTENT
+          - 207 MULTI_STATUS
+          - 208 ALREADY_REPORTED
+          - 226 IM_USED
+          - 300 MULTIPLE_CHOICES
+          - 301 MOVED_PERMANENTLY
+          - 302 FOUND
+          - 302 MOVED_TEMPORARILY
+          - 303 SEE_OTHER
+          - 304 NOT_MODIFIED
+          - 305 USE_PROXY
+          - 307 TEMPORARY_REDIRECT
+          - 308 PERMANENT_REDIRECT
+          - 400 BAD_REQUEST
+          - 401 UNAUTHORIZED
+          - 402 PAYMENT_REQUIRED
+          - 403 FORBIDDEN
+          - 404 NOT_FOUND
+          - 405 METHOD_NOT_ALLOWED
+          - 406 NOT_ACCEPTABLE
+          - 407 PROXY_AUTHENTICATION_REQUIRED
+          - 408 REQUEST_TIMEOUT
+          - 409 CONFLICT
+          - 410 GONE
+          - 411 LENGTH_REQUIRED
+          - 412 PRECONDITION_FAILED
+          - 413 PAYLOAD_TOO_LARGE
+          - 413 REQUEST_ENTITY_TOO_LARGE
+          - 414 URI_TOO_LONG
+          - 414 REQUEST_URI_TOO_LONG
+          - 415 UNSUPPORTED_MEDIA_TYPE
+          - 416 REQUESTED_RANGE_NOT_SATISFIABLE
+          - 417 EXPECTATION_FAILED
+          - 418 I_AM_A_TEAPOT
+          - 419 INSUFFICIENT_SPACE_ON_RESOURCE
+          - 420 METHOD_FAILURE
+          - 421 DESTINATION_LOCKED
+          - 422 UNPROCESSABLE_ENTITY
+          - 423 LOCKED
+          - 424 FAILED_DEPENDENCY
+          - 425 TOO_EARLY
+          - 426 UPGRADE_REQUIRED
+          - 428 PRECONDITION_REQUIRED
+          - 429 TOO_MANY_REQUESTS
+          - 431 REQUEST_HEADER_FIELDS_TOO_LARGE
+          - 451 UNAVAILABLE_FOR_LEGAL_REASONS
+          - 500 INTERNAL_SERVER_ERROR
+          - 501 NOT_IMPLEMENTED
+          - 502 BAD_GATEWAY
+          - 503 SERVICE_UNAVAILABLE
+          - 504 GATEWAY_TIMEOUT
+          - 505 HTTP_VERSION_NOT_SUPPORTED
+          - 506 VARIANT_ALSO_NEGOTIATES
+          - 507 INSUFFICIENT_STORAGE
+          - 508 LOOP_DETECTED
+          - 509 BANDWIDTH_LIMIT_EXCEEDED
+          - 510 NOT_EXTENDED
+          - 511 NETWORK_AUTHENTICATION_REQUIRED
+        message:
+          type: string
+          description: Error Message
+          example: Resource Already Exists
+        errors:
+          type: array
+          description: Resource Already Exists
+          example:
+          - Id 3249892348-sdfjsdhf-345hdsf-345345 already exists
+          items:
+            type: string
+        timestamp:
+          type: string
+          description: Occurred timestamp
+          format: date-time
+          example: '2023-03-27T20:59:32.376Z'
+        trackingId:
+          type: string
+          description: Unique ID by which a request can be debugged. Please provide if opening a support case.
+          example: 76cd71d0e678a8bb
+    CreateOrUpdateTemplateModel:
+      required:
+      - attributes
+      - name
+      type: object
+      properties:
+        name:
+          type: string
+          description: Template Name
+          example: sample-template
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProfileViewAttributeRequestModel'
+      description: Create Or Update Template
+    JourneyCloudEventModel:
+      required:
+      - data
+      - datacontenttype
+      - id
+      - identity
+      - identitytype
+      - source
+      - specversion
+      - type
+      type: object
+      properties:
+        id:
+          type: string
+          description: Event ID
+          example: 9ab65fdf-9643-417f-9974-ad72cae0e10f
+        specversion:
+          type: string
+          description: Event Spec Version
+          example: '1.0'
+        type:
+          type: string
+          description: Event Type
+          example: com.cisco.wxcc.event.agent
+        source:
+          type: string
+          description: Event Source
+          example: /com/cisco/wxcc/123
+        time:
+          type: string
+          description: Event Time
+          example: '2022-08-15T22:29:43.768Z'
+        identity:
+          type: string
+          description: Identity
+          example: sjohndeo@cisco.com
+        identitytype:
+          type: string
+          description: Identity Type
+          example: email
+        previousidentity:
+          type: string
+          description: Previous Identity
+          example: sdeo@cisco.com
+        datacontenttype:
+          type: string
+          description: Event Data Content Type
+          example: application/json
+        data:
+          $ref: '#/components/schemas/eventData'
+      description: Journey Cloud Event Model
+    ProgressiveProfileViewMetaDataModel:
+      type: object
+      properties:
+        organizationId:
+          type: string
+          description: Organization ID
+          example: 1eb65fdf-9643-417f-9974-ad72cae0e10f
+        workspaceId:
+          type: string
+          description: Workspace ID
+          example: ad72cae0e10f-417f-9974-417f-ad72cae0e10f
+        personId:
+          type: string
+          description: personId
+          example: 642f1c56276e305287405167
+        templateId:
+          type: string
+          description: templateId
+          example: 922f1c56276e305287405162
+    ApiError404:
+      required:
+      - trackingId
+      type: object
+      properties:
+        status:
+          type: string
+          description: Http Status Description
+          example: 404 NOT_FOUND
+          enum:
+          - 100 CONTINUE
+          - 101 SWITCHING_PROTOCOLS
+          - 102 PROCESSING
+          - 103 EARLY_HINTS
+          - 103 CHECKPOINT
+          - 200 OK
+          - 201 CREATED
+          - 202 ACCEPTED
+          - 203 NON_AUTHORITATIVE_INFORMATION
+          - 204 NO_CONTENT
+          - 205 RESET_CONTENT
+          - 206 PARTIAL_CONTENT
+          - 207 MULTI_STATUS
+          - 208 ALREADY_REPORTED
+          - 226 IM_USED
+          - 300 MULTIPLE_CHOICES
+          - 301 MOVED_PERMANENTLY
+          - 302 FOUND
+          - 302 MOVED_TEMPORARILY
+          - 303 SEE_OTHER
+          - 304 NOT_MODIFIED
+          - 305 USE_PROXY
+          - 307 TEMPORARY_REDIRECT
+          - 308 PERMANENT_REDIRECT
+          - 400 BAD_REQUEST
+          - 401 UNAUTHORIZED
+          - 402 PAYMENT_REQUIRED
+          - 403 FORBIDDEN
+          - 404 NOT_FOUND
+          - 405 METHOD_NOT_ALLOWED
+          - 406 NOT_ACCEPTABLE
+          - 407 PROXY_AUTHENTICATION_REQUIRED
+          - 408 REQUEST_TIMEOUT
+          - 409 CONFLICT
+          - 410 GONE
+          - 411 LENGTH_REQUIRED
+          - 412 PRECONDITION_FAILED
+          - 413 PAYLOAD_TOO_LARGE
+          - 413 REQUEST_ENTITY_TOO_LARGE
+          - 414 URI_TOO_LONG
+          - 414 REQUEST_URI_TOO_LONG
+          - 415 UNSUPPORTED_MEDIA_TYPE
+          - 416 REQUESTED_RANGE_NOT_SATISFIABLE
+          - 417 EXPECTATION_FAILED
+          - 418 I_AM_A_TEAPOT
+          - 419 INSUFFICIENT_SPACE_ON_RESOURCE
+          - 420 METHOD_FAILURE
+          - 421 DESTINATION_LOCKED
+          - 422 UNPROCESSABLE_ENTITY
+          - 423 LOCKED
+          - 424 FAILED_DEPENDENCY
+          - 425 TOO_EARLY
+          - 426 UPGRADE_REQUIRED
+          - 428 PRECONDITION_REQUIRED
+          - 429 TOO_MANY_REQUESTS
+          - 431 REQUEST_HEADER_FIELDS_TOO_LARGE
+          - 451 UNAVAILABLE_FOR_LEGAL_REASONS
+          - 500 INTERNAL_SERVER_ERROR
+          - 501 NOT_IMPLEMENTED
+          - 502 BAD_GATEWAY
+          - 503 SERVICE_UNAVAILABLE
+          - 504 GATEWAY_TIMEOUT
+          - 505 HTTP_VERSION_NOT_SUPPORTED
+          - 506 VARIANT_ALSO_NEGOTIATES
+          - 507 INSUFFICIENT_STORAGE
+          - 508 LOOP_DETECTED
+          - 509 BANDWIDTH_LIMIT_EXCEEDED
+          - 510 NOT_EXTENDED
+          - 511 NETWORK_AUTHENTICATION_REQUIRED
+        message:
+          type: string
+          description: Error Message
+          example: Resource not found
+        errors:
+          type: array
+          description: Resource Already Found
+          example:
+          - Id 3249892348-sdfjsdhf-345hdsf-345345 Not Found
+          items:
+            type: string
+        timestamp:
+          type: string
+          description: Occurred timestamp
+          format: date-time
+          example: '2023-03-27T20:59:32.376Z'
+        trackingId:
+          type: string
+          description: Unique ID by which a request can be debugged. Please provide if opening a support case.
+          example: 76cd71d0e678a8bb
+    ProfileGetResponse:
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/BaseMetaResponseEnvelope'
+        data:
+          type: array
+          description: Data part of the response
+          items:
+            $ref: '#/components/schemas/TemplateResponseModel'
+    ProfileViewAttributeRequestModel:
+      required:
+      - aggregationMode
+      - displayName
+      - event
+      - limit
+      - lookBackDurationType
+      - lookBackPeriod
+      - metaData
+      - metaDataType
+      - verbose
+      - version
+      type: object
+      properties:
+        displayName:
+          type: string
+          description: displayName
+          example: Name
+        version:
+          type: string
+          description: version
+          example: '1.1'
+        event:
+          type: string
+          description: event
+          example: task:new
+        metaDataType:
+          type: string
+          description: metaDataType
+          example: string
+        metaData:
+          type: string
+          description: metaData
+          example: origin
+        limit:
+          minimum: 0
+          type: integer
+          description: limit
+          format: int32
+          example: 30
+        lookBackDurationType:
+          type: string
+          description: lookBackDurationType
+          example: days
+        lookBackPeriod:
+          minimum: 1
+          type: integer
+          description: lookBackPeriod
+          format: int32
+          example: 10
+        aggregationMode:
+          type: string
+          description: aggregationMode
+          example: Count
+        verbose:
+          type: boolean
+          description: verbose
+          example: true
+        widgetAttributes:
+          $ref: '#/components/schemas/WidgetAttributesRequestModel'
+        rules:
+          $ref: '#/components/schemas/Rules'
+      description: Create or Update Attribute of a ProfileViewTemplate
+    JourneyActionTriggerHistory:
+      required:
+      - actionId
+      - doNotDisturbPeriod
+      - triggeredAt
+      type: object
+      properties:
+        actionId:
+          type: string
+          description: Action Id
+          example: 3489032dsfhsdf34
+        triggeredAt:
+          type: string
+          description: Triggered Date
+          format: date-time
+          example: '2022-10-18T04:21:34.124Z'
+        doNotDisturbPeriod:
+          type: string
+          description: Do Not Disturb Period
+          example: '10'
+    ApiError429:
+      required:
+      - trackingId
+      type: object
+      properties:
+        status:
+          type: string
+          description: Http Status Description
+          example: 429 TOO_MANY_REQUESTS
+          enum:
+          - 100 CONTINUE
+          - 101 SWITCHING_PROTOCOLS
+          - 102 PROCESSING
+          - 103 EARLY_HINTS
+          - 103 CHECKPOINT
+          - 200 OK
+          - 201 CREATED
+          - 202 ACCEPTED
+          - 203 NON_AUTHORITATIVE_INFORMATION
+          - 204 NO_CONTENT
+          - 205 RESET_CONTENT
+          - 206 PARTIAL_CONTENT
+          - 207 MULTI_STATUS
+          - 208 ALREADY_REPORTED
+          - 226 IM_USED
+          - 300 MULTIPLE_CHOICES
+          - 301 MOVED_PERMANENTLY
+          - 302 FOUND
+          - 302 MOVED_TEMPORARILY
+          - 303 SEE_OTHER
+          - 304 NOT_MODIFIED
+          - 305 USE_PROXY
+          - 307 TEMPORARY_REDIRECT
+          - 308 PERMANENT_REDIRECT
+          - 400 BAD_REQUEST
+          - 401 UNAUTHORIZED
+          - 402 PAYMENT_REQUIRED
+          - 403 FORBIDDEN
+          - 404 NOT_FOUND
+          - 405 METHOD_NOT_ALLOWED
+          - 406 NOT_ACCEPTABLE
+          - 407 PROXY_AUTHENTICATION_REQUIRED
+          - 408 REQUEST_TIMEOUT
+          - 409 CONFLICT
+          - 410 GONE
+          - 411 LENGTH_REQUIRED
+          - 412 PRECONDITION_FAILED
+          - 413 PAYLOAD_TOO_LARGE
+          - 413 REQUEST_ENTITY_TOO_LARGE
+          - 414 URI_TOO_LONG
+          - 414 REQUEST_URI_TOO_LONG
+          - 415 UNSUPPORTED_MEDIA_TYPE
+          - 416 REQUESTED_RANGE_NOT_SATISFIABLE
+          - 417 EXPECTATION_FAILED
+          - 418 I_AM_A_TEAPOT
+          - 419 INSUFFICIENT_SPACE_ON_RESOURCE
+          - 420 METHOD_FAILURE
+          - 421 DESTINATION_LOCKED
+          - 422 UNPROCESSABLE_ENTITY
+          - 423 LOCKED
+          - 424 FAILED_DEPENDENCY
+          - 425 TOO_EARLY
+          - 426 UPGRADE_REQUIRED
+          - 428 PRECONDITION_REQUIRED
+          - 429 TOO_MANY_REQUESTS
+          - 431 REQUEST_HEADER_FIELDS_TOO_LARGE
+          - 451 UNAVAILABLE_FOR_LEGAL_REASONS
+          - 500 INTERNAL_SERVER_ERROR
+          - 501 NOT_IMPLEMENTED
+          - 502 BAD_GATEWAY
+          - 503 SERVICE_UNAVAILABLE
+          - 504 GATEWAY_TIMEOUT
+          - 505 HTTP_VERSION_NOT_SUPPORTED
+          - 506 VARIANT_ALSO_NEGOTIATES
+          - 507 INSUFFICIENT_STORAGE
+          - 508 LOOP_DETECTED
+          - 509 BANDWIDTH_LIMIT_EXCEEDED
+          - 510 NOT_EXTENDED
+          - 511 NETWORK_AUTHENTICATION_REQUIRED
+        message:
+          type: string
+          description: Error Message
+          example: Too many requests
+        errors:
+          type: array
+          description: Too many requests
+          example:
+          - Too many requests
+          items:
+            type: string
+        timestamp:
+          type: string
+          description: Occurred timestamp
+          format: date-time
+          example: '2023-03-27T20:59:32.376Z'
+        trackingId:
+          type: string
+          description: Unique ID by which a request can be debugged. Please provide if opening a support case.
+          example: 76cd71d0e678a8bb
+    ProfileViewSystemMetadata:
+      type: object
+      properties:
+        journeyActionTriggerHistories:
+          type: array
+          items:
+            $ref: '#/components/schemas/JourneyActionTriggerHistory'
+      description: ProfileViewSystemMetdata
+    ApiError500:
+      required:
+      - trackingId
+      type: object
+      properties:
+        status:
+          type: string
+          description: Http Status Description
+          example: 500 INTERNAL_SERVER_ERROR
+          enum:
+          - 100 CONTINUE
+          - 101 SWITCHING_PROTOCOLS
+          - 102 PROCESSING
+          - 103 EARLY_HINTS
+          - 103 CHECKPOINT
+          - 200 OK
+          - 201 CREATED
+          - 202 ACCEPTED
+          - 203 NON_AUTHORITATIVE_INFORMATION
+          - 204 NO_CONTENT
+          - 205 RESET_CONTENT
+          - 206 PARTIAL_CONTENT
+          - 207 MULTI_STATUS
+          - 208 ALREADY_REPORTED
+          - 226 IM_USED
+          - 300 MULTIPLE_CHOICES
+          - 301 MOVED_PERMANENTLY
+          - 302 FOUND
+          - 302 MOVED_TEMPORARILY
+          - 303 SEE_OTHER
+          - 304 NOT_MODIFIED
+          - 305 USE_PROXY
+          - 307 TEMPORARY_REDIRECT
+          - 308 PERMANENT_REDIRECT
+          - 400 BAD_REQUEST
+          - 401 UNAUTHORIZED
+          - 402 PAYMENT_REQUIRED
+          - 403 FORBIDDEN
+          - 404 NOT_FOUND
+          - 405 METHOD_NOT_ALLOWED
+          - 406 NOT_ACCEPTABLE
+          - 407 PROXY_AUTHENTICATION_REQUIRED
+          - 408 REQUEST_TIMEOUT
+          - 409 CONFLICT
+          - 410 GONE
+          - 411 LENGTH_REQUIRED
+          - 412 PRECONDITION_FAILED
+          - 413 PAYLOAD_TOO_LARGE
+          - 413 REQUEST_ENTITY_TOO_LARGE
+          - 414 URI_TOO_LONG
+          - 414 REQUEST_URI_TOO_LONG
+          - 415 UNSUPPORTED_MEDIA_TYPE
+          - 416 REQUESTED_RANGE_NOT_SATISFIABLE
+          - 417 EXPECTATION_FAILED
+          - 418 I_AM_A_TEAPOT
+          - 419 INSUFFICIENT_SPACE_ON_RESOURCE
+          - 420 METHOD_FAILURE
+          - 421 DESTINATION_LOCKED
+          - 422 UNPROCESSABLE_ENTITY
+          - 423 LOCKED
+          - 424 FAILED_DEPENDENCY
+          - 425 TOO_EARLY
+          - 426 UPGRADE_REQUIRED
+          - 428 PRECONDITION_REQUIRED
+          - 429 TOO_MANY_REQUESTS
+          - 431 REQUEST_HEADER_FIELDS_TOO_LARGE
+          - 451 UNAVAILABLE_FOR_LEGAL_REASONS
+          - 500 INTERNAL_SERVER_ERROR
+          - 501 NOT_IMPLEMENTED
+          - 502 BAD_GATEWAY
+          - 503 SERVICE_UNAVAILABLE
+          - 504 GATEWAY_TIMEOUT
+          - 505 HTTP_VERSION_NOT_SUPPORTED
+          - 506 VARIANT_ALSO_NEGOTIATES
+          - 507 INSUFFICIENT_STORAGE
+          - 508 LOOP_DETECTED
+          - 509 BANDWIDTH_LIMIT_EXCEEDED
+          - 510 NOT_EXTENDED
+          - 511 NETWORK_AUTHENTICATION_REQUIRED
+        message:
+          type: string
+          description: Error Message
+          example: Internal server error
+        errors:
+          type: array
+          description: Internal server error
+          example:
+          - 'Internal server error '
+          items:
+            type: string
+        timestamp:
+          type: string
+          description: Occurred timestamp
+          format: date-time
+          example: '2023-03-27T20:59:32.376Z'
+        trackingId:
+          type: string
+          description: Unique ID by which a request can be debugged. Please provide if opening a support case.
+          example: 76cd71d0e678a8bb
+    RulesDocument:
+      type: object
+      properties:
+        type:
+          type: string
+          description: type
+          example: nested
+        childrenRules:
+          type: object
+          properties:
+            type:
+              type: string
+              description: type
+              example: nested
+          description: childrenRules
+          discriminator:
+            propertyName: type
+      description: Configuration details of the Rules based on which the Action will be triggered
+      example:
+        logic: OR
+        args:
+        - item buy,price,integer,Sum GT 100
+        - item buy,sku,integer,Count GT 5
+      discriminator:
+        propertyName: type
+  securitySchemes:
+    oauth2:
+      flows:
+        authorizationCode:
+          authorizationUrl: /
+          scopes: {}
+          tokenUrl: /
+      type: oauth2
+    bearer-key:
+      type: http
+      description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
+      scheme: bearer
+      bearerFormat: JWT
+    bearerAuth:
+      type: oauth2
+      description: OAuth 2.0 Bearer token authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: https://webexapis.com/v1/authorize
+          tokenUrl: https://webexapis.com/v1/access_token
+          scopes:
+            spark:applications_token: Create access tokens for Service Apps

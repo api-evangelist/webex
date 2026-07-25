@@ -1,0 +1,400 @@
+openapi: 3.0.0
+info:
+  title: Webex Admin Address Book Partner Administrators API
+  version: 1.0.0
+  description: The Webex Admin APIs provide comprehensive programmatic access to administrative functions for managing Webex organizations, users, licenses, and settings. These APIs enable automation of user provisioning, license assignment, compliance management, and audit event retrieval. Administrators can integrate with enterprise identity systems, enforce security policies, monitor usage, and streamline onboarding/offboarding processes. The APIs support granular control over organizational resources, making them ideal for large-scale deployments and custom admin tooling.
+tags:
+- name: Partner Administrators
+paths:
+  /partner/organizations:
+    get:
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ManagedOrgsResponse'
+              example:
+                items:
+                - orgId: Y2LZY29ZCGFYAZOVL3VZL1BFT1BMRS9MNWIZNJE4NY1JOGRKLTQ3MJCTOGIYZI1MOWM0NDDMMJKWNDY
+                  role: YXRSYXMTCG9YDGFSLNBHCNRUZXIUC2FSZXNMDWXSYWRTAW4=
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Get all customers managed by a partner admin
+      operationId: Get all customers managed by a partner admin
+      description: 'Get all customer organizations managed by given partner admin, in the `managedBy` request parameter. The `managedBy` user typically has the role of a Partner Admin. In case where a Partner Full Admin or Partner Read-Only admin is selected an error like "The user already has access to all customers managed by their partner organization." is shown as a Partner Admin (Full and Read-Only) is able to manage all customers by default. This does not include customers managed through Customer Groups.
+
+
+        This API can be invoked by Partner Full Admin and Partner Readonly Admin.
+
+        Specify the `personId` in the `managedBy` parameter in the URI.'
+      tags:
+      - Partner Administrators
+      parameters:
+      - name: managedBy
+        in: query
+        description: List customer orgs associated with this person ID.
+        required: true
+        example: Y2LZY29ZCGFYAZOVL3VZL1BFT1BMRS9JOTYWOTZIYI1KYTRHLTQ3NZETYTC2ZI1KNDEZODQWZWVM1TQ
+        schema:
+          type: string
+  /partner/organizations/{orgId}/partnerAdmins:
+    get:
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PartneradminsfororgResponse'
+              example:
+                items:
+                - id: Y2LZY29ZCGFYAZOVL3VZL1BFT1BMRS9JOTYWOTZIYI1KYTRHLTQ3NZETYTC2ZI1KNDEZODQWZWVM1TQ
+                  displayName: display name
+                  firstName: John
+                  lastName: Doe
+                  emails:
+                  - johndoe@example.com
+                  roleInCustomerOrg: id_full_admin
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Get all partner admins assigned to a customer
+      operationId: Get all partner admins assigned to a customer
+      description: 'For a given customer, get all the partner admins with their role details. This does not include partner admins who have access through Customer Groups.
+
+        This API can be used by Partner Full Admins.
+
+
+        Specify the `orgId` in the path parameter.'
+      tags:
+      - Partner Administrators
+      parameters:
+      - name: orgId
+        in: path
+        description: List partner admins associated with this customer org ID.
+        required: true
+        example: Y2LZY29ZCGFYAZOVL3VZL09SR0FOSVPBVELPTI8XZWI2NWZKZI05NJQZLTQXN2YTOTK3NC1HZDCYY2FLM9UXMGY
+        schema:
+          type: string
+  /partner/organizations/{orgId}/partnerAdmin/{personId}/assign:
+    post:
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content: {}
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Assign partner admin to a customer
+      operationId: Assign partner admin to a customer
+      description: 'Assign a specific Partner Admin to a customer organization. The partner admin is a user that has the Partner Administrator role.
+
+        Other partner roles, such as Partner Full Administrator are not applicable for this API, since this role manages all customer organizations.
+
+
+        This API can be used b a Partner Full Admin.
+
+
+        Specify the `orgId` and the `personId` in the path param.'
+      tags:
+      - Partner Administrators
+      parameters:
+      - name: orgId
+        in: path
+        description: The ID of the customer organization.
+        required: true
+        example: Y2LZY29ZCGFYAZOVL3VZL09SR0FOSVPBVELPTI85NMFIYZJHYS0ZZGNJLTEXZTUTYTE1MI1MZTM0ODE5Y2RJOWE
+        schema:
+          type: string
+      - name: personId
+        in: path
+        description: User ID of the partner admin in the partners org.
+        required: true
+        example: Y2LZY29ZCGFYAZOVL3VZL1BFT1BMRS80ZGEZYTI0OC05YJBHLTQXMDGTODU0NC1INTQWMZEYZTU2M2E
+        schema:
+          type: string
+  /partner/organizations/{orgId}/partnerAdmin/{personId}/unassign:
+    delete:
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content: {}
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Unassign partner admin from a customer
+      operationId: Unassign partner admin from a customer
+      description: 'Unassign a specific partner admin from a customer organization. Unassigning a customer organization from a partner admin does not remove the role from the user. If a partner admin is also managing the customer organization through a Customer Group, they will continue to have access.
+
+        This API can be used by Partner Full Admin.
+
+
+        Specify the `orgId` and the `personId` in the path param.'
+      tags:
+      - Partner Administrators
+      parameters:
+      - name: orgId
+        in: path
+        description: The ID of the customer organization.
+        required: true
+        example: Y2LZY29ZCGFYAZOVL3VZL09SR0FOSVPBVELPTI85NMFIYZJHYS0ZZGNJLTEXZTUTYTE1MI1MZTM0ODE5Y2RJOWE
+        schema:
+          type: string
+      - name: personId
+        in: path
+        description: User ID of the partner admin in the partners org.
+        required: true
+        example: Y2LZY29ZCGFYAZOVL3VZL1BFT1BMRS80ZGEZYTI0OC05YJBHLTQXMDGTODU0NC1INTQWMZEYZTU2M2E
+        schema:
+          type: string
+  /partner/organizations/partnerAdmin/{personId}:
+    delete:
+      responses:
+        '204':
+          description: No Content
+          headers: {}
+          content: {}
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Revoke all partner admin roles for a given person ID
+      operationId: Revoke all partner admin roles for a given person ID
+      description: 'Revoke all partner administrator roles from a user, thereby revoking access to Partner Hub and all managed customer organizations.
+
+        This action does not grant or revoke Control Hub administrator roles (e.g. Full Administrator, User and Device Administrator, etc.).
+
+        This API can be used by Partner Full Admin.
+
+        Specify the `personId` in the path param.'
+      tags:
+      - Partner Administrators
+      parameters:
+      - name: personId
+        in: path
+        description: ID of the user whose partner roles needs to be revoked.
+        required: true
+        example: Y2LZY29ZCGFYAZOVL3VZL1BFT1BMRS9JOTYWOTZIYI1KYTRHLTQ3NZETYTC2ZI1KNDEZODQWZWVM1TQ
+        schema:
+          type: string
+components:
+  schemas:
+    IdentityManagedOrg:
+      type: object
+      properties:
+        orgId:
+          type: string
+          example: Y2LZY29ZCGFYAZOVL3VZL1BFT1BMRS9MNWIZNJE4NY1JOGRKLTQ3MJCTOGIYZI1MOWM0NDDMMJKWNDY
+          description: The org ID of the managed org.
+        role:
+          type: string
+          example: YXRSYXMTCG9YDGFSLNBHCNRUZXIUC2FSZXNMDWXSYWRTAW4=
+          description: role ID of the user to this org.
+    ManagedOrgsResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/IdentityManagedOrg'
+          description: An array of managed orgs objects.
+    PartneradminsfororgResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PartnerAdminUser'
+          description: An array of partner admin user details.
+    PartnerAdminUser:
+      type: object
+      properties:
+        id:
+          type: string
+          example: Y2LZY29ZCGFYAZOVL3VZL1BFT1BMRS9JOTYWOTZIYI1KYTRHLTQ3NZETYTC2ZI1KNDEZODQWZWVM1TQ
+          description: The user ID of the partner admin.
+        displayName:
+          type: string
+          example: display name
+          description: The display name of the partner admin.
+        firstName:
+          type: string
+          example: John
+          description: The first name of the partner admin.
+        lastName:
+          type: string
+          example: Doe
+          description: The last name of the partner admin.
+        emails:
+          type: array
+          items:
+            type: string
+            example: johndoe@example.com
+          description: List of emails for the partner admin.
+        roleInCustomerOrg:
+          type: string
+          example: id_full_admin
+          description: The role of this partner admin in the given customer org.
+  securitySchemes:
+    oauth2:
+      flows:
+        authorizationCode:
+          authorizationUrl: /
+          scopes: {}
+          tokenUrl: /
+      type: oauth2
+    bearer-key:
+      type: http
+      description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
+      scheme: bearer
+      bearerFormat: JWT
+    bearerAuth:
+      type: oauth2
+      description: OAuth 2.0 Bearer token authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: https://webexapis.com/v1/authorize
+          tokenUrl: https://webexapis.com/v1/access_token
+          scopes:
+            spark:applications_token: Create access tokens for Service Apps

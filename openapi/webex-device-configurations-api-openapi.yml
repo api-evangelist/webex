@@ -1,0 +1,391 @@
+openapi: 3.0.0
+info:
+  title: Webex Admin Address Book Device Configurations API
+  version: 1.0.0
+  description: The Webex Admin APIs provide comprehensive programmatic access to administrative functions for managing Webex organizations, users, licenses, and settings. These APIs enable automation of user provisioning, license assignment, compliance management, and audit event retrieval. Administrators can integrate with enterprise identity systems, enforce security policies, monitor usage, and streamline onboarding/offboarding processes. The APIs support granular control over organizational resources, making them ideal for large-scale deployments and custom admin tooling.
+tags:
+- name: Device Configurations
+paths:
+  /deviceConfigurations:
+    get:
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceConfigurationCollectionResponse'
+              example:
+                deviceId: Y2lzY29zcGFyazovL3VybjpURUFNOnVzLWVhc3QtMl9hL0RFVklDRS9hNmYwYjhkMi01ZjdkLTQzZDItODAyNi0zM2JkNDg3NjYzMTg=
+                items:
+                  Audio.Ultrasound.MaxVolume:
+                    value: 70
+                    source: default
+                    sources:
+                      default:
+                        value: 70
+                        editability:
+                          editable: false
+                          reason: FACTORY_DEFAULT
+                      configured:
+                        value: null
+                        editability:
+                          editable: true
+                    valueSpace:
+                      type: integer
+                      maximum: 100
+                      minimum: 0
+                  FacilityService.Service[1].Name:
+                    value: Live Support
+                    source: default
+                    sources:
+                      default:
+                        value: Live Support
+                        editability:
+                          editable: false
+                          reason: FACTORY_DEFAULT
+                      configured:
+                        value: null
+                        editability:
+                          editable: true
+                    valueSpace:
+                      type: string
+                      maxLength: 1024
+                      minLength: 0
+                  Conference.MaxReceiveCallRate:
+                    value: 786
+                    source: configured
+                    sources:
+                      default:
+                        value: 6000
+                        editability:
+                          editable: false
+                          reason: FACTORY_DEFAULT
+                      configured:
+                        value: 786
+                        editability:
+                          editable: true
+                    valueSpace:
+                      type: integer
+                      maximum: 6000
+                      minimum: 64
+                  Video.Output.Connector[2].Resolution:
+                    value: Auto
+                    source: default
+                    sources:
+                      default:
+                        value: Auto
+                        editability:
+                          editable: false
+                          reason: FACTORY_DEFAULT
+                      configured:
+                        value: null
+                        editability:
+                          editable: false
+                          reason: CONFIG_MANAGED_BY_DIFFERENT_AUTHORITY
+                    valueSpace:
+                      enum:
+                      - '1920_1080_50'
+                      - '1920_1080_60'
+                      - '1920_1200_50'
+                      - '1920_1200_60'
+                      - '2560_1440_60'
+                      - '3840_2160_30'
+                      - '3840_2160_60'
+                      - Auto
+                      type: string
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: List Device Configurations for device
+      operationId: List Device Configurations for device
+      description: Lists all device configurations associated with the given device ID. Administrators can list configurations for all devices within an organization.
+      tags:
+      - Device Configurations
+      parameters:
+      - name: deviceId
+        in: query
+        description: List device configurations by device ID.
+        required: true
+        example: Y2lzY29zcGFyazovL3VybjpURUFNOnVzLWVhc3QtMl9hL0RFVklDRS9hNmYwYjhkMi01ZjdkLTQzZDItODAyNi0zM2JkNDg3NjYzMTg=
+        schema:
+          type: string
+      - name: key
+        in: query
+        description: 'This can optionally be used to filter configurations. Keys are composed of segments. It''s possible to use absolute paths, wildcards or ranges.
+
+
+          - **Absolute** gives only one configuration as a result. `Conference.MaxReceiveCallRate` for example gives the Conference `MaxReceiveCallRate` configuration.
+
+
+          + **Wildcards** (\*) can specify multiple configurations with shared segments. `Audio.Ultrasound.*` for example will filter on all Audio Ultrasound configurations.
+
+
+          - **Range** ([_number_]) can be used to filter numbered segments. `FacilityService.Service[1].Name` for instance only shows the first `FacilityService` Service Name configuration, `FacilityService.Service[*].Name` shows all, `FacilityService.Service[1..3].Name` shows the first three and `FacilityService.Service[2..n].Name` shows all starting at 2. Note that [RFC 3986 3.2.2](https://www.ietf.org/rfc/rfc3986.html#section-3.2.2) does not allow square brackets in urls outside the host, so to specify range in a configuration key you will need to encode them to %5B for [ and %5D for ].'
+        schema:
+          type: string
+    patch:
+      responses:
+        '201':
+          description: Created
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceConfigurationCollectionResponse'
+              example:
+                deviceId: Y2lzY29zcGFyazovL3VybjpURUFNOnVzLWVhc3QtMl9hL0RFVklDRS9hNmYwYjhkMi01ZjdkLTQzZDItODAyNi0zM2JkNDg3NjYzMTg=
+                items:
+                  Audio.Ultrasound.MaxVolume:
+                    value: 50
+                    source: configured
+                    sources:
+                      default:
+                        value: 70
+                        editability:
+                          isEditable: false
+                          reason: FACTORY_DEFAULT
+                      configured:
+                        value: 50
+                        editability:
+                          isEditable: true
+                    valueSpace:
+                      type: integer
+                      maximum: 100
+                      minimum: 0
+                  FacilityService.Service[1].Name:
+                    value: Live Support
+                    source: default
+                    sources:
+                      default:
+                        value: Live Support
+                        editability:
+                          isEditable: false
+                          reason: FACTORY_DEFAULT
+                      configured:
+                        value: null
+                        editability:
+                          isEditable: true
+                    valueSpace:
+                      type: string
+                      maxLength: 1024
+                      minLength: 0
+                  Conference.MaxReceiveCallRate:
+                    value: 6000
+                    source: default
+                    sources:
+                      default:
+                        value: 6000
+                        editability:
+                          isEditable: false
+                          reason: FACTORY_DEFAULT
+                      configured:
+                        value: null
+                        editability:
+                          isEditable: true
+                    valueSpace:
+                      type: integer
+                      maximum: 6000
+                      minimum: 64
+                  Video.Output.Connector[2].Resolution:
+                    value: Auto
+                    source: default
+                    sources:
+                      default:
+                        value: Auto
+                        editability:
+                          isEditable: false
+                          reason: FACTORY_DEFAULT
+                      configured:
+                        value: null
+                        editability:
+                          isEditable: false
+                          reason: CONFIG_MANAGED_BY_DIFFERENT_AUTHORITY
+                    valueSpace:
+                      enum:
+                      - '1920_1080_50'
+                      - '1920_1080_60'
+                      - '1920_1200_50'
+                      - '1920_1200_60'
+                      - '2560_1440_60'
+                      - '3840_2160_30'
+                      - '3840_2160_60'
+                      - Auto
+                      type: string
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Update Device Configurations
+      operationId: Update Device Configurations
+      description: Edit configurations for the device specified by device ID.
+      tags:
+      - Device Configurations
+      parameters:
+      - name: deviceId
+        in: query
+        description: Update device configurations by device ID.
+        required: true
+        example: Y2lzY29zcGFyazovL3VybjpURUFNOnVzLWVhc3QtMl9hL0RFVklDRS9hNmYwYjhkMi01ZjdkLTQzZDItODAyNi0zM2JkNDg3NjYzMTg=
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json-patch+json:
+            example:
+            - op: replace
+              path: Audio.Ultrasound.MaxVolume/sources/configured/value
+              value: 50
+            - op: remove
+              path: Conference.MaxReceiveCallRate/sources/configured/value
+            schema:
+              type: object
+              properties:
+                op:
+                  type: string
+                  enum:
+                  - remove
+                  - replace
+                  description: " * `remove` - Remove the configured value and revert back to the default from schema, if present.\n * `replace` - Set the configured value.\n"
+                path:
+                  type: string
+                  example: Audio.Ultrasound.MaxVolume/sources/configured/value
+                  description: Only paths ending in `/sources/configured/value` are supported.
+components:
+  schemas:
+    DeviceConfiguration:
+      type: object
+      properties:
+        configuration_key:
+          type: object
+          properties:
+            source:
+              type: string
+              enum:
+              - default
+              - configured
+              description: "The source of the current value that is applied to the device.\n * `default` - Current value comes from the schema default.\n * `configured` - Current value comes from configuredValue.\n"
+            sources:
+              type: object
+              properties:
+                default:
+                  type: object
+                  properties:
+                    editability:
+                      type: object
+                      properties:
+                        isEditable:
+                          type: boolean
+                          description: Whether or not the value is editable on this source (always `false` for `default`).
+                        reason:
+                          type: string
+                          example: FACTORY_DEFAULT
+                          description: The reason value is not editable on this source (always `FACTORY_DEFAULT` for `default`).
+                configured:
+                  type: object
+                  properties:
+                    editability:
+                      type: object
+                      properties:
+                        isEditable:
+                          type: boolean
+                          example: true
+                          description: Whether or not the value is editable on this source.
+                        reason:
+                          type: string
+                          enum:
+                          - NOT_AUTHORIZED
+                          - CONFIG_MANAGED_BY_DIFFERENT_AUTHORITY
+                          description: "The reason the value is not editable on this source.\n * `NOT_AUTHORIZED` - User is not authorized to edit any values.\n * `CONFIG_MANAGED_BY_DIFFERENT_AUTHORITY` - The configuration is managed by a different authority. For example `CUCM`.\n"
+            valueSpace:
+              type: object
+              properties: {}
+              description: '[JSON Schema](http://json-schema.org/) describing the data format of the configuration as specified by the device.'
+          description: Key of the configuration.
+    DeviceConfigurationCollectionResponse:
+      type: object
+      required:
+      - deviceId
+      properties:
+        deviceId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VybjpURUFNOnVzLWVhc3QtMl9hL0RFVklDRS9hNmYwYjhkMi01ZjdkLTQzZDItODAyNi0zM2JkNDg3NjYzMTg=
+          description: ID of the device that the configurations are for.
+        items:
+          $ref: '#/components/schemas/DeviceConfiguration'
+  securitySchemes:
+    oauth2:
+      flows:
+        authorizationCode:
+          authorizationUrl: /
+          scopes: {}
+          tokenUrl: /
+      type: oauth2
+    bearer-key:
+      type: http
+      description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
+      scheme: bearer
+      bearerFormat: JWT
+    bearerAuth:
+      type: oauth2
+      description: OAuth 2.0 Bearer token authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: https://webexapis.com/v1/authorize
+          tokenUrl: https://webexapis.com/v1/access_token
+          scopes:
+            spark:applications_token: Create access tokens for Service Apps

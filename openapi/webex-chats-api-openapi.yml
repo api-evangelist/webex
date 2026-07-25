@@ -1,0 +1,241 @@
+openapi: 3.0.0
+info:
+  title: Webex Admin Address Book Chats API
+  version: 1.0.0
+  description: The Webex Admin APIs provide comprehensive programmatic access to administrative functions for managing Webex organizations, users, licenses, and settings. These APIs enable automation of user provisioning, license assignment, compliance management, and audit event retrieval. Administrators can integrate with enterprise identity systems, enforce security policies, monitor usage, and streamline onboarding/offboarding processes. The APIs support granular control over organizational resources, making them ideal for large-scale deployments and custom admin tooling.
+tags:
+- name: Chats
+paths:
+  /meetings/postMeetingChats:
+    get:
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ChatObject'
+                    description: Chat array
+              example:
+                items:
+                - id: 1aea8390-e375-4547-b7ff-58ecd9e0b03d
+                  chatTime: '2021-07-06T09:22:34Z'
+                  text: hi
+                  meetingId: a2f95f5073e347489f7611492dbd6ad5_I_199075330905867928
+                  type: private
+                  sender:
+                    email: john.andersen@example.com
+                    displayName: John Andersen
+                    personId: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9jN2ZkNzNmMi05ZjFlLTQ3ZjctYWEwNS05ZWI5OGJiNjljYzY=
+                    orgId: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi9jMmUyMjE4Zi00ZDZhLTQwODEtYTc1MS0yOWIyZTk3MDRiZGU=
+                  receivers:
+                  - email: catherine.sinu@example.com
+                    displayName: Catherine Sinu
+                    personId: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9hYmEwZDRjYi02MGVkLTQzYjctYTkyNy1mZTc2MmIyZTRiODY=
+                    orgId: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi9jMmUyMjE4Zi00ZDZhLTQwODEtYTc1MS0yOWIyZTk3MDRiZGU=
+        '400':
+          description: Bad Request
+          headers: {}
+          content: {}
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: List Meeting Chats
+      operationId: List Meeting Chats
+      description: 'Lists the meeting chats of a finished [meeting instance](/docs/meetings#meeting-series-scheduled-meetings-and-meeting-instances) specified by `meetingId`. You can set a maximum number of chats to return.
+
+
+        Use this operation to list the chats of a finished [meeting instance](/docs/meetings#meeting-series-scheduled-meetings-and-meeting-instances) when they are ready. Please note that only **meeting instances** in state `ended` are supported for `meetingId`. **Meeting series**, **scheduled meetings** and `in-progress` **meeting instances** are not supported.'
+      tags:
+      - Chats
+      parameters:
+      - name: meetingId
+        in: query
+        description: A unique identifier for the [meeting instance](/docs/meetings#meeting-series-scheduled-meetings-and-meeting-instances) to which the chats belong. The meeting ID of a scheduled [personal room](https://help.webex.com/en-us/article/nul0wut/Webex-Personal-Rooms-in-Webex-Meetings) meeting is not supported.
+        required: true
+        example: 0ed74a1c0551494fb7a04e2881bf50ae_I_166022169160077044
+        schema:
+          type: string
+      - name: max
+        in: query
+        description: Limit the maximum number of meeting chats in the response, up to 100.
+        example: '100'
+        schema:
+          type: number
+          default: 10
+      - name: offset
+        in: query
+        description: Offset from the first result that you want to fetch.
+        example: '0'
+        schema:
+          type: number
+    delete:
+      responses:
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: Not Found
+          headers: {}
+          content: {}
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Delete Meeting Chats
+      operationId: Delete Meeting Chats
+      description: 'Deletes the meeting chats of a finished [meeting instance](/docs/meetings#meeting-series-scheduled-meetings-and-meeting-instances) specified by `meetingId`.
+
+
+        Use this operation to delete the chats of a finished [meeting instance](/docs/meetings#meeting-series-scheduled-meetings-and-meeting-instances) when they are ready. Please note that only **meeting instances** in state `ended` are supported for `meetingId`. **Meeting series**, **scheduled meetings** and `in-progress` **meeting instances** are not supported.'
+      tags:
+      - Chats
+      parameters:
+      - name: meetingId
+        in: query
+        description: A unique identifier for the [meeting instance](/docs/meetings#meeting-series-scheduled-meetings-and-meeting-instances) to which the chats belong. Meeting IDs of a scheduled [personal room](https://help.webex.com/en-us/article/nul0wut/Webex-Personal-Rooms-in-Webex-Meetings) meeting are not supported.
+        required: true
+        example: 0ed74a1c0551494fb7a04e2881bf50ae_I_166022169160077044
+        schema:
+          type: string
+components:
+  schemas:
+    ChatObject:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 1aea8390-e375-4547-b7ff-58ecd9e0b03d
+          description: A unique identifier for the chat snippet.
+        chatTime:
+          type: string
+          example: '2021-07-06T09:22:34Z'
+          description: Chat time for the chat snippet in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant format.
+        text:
+          type: string
+          example: hi
+          description: The text of the chat snippet.
+        meetingId:
+          type: string
+          example: a2f95f5073e347489f7611492dbd6ad5_I_199075330905867928
+          description: A unique identifier for the [meeting instance](/docs/meetings#meeting-series-scheduled-meetings-and-meeting-instances) to which the chat belongs.
+        type:
+          type: string
+          example: private
+          description: Whether the type of the chat is private, public or group. Private chat is for the 1:1 chat. Public chat is for the message which is sent to all the people in the meeting. Group chat is for the message which is sent to a small group of people, like a message to "host and presenter".
+        sender:
+          type: object
+          properties:
+            email:
+              type: string
+              example: john.andersen@example.com
+              description: Email address of the sender of the meeting chat snippet.
+            displayName:
+              type: string
+              example: John Andersen
+              description: Display name for the sender.
+            personId:
+              type: string
+              example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS81YmVkZWUyMC1hNjI3LTQ4YTUtODg0Yi04NjVhODhlZmFhNzM
+              description: A unique identifier for the sender.
+            orgId:
+              type: string
+              example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi81OWU2NzUyNy00NjUxLTRjOTAtYjJmMC00Zjg2YzNiYjY2MDg
+              description: The ID of the organization to which the sender belongs.
+          description: Information of the sender of the chat snippet.
+        receivers:
+          type: array
+          items:
+            type: object
+            properties:
+              email:
+                type: string
+                example: catherine.sinu@example.com
+                description: Email address of the receiver of the meeting chat snippet.
+              displayName:
+                type: string
+                example: Catherine Sinu
+                description: Display name for the receiver.
+              personId:
+                type: string
+                example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS81YmVkZWUyMC1hNjI3LTQ4YTUtODg0Yi04NjVhODhlZmFhNzM
+                description: A unique identifier for the receiver.
+              orgId:
+                type: string
+                example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi81OWU2NzUyNy00NjUxLTRjOTAtYjJmMC00Zjg2YzNiYjY2MDg
+                description: The ID of the organization to which the receiver belongs.
+          description: Information of the receivers of the chat snippet.
+  securitySchemes:
+    oauth2:
+      flows:
+        authorizationCode:
+          authorizationUrl: /
+          scopes: {}
+          tokenUrl: /
+      type: oauth2
+    bearer-key:
+      type: http
+      description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
+      scheme: bearer
+      bearerFormat: JWT
+    bearerAuth:
+      type: oauth2
+      description: OAuth 2.0 Bearer token authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: https://webexapis.com/v1/authorize
+          tokenUrl: https://webexapis.com/v1/access_token
+          scopes:
+            spark:applications_token: Create access tokens for Service Apps

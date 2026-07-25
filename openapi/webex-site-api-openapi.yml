@@ -1,0 +1,1539 @@
+openapi: 3.0.0
+info:
+  title: Webex Admin Address Book Site API
+  version: 1.0.0
+  description: The Webex Admin APIs provide comprehensive programmatic access to administrative functions for managing Webex organizations, users, licenses, and settings. These APIs enable automation of user provisioning, license assignment, compliance management, and audit event retrieval. Administrators can integrate with enterprise identity systems, enforce security policies, monitor usage, and streamline onboarding/offboarding processes. The APIs support granular control over organizational resources, making them ideal for large-scale deployments and custom admin tooling.
+tags:
+- name: Site
+paths:
+  /organization/{orgid}/site:
+    get:
+      tags:
+      - Site
+      summary: List Site(s)
+      description: Retrieve a list of Site(s) in a given organization.
+      operationId: getAllConfigWithoutPagination_1
+      parameters:
+      - name: orgid
+        in: path
+        description: Organization ID to be used for this operation. The specified security token must have permission to interact with the organization.
+        required: true
+        schema:
+          type: string
+        example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+      - name: filter
+        in: query
+        description: "Specify a filter based on which the results will be fetched. Supported filterable fields:  id. \n\nThe examples below show some search queries\n- id==\"57efb0e6-5af0-4245-a67d-d3c5045cdb6e\"\n- id!=\"57efb0e6-5af0-4245-a67d-d3c5045cdb6e\"\n- id=in=(\"57efb0e6-5af0-4245-a67d-d3c5045cdb6e\",\"a421e0b2-732e-46f3-a057-39160a53afb9\")\n- id=out=(\"57efb0e6-5af0-4245-a67d-d3c5045cdb6e\",\"a421e0b2-732e-46f3-a057-39160a53afb9\")\nThis parameter uses the RSQL query syntax, a URI-friendly format for expressing criteria for filtering REST entities. For more information about RSQL in general, see  <a href=\"https://www.here.com/docs/bundle/data-client-library-developer-guide-java-scala/page/client/rsql.html\">this reference</a>. For a list of supported operators, see <a href=\"https://github.com/perplexhub/rsql-jpa-specification#rsql-syntax-reference\">this syntax guide</a>.\n\nNote: values to be used in the filter syntax should not contain space, and if so kindly bound it with quotes to apply filter.\n"
+        required: false
+        schema:
+          type: string
+        example: id=="2f9eecc5-0472-4549-9a83-2afdae0d4ba1"
+      - name: attributes
+        in: query
+        description: Specify the attributes to be returned.Default all attributes are returned along with specified columns. All Attributes are supported
+        required: false
+        schema:
+          type: string
+          format: string
+        example: id
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SiteDTO'
+        '401':
+          description: Unauthorized Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '403':
+          description: Operation is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Resource not found or URI is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '429':
+          description: Too many requests have been sent in a given amount of time and the request has been rate limited
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: An Unexpected Error Occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      deprecated: false
+    post:
+      tags:
+      - Site
+      summary: Create a new Site
+      description: Create a new Site in a given organization.
+      operationId: createConfig_7
+      parameters:
+      - name: orgid
+        in: path
+        description: Organization ID to be used for this operation. The specified security token must have permission to interact with the organization.
+        required: true
+        schema:
+          type: string
+        example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SiteDTO'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SiteDTO'
+        '400':
+          description: The request was invalid and cannot be served. An accompanying error message will explain further
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '403':
+          description: Operation is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '409':
+          description: Similar entity is already present
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '429':
+          description: Too many requests have been sent in a given amount of time and the request has been rate limited
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: An Unexpected Error Occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      deprecated: false
+  /organization/{orgid}/site/bulk:
+    post:
+      tags:
+      - Site
+      summary: Bulk save Site(s)
+      description: Create, Update or delete Site(s) in bulk in a given organization.
+      operationId: saveAllConfig_6
+      parameters:
+      - name: orgid
+        in: path
+        description: Organization ID to be used for this operation. The specified security token must have permission to interact with the organization.
+        required: true
+        schema:
+          type: string
+        example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkRequestDTOSiteDTO'
+        required: true
+      responses:
+        '207':
+          description: Multi-Status
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/BulkResponseDTO'
+        '400':
+          description: The request was invalid and cannot be served. An accompanying error message will explain further
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '403':
+          description: Operation is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '409':
+          description: Similar entity is already present
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '429':
+          description: Too many requests have been sent in a given amount of time and the request has been rate limited
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: An Unexpected Error Occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      deprecated: false
+  /organization/{orgid}/site/bulk-export:
+    get:
+      tags:
+      - Site
+      summary: Bulk export Site(s)
+      description: Export all Site(s) in a given organization.
+      operationId: bulkExport_7
+      parameters:
+      - name: orgid
+        in: path
+        description: Organization ID to be used for this operation. The specified security token must have permission to interact with the organization.
+        required: true
+        schema:
+          type: string
+        example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+      - name: page
+        in: query
+        description: Defines the number of displayed page. The page number starts from 0.
+        schema:
+          type: integer
+          example: 0
+          default: 0
+      - name: pageSize
+        in: query
+        description: Defines the number of items to be displayed on a page. If the number specified is more than allowed max page size, the API will automatically adjust the page size to the max page size.
+        schema:
+          type: integer
+          example: 100
+          default: 100
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/BulkExportDTOSiteBulkExportDTO'
+        '401':
+          description: Unauthorized Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '403':
+          description: Operation is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Resource not found or URI is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '429':
+          description: Too many requests have been sent in a given amount of time and the request has been rate limited
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: An Unexpected Error Occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      deprecated: true
+  /organization/{orgid}/site/purge-inactive-entities:
+    post:
+      tags:
+      - Site
+      summary: Purge inactive Site(s)
+      description: Purge inactive Site(s) older than the configured interval for a given organization.
+      operationId: purgeInactiveConfig_4
+      parameters:
+      - name: orgid
+        in: path
+        description: Organization ID to be used for this operation. The specified security token must have permission to interact with the organization.
+        required: true
+        schema:
+          type: string
+        example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+      - name: nextStartId
+        in: query
+        description: This is the entity ID from which items for the next purge batch with be selected.
+        required: false
+        schema:
+          type: string
+          default: ''
+        example: af9eecc5-0472-4549-9a83-2afdae0d4ba0
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Response'
+        '400':
+          description: The request was invalid and cannot be served. An accompanying error message will explain further
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '403':
+          description: Operation is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '409':
+          description: Similar entity is already present
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '429':
+          description: Too many requests have been sent in a given amount of time and the request has been rate limited
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: An Unexpected Error Occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      deprecated: false
+  /organization/{orgid}/site/{id}:
+    get:
+      tags:
+      - Site
+      summary: Get specific Site by ID
+      description: Retrieve an existing Site by ID in a given organization.
+      operationId: getConfig_8
+      parameters:
+      - name: orgid
+        in: path
+        description: Organization ID to be used for this operation. The specified security token must have permission to interact with the organization.
+        required: true
+        schema:
+          type: string
+        example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+      - name: id
+        in: path
+        description: Resource ID of the Site.
+        required: true
+        schema:
+          type: string
+        example: 2f9eecc5-0472-4549
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SiteDTO'
+        '401':
+          description: Unauthorized Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '403':
+          description: Operation is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Resource not found or URI is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '429':
+          description: Too many requests have been sent in a given amount of time and the request has been rate limited
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: An Unexpected Error Occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      deprecated: false
+    put:
+      tags:
+      - Site
+      summary: Update specific Site by ID
+      description: Update an existing Site by ID in a given organization.
+      operationId: updateConfig_8
+      parameters:
+      - name: orgid
+        in: path
+        description: Organization ID to be used for this operation. The specified security token must have permission to interact with the organization.
+        required: true
+        schema:
+          type: string
+        example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+      - name: id
+        in: path
+        description: Resource ID of the Site.
+        required: true
+        schema:
+          type: string
+        example: 2f9eecc5-0472-4549
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SiteDTO'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SiteDTO'
+        '400':
+          description: The request was invalid and cannot be served. An accompanying error message will explain further
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '403':
+          description: Operation is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Resource not found or URI is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '412':
+          description: Resource referred in other entity(s). Please get all the reference entities info by invoking Get incoming-references api.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '429':
+          description: Too many requests have been sent in a given amount of time and the request has been rate limited
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: An Unexpected Error Occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      deprecated: false
+    delete:
+      tags:
+      - Site
+      summary: Delete specific Site by ID
+      description: Delete an existing Site by ID in a given organization.
+      operationId: deleteConfig_7
+      parameters:
+      - name: orgid
+        in: path
+        description: Organization ID to be used for this operation. The specified security token must have permission to interact with the organization.
+        required: true
+        schema:
+          type: string
+        example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+      - name: id
+        in: path
+        description: Resource ID of the Site.
+        required: true
+        schema:
+          type: string
+        example: 2f9eecc5-0472-4549
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '403':
+          description: Operation is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Resource not found or URI is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '412':
+          description: Resource referred in other entity(s). Please get all the reference entities info by invoking Get incoming-references api.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '429':
+          description: Too many requests have been sent in a given amount of time and the request has been rate limited
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: An Unexpected Error Occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      deprecated: false
+  /organization/{orgid}/site/{id}/incoming-references:
+    get:
+      tags:
+      - Site
+      summary: List references for a specific Site
+      description: Retrieve a list of all entities that have reference to an existing Site by ID in a given organization.
+      operationId: getIncomingReferences_6
+      parameters:
+      - name: orgid
+        in: path
+        description: Organization ID to be used for this operation. The specified security token must have permission to interact with the organization.
+        required: true
+        schema:
+          type: string
+        example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+      - name: id
+        in: path
+        description: ID of this contact center resource.
+        required: true
+        schema:
+          type: string
+        example: af9eecc5-0472-4549-9a83-2afdae0d4ba0
+      - name: type
+        in: query
+        description: Entity type of the other entity that has a reference to this specific entity.
+        required: false
+        schema:
+          type: string
+        example: type_text
+      - name: page
+        in: query
+        description: Defines the number of displayed page. The page number starts from 0.
+        schema:
+          type: integer
+          example: 0
+          default: 0
+      - name: pageSize
+        in: query
+        description: Defines the number of items to be displayed on a page. If the number specified is more than allowed max page size, the API will automatically adjust the page size to the max page size.
+        schema:
+          type: integer
+          example: 100
+          default: 100
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/EntityReferenceInfoDTO'
+        '401':
+          description: Unauthorized Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '403':
+          description: Operation is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Resource not found or URI is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '429':
+          description: Too many requests have been sent in a given amount of time and the request has been rate limited
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: An Unexpected Error Occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      deprecated: false
+  /organization/{orgid}/v2/site:
+    get:
+      tags:
+      - Site
+      summary: List Site(s)
+      description: Retrieve a list of Site(s) in a given organization.
+      operationId: getAllConfigWithMetaData_9
+      parameters:
+      - name: orgid
+        in: path
+        description: Organization ID to be used for this operation. The specified security token must have permission to interact with the organization.
+        required: true
+        schema:
+          type: string
+        example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+      - name: filter
+        in: query
+        description: "Specify a filter based on which the results will be fetched. All the fields are supported except: organizationId, createdTime, lastUpdatedTime \n\nThe examples below show some search queries\n- id==\"57efb0e6-5af0-4245-a67d-d3c5045cdb6e\"\n- id!=\"57efb0e6-5af0-4245-a67d-d3c5045cdb6e\"\n- id=in=(\"57efb0e6-5af0-4245-a67d-d3c5045cdb6e\",\"a421e0b2-732e-46f3-a057-39160a53afb9\")\n- id=out=(\"57efb0e6-5af0-4245-a67d-d3c5045cdb6e\",\"a421e0b2-732e-46f3-a057-39160a53afb9\")\nThis parameter uses the RSQL query syntax, a URI-friendly format for expressing criteria for filtering REST entities. For more information about RSQL in general, see  <a href=\"https://www.here.com/docs/bundle/data-client-library-developer-guide-java-scala/page/client/rsql.html\">this reference</a>. For a list of supported operators, see <a href=\"https://github.com/perplexhub/rsql-jpa-specification#rsql-syntax-reference\">this syntax guide</a>.\n\nNote: values to be used in the filter syntax should not contain space, and if so kindly bound it with quotes to apply filter.\n"
+        required: false
+        schema:
+          type: string
+        example: id=="2f9eecc5-0472-4549-9a83-2afdae0d4ba1"
+      - name: attributes
+        in: query
+        description: Specify the attributes to be returned.Default all attributes are returned along with specified columns. All Attributes are supported
+        required: false
+        schema:
+          type: string
+          format: string
+        example: id
+      - name: search
+        in: query
+        description: 'Filter data based on the search keyword.Supported search columns(name)
+
+
+          The examples below show some search queries
+
+          - "Cisco"
+
+          - field=="name";value=="Cisco"
+
+          - fields=in=("name");value=="Cisco"
+
+          '
+        required: false
+        schema:
+          type: string
+        example: contact center
+      - name: page
+        in: query
+        description: Defines the number of displayed page. The page number starts from 0.
+        schema:
+          type: integer
+          example: 0
+          default: 0
+      - name: pageSize
+        in: query
+        description: Defines the number of items to be displayed on a page. If the number specified is more than allowed max page size, the API will automatically adjust the page size to the max page size.
+        schema:
+          type: integer
+          example: 100
+          default: 100
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ResponseEnvelopeSiteDTO'
+        '401':
+          description: Unauthorized Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '403':
+          description: Operation is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Resource not found or URI is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '429':
+          description: Too many requests have been sent in a given amount of time and the request has been rate limited
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: An Unexpected Error Occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      deprecated: false
+  /admin/meeting/config/commonSettings:
+    get:
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/GetMeetingConfigurationCommonSettingObject'
+              example:
+                siteOptions:
+                  allowCustomPersonalRoomURL: true
+                telephonyConfig:
+                  allowCallIn: true
+                  allowCallBack: true
+                  allowOtherTeleconf: true
+                  allowTollFreeCallin: true
+                  allowInternationalCallin: true
+                  allowInternationalCallback: true
+                  VoIP: true
+                defaultSchedulerOptions:
+                  entryAndExitTone: Beep
+                  joinTeleconfNotPress1: true
+                  telephonySupport: WebexTeleconferencing
+                  tollFree: true
+                  VoIP: false
+                scheduleMeetingOptions:
+                  emailReminders: true
+                securityOptions:
+                  joinBeforeHost: true
+                  audioBeforeHost: true
+                  firstAttendeeAsPresenter: true
+                  unlistAllMeetings: false
+                  requireLoginBeforeAccess: false
+                  allowMobileScreenCapture: true
+                  requireStrongPassword: true
+                  passwordCriteria:
+                    mixedCase: true
+                    minLength: 8
+                    minNumeric: 2
+                    minAlpha: 4
+                    minSpecial: 1
+                    disallowDynamicWebText: true
+                    disallowList: true
+                    disallowValues:
+                    - password
+                    - Admin@123
+                    - passwd
+                    - pass
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Get Meeting Common Settings Configuration
+      operationId: getMeetingCommonSettingsConfiguration
+      description: 'Site administrators can use this API to get a list of functions, options, and privileges that are configured for their Webex service sites.
+
+
+        * If `siteUrl` is specified, common settings of the meeting''s configuration of the specified site will be queried; otherwise, the API will query from the site administrator''s preferred site. All available Webex sites and preferred site of the user can be retrieved by [Get Site List](/docs/api/v1/meeting-preferences/get-site-list) API.'
+      tags:
+      - Site
+      parameters:
+      - name: siteUrl
+        in: query
+        description: URL of the Webex site which the API queries common settings of the meeting's configuration from. If not specified, the API will query from the site administrator's preferred site. All available Webex sites and the preferred site of the user can be retrieved by the [Get Site List](/docs/api/v1/meeting-preferences/get-site-list) API.
+        example: example.webex.com
+        schema:
+          type: string
+    patch:
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/GetMeetingConfigurationCommonSettingObject'
+              example:
+                siteOptions:
+                  allowCustomPersonalRoomURL: true
+                telephonyConfig:
+                  allowCallIn: true
+                  allowCallBack: true
+                  allowOtherTeleconf: true
+                  allowTollFreeCallin: true
+                  allowInternationalCallin: true
+                  allowInternationalCallback: true
+                  VoIP: true
+                defaultSchedulerOptions:
+                  entryAndExitTone: Beep
+                  joinTeleconfNotPress1: true
+                  telephonySupport: WebexTeleconferencing
+                  tollFree: true
+                  VoIP: false
+                scheduleMeetingOptions:
+                  emailReminders: true
+                securityOptions:
+                  joinBeforeHost: true
+                  audioBeforeHost: true
+                  firstAttendeeAsPresenter: true
+                  unlistAllMeetings: false
+                  requireLoginBeforeAccess: false
+                  allowMobileScreenCapture: true
+                  requireStrongPassword: true
+                  passwordCriteria:
+                    mixedCase: true
+                    minLength: 8
+                    minNumeric: 2
+                    minAlpha: 4
+                    minSpecial: 1
+                    disallowDynamicWebText: true
+                    disallowList: true
+                    disallowValues:
+                    - password
+                    - Admin@123
+                    - passwd
+                    - pass
+        '400':
+          description: Bad Request
+          headers: {}
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        description:
+                          type: string
+                  trackingId:
+                    type: string
+              example:
+                message: The request could not be understood by the server due to malformed syntax. See 'errors' for more details.
+                errors:
+                - description: Repeated items are not allowed in disallowValues.
+                trackingId: 026C56558A1540089DB8CA7091F9B547_1663746877258
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Update Meeting Common Settings Configuration
+      operationId: Update Meeting Common Settings Configuration
+      description: Site administrators can use this API to update the option of features, options and privileges that are configured for their WebEx service sites.
+      tags:
+      - Site
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            example:
+              defaultSchedulerOptions:
+                entryAndExitTone: AnnounceName
+              scheduleMeetingOptions:
+                emailReminders: false
+              securityOptions:
+                joinBeforeHost: true
+                audioBeforeHost: false
+                firstAttendeeAsPresenter: false
+                requireStrongPassword: true
+                passwordCriteria:
+                  mixedCase: false
+                  disallowValues:
+                  - password
+                  - passwd
+                  - pwd
+            schema:
+              $ref: '#/components/schemas/UpdateMeetingConfigurationCommonSettingObject'
+components:
+  schemas:
+    BulkExportDTOSiteBulkExportDTO:
+      type: object
+      properties:
+        totalResources:
+          type: integer
+          description: Total number of items
+          format: int32
+          example: 100
+        pageNumber:
+          type: integer
+          description: Current page number
+          format: int32
+          example: 0
+        pageSize:
+          type: integer
+          description: Page size for current data set
+          format: int32
+          example: 50
+        rel:
+          type: string
+          description: Indicates whether more pages exist. When 'next' there are more pages available, otherwise 'last'.
+          example: last
+        resources:
+          type: array
+          items:
+            $ref: '#/components/schemas/SiteBulkExportDTO'
+    ApiErrorResponse:
+      description: Response body for an API error.
+      type: object
+      properties:
+        trackingId:
+          type: string
+          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
+          example: c1a4fcef-aee2-4dea-8977-29f594760552
+        error:
+          description: An object containing details about the error.
+          $ref: '#/components/schemas/ErrorDetails'
+    UpdateMeetingConfigurationCommonSettingObject:
+      type: object
+      properties:
+        siteOptions:
+          type: object
+          properties:
+            allowCustomPersonalRoomURL:
+              type: boolean
+              description: Allow hosts to change their Personal Room URLs.
+          description: Site Options on Webex Administration.
+        defaultSchedulerOptions:
+          type: object
+          required:
+          - entryAndExitTone
+          - telephonySupport
+          properties:
+            entryAndExitTone:
+              type: string
+              enum:
+              - NoTone
+              - Beep
+              - AnnounceName
+              description: "Determines if a sound is made when someone enters or exits.\n * `NoTone` - No tone.\n * `Beep` - Beep.\n * `AnnounceName` - Announce name.\n"
+            joinTeleconfNotPress1:
+              type: boolean
+              description: Specifies whether or not joining teleconference without pressing 1 is checked by default.
+            telephonySupport:
+              type: string
+              enum:
+              - None
+              - WebexTeleconferencing
+              - Other
+              description: "Specifies the type of teleconference support for meetings.\n * `None` - None.\n * `WebexTeleconferencing` - Webex teleconferencing (Unabled when Webex Super Admin hasn't turned on call-in teleconferencing and call-back teleconferencing).\n * `Other` - Other Teleconferencing (Unabled when Webex Super Admin hasn't turned on other teleconferencing).\n"
+            tollFree:
+              type: boolean
+              description: Specifies whether toll-free call-in is available, it can't be specified when `telephonySupport` was not `WebexTeleconferencing`, and it can't be specified as `true` when Webex Super Admin hasn't turned on toll-free call-in teleconferencing.
+            VoIP:
+              type: boolean
+              description: Denotes if VoIP protocols are being used, it can't be specified as `true` when Webex Super Admin hasn't turned on Voice Over IP functionality.
+          description: Default Scheduler Options on Webex Administration (These options are applied to the site as defaults, but individual users can change them).
+        scheduleMeetingOptions:
+          type: object
+          properties:
+            emailReminders:
+              type: boolean
+              description: Determines if email reminders are to be sent out.
+          description: Schedule Meeting Options on Webex Administration.
+        securityOptions:
+          type: object
+          properties:
+            joinBeforeHost:
+              type: boolean
+              description: Allow attendees or panelists to join before the host.
+            audioBeforeHost:
+              type: boolean
+              description: Allows attendees or panelists to join the teleconference before the host, it can't be turned on when `joinBeforeHost` was `false`.
+            firstAttendeeAsPresenter:
+              type: boolean
+              description: Allows first attendee or panelist as the presenter, it can't be turned on when `firstAttendeeAsPresenter` was `false`.
+            unlistAllMeetings:
+              type: boolean
+              description: Specifies that all meetings must be unlisted.
+            requireLoginBeforeAccess:
+              type: boolean
+              description: Determines if a user must login before getting site access.
+            allowMobileScreenCapture:
+              type: boolean
+              description: Allow screen capture (Android devices only).
+            requireStrongPassword:
+              type: boolean
+              description: Determines if strict passwords are required for meetings.
+            passwordCriteria:
+              type: object
+              properties:
+                mixedCase:
+                  type: boolean
+                  description: Determines if a password requires mixed case.
+                minLength:
+                  type: number
+                  example: 8
+                  description: Sets the minimum password length, maximum value limit of 12.
+                minNumeric:
+                  type: number
+                  example: 2
+                  description: Sets the minimum number of numeric characters in the password, maximum value limit of 12.
+                minAlpha:
+                  type: number
+                  example: 4
+                  description: Sets the minimum number of alphabetical characters in the password, maximum value limit of 12.
+                minSpecial:
+                  type: number
+                  example: 1
+                  description: Sets the minimum number of special characters in the password, maximum value limit of 12.
+                disallowDynamicWebText:
+                  type: boolean
+                  description: Do not allow dynamic web page text for meeting passwords (like site name, host's name, username, meeting topic).
+                disallowList:
+                  type: boolean
+                  description: Specifies if passwords from the `disallowValues` list are to be allowed.
+                disallowValues:
+                  type: array
+                  items:
+                    type: string
+                  description: Sets password values that are not allowed, and cannot type repeated items in it.
+              description: Criteria of a strong password, which cannot be specified when `requireStrongPassword` was `false`.
+          description: Security Options on Webex Administration.
+    Response:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        details:
+          type: object
+          additionalProperties:
+            type: object
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'
+    Link:
+      type: object
+      properties:
+        href:
+          type: string
+        hreflang:
+          type: string
+        title:
+          type: string
+        type:
+          type: string
+        deprecation:
+          type: string
+        profile:
+          type: string
+        name:
+          type: string
+        templated:
+          type: boolean
+    ErrorDetails:
+      description: Details of an error.
+      type: object
+      properties:
+        key:
+          type: string
+          description: An application defined error code.
+          example: '401'
+        message:
+          type: array
+          description: A message providing details about the error.
+          items:
+            $ref: '#/components/schemas/OperationError'
+    BulkResponseItemDTO:
+      type: object
+      properties:
+        itemIdentifier:
+          type: integer
+          description: Unique item identifier for a bulk operation.
+          format: int32
+          example: 10
+        status:
+          type: integer
+          description: Indicates the error status code.
+          format: int32
+          example: 400
+        operationType:
+          type: string
+          description: The kind of operation desired of an entity.
+          example: CREATE
+          enum:
+          - CREATE
+          - UPDATE
+          - DELETE
+          - GET
+        href:
+          type: string
+          description: The resource URI of an entity.
+          example: /api/organization/6705c69d-4585-42ad-bfc3-79cc485dfb15/team/7b26d174-0016-4682-9858-65918e05f85
+        apiError:
+          $ref: '#/components/schemas/ApiErrorResponse'
+      example:
+        apiError:
+          error:
+            key: '400'
+            message:
+            - description: 'siteId: not found for given orgId.'
+              entity: string
+              references:
+              - id: string
+                name: string
+            reason: dependency exists
+          trackingId: ccconfig_c1a4fcef-aee2-4dea-8977-29f594760552
+        href: /api/organization/6705c69d-4585-42ad-bfc3-79cc485dfb15/team/7b26d174-0016-4682-9858-65918e05f85
+        itemIdentifier: 10
+        operationType: CREATE
+        status: 400
+    BulkRequestDTOSiteDTO:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BulkRequestItemDTOSiteDTO'
+    OperationError:
+      description: An error message providing details about the operation failure.
+      type: object
+      properties:
+        description:
+          type: string
+          description: A human readable explanation for the occurrence of an error.
+          example: Incorrect Credentials.
+    GetMeetingConfigurationCommonSettingObject:
+      type: object
+      properties:
+        siteOptions:
+          type: object
+          properties:
+            allowCustomPersonalRoomURL:
+              type: boolean
+              description: Allow hosts to change their Personal Room URLs.
+          description: Site Options on Webex Administration.
+        telephonyConfig:
+          type: object
+          properties:
+            allowCallIn:
+              type: boolean
+              description: Whether call-in teleconferencing for sessions was enabled.
+            allowCallBack:
+              type: boolean
+              description: Whether call-back teleconferencing for sessions was enabled.
+            allowOtherTeleconf:
+              type: boolean
+              description: Whether other teleconferencing for sessions was enabled.
+            allowTollFreeCallin:
+              type: boolean
+              description: Whether toll-free call-in teleconferencing was enabled.
+            allowInternationalCallin:
+              type: boolean
+              description: Whether international call-in teleconferencing was enabled.
+            allowInternationalCallback:
+              type: boolean
+              description: Whether international call-back teleconferencing was enabled.
+            VoIP:
+              type: boolean
+              description: Whether Voice Over IP functionality using the attendee computer's speakers and microphones was enabled.
+          description: Telephony Configuration on WebEx Super Admin (These options are read-only, unable to update by Update Common Settings API).
+        defaultSchedulerOptions:
+          type: object
+          required:
+          - entryAndExitTone
+          - telephonySupport
+          properties:
+            entryAndExitTone:
+              type: string
+              enum:
+              - NoTone
+              - Beep
+              - AnnounceName
+              description: "Determines if a sound is made when someone enters or exits.\n * `NoTone` - No tone.\n * `Beep` - Beep.\n * `AnnounceName` - Announce name.\n"
+            joinTeleconfNotPress1:
+              type: boolean
+              description: Specifies whether or not joining teleconference without pressing 1 is checked by default.
+            telephonySupport:
+              type: string
+              enum:
+              - None
+              - WebexTeleconferencing
+              - Other
+              description: "Specifies the type of teleconference support for meetings.\n * `None` - None.\n * `WebexTeleconferencing` - Webex teleconferencing.\n * `Other` - Other Teleconferencing.\n"
+            tollFree:
+              type: boolean
+              description: Specifies whether toll-free call-in is available.
+            VoIP:
+              type: boolean
+              description: Denotes if VoIP protocols are being used.
+          description: Default Scheduler Options on Webex Administration (These options are applied to the site as defaults, but individual users can change them).
+        scheduleMeetingOptions:
+          type: object
+          properties:
+            emailReminders:
+              type: boolean
+              description: Determines if email reminders are to be sent out.
+          description: Schedule Meeting Options on Webex Administration.
+        securityOptions:
+          type: object
+          properties:
+            joinBeforeHost:
+              type: boolean
+              description: Allow attendees or panelists to join before the host.
+            audioBeforeHost:
+              type: boolean
+              description: Allows attendees or panelists to join the teleconference before the host.
+            firstAttendeeAsPresenter:
+              type: boolean
+              description: Allows first attendee or panelist as the presenter.
+            unlistAllMeetings:
+              type: boolean
+              description: Specifies that all meetings must be unlisted.
+            requireLoginBeforeAccess:
+              type: boolean
+              description: Determines if a user must login before getting site access.
+            allowMobileScreenCapture:
+              type: boolean
+              description: Allow screen capture (Android devices only).
+            requireStrongPassword:
+              type: boolean
+              description: Determines if strict passwords are required for meetings.
+            passwordCriteria:
+              type: object
+              properties:
+                mixedCase:
+                  type: boolean
+                  description: Determines if a password requires mixed case.
+                minLength:
+                  type: number
+                  example: 8
+                  description: Sets the minimum password length.
+                minNumeric:
+                  type: number
+                  example: 2
+                  description: Sets the minimum number of numeric characters in the password.
+                minAlpha:
+                  type: number
+                  example: 4
+                  description: Sets the minimum number of alphabetical characters in the password.
+                minSpecial:
+                  type: number
+                  example: 1
+                  description: Sets the minimum number of special characters in the password.
+                disallowDynamicWebText:
+                  type: boolean
+                  description: Do not allow dynamic web page text for meeting passwords (like site name, host's name, username, meeting topic).
+                disallowList:
+                  type: boolean
+                  description: Specifies if passwords from the `disallowValues` list are to be allowed.
+                disallowValues:
+                  type: array
+                  items:
+                    type: string
+                  description: Sets password values that are not allowed.
+              description: Criteria of a strong password.
+          description: Security Options on Webex Administration.
+    SiteBulkExportDTO:
+      type: object
+      properties:
+        name:
+          type: string
+        multimediaProfileName:
+          type: string
+    SiteDTO:
+      required:
+      - active
+      - multimediaProfileId
+      - name
+      type: object
+      properties:
+        organizationId:
+          maxLength: 36
+          minLength: 32
+          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
+          type: string
+          description: ID of the contact center organization. It is required to define for the following operations - All bulk save operations
+          format: uuid
+          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+        id:
+          type: string
+          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
+          example: 93912f11-6017-404b-bf14-5331890b1797
+        version:
+          type: integer
+          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
+          format: int32
+          example: 1
+        name:
+          maxLength: 80
+          minLength: 1
+          pattern: ^[a-zA-Z\d-_\s]+$
+          type: string
+          description: Indicates the name of the site. Generally, it is the name of the geographical location. It is required only during a create or an update operation.
+          example: California
+        active:
+          type: boolean
+          description: Indicates the status of the site whether it is active(when true) or not active(when false). It is required only during a create or an update operation.
+          example: true
+        multimediaProfileId:
+          type: string
+          description: Indicates the multimedia profile for the site. It is required only during a create or an update operation.
+          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+        description:
+          maxLength: 255
+          minLength: 0
+          type: string
+        systemDefault:
+          type: boolean
+          description: Indicates whether the created resource is system created or not
+          example: false
+        createdTime:
+          type: integer
+          description: Creation time(in epoch millis) of this resource.
+          format: int64
+          readOnly: true
+          example: 1617536244000
+        lastUpdatedTime:
+          type: integer
+          description: Time(in epoch millis) when this resource was last updated.
+          format: int64
+          readOnly: true
+          example: 1617536244000
+    BulkResponseDTO:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BulkResponseItemDTO'
+    BulkRequestItemDTOSiteDTO:
+      type: object
+      properties:
+        itemIdentifier:
+          type: integer
+          description: Unique item identifier for a bulk operation.
+          format: int32
+          example: 10
+        item:
+          $ref: '#/components/schemas/SiteDTO'
+        requestAction:
+          type: string
+          description: Identifier for action type. Possible values can be SAVE and DELETE.
+          example: SAVE
+    ResponseEnvelopeSiteDTO:
+      type: object
+      properties:
+        meta:
+          type: object
+          additionalProperties:
+            type: object
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/SiteDTO'
+    MetaDataReferencesPagingInfo:
+      title: MetaDataReferencesPagingInfo
+      type: object
+      properties:
+        orgid:
+          maxLength: 36
+          minLength: 32
+          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
+          type: string
+          description: Org ID
+          format: uuid
+          example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+        page:
+          type: integer
+          description: Current page number
+          format: int32
+          example: 1
+        pageSize:
+          type: integer
+          description: Page size for current data set
+          format: int32
+          example: 100
+        totalPages:
+          type: integer
+          description: Number of pages
+          format: int32
+          example: 1
+        totalRecords:
+          type: integer
+          description: Total number of items
+          format: int32
+          example: 1000
+        links:
+          type: object
+          description: Map of pagination links with self, next, prev, last and first
+          example:
+            next: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=2&pageSize=10
+            last: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=3&pageSize=10
+            prev: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=0&pageSize=10
+            self: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=1&pageSize=10
+            first: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=0&pageSize=10
+        referencedEntities:
+          type: array
+          description: List of referenced entities
+          example:
+          - agent-profile
+          - entrypoint
+          items:
+            type: string
+        currentEntity:
+          type: string
+          description: Name of current entity
+          example: entity_name
+      description: Metadata of response for references with paging information
+    EntityInfo:
+      type: object
+      properties:
+        id:
+          type: string
+          description: id
+          example: id.
+        name:
+          type: string
+          description: name
+          example: name.
+        additionalAttributes:
+          type: object
+          additionalProperties:
+            type: string
+            description: A map containing additional attributes of entity where both the key and value are Strings.
+            example: '{"key1":"value1","key2":"value2"}'
+          description: A map containing additional attributes of entity where both the key and value are Strings.
+          example:
+            key1: value1
+            key2: value2
+        createdDate:
+          type: string
+        lastModifiedDate:
+          type: string
+        version:
+          type: integer
+          format: int32
+    EntityReferenceInfoDTO:
+      type: object
+      properties:
+        description:
+          type: string
+          description: Description about reference info.
+          example: list of referenced entities
+        meta:
+          $ref: '#/components/schemas/MetaDataReferencesPagingInfo'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityInfo'
+  securitySchemes:
+    oauth2:
+      flows:
+        authorizationCode:
+          authorizationUrl: /
+          scopes: {}
+          tokenUrl: /
+      type: oauth2
+    bearer-key:
+      type: http
+      description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
+      scheme: bearer
+      bearerFormat: JWT
+    bearerAuth:
+      type: oauth2
+      description: OAuth 2.0 Bearer token authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: https://webexapis.com/v1/authorize
+          tokenUrl: https://webexapis.com/v1/access_token
+          scopes:
+            spark:applications_token: Create access tokens for Service Apps

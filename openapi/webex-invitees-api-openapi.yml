@@ -1,0 +1,734 @@
+openapi: 3.0.0
+info:
+  title: Webex Admin Address Book Invitees API
+  version: 1.0.0
+  description: The Webex Admin APIs provide comprehensive programmatic access to administrative functions for managing Webex organizations, users, licenses, and settings. These APIs enable automation of user provisioning, license assignment, compliance management, and audit event retrieval. Administrators can integrate with enterprise identity systems, enforce security policies, monitor usage, and streamline onboarding/offboarding processes. The APIs support granular control over organizational resources, making them ideal for large-scale deployments and custom admin tooling.
+tags:
+- name: Invitees
+paths:
+  /meetingInvitees:
+    get:
+      responses:
+        '200':
+          description: OK
+          headers:
+            Link:
+              schema:
+                type: string
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/GetInviteeObject'
+                    description: Array of meeting invitees.
+              example:
+                items:
+                - id: 870f51ff287b41be84648412901e0402_2628957
+                  email: john.andersen@example.com
+                  displayName: John Andersen
+                  coHost: false
+                  panelist: false
+                  meetingId: 870f51ff287b41be84648412901e0402
+                - id: 870f51ff287b41be84648412901e0402_2628962
+                  email: brenda.song@example.com
+                  displayName: Brenda Song
+                  coHost: false
+                  panelist: false
+                  meetingId: 870f51ff287b41be84648412901e0402
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: List Meeting Invitees
+      operationId: List Meeting Invitees
+      description: 'Lists meeting invitees for a meeting with a specified `meetingId`. You can set a maximum number of invitees to return.
+
+
+        This operation can be used for meeting series, scheduled meetings, and ended or ongoing meeting instance objects. If the specified `meetingId` is for a meeting series, the invitees for the series will be listed; if the `meetingId` is for a scheduled meeting, the invitees for the particular scheduled meeting will be listed; if the `meetingId` is for an ended or ongoing meeting instance, the invitees for the particular meeting instance will be listed. See the [Webex Meetings](/docs/meetings#meeting-series-scheduled-meetings-and-meeting-instances) guide for more information about the types of meetings.
+
+
+        The list returned is sorted in ascending order by email address.
+
+
+        Long result sets are split into [pages](/docs/basics#pagination).'
+      tags:
+      - Invitees
+      parameters:
+      - name: meetingId
+        in: query
+        description: Unique identifier for the meeting for which invitees are being requested. The meeting can be a meeting series, a scheduled meeting, or a meeting instance which has ended or is ongoing. The meeting ID of a scheduled [personal room](https://help.webex.com/en-us/article/nul0wut/Webex-Personal-Rooms-in-Webex-Meetings) meeting is not supported for this API.
+        required: true
+        example: 870f51ff287b41be84648412901e0402
+        schema:
+          type: string
+      - name: max
+        in: query
+        description: Limit the maximum number of meeting invitees in the response, up to 100.
+        example: '100'
+        schema:
+          type: number
+          default: 10
+      - name: hostEmail
+        in: query
+        description: Email address for the meeting host. This parameter is only used if the user or application calling the API has the admin on-behalf-of scopes. If set, the admin may specify the email of a user in a site they manage and the API will return meeting invitees that are hosted by that user.
+        example: brenda.song@example.com
+        schema:
+          type: string
+      - name: panelist
+        in: query
+        description: Filter invitees or attendees for webinars only. If `true`, returns invitees. If `false`, returns attendees. If `null`, returns both invitees and attendees.
+        example: 'true'
+        schema:
+          type: string
+    post:
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/GetInviteeObject'
+              example:
+                id: 870f51ff287b41be84648412901e0402_2628982
+                email: john.andersen@example.com
+                displayName: John Andersen
+                coHost: false
+                panelist: false
+                meetingId: 870f51ff287b41be84648412901e0402
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: Conflict
+          headers: {}
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        description:
+                          type: string
+                  trackingId:
+                    type: string
+              example:
+                message: User is already a meeting invitee.
+                errors:
+                - description: User is already a meeting invitee.
+                trackingId: 8E12317727354470B5258F5B28D93FB9_1562296858685
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Create a Meeting Invitee
+      operationId: Create a Meeting Invitee
+      description: '* Invite a person to attend a meeting.
+
+
+        * Identify the invitee in the request body, by email address.
+
+
+        * The `sendEmail` parameter is `true` by default and the meeting emails will be sent to the invitee''s `email`. Please set `sendEmail` to `false` to prevent the invitee from receiving emails.'
+      tags:
+      - Invitees
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            example:
+              email: john.andersen@example.com
+              displayName: John Andersen
+              meetingId: 870f51ff287b41be84648412901e0402
+              coHost: false
+              hostEmail: brenda.song@example.com
+              panelist: false
+              sendEmail: true
+            schema:
+              $ref: '#/components/schemas/CreateInviteeObject'
+  /meetingInvitees/bulkInsert:
+    post:
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/CreateInviteesResponse'
+              example:
+                items:
+                - id: 870f51ff287b41be84648412901e0402_2628962
+                  meetingId: 870f51ff287b41be84648412901e0402
+                  email: john.andersen@example.com
+                  displayName: John Andersen
+                  coHost: false
+                  panelist: false
+                - id: 870f51ff287b41be84648412901e0402_2628963
+                  meetingId: 870f51ff287b41be84648412901e0402
+                  email: jack.andersen@example.com
+                  displayName: Jack Andersen
+                  coHost: false
+                  panelist: false
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: Conflict
+          headers: {}
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  trackingId:
+                    type: string
+              example:
+                message: Some users in the list have been invited.
+                trackingId: f614eb20-8188-3641-8cc3-dd66a2ebeebb
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Create Meeting Invitees
+      operationId: Create Meeting Invitees
+      description: '* Invite people to attend a meeting in bulk.
+
+
+        * Identify each invitee by the email address of each item in the `items` of the request body.
+
+
+        * Each invitee should have a unique `email`.
+
+
+        * This API limits the maximum size of `items` in the request body to 100.
+
+
+        * The `sendEmail` parameter for each invitee is `true` by default and the meeting emails will be sent to the invitee''s `email`. Please set `sendEmail` to `false` to prevent an invitee from receiving emails.'
+      tags:
+      - Invitees
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            example:
+              meetingId: 870f51ff287b41be84648412901e0402
+              hostEmail: brenda.song@example.com
+              items:
+              - email: john.andersen@example.com
+                displayName: John Andersen
+                coHost: false
+                panelist: false
+                sendEmail: true
+              - email: jack.andersen@example.com
+                displayName: Jack Andersen
+                coHost: false
+                panelist: false
+                sendEmail: true
+            schema:
+              $ref: '#/components/schemas/CreateInviteesObject'
+  /meetingInvitees/{meetingInviteeId}:
+    get:
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/GetInviteeObject'
+              example:
+                id: 870f51ff287b41be84648412901e0402_2628962
+                email: john.andersen@example.com
+                displayName: John Andersen
+                coHost: false
+                panelist: false
+                meetingId: 870f51ff287b41be84648412901e0402
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Get a Meeting Invitee
+      operationId: Get a Meeting Invitee
+      description: Retrieve details for a meeting invitee identified by a `meetingInviteeId` in the URI.
+      tags:
+      - Invitees
+      parameters:
+      - name: meetingInviteeId
+        in: path
+        description: Unique identifier for the invitee whose details are being requested.
+        required: true
+        example: 870f51ff287b41be84648412901e0402_2628962
+        schema:
+          type: string
+      - name: hostEmail
+        in: query
+        description: Email address for the meeting host. This parameter is only used if the user or application calling the API has the admin on-behalf-of scopes. If set, the admin may specify the email of a user in a site they manage and the API will return details for a meeting invitee that is hosted by that user.
+        example: brenda.song@example.com
+        schema:
+          type: string
+    put:
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/GetInviteeObject'
+              example:
+                id: 870f51ff287b41be84648412901e0402_2628962
+                email: john.andersen@example.com
+                displayName: John Andersen
+                coHost: false
+                panelist: false
+                meetingId: 870f51ff287b41be84648412901e0402
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: Conflict
+          headers: {}
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        description:
+                          type: string
+                  trackingId:
+                    type: string
+              example:
+                message: User is already a meeting invitee.
+                errors:
+                - description: User is already a meeting invitee.
+                trackingId: 8E12317727354470B5258F5B28D93FB9_1562296858685
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Update a Meeting Invitee
+      operationId: Update a Meeting Invitee
+      description: Update details for a meeting invitee identified by a `meetingInviteeId` in the URI.
+      tags:
+      - Invitees
+      parameters:
+      - name: meetingInviteeId
+        in: path
+        description: Unique identifier for the invitee to be updated. This parameter only applies to an invitee to a meeting series or a scheduled meeting. It doesn't apply to an invitee to an ended or ongoing meeting instance.
+        required: true
+        example: 870f51ff287b41be84648412901e0402_2628962
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            example:
+              email: john.andersen@example.com
+              displayName: John Andersen
+              coHost: false
+              hostEmail: brenda.song@example.com
+              panelist: false
+              sendEmail: true
+            schema:
+              $ref: '#/components/schemas/UpdateInviteeObject'
+    delete:
+      responses:
+        '204':
+          description: No Content
+          headers: {}
+          content: {}
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: Not Found
+          headers: {}
+          content: {}
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Delete a Meeting Invitee
+      operationId: Delete a Meeting Invitee
+      description: 'Removes a meeting invitee identified by a `meetingInviteeId` specified in the URI. The deleted meeting invitee cannot be recovered.
+
+
+        If the meeting invitee is associated with a meeting series, the invitee will be removed from the entire meeting series. If the invitee is associated with a scheduled meeting, the invitee will be removed from only that scheduled meeting.'
+      tags:
+      - Invitees
+      parameters:
+      - name: meetingInviteeId
+        in: path
+        description: Unique identifier for the invitee to be removed. This parameter only applies to an invitee to a meeting series or a scheduled meeting. It doesn't apply to an invitee to an ended or ongoing meeting instance.
+        required: true
+        example: 870f51ff287b41be84648412901e0402_2628962
+        schema:
+          type: string
+      - name: hostEmail
+        in: query
+        description: Email address for the meeting host. This parameter is only used if the user or application calling the API has the admin on-behalf-of scopes. If set, the admin may specify the email of a user in a site they manage and the API will delete a meeting invitee that is hosted by that user.
+        example: brenda.song@example.com
+        schema:
+          type: string
+      - name: sendEmail
+        in: query
+        description: If `true`, send an email to the invitee.
+        example: 'true'
+        schema:
+          type: boolean
+          default: 'true'
+components:
+  schemas:
+    CreateInviteesItemObject:
+      type: object
+      required:
+      - email
+      properties:
+        email:
+          type: string
+          example: john.andersen@example.com
+          description: Email address for meeting invitee.
+        displayName:
+          type: string
+          example: John Andersen
+          description: 'Display name for meeting invitee. The maximum length of `displayName` is 128 characters. In Webex App, if the email has been associated with an existing Webex account, the display name associated with the Webex account will be used; otherwise, the `email` will be used as `displayName`. In Webex site, if `displayName` is specified, it will show `displayName`. If `displayName` is not specified, and the `email` has been associated with an existing Webex account, the display name associated with the Webex account will be used; otherwise, the `email` will be used as `displayName`.
+
+
+            Please note that if the invitee has an existing Webex account, the `displayName` shown in the meeting will be the `displayName` associated with the Webex account; otherwise, `displayName` shown in the meeting will be the `displayName` which is specified by the invitee who does not have a Webex account.'
+        coHost:
+          type: boolean
+          description: Whether or not invitee is a designated alternate host for the meeting. See [Add Alternate Hosts for Cisco Webex Meetings](https://help.webex.com/b5z6he/) for more details.
+        sendEmail:
+          type: boolean
+          example: true
+          description: If `true`, send an email to the invitee.
+        panelist:
+          type: boolean
+          description: If `true`, the invitee is a designated panelist for the event meeting.
+    UpdateInviteeObject:
+      type: object
+      required:
+      - email
+      properties:
+        email:
+          type: string
+          example: john.andersen@example.com
+          description: Email address for meeting invitee.
+        displayName:
+          type: string
+          example: John Andersen
+          description: 'Display name for meeting invitee. The maximum length of `displayName` is 128 characters. In the Webex app, if the email has been associated with an existing Webex account, the display name associated with the Webex account will be used; otherwise, the `email` will be used as `displayName`. In a Webex site, if `displayName` is specified, it will show `displayName`. If `displayName` is not specified, and the `email` has been associated with an existing Webex account, the display name associated with the Webex account will be used; otherwise, the `email` will be used as `displayName`.
+
+
+            If the invitee has an existing Webex account, the `displayName` shown in the meeting will be the `displayName` associated with the Webex account; otherwise, `displayName` shown in the meeting will be the `displayName` which is specified by the invitee who does not have a Webex account.'
+        coHost:
+          type: boolean
+          description: Whether or not the invitee is a designated alternate host for the meeting. See [Add Alternate Hosts for Cisco Webex Meetings](https://help.webex.com/b5z6he/) for more details.
+        hostEmail:
+          type: string
+          example: brenda.song@example.com
+          description: Email address for the meeting host. This attribute should only be set if the user or application calling the API has the admin on-behalf-of scopes. When used, the admin may specify the email of a user in a site they manage to be the meeting host.
+        sendEmail:
+          type: boolean
+          example: true
+          description: If `true`, send an email to the invitee.
+        panelist:
+          type: boolean
+          description: If `true`, the invitee is a designated panelist for the event meeting.
+    CreateInviteesResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateInviteesItemResponseObject'
+          description: Meeting invitees inserted.
+    GetInviteeObject:
+      type: object
+      required:
+      - id
+      - email
+      - displayName
+      - meetingId
+      properties:
+        id:
+          type: string
+          example: 870f51ff287b41be84648412901e0402_2628962
+          description: Unique identifier for meeting invitee.
+        email:
+          type: string
+          example: john.andersen@example.com
+          description: Email address for meeting invitee. This attribute can be modified by `Update a Meeting Invitee` API.
+        displayName:
+          type: string
+          example: John Andersen
+          description: Display name for meeting invitee. This attribute can be modified by `Update a Meeting Invitee` API.
+        coHost:
+          type: boolean
+          description: Whether or not invitee is a designated alternate host for the meeting. See [Add Alternate Hosts for Cisco Webex Meetings](https://help.webex.com/b5z6he/) for more details.
+        meetingId:
+          type: string
+          example: 870f51ff287b41be84648412901e0402
+          description: Unique identifier for the meeting for which invitees are being requested. The meeting can be a meeting series, a scheduled meeting, or a meeting instance which has ended or is ongoing.
+        panelist:
+          type: boolean
+          description: If `true`, the invitee is a designated panelist for the event meeting.
+    CreateInviteesItemResponseObject:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 870f51ff287b41be84648412901e0402_2628962
+          description: Unique identifier for meeting invitee.
+        meetingId:
+          type: string
+          example: 870f51ff287b41be84648412901e0402
+          description: Unique identifier for the meeting to which a person is being invited. This attribute only applies to meeting series and scheduled meeting. If it's a meeting series, the meeting invitee is invited to the entire meeting series; if it's a scheduled meeting, the meeting invitee is invited to this individual scheduled meeting. It doesn't apply to an ended or ongoing meeting instance.
+        email:
+          type: string
+          example: john.andersen@example.com
+          description: Email address for meeting invitee.
+        displayName:
+          type: string
+          example: John Andersen
+          description: 'Display name for meeting invitee. The maximum length of `displayName` is 128 characters. In the Webex App, if the email has been associated with an existing Webex account, the display name associated with the Webex account will be used; otherwise, the `email` will be used as `displayName`. In Webex site, if `displayName` is specified, it will show `displayName`. If `displayName` is not specified, and the `email` has been associated with an existing Webex account, the display name associated with the Webex account will be used; otherwise, the `email` will be used as `displayName`.
+
+
+            If the invitee has an existing Webex account, the `displayName` shown in the meeting will be the `displayName` associated with the Webex account; otherwise, `displayName` shown in the meeting will be the `displayName` which is specified by the invitee who does not have a Webex account.'
+        coHost:
+          type: boolean
+          description: Whether or not the invitee is a designated alternate host for the meeting. See [Add Alternate Hosts for Cisco Webex Meetings](https://help.webex.com/b5z6he/) for more details.
+        panelist:
+          type: boolean
+          description: If `true`, the invitee is a designated panelist for the event meeting.
+    CreateInviteeObject:
+      type: object
+      required:
+      - meetingId
+      - email
+      properties:
+        meetingId:
+          type: string
+          example: 870f51ff287b41be84648412901e0402
+          description: Unique identifier for the meeting to which a person is being invited. This attribute only applies to meeting series and scheduled meeting. If it's a meeting series, the meeting invitee is invited to the entire meeting series; if it's a scheduled meeting, the meeting invitee is invited to this individual scheduled meeting. It doesn't apply to an ended or ongoing meeting instance. The meeting ID of a scheduled [personal room](https://help.webex.com/en-us/article/nul0wut/Webex-Personal-Rooms-in-Webex-Meetings) meeting is not supported for this API.
+        email:
+          type: string
+          example: john.andersen@example.com
+          description: Email address for meeting invitee.
+        displayName:
+          type: string
+          example: John Andersen
+          description: 'Display name for meeting invitee. The maximum length of `displayName` is 128 characters. In the Webex app, if the email has been associated with an existing Webex account, the display name associated with the Webex account will be used; otherwise, the `email` will be used as `displayName`. In a Webex site, if `displayName` is specified, it will show `displayName`. If `displayName` is not specified, and the `email` has been associated with an existing Webex account, the display name associated with the Webex account will be used; otherwise, the `email` will be used as `displayName`.
+
+
+            If the invitee has an existing Webex account, the `displayName` shown in the meeting will be the `displayName` associated with the Webex account; otherwise, `displayName` shown in the meeting will be the `displayName` which is specified by the invitee who does not have a Webex account.'
+        coHost:
+          type: boolean
+          description: Whether or not the invitee is a designated alternate host for the meeting. See [Add Alternate Hosts for Cisco Webex Meetings](https://help.webex.com/b5z6he/) for more details.
+        hostEmail:
+          type: string
+          example: brenda.song@example.com
+          description: Email address for the meeting host. This attribute should only be set if the user or application calling the API has the admin on-behalf-of scopes. When used, the admin may specify the email of a user in a site they manage to be the meeting host.
+        sendEmail:
+          type: boolean
+          example: true
+          description: If `true`, send an email to the invitee.
+        panelist:
+          type: boolean
+          description: If `true`, the invitee is a designated panelist for the event meeting.
+    CreateInviteesObject:
+      type: object
+      required:
+      - meetingId
+      properties:
+        meetingId:
+          type: string
+          example: 870f51ff287b41be84648412901e0402
+          description: Unique identifier for the meeting to which the people are being invited. This attribute only applies to meeting series and scheduled meetings. If it's a meeting series, the meeting invitees are invited to the entire meeting series; if it's a scheduled meeting, the meeting invitees are invited to this individual scheduled meeting. It doesn't apply to an ended or ongoing meeting instance. The meeting ID of a scheduled [personal room](https://help.webex.com/en-us/article/nul0wut/Webex-Personal-Rooms-in-Webex-Meetings) meeting is not supported for this API.
+        hostEmail:
+          type: string
+          example: brenda.song@example.com
+          description: Email address for the meeting host. This attribute should only be set if the user or application calling the API has the admin on-behalf-of scopes. When used, the admin may specify the email of a user in a site they manage to be the meeting host.
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateInviteesItemObject'
+          description: Meeting invitees to be inserted.
+  securitySchemes:
+    oauth2:
+      flows:
+        authorizationCode:
+          authorizationUrl: /
+          scopes: {}
+          tokenUrl: /
+      type: oauth2
+    bearer-key:
+      type: http
+      description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
+      scheme: bearer
+      bearerFormat: JWT
+    bearerAuth:
+      type: oauth2
+      description: OAuth 2.0 Bearer token authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: https://webexapis.com/v1/authorize
+          tokenUrl: https://webexapis.com/v1/access_token
+          scopes:
+            spark:applications_token: Create access tokens for Service Apps

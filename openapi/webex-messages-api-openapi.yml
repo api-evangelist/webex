@@ -1,0 +1,931 @@
+openapi: 3.0.0
+info:
+  title: Webex Admin Address Book Messages API
+  version: 1.0.0
+  description: The Webex Admin APIs provide comprehensive programmatic access to administrative functions for managing Webex organizations, users, licenses, and settings. These APIs enable automation of user provisioning, license assignment, compliance management, and audit event retrieval. Administrators can integrate with enterprise identity systems, enforce security policies, monitor usage, and streamline onboarding/offboarding processes. The APIs support granular control over organizational resources, making them ideal for large-scale deployments and custom admin tooling.
+tags:
+- name: Messages
+paths:
+  /meeting/messages/{meetingMessageId}:
+    delete:
+      responses:
+        '204':
+          description: No Content
+          headers: {}
+          content: {}
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Delete a Meeting Message
+      operationId: Delete a Meeting Message
+      description: 'Deletes a Meeting Message from the In Meeting Chat, using its ID.
+
+
+        This ID can be retrieved by a Compliance Officer using the [events API](/docs/api/v1/events/list-events) filtering on the `meetingMessages` resource type.
+
+
+        NOTE: When viewing the response from the events API, there are 2 `id` fields. The ID to be used here can be found under the `data` field in the response.
+
+
+        Specify the `meetingMessage` ID in the `meetingMessageId` parameter in the URI.'
+      tags:
+      - Messages
+      parameters:
+      - name: meetingMessageId
+        in: path
+        description: The unique identifier for the message.
+        required: true
+        example: Y2lzY29zcGFyazovL3VzL01FRVRJTkdfTUVTU0FHRS85MmRiM2JlMC00M2JkLTExZTYtOGFlOS1kZDViM2RmYzU2NWQ
+        schema:
+          type: string
+  /messages:
+    get:
+      responses:
+        '200':
+          description: OK
+          headers:
+            Link:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListMessageCollectionResponse'
+              example:
+                items:
+                - id: Y2lzY29zcGFyazovL3VzL01FU1NBR0UvOTJkYjNiZTAtNDNiZC0xMWU2LThhZTktZGQ1YjNkZmM1NjVk
+                  parentId: Y2lzY29zcGFyazovL3VzL01FU1NBR0UvOTJkYjNiZTAtNDNiZC0xMWU2LThhZTktZGQ1YjNkZmM1NjVk
+                  roomId: Y2lzY29zcGFyazovL3VzL1JPT00vYmJjZWIxYWQtNDNmMS0zYjU4LTkxNDctZjE0YmIwYzRkMTU0
+                  roomType: group
+                  text: PROJECT UPDATE - A new project plan has been published on http://example.com/s/lf5vj. The PM for this project is Mike C. and the Engineering Manager is Jane W.
+                  markdown: '**PROJECT UPDATE** A new project plan has been published on <http://example.com/s/lf5vj>. The PM for this project is <@personEmail:mike@example.com> and the Engineering Manager is <@personEmail:jane@example.com>.'
+                  html: <p><strong>PROJECT UPDATE</strong> A new project plan has been published <a href=\"http://example.com/s/lf5vj\" rel=\"nofollow\">here</a>. The PM for this project is mike@example.com and the Engineering Manager is jane@example.com.</p>
+                  files:
+                  - http://www.example.com/images/media.png
+                  personId: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9mNWIzNjE4Ny1jOGRkLTQ3MjctOGIyZi1mOWM0NDdmMjkwNDY
+                  personEmail: matt@example.com
+                  mentionedPeople:
+                  - Y2lzY29zcGFyazovL3VzL1BFT1BMRS8yNDlmNzRkOS1kYjhhLTQzY2EtODk2Yi04NzllZDI0MGFjNTM,Y2lzY29zcGFyazovL3VzL1BFT1BMRS83YWYyZjcyYy0xZDk1LTQxZjAtYTcxNi00MjlmZmNmYmM0ZDg
+                  mentionedGroups:
+                  - all
+                  attachments:
+                  - contentType: application/vnd.microsoft.card.adaptive
+                    content:
+                      type: AdaptiveCard
+                      version: '1.0'
+                      body:
+                      - type: TextBlock
+                        text: Adaptive Cards
+                        size: large
+                      actions:
+                      - type: Action.OpenUrl
+                        url: http://adaptivecards.io
+                        title: Learn More
+                  created: '2015-10-18T14:26:16+00:00'
+                  updated: '2015-10-18T14:27:16+00:00'
+                  isVoiceClip: false
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: List Messages
+      operationId: List Messages
+      description: 'Lists all messages in a room.  Each message will include content attachments if present.
+
+
+        The list sorts the messages in descending order by creation date.
+
+
+        Long result sets will be split into [pages](/docs/basics#pagination).'
+      tags:
+      - Messages
+      parameters:
+      - name: roomId
+        in: query
+        description: List messages in a room, by ID.
+        required: true
+        example: Y2lzY29zcGFyazovL3VzL1JPT00vYmJjZWIxYWQtNDNmMS0zYjU4LTkxNDctZjE0YmIwYzRkMTU0
+        schema:
+          type: string
+      - name: parentId
+        in: query
+        description: List messages with a parent, by ID.
+        example: Y2lzY29zcGFyazovL3VzL01FU1NBR0UvZWM1ZTIzZjAtN2RhMS0xMWU5LTg2NTgtZTkzYzNiODZjZmFm
+        schema:
+          type: string
+      - name: mentionedPeople
+        in: query
+        description: List messages with these people mentioned, by ID. Use `me` as a shorthand for the current API user. Only `me` or the person ID of the current user may be specified. Bots must include this parameter to list messages in group rooms (spaces).
+        example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8yNDlmNzRkOS1kYjhhLTQzY2EtODk2Yi04NzllZDI0MGFjNTM
+        schema:
+          type: array
+          items:
+            type: string
+            example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8yNDlmNzRkOS1kYjhhLTQzY2EtODk2Yi04NzllZDI0MGFjNTM
+          description: List messages with these people mentioned, by ID. Use `me` as a shorthand for the current API user. Only `me` or the person ID of the current user may be specified. Bots must include this parameter to list messages in group rooms (spaces).
+      - name: before
+        in: query
+        description: List messages sent before a date and time.
+        example: '2016-04-21T19:01:55.966Z'
+        schema:
+          type: string
+      - name: beforeMessage
+        in: query
+        description: List messages sent before a message, by ID.
+        example: Y2lzY29zcGFyazovL3VzL01FU1NBR0UvOTJkYjNiZTAtNDNiZC0xMWU2LThhZTktZGQ1YjNkZmM1NjVk
+        schema:
+          type: string
+      - name: max
+        in: query
+        description: Limit the maximum number of messages in the response. Cannot exceed 100 if used with `mentionedPeople`.
+        example: '100'
+        schema:
+          type: number
+          default: 50
+    post:
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+              example:
+                id: Y2lzY29zcGFyazovL3VzL01FU1NBR0UvOTJkYjNiZTAtNDNiZC0xMWU2LThhZTktZGQ1YjNkZmM1NjVk
+                parentId: Y2lzY29zcGFyazovL3VzL01FU1NBR0UvOTJkYjNiZTAtNDNiZC0xMWU2LThhZTktZGQ1YjNkZmM1NjVk
+                roomId: Y2lzY29zcGFyazovL3VzL1JPT00vYmJjZWIxYWQtNDNmMS0zYjU4LTkxNDctZjE0YmIwYzRkMTU0
+                roomType: group
+                toPersonId: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9mMDZkNzFhNS0wODMzLTRmYTUtYTcyYS1jYzg5YjI1ZWVlMmX
+                toPersonEmail: julie@example.com
+                text: PROJECT UPDATE - A new project plan has been published om http://example.com/s/lf5vj. The PM for this project is Mike C. and the Engineering Manager is Jane W.
+                markdown: '**PROJECT UPDATE** A new project plan has been published on <http://box.com/s/lf5vj>. The PM for this project is <@personEmail:mike@example.com> and the Engineering Manager is <@personEmail:jane@example.com>.'
+                html: <p><strong>PROJECT UPDATE</strong> A new project plan has been published <a href=\"http://example.com/s/lf5vj\" rel=\"nofollow\">here</a>. The PM for this project is mike@example.com and the Engineering Manager is jane@example.com.</p>
+                files:
+                - http://www.example.com/images/media.png
+                personId: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9mNWIzNjE4Ny1jOGRkLTQ3MjctOGIyZi1mOWM0NDdmMjkwNDY
+                personEmail: matt@example.com
+                mentionedPeople:
+                - Y2lzY29zcGFyazovL3VzL1BFT1BMRS8yNDlmNzRkOS1kYjhhLTQzY2EtODk2Yi04NzllZDI0MGFjNTM,Y2lzY29zcGFyazovL3VzL1BFT1BMRS83YWYyZjcyYy0xZDk1LTQxZjAtYTcxNi00MjlmZmNmYmM0ZDg
+                mentionedGroups:
+                - all
+                attachments:
+                - contentType: application/vnd.microsoft.card.adaptive
+                  content:
+                    type: AdaptiveCard
+                    version: '1.0'
+                    body:
+                    - type: TextBlock
+                      text: Adaptive Cards
+                      size: large
+                    actions:
+                    - type: Action.OpenUrl
+                      url: http://adaptivecards.io
+                      title: Learn More
+                created: '2015-10-18T14:26:16+00:00'
+                updated: '2015-10-18T14:27:16+00:00'
+                isVoiceClip: false
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Create a Message
+      operationId: Create a Message
+      description: 'Post a plain text or [rich text](/docs/basics#formatting-messages) message, and optionally, a [file attachment](/docs/basics#message-attachments) attachment, to a room.
+
+
+        The `files` parameter is an array, which accepts multiple values to allow for future expansion, but currently only one file may be included with the message. File previews are only rendered for attachments of 1MB or less.'
+      tags:
+      - Messages
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            example:
+              roomId: Y2lzY29zcGFyazovL3VzL1JPT00vYmJjZWIxYWQtNDNmMS0zYjU4LTkxNDctZjE0YmIwYzRkMTU0
+              parentId: Y2lzY29zcGFyazovL3VzL01FU1NBR0UvZWM1ZTIzZjAtN2RhMS0xMWU5LTg2NTgtZTkzYzNiODZjZmFm
+              toPersonId: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9mMDZkNzFhNS0wODMzLTRmYTUtYTcyYS1jYzg5YjI1ZWVlMmX
+              toPersonEmail: julie@example.com
+              text: 'PROJECT UPDATE - A new project plan has been published on Box: http://box.com/s/lf5vj. The PM for this project is Mike C. and the Engineering Manager is Jane W.'
+              markdown: '**PROJECT UPDATE** A new project plan has been published [on Box](http://box.com/s/lf5vj). The PM for this project is <@personEmail:mike@example.com> and the Engineering Manager is <@personEmail:jane@example.com>.'
+              files:
+              - http://www.example.com/images/media.png
+              attachments:
+              - contentType: application/vnd.microsoft.card.adaptive
+                content:
+                  type: AdaptiveCard
+                  version: '1.0'
+                  body:
+                  - type: TextBlock
+                    text: Adaptive Cards
+                    size: large
+                  actions:
+                  - type: Action.OpenUrl
+                    url: http://adaptivecards.io
+                    title: Learn More
+            schema:
+              type: object
+              properties:
+                roomId:
+                  type: string
+                  example: Y2lzY29zcGFyazovL3VzL1JPT00vYmJjZWIxYWQtNDNmMS0zYjU4LTkxNDctZjE0YmIwYzRkMTU0
+                  description: The room ID of the message.
+                parentId:
+                  type: string
+                  example: Y2lzY29zcGFyazovL3VzL01FU1NBR0UvZWM1ZTIzZjAtN2RhMS0xMWU5LTg2NTgtZTkzYzNiODZjZmFm
+                  description: The parent message to reply to.
+                toPersonId:
+                  type: string
+                  example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9mMDZkNzFhNS0wODMzLTRmYTUtYTcyYS1jYzg5YjI1ZWVlMmX
+                  description: The person ID of the recipient when sending a private 1:1 message.
+                toPersonEmail:
+                  type: string
+                  example: julie@example.com
+                  description: The email address of the recipient when sending a private 1:1 message.
+                text:
+                  type: string
+                  example: 'PROJECT UPDATE - A new project plan has been published on Box: http://box.com/s/lf5vj. The PM for this project is Mike C. and the Engineering Manager is Jane W.'
+                  description: The message, in plain text. If `markdown` is specified this parameter may be *optionally* used to provide alternate text for UI clients that do not support rich text. The maximum message length is 7439 bytes.
+                markdown:
+                  type: string
+                  example: '**PROJECT UPDATE** A new project plan has been published [on Box](http://box.com/s/lf5vj). The PM for this project is <@personEmail:mike@example.com> and the Engineering Manager is <@personEmail:jane@example.com>.'
+                  description: The message, in Markdown format. The maximum message length is 7439 bytes.
+                files:
+                  type: array
+                  items:
+                    type: string
+                    example: http://www.example.com/images/media.png
+                  description: The public URL to a binary file to be posted into the room. Only one file is allowed per message. Uploaded files are automatically converted into a format that all Webex clients can render. For the supported media types and the behavior of uploads, see the [Message Attachments Guide](/docs/basics#message-attachments).
+                attachments:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Attachment'
+                  description: Content attachments to attach to the message. Only one card per message is supported. See the [Cards Guide](/docs/api/guides/cards) for more information.
+  /messages/direct:
+    get:
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DirectMessageCollectionResponse'
+              example:
+                items:
+                - id: Y2lzY29zcGFyazovL3VzL01FU1NBR0UvOTJkYjNiZTAtNDNiZC0xMWU2LThhZTktZGQ1YjNkZmM1NjVk
+                  parentId: Y2lzY29zcGFyazovL3VzL01FU1NBR0UvOTJkYjNiZTAtNDNiZC0xMWU2LThhZTktZGQ1YjNkZmM1NjVk
+                  roomId: Y2lzY29zcGFyazovL3VzL1JPT00vODQxZjY5MjAtNDdlZC00NmE0LWI2YmItZTVjM2M1YTc3Yzgy
+                  roomType: direct
+                  text: Hey there, what do you think of this project update presentation (http://sharepoint.example.com/presentation.pptx)?
+                  markdown: Hey there, what do you think of [this project update presentation](http://sharepoint.example.com/presentation.pptx)?
+                  html: <p>Hey there, what do you think of <a href=\"http://sharepoint.example.com/presentation.pptx\" rel=\"nofollow\">this project update presentation</a>?</p>
+                  files:
+                  - http://www.example.com/images/media.png
+                  personId: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9mNWIzNjE4Ny1jOGRkLTQ3MjctOGIyZi1mOWM0NDdmMjkwNDY
+                  personEmail: matt@example.com
+                  attachments:
+                  - contentType: application/vnd.microsoft.card.adaptive
+                    content:
+                      type: AdaptiveCard
+                      version: '1.0'
+                      body:
+                      - type: TextBlock
+                        text: Adaptive Cards
+                        size: large
+                      actions:
+                      - type: Action.OpenUrl
+                        url: http://adaptivecards.io
+                        title: Learn More
+                  created: '2015-10-18T14:26:16+00:00'
+                  updated: '2015-10-18T14:27:16+00:00'
+                  isVoiceClip: false
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: List Direct Messages
+      operationId: List Direct Messages
+      description: 'List all messages in a 1:1 (direct) room. Use the `personId` or `personEmail` query parameter to specify the room. Each message will include content attachments if present.
+
+
+        The list sorts the messages in descending order by creation date.'
+      tags:
+      - Messages
+      parameters:
+      - name: parentId
+        in: query
+        description: List messages with a parent, by ID.
+        example: Y2lzY29zcGFyazovL3VzL01FU1NBR0UvZWM1ZTIzZjAtN2RhMS0xMWU5LTg2NTgtZTkzYzNiODZjZmFm
+        schema:
+          type: string
+      - name: personId
+        in: query
+        description: List messages in a 1:1 room, by person ID.
+        example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9mNWIzNjE4Ny1jOGRkLTQ3MjctOGIyZi1mOWM0NDdmMjkwNDY
+        schema:
+          type: string
+      - name: personEmail
+        in: query
+        description: List messages in a 1:1 room, by person email.
+        example: matt@example.com
+        schema:
+          type: string
+  /messages/{messageId}:
+    put:
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListMessage'
+              example:
+                id: Y2lzY29zcGFyazovL3VzL01FU1NBR0UvOTJkYjNiZTAtNDNiZC0xMWU2LThhZTktZGQ1YjNkZmM1NjVk
+                parentId: Y2lzY29zcGFyazovL3VzL01FU1NBR0UvOTJkYjNiZTAtNDNiZC0xMWU2LThhZTktZGQ1YjNkZmM1NjVk
+                roomId: Y2lzY29zcGFyazovL3VzL1JPT00vYmJjZWIxYWQtNDNmMS0zYjU4LTkxNDctZjE0YmIwYzRkMTU0
+                roomType: group
+                text: PROJECT UPDATE - A new project plan has been published on http://example.com/s/lf5vj. The PM for this project is Mike C. and the Engineering Manager is Jane W.
+                markdown: '**PROJECT UPDATE** A new project plan has been published on <http://example.com/s/lf5vj>. The PM for this project is <@personEmail:mike@example.com> and the Engineering Manager is <@personEmail:jane@example.com>.'
+                html: <p><strong>PROJECT UPDATE</strong> A new project plan has been published <a href=\"http://example.com/s/lf5vj\" rel=\"nofollow\">here</a>. The PM for this project is mike@example.com and the Engineering Manager is jane@example.com.</p>
+                files:
+                - http://www.example.com/images/media.png
+                personId: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9mNWIzNjE4Ny1jOGRkLTQ3MjctOGIyZi1mOWM0NDdmMjkwNDY
+                personEmail: matt@example.com
+                mentionedPeople:
+                - Y2lzY29zcGFyazovL3VzL1BFT1BMRS8yNDlmNzRkOS1kYjhhLTQzY2EtODk2Yi04NzllZDI0MGFjNTM,Y2lzY29zcGFyazovL3VzL1BFT1BMRS83YWYyZjcyYy0xZDk1LTQxZjAtYTcxNi00MjlmZmNmYmM0ZDg
+                mentionedGroups:
+                - all
+                attachments:
+                - contentType: application/vnd.microsoft.card.adaptive
+                  content:
+                    type: AdaptiveCard
+                    version: '1.0'
+                    body:
+                    - type: TextBlock
+                      text: Adaptive Cards
+                      size: large
+                    actions:
+                    - type: Action.OpenUrl
+                      url: http://adaptivecards.io
+                      title: Learn More
+                created: '2015-10-18T14:26:16+00:00'
+                updated: '2015-10-18T14:27:16+00:00'
+                isVoiceClip: false
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Edit a Message
+      operationId: Edit a Message
+      description: "Update a message you have posted not more than 10 times.\n\nSpecify the `messageId` of the message you want to edit.\n\nEdits of messages containing files or attachments are not currently supported.\nIf a user attempts to edit a message containing files or attachments a `400 Bad Request` will be returned by the API with a message stating that the feature is currently unsupported.\n\nThere is also a maximum number of times a user can edit a message. The maximum currently supported is 10 edits per message.\n    If a user attempts to edit a message greater that the maximum times allowed the API will return 400 Bad Request with a message stating the edit limit has been reached.\n\nWhile only the `roomId` and `text` or `markdown` attributes are *required* in the request body, a common pattern for editing message is to first call `GET /messages/{id}` for the message you wish to edit and to then update the `text` or `markdown` attribute accordingly, passing the updated message object in the request body of the `PUT /messages/{id}` request.\nWhen this pattern is used on a message that included markdown, the `html` attribute must be deleted prior to making the `PUT` request."
+      tags:
+      - Messages
+      parameters:
+      - name: messageId
+        in: path
+        description: The unique identifier for the message.
+        required: true
+        example: Y2lzY29zcGFyazovL3VzL01FU1NBR0UvOTJkYjNiZTAtNDNiZC0xMWU2LThhZTktZGQ1YjNkZmM1NjVk
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - roomId
+              properties:
+                roomId:
+                  type: string
+                  example: Y2lzY29zcGFyazovL3VzL1JPT00vYmJjZWIxYWQtNDNmMS0zYjU4LTkxNDctZjE0YmIwYzRkMTU0
+                  description: The room ID of the message.
+                text:
+                  type: string
+                  example: PROJECT UPDATE - A new project plan has been published on http://example.com/s/lf5vj. The PM for this project is Mike C. and the Engineering Manager is Jane W.
+                  description: The message, in plain text. If `markdown` is specified this parameter may be *optionally* used to provide alternate text for UI clients that do not support rich text. The maximum message length is 7439 bytes.
+                markdown:
+                  type: string
+                  example: '**PROJECT UPDATE** A new project plan has been published on <http://example.com/s/lf5vj>. The PM for this project is <@personEmail:mike@example.com> and the Engineering Manager is <@personEmail:jane@example.com>.'
+                  description: The message, in Markdown format. If this attribute is set ensure that the request does NOT contain an `html` attribute.
+    get:
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListMessage'
+              example:
+                id: Y2lzY29zcGFyazovL3VzL01FU1NBR0UvOTJkYjNiZTAtNDNiZC0xMWU2LThhZTktZGQ1YjNkZmM1NjVk
+                parentId: Y2lzY29zcGFyazovL3VzL01FU1NBR0UvOTJkYjNiZTAtNDNiZC0xMWU2LThhZTktZGQ1YjNkZmM1NjVk
+                roomId: Y2lzY29zcGFyazovL3VzL1JPT00vYmJjZWIxYWQtNDNmMS0zYjU4LTkxNDctZjE0YmIwYzRkMTU0
+                roomType: group
+                text: PROJECT UPDATE - A new project plan has been published on http://example.com/s/lf5vj. The PM for this project is Mike C. and the Engineering Manager is Jane W.
+                markdown: '**PROJECT UPDATE** A new project plan has been published on <http://example.com/s/lf5vj>. The PM for this project is <@personEmail:mike@example.com> and the Engineering Manager is <@personEmail:jane@example.com>.'
+                html: <p><strong>PROJECT UPDATE</strong> A new project plan has been published <a href=\"http://example.com/s/lf5vj\" rel=\"nofollow\">here</a>. The PM for this project is mike@example.com and the Engineering Manager is jane@example.com.</p>
+                files:
+                - http://www.example.com/images/media.png
+                personId: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9mNWIzNjE4Ny1jOGRkLTQ3MjctOGIyZi1mOWM0NDdmMjkwNDY
+                personEmail: matt@example.com
+                mentionedPeople:
+                - Y2lzY29zcGFyazovL3VzL1BFT1BMRS8yNDlmNzRkOS1kYjhhLTQzY2EtODk2Yi04NzllZDI0MGFjNTM,Y2lzY29zcGFyazovL3VzL1BFT1BMRS83YWYyZjcyYy0xZDk1LTQxZjAtYTcxNi00MjlmZmNmYmM0ZDg
+                mentionedGroups:
+                - all
+                attachments:
+                - contentType: application/vnd.microsoft.card.adaptive
+                  content:
+                    type: AdaptiveCard
+                    version: '1.0'
+                    body:
+                    - type: TextBlock
+                      text: Adaptive Cards
+                      size: large
+                    actions:
+                    - type: Action.OpenUrl
+                      url: http://adaptivecards.io
+                      title: Learn More
+                created: '2015-10-18T14:26:16+00:00'
+                updated: '2015-10-18T14:27:16+00:00'
+                isVoiceClip: false
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Get Message Details
+      operationId: Get Message Details
+      description: 'Show details for a message, by message ID.
+
+
+        Specify the message ID in the `messageId` parameter in the URI.'
+      tags:
+      - Messages
+      parameters:
+      - name: messageId
+        in: path
+        description: The unique identifier for the message.
+        required: true
+        example: Y2lzY29zcGFyazovL3VzL01FU1NBR0UvOTJkYjNiZTAtNDNiZC0xMWU2LThhZTktZGQ1YjNkZmM1NjVk
+        schema:
+          type: string
+    delete:
+      responses:
+        '204':
+          description: No Content
+          headers: {}
+          content: {}
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Delete a Message
+      operationId: Delete a Message
+      description: 'Delete a message, by message ID.
+
+
+        Specify the message ID in the `messageId` parameter in the URI.'
+      tags:
+      - Messages
+      parameters:
+      - name: messageId
+        in: path
+        description: The unique identifier for the message.
+        required: true
+        example: Y2lzY29zcGFyazovL3VzL01FU1NBR0UvOTJkYjNiZTAtNDNiZC0xMWU2LThhZTktZGQ1YjNkZmM1NjVk
+        schema:
+          type: string
+components:
+  schemas:
+    DirectMessageCollectionResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/DirectMessage'
+    ListMessageCollectionResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ListMessage'
+    Attachment:
+      type: object
+      properties:
+        content:
+          $ref: '#/components/schemas/File'
+          description: Enterprise Content Management file.
+    Message:
+      type: object
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL01FU1NBR0UvOTJkYjNiZTAtNDNiZC0xMWU2LThhZTktZGQ1YjNkZmM1NjVk
+          description: The unique identifier for the message.
+        roomId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1JPT00vYmJjZWIxYWQtNDNmMS0zYjU4LTkxNDctZjE0YmIwYzRkMTU0
+          description: The room ID of the message.
+        roomType:
+          type: string
+          enum:
+          - direct
+          - group
+          description: "The type of room.\n * `direct` - 1:1 room\n * `group` - group room\n"
+        toPersonId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9mMDZkNzFhNS0wODMzLTRmYTUtYTcyYS1jYzg5YjI1ZWVlMmX
+          description: The person ID of the recipient when sending a private 1:1 message.
+        toPersonEmail:
+          type: string
+          example: julie@example.com
+          description: The email address of the recipient when sending a private 1:1 message.
+        text:
+          type: string
+          example: PROJECT UPDATE - A new project plan has been published on http://example.com/s/lf5vj. The PM for this project is Mike C. and the Engineering Manager is Jane W.
+          description: The message, in plain text. If `markdown` is specified this parameter may be *optionally* used to provide alternate text for UI clients that do not support rich text.
+        markdown:
+          type: string
+          example: '**PROJECT UPDATE** A new project plan has been published [here](http://example.com/s/lf5vj). The PM for this project is <@personEmail:mike@example.com> and the Engineering Manager is <@personEmail:jane@example.com>.'
+          description: The message, in Markdown format.
+        files:
+          type: array
+          items:
+            type: string
+            example: http://www.example.com/images/media.png
+          description: Public URLs for files attached to the message. For the supported media types and the behavior of file uploads, see [Message Attachments](/docs/api/basics#message-attachments).
+        attachments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Attachment'
+          description: Content attachments attached to the message.
+        personId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9mNWIzNjE4Ny1jOGRkLTQ3MjctOGIyZi1mOWM0NDdmMjkwNDY
+          description: The person ID of the message author.
+        personEmail:
+          type: string
+          example: matt@example.com
+          description: The email address of the message author.
+        mentionedPeople:
+          type: array
+          items:
+            type: string
+            example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8yNDlmNzRkOS1kYjhhLTQzY2EtODk2Yi04NzllZDI0MGFjNTM,Y2lzY29zcGFyazovL3VzL1BFT1BMRS83YWYyZjcyYy0xZDk1LTQxZjAtYTcxNi00MjlmZmNmYmM0ZDg
+          description: People IDs for anyone mentioned in the message.
+        mentionedGroups:
+          type: array
+          items:
+            type: string
+            example: all
+          description: Group names for the groups mentioned in the message.
+        created:
+          type: string
+          example: '2015-10-18T14:26:16+00:00'
+          description: The date and time the message was created.
+    ListMessage:
+      type: object
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL01FU1NBR0UvOTJkYjNiZTAtNDNiZC0xMWU2LThhZTktZGQ1YjNkZmM1NjVk
+          description: The unique identifier for the message.
+        parentId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL01FU1NBR0UvOTJkYjNiZTAtNDNiZC0xMWU2LThhZTktZGQ1YjNkZmM1NjVk
+          description: The unique identifier for the parent message.
+        roomId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1JPT00vYmJjZWIxYWQtNDNmMS0zYjU4LTkxNDctZjE0YmIwYzRkMTU0
+          description: The room ID of the message.
+        roomType:
+          type: string
+          enum:
+          - direct
+          - group
+          description: "The type of room.\n * `direct` - 1:1 room\n * `group` - group room\n"
+        text:
+          type: string
+          example: PROJECT UPDATE - A new project plan has been published on http://example.com/s/lf5vj. The PM for this project is Mike C. and the Engineering Manager is Jane W.
+          description: The message, in plain text. If `markdown` is specified this parameter may be *optionally* used to provide alternate text for UI clients that do not support rich text.
+        markdown:
+          type: string
+          example: '**PROJECT UPDATE** A new project plan has been published on <http://example.com/s/lf5vj>. The PM for this project is <@personEmail:mike@example.com> and the Engineering Manager is <@personEmail:jane@example.com>.'
+          description: The message, in Markdown format.
+        html:
+          type: string
+          example: <p><strong>PROJECT UPDATE</strong> A new project plan has been published <a href=\"http://example.com/s/lf5vj\" rel=\"nofollow\">here</a>. The PM for this project is mike@example.com and the Engineering Manager is jane@example.com.</p>
+          description: The text content of the message, in HTML format. This read-only property is used by the Webex clients.
+        files:
+          type: array
+          items:
+            type: string
+            example: http://www.example.com/images/media.png
+          description: Public URLs for files attached to the message. For the supported media types and the behavior of file uploads, see [Message Attachments](/docs/basics#message-attachments).
+        personId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9mNWIzNjE4Ny1jOGRkLTQ3MjctOGIyZi1mOWM0NDdmMjkwNDY
+          description: The person ID of the message author.
+        personEmail:
+          type: string
+          example: matt@example.com
+          description: The email address of the message author.
+        mentionedPeople:
+          type: array
+          items:
+            type: string
+            example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8yNDlmNzRkOS1kYjhhLTQzY2EtODk2Yi04NzllZDI0MGFjNTM,Y2lzY29zcGFyazovL3VzL1BFT1BMRS83YWYyZjcyYy0xZDk1LTQxZjAtYTcxNi00MjlmZmNmYmM0ZDg
+          description: People IDs for anyone mentioned in the message.
+        mentionedGroups:
+          type: array
+          items:
+            type: string
+            example: all
+          description: Group names for the groups mentioned in the message.
+        attachments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Attachment'
+          description: Message content attachments attached to the message. See the [Cards Guide](/docs/api/guides/cards) for more information.
+        created:
+          type: string
+          example: '2015-10-18T14:26:16+00:00'
+          description: The date and time the message was created.
+        updated:
+          type: string
+          example: '2015-10-18T14:27:16+00:00'
+          description: The date and time that the message was last edited by the author. This field is only present when the message contents have changed.
+        isVoiceClip:
+          type: boolean
+          description: '`true` if the audio file is a voice clip recorded by the client; `false` if the audio file is a standard audio file not posted using the voice clip feature.'
+    DirectMessage:
+      type: object
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL01FU1NBR0UvOTJkYjNiZTAtNDNiZC0xMWU2LThhZTktZGQ1YjNkZmM1NjVk
+          description: The unique identifier for the message.
+        roomId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1JPT00vODQxZjY5MjAtNDdlZC00NmE0LWI2YmItZTVjM2M1YTc3Yzgy
+          description: The room ID of the message.
+        roomType:
+          type: string
+          example: direct
+          description: The type of room. Will always be `direct`.
+        text:
+          type: string
+          example: Hey there, what do you think of this project update presentation (http://sharepoint.example.com/presentation.pptx)?
+          description: The message, in plain text. If `markdown` is specified this parameter may be *optionally* used to provide alternate text for UI clients that do not support rich text.
+        markdown:
+          type: string
+          example: Hey there, what do you think of [this project update presentation](http://sharepoint.example.com/presentation.pptx)?
+          description: The message, in Markdown format.
+        files:
+          type: array
+          items:
+            type: string
+            example: http://www.example.com/images/media.png
+          description: Public URLs for files attached to the message. For the supported media types and the behavior of file uploads, see [Message Attachments](/docs/api/basics#message-attachments).
+        personId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9mNWIzNjE4Ny1jOGRkLTQ3MjctOGIyZi1mOWM0NDdmMjkwNDY
+          description: The person ID of the message author.
+        personEmail:
+          type: string
+          example: matt@example.com
+          description: The email address of the message author.
+        created:
+          type: string
+          example: '2015-10-18T14:26:16+00:00'
+          description: The date and time the message was created.
+    File:
+      type: object
+      required:
+      - fileId
+      - type
+      - contentUrl
+      properties:
+        fileId:
+          type: string
+          example: BFT1BMRS8yNDlmNzRkOS1kYjhhLTQzY2
+          description: The `fileId` of the attachment.
+        type:
+          type: string
+          enum:
+          - external
+          - native
+          description: "The type of attachment.\n * `external` - Attachment stored externally.\n * `native` - Attachment stored within the Webex platform.\n"
+        contentUrl:
+          type: string
+          example: https://testecmwebexteams-my.sharepoint.com/:w:/g/personal/admin_testecmwebexteams_onmicrosoft_com/ESCiJiALU0pBlVm6TVhZ2k0B69XNVB1kWoaa7RIV9GERTg
+          description: The URL for the content.
+  securitySchemes:
+    oauth2:
+      flows:
+        authorizationCode:
+          authorizationUrl: /
+          scopes: {}
+          tokenUrl: /
+      type: oauth2
+    bearer-key:
+      type: http
+      description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
+      scheme: bearer
+      bearerFormat: JWT
+    bearerAuth:
+      type: oauth2
+      description: OAuth 2.0 Bearer token authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: https://webexapis.com/v1/authorize
+          tokenUrl: https://webexapis.com/v1/access_token
+          scopes:
+            spark:applications_token: Create access tokens for Service Apps

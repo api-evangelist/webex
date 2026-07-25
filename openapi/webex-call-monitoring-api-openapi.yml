@@ -1,0 +1,277 @@
+openapi: 3.0.0
+info:
+  title: Webex Admin Address Book Call Monitoring API
+  version: 1.0.0
+  description: The Webex Admin APIs provide comprehensive programmatic access to administrative functions for managing Webex organizations, users, licenses, and settings. These APIs enable automation of user provisioning, license assignment, compliance management, and audit event retrieval. Administrators can integrate with enterprise identity systems, enforce security policies, monitor usage, and streamline onboarding/offboarding processes. The APIs support granular control over organizational resources, making them ideal for large-scale deployments and custom admin tooling.
+tags:
+- name: Call Monitoring
+paths:
+  /v1/monitor:
+    post:
+      tags:
+      - Call Monitoring
+      summary: Create Monitoring Request
+      description: Create a successful monitoring request. It can be done either on an on-going or next successful inbound/outbound call. Requires scope 'cloud-contact-center:pod_conv' and 'cjp.supervisor'.
+      operationId: createMonitoringRequest
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CallMonitoringRequest'
+        required: true
+      responses:
+        '202':
+          description: The create request was accepted for processing
+        '401':
+          description: Unauthorized, Token is Invalid
+        '403':
+          description: Forbidden Request
+        '412':
+          description: Precondition Failed
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+  /v1/monitor/{taskId}/bargeIn:
+    post:
+      tags:
+      - Call Monitoring
+      summary: BargeIn Request
+      description: Create a successful barge-in request for the supervisor to barge in the call that is being monitored already. Requires scope 'cloud-contact-center:pod_conv' and 'cjp.supervisor'.
+      operationId: bargeInRoute
+      parameters:
+      - name: taskId
+        in: path
+        description: The unique ID representing the task that needs to be barged by the supervisor.
+        required: true
+        schema:
+          type: string
+          format: UUID
+        example: 315fbb91-2288-427c-9588-ec764cd46ea4
+      responses:
+        '202':
+          description: The bargeIn request was accepted for processing
+        '401':
+          description: Unauthorized, Token is Invalid
+        '403':
+          description: Forbidden Request
+        '412':
+          description: Precondition Failed
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+  /v1/monitor/{taskId}/end:
+    post:
+      tags:
+      - Call Monitoring
+      summary: End Monitoring Request
+      description: Allows to successfully end the on-going monitoring request. Requires scope 'cloud-contact-center:pod_conv' and 'cjp.supervisor'.
+      operationId: endActiveMonitoringRoute
+      parameters:
+      - name: taskId
+        in: path
+        description: The unique ID represents the task that needs to end.
+        required: true
+        schema:
+          type: string
+          format: UUID
+        example: 315fbb91-2288-427c-9588-ec764cd46ea4
+      responses:
+        '202':
+          description: The end request was accepted for processing
+        '401':
+          description: Unauthorized, Token is Invalid
+        '403':
+          description: Forbidden Request
+        '412':
+          description: Precondition Failed
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+  /v1/monitor/{taskId}/hold:
+    post:
+      tags:
+      - Call Monitoring
+      summary: Hold Monitoring Request
+      description: Place the monitoring session on hold for a particular call. Requires scope 'cloud-contact-center:pod_conv' and 'cjp.supervisor'.
+      operationId: supervisorHoldMonitoringRoute
+      parameters:
+      - name: taskId
+        in: path
+        description: The unique ID representing the task that needs to be held.
+        required: true
+        schema:
+          type: string
+          format: UUID
+        example: 315fbb91-2288-427c-9588-ec764cd46ea4
+      responses:
+        '202':
+          description: The hold request was accepted for processing.
+        '401':
+          description: Unauthorized, Token is Invalid
+        '403':
+          description: Forbidden Request
+        '412':
+          description: Precondition Failed
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+  /v1/monitor/{taskId}/unhold:
+    post:
+      tags:
+      - Call Monitoring
+      summary: Unhold Monitoring Request
+      description: Resume a particular monitoring request that was on hold already. Requires scope 'cloud-contact-center:pod_conv' and 'cjp.supervisor'.
+      operationId: supervisorUnHoldMonitoringRoute
+      parameters:
+      - name: taskId
+        in: path
+        description: The unique ID representing the task that needs to be resumed and was on hold already.
+        required: true
+        schema:
+          type: string
+          format: UUID
+        example: 315fbb91-2288-427c-9588-ec764cd46ea4
+      responses:
+        '202':
+          description: The resume request was accepted for processing.
+        '401':
+          description: Unauthorized, Token is Invalid
+        '403':
+          description: Forbidden Request
+        '412':
+          description: Precondition Failed
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+  /v1/monitor/sessions:
+    get:
+      tags:
+      - Call Monitoring
+      summary: Fetch Monitoring Sessions
+      description: Fetches all active subscriptions for a given clientID.
+      operationId: fetchMonitoringSessionsRoute
+      parameters: []
+      responses:
+        '202':
+          description: The fetch session request was accepted for processing.
+        '401':
+          description: Unauthorized, Token is Invalid
+        '403':
+          description: Forbidden Request
+        '412':
+          description: Precondition Failed
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+  /v1/monitor/{requestId}:
+    delete:
+      tags:
+      - Call Monitoring
+      summary: Delete Monitoring Request
+      description: Delete a particular monitoring request that was created. Requires scope 'cloud-contact-center:pod_conv' and 'cjp.supervisor'.
+      operationId: deleteMonitoringRequestRoute
+      parameters:
+      - name: requestId
+        in: path
+        description: The id with which the monitoring request has been created.
+        required: true
+        schema:
+          type: string
+          format: UUID
+        example: 315fbb91-2288-427c-9588-ec764cd46ea4
+      responses:
+        '202':
+          description: The delete request was accepted for processing
+        '401':
+          description: Unauthorized, Token is Invalid
+        '403':
+          description: Forbidden Request
+        '412':
+          description: Precondition Failed
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+components:
+  schemas:
+    CallMonitoringRequest:
+      required:
+      - id
+      - monitorType
+      type: object
+      properties:
+        id:
+          type: string
+          description: The id represents the unique request id with which the Monitoring Request will be created, maximum length 36 characters.
+          example: 3b7e6ad3-e5fe-4dd1-89a1-d7d952e29990
+        monitorType:
+          type: string
+          description: ' It represents the type of the monitoring request. It can to be ```midcall```, ```adhoc``` and ```continuous```'
+          example: midcall
+        taskId:
+          type: string
+          format: UUID
+          description: The unique ID representing the task that needs to be monitored. Mandatory for ```midcall``` type.
+          example: 9ce62805-3931-44d3-a839-3004025f7e30
+        queueIds:
+          type: array
+          items:
+            type: string
+          description: If the call is routed to an agent and the agent is assigned to a queue, the queueId can be entered here to initiate a successful call monitoring request for that particular queue, maximum length of each queue is 36 characters and maximum number of queueIds 250.
+          example: '[fbed39e1-4ed8-4179-828b-075e3788649c]'
+        teams:
+          type: array
+          items:
+            type: string
+          description: If the call is routed to an agent and the agent is assigned to a team, the teamId can be entered here to initiate a successful monitoring request for that particular team, maximum length of each team is 36 characters and maximum number of teams 100.
+          example: '[510d198d-7aa7-4b75-a5ff-e61759f4f313]'
+        sites:
+          type: array
+          items:
+            type: string
+          description: If the call is routed to an agent and the agent is assigned to a site, the siteId can be entered here to initiate a successful monitoring request for that particular site, maximum length of each site is 36 characters and the maximum number of sites 20.
+          example: '[67c5b4c8-9c78-4400-8148-8254dc550c49]'
+        agents:
+          type: array
+          items:
+            type: string
+          description: Enter the agentId to monitor a particular agent to whom the call is being assigned, maximum length of each agent is 36 characters and the maximum number of agents is 500.
+          example: '[fbed39e1-4ed8-4179-828b-075e3788649c]'
+        trackingId:
+          type: string
+          format: UUID
+          description: An unique id to keep a track of events occurring during the call
+          example: 8bd52805-3931-44d3-a839-3004025f7e30
+        invisibleMode:
+          type: boolean
+          description: This allows the supervisor to obfuscate their details from Team Performance Widget panel. Set ```true``` inorder to activate this mode
+          example: 'false'
+  securitySchemes:
+    oauth2:
+      flows:
+        authorizationCode:
+          authorizationUrl: /
+          scopes: {}
+          tokenUrl: /
+      type: oauth2
+    bearer-key:
+      type: http
+      description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
+      scheme: bearer
+      bearerFormat: JWT
+    bearerAuth:
+      type: oauth2
+      description: OAuth 2.0 Bearer token authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: https://webexapis.com/v1/authorize
+          tokenUrl: https://webexapis.com/v1/access_token
+          scopes:
+            spark:applications_token: Create access tokens for Service Apps

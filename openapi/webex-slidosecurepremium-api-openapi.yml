@@ -1,0 +1,905 @@
+openapi: 3.0.0
+info:
+  title: Webex Admin Address Book slidoSecurePremium API
+  version: 1.0.0
+  description: The Webex Admin APIs provide comprehensive programmatic access to administrative functions for managing Webex organizations, users, licenses, and settings. These APIs enable automation of user provisioning, license assignment, compliance management, and audit event retrieval. Administrators can integrate with enterprise identity systems, enforce security policies, monitor usage, and streamline onboarding/offboarding processes. The APIs support granular control over organizational resources, making them ideal for large-scale deployments and custom admin tooling.
+tags:
+- name: slidoSecurePremium
+  description: APIs for Slido Secure Premium integration with Webex Meetings.
+paths:
+  /slido/compliance/events:
+    get:
+      tags:
+      - slidoSecurePremium
+      description: 'Lists events representing actions that occurred during a Slido Secure Premium session (creating a poll, modifying a poll, activating a poll, posting an answer, etc.)
+
+
+        Events capture who performed the action and on what resource.
+
+
+        The events are paginated by the server into pages of max 256 items per page without any order.
+
+
+        The events are available within 15 minutes after they happened.
+
+
+        Every resource has properties:
+
+        * type - event type
+
+
+        * ... event specific ids
+
+
+        * ... event specific properties
+
+        '
+      summary: List Compliance Events
+      operationId: listComplianceEvents
+      parameters:
+      - schema:
+          title: org id
+          pattern: '[a-z0-9-]*'
+          minLength: 0
+          maxLength: 128
+          type: string
+        in: query
+        name: sessionOrgId
+        required: true
+        description: Webex organization UUID.
+        example: a1111111-1a11-111a-1a11-1a1111a1111a
+      - schema:
+          title: session id
+          pattern: '[a-z0-9-]*'
+          minLength: 0
+          maxLength: 128
+          type: string
+        in: query
+        name: sessionId
+        required: true
+        description: Webex meeting instance ID (`{meetingSeriesId}_I_{conferenceId}`).
+        example: abcdef0123456789abcdef0123456789_I_000000000000000000
+      - schema:
+          minLength: 0
+          maxLength: 128
+          type: string
+        in: query
+        name: start
+        required: false
+        description: Pagination token. Returned in the response body as the `next` property.
+        example: MTIzNDU2Nzg5MDEyMzQ1Ng
+      responses:
+        '200':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  items:
+                  - createdAtMs: 0
+                    sessionId: abcdef0123456789abcdef0123456789_I_000000000000000000
+                    sessionOrgId: a1111111-1a11-111a-1a11-1a1111a1111a
+                    userId: u1111111-1u11-111u-1u11-1u1111u1111u
+                    data:
+                      type: qaaQuestion
+                      sessionId: abcdef0123456789abcdef0123456789_I_000000000000000000
+                      questionId: q1111111-1q11-111q-1q11-1q1111q1111q
+                      createdAtMs: 0
+                      modifiedAtMs: 0
+                      isDeleted: false
+                      text: What are we having for breakfast tonight?
+                      isAnonymous: false
+                      user:
+                        userId: u1111111-1u11-111u-1u11-1u1111u1111u
+                        name: John Doe
+                        unverifiedName: null
+                      status: public
+                  next: MTIzNDU2Nzg5MDEyMzQ1Ng
+                properties:
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        createdAtMs:
+                          type: number
+                        sessionId:
+                          title: session id
+                          description: Webex meeting instance ID (`{meetingSeriesId}_I_{conferenceId}`).
+                          pattern: '[a-z0-9-]*'
+                          minLength: 0
+                          maxLength: 128
+                          type: string
+                        sessionOrgId:
+                          title: org id
+                          description: Webex organization UUID.
+                          pattern: '[a-z0-9-]*'
+                          minLength: 0
+                          maxLength: 128
+                          type: string
+                        userId:
+                          title: user id
+                          pattern: '[a-z0-9-]*'
+                          minLength: 0
+                          maxLength: 128
+                          type: string
+                        data:
+                          anyOf:
+                          - description: Slido session. There can be at most 1 Slido session per Webex meeting instance.
+                            additionalProperties: false
+                            type: object
+                            properties:
+                              type:
+                                title: session type
+                                description: Slido session. There can be at most 1 Slido session per Webex meeting instance.
+                                type: string
+                                enum:
+                                - session
+                              sessionId:
+                                title: session id
+                                description: Webex meeting instance ID (`{meetingSeriesId}_I_{conferenceId}`).
+                                pattern: '[a-z0-9-]*'
+                                minLength: 0
+                                maxLength: 128
+                                type: string
+                              createdAtMs:
+                                description: Timestamp when the resource was created.
+                                type: number
+                              modifiedAtMs:
+                                description: Timestamp when the resource was last modified.
+                                type: number
+                              isDeleted:
+                                description: If `true` the resource was deleted.
+                                type: boolean
+                              anonymityEnabled:
+                                type: boolean
+                          - description: Q&A section. Contains settings related to Q&A.
+                            additionalProperties: false
+                            type: object
+                            properties:
+                              type:
+                                title: qaa type
+                                description: Q&A section. Contains settings related to Q&A.
+                                type: string
+                                enum:
+                                - qaa
+                              sessionId:
+                                title: session id
+                                description: Webex meeting instance ID (`{meetingSeriesId}_I_{conferenceId}`).
+                                pattern: '[a-z0-9-]*'
+                                minLength: 0
+                                maxLength: 128
+                                type: string
+                              createdAtMs:
+                                description: Timestamp when the resource was created.
+                                type: number
+                              modifiedAtMs:
+                                description: Timestamp when the resource was last modified.
+                                type: number
+                              isDeleted:
+                                description: If `true` the resource was deleted.
+                                type: boolean
+                              enabled:
+                                type: boolean
+                              moderation:
+                                type: boolean
+                          - description: Q&A question.
+                            additionalProperties: false
+                            type: object
+                            properties:
+                              type:
+                                title: qaaQuestion type
+                                description: Q&A question.
+                                type: string
+                                enum:
+                                - qaaQuestion
+                              sessionId:
+                                title: session id
+                                description: Webex meeting instance ID (`{meetingSeriesId}_I_{conferenceId}`).
+                                pattern: '[a-z0-9-]*'
+                                minLength: 0
+                                maxLength: 128
+                                type: string
+                              questionId:
+                                title: qaaQuestion id
+                                pattern: '[a-z0-9-]*'
+                                minLength: 0
+                                maxLength: 128
+                                type: string
+                              createdAtMs:
+                                description: Timestamp when the resource was created.
+                                type: number
+                              modifiedAtMs:
+                                description: Timestamp when the resource was last modified.
+                                type: number
+                              isDeleted:
+                                description: If `true` the resource was deleted.
+                                type: boolean
+                              text:
+                                maxLength: 500
+                                type: string
+                              isAnonymous:
+                                type: boolean
+                              archivedStatus:
+                                anyOf:
+                                - type: string
+                                  enum:
+                                  - Archived
+                                - type: string
+                                  enum:
+                                  - Answered
+                              profanities:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    first:
+                                      type: number
+                                    last:
+                                      type: number
+                                    isEmoji:
+                                      type: boolean
+                                  required:
+                                  - first
+                                  - last
+                                  - isEmoji
+                              upvotes:
+                                type: number
+                              replyCount:
+                                type: number
+                              user:
+                                type: object
+                                properties:
+                                  userId:
+                                    title: user id
+                                    pattern: '[a-z0-9-]*'
+                                    minLength: 0
+                                    maxLength: 128
+                                    type: string
+                                  name:
+                                    maxLength: 512
+                                    type: string
+                                  unverifiedName:
+                                    maxLength: 512
+                                    type: string
+                                required:
+                                - userId
+                                - name
+                                - unverifiedName
+                              status:
+                                anyOf:
+                                - type: string
+                                  enum:
+                                  - in-review
+                                - type: string
+                                  enum:
+                                  - public
+                                - type: string
+                                  enum:
+                                  - archived
+                          - description: Reply to a Q&A question.
+                            additionalProperties: false
+                            type: object
+                            properties:
+                              type:
+                                title: qaaQuestionReply type
+                                description: Reply to a Q&A question.
+                                type: string
+                                enum:
+                                - qaaQuestionReply
+                              sessionId:
+                                title: session id
+                                description: Webex meeting instance ID (`{meetingSeriesId}_I_{conferenceId}`).
+                                pattern: '[a-z0-9-]*'
+                                minLength: 0
+                                maxLength: 128
+                                type: string
+                              questionId:
+                                title: qaaQuestion id
+                                pattern: '[a-z0-9-]*'
+                                minLength: 0
+                                maxLength: 128
+                                type: string
+                              createdAtMs:
+                                description: Timestamp when the resource was created.
+                                type: number
+                              modifiedAtMs:
+                                description: Timestamp when the resource was last modified.
+                                type: number
+                              isDeleted:
+                                description: If `true` the resource was deleted.
+                                type: boolean
+                              replyId:
+                                type: string
+                              user:
+                                type: object
+                                properties:
+                                  userId:
+                                    title: user id
+                                    pattern: '[a-z0-9-]*'
+                                    minLength: 0
+                                    maxLength: 128
+                                    type: string
+                                  name:
+                                    maxLength: 512
+                                    type: string
+                                  unverifiedName:
+                                    maxLength: 512
+                                    type: string
+                                required:
+                                - userId
+                                - name
+                                - unverifiedName
+                              isAnonymous:
+                                type: boolean
+                              text:
+                                maxLength: 1000
+                                type: string
+                          - description: Action performed on a Q&A question. Actions include question approvals, rejections, answers, archivals, restorations, highlighting, unhighlighting, upvoting and removing an upvote.
+                            additionalProperties: false
+                            type: object
+                            properties:
+                              type:
+                                title: qaaQuestionAction type
+                                description: Action performed on a Q&A question. Actions include question approvals, rejections, answers, archivals, restorations, highlighting, unhighlighting, upvoting and removing an upvote.
+                                type: string
+                                enum:
+                                - qaaQuestionAction
+                              sessionId:
+                                title: session id
+                                description: Webex meeting instance ID (`{meetingSeriesId}_I_{conferenceId}`).
+                                pattern: '[a-z0-9-]*'
+                                minLength: 0
+                                maxLength: 128
+                                type: string
+                              questionId:
+                                title: qaaQuestion id
+                                pattern: '[a-z0-9-]*'
+                                minLength: 0
+                                maxLength: 128
+                                type: string
+                              createdAtMs:
+                                description: Timestamp when the resource was created.
+                                type: number
+                              modifiedAtMs:
+                                description: Timestamp when the resource was last modified.
+                                type: number
+                              isDeleted:
+                                description: If `true` the resource was deleted.
+                                type: boolean
+                              action:
+                                anyOf:
+                                - type: string
+                                  enum:
+                                  - approve
+                                - type: string
+                                  enum:
+                                  - reject
+                                - type: string
+                                  enum:
+                                  - answer
+                                - type: string
+                                  enum:
+                                  - archive
+                                - type: string
+                                  enum:
+                                  - restore
+                                - type: string
+                                  enum:
+                                  - highlight
+                                - type: string
+                                  enum:
+                                  - unhighlight
+                                - type: string
+                                  enum:
+                                  - upvote
+                                - type: string
+                                  enum:
+                                  - removeUpvote
+                          - description: 'Poll is a basic unit of interaction for participants.
+
+                              Poll can be either a single question like text / poll or a composed interaction like quiz, survey.
+
+                              Owned by admins.
+
+                              '
+                            additionalProperties: false
+                            type: object
+                            properties:
+                              type:
+                                title: poll type
+                                description: 'Poll is a basic unit of interaction for participants.
+
+                                  Poll can be either a single question like text / poll or a composed interaction like quiz, survey.
+
+                                  Owned by admins.
+
+                                  '
+                                type: string
+                                enum:
+                                - poll
+                              sessionId:
+                                title: session id
+                                description: Webex meeting instance ID (`{meetingSeriesId}_I_{conferenceId}`).
+                                pattern: '[a-z0-9-]*'
+                                minLength: 0
+                                maxLength: 128
+                                type: string
+                              pollId:
+                                title: poll id
+                                pattern: '[a-z0-9-]*'
+                                minLength: 0
+                                maxLength: 128
+                                type: string
+                              createdAtMs:
+                                description: Timestamp when the resource was created.
+                                type: number
+                              modifiedAtMs:
+                                description: Timestamp when the resource was last modified.
+                                type: number
+                              isDeleted:
+                                description: If `true` the resource was deleted.
+                                type: boolean
+                              pollType:
+                                description: 'Poll type determines structure and behavior:
+
+                                  - `simple`: Single question poll (choice, text). Question content is at poll level.
+
+                                  - `survey`: Multiple questions answered in sequence. Questions are in `questions` record.'
+                                anyOf:
+                                - type: string
+                                  enum:
+                                  - simple
+                                - type: string
+                                  enum:
+                                  - survey
+                              questionType:
+                                anyOf:
+                                - type: string
+                                  enum:
+                                  - none
+                                - type: string
+                                  enum:
+                                  - choice
+                                - type: string
+                                  enum:
+                                  - text
+                              title:
+                                title: Question title
+                                maxLength: 255
+                                type: string
+                              description:
+                                title: Question description
+                                maxLength: 1024
+                                type: string
+                              hideNames:
+                                title: Hide respondent names
+                                type: boolean
+                              maxAnswers:
+                                title: Explicit limit for number of answers per participant. 0 -> no explicit limit
+                                description: Applicable for questionType:text
+                                minimum: 0
+                                maximum: 50
+                                type: number
+                              options:
+                                title: Question options
+                                description: Applicable for questionType:choice
+                                maxProperties: 50
+                                type: object
+                                additionalProperties:
+                                  type: object
+                                  properties:
+                                    title:
+                                      title: Option title
+                                      maxLength: 255
+                                      type: string
+                                    isCorrect:
+                                      title: Marks correct answer
+                                      description: Meaningful only when `enableCorrectOptions` setting is `true`.
+                                      type: boolean
+                                    order:
+                                      title: Sort order of the option
+                                      type: number
+                              maxOptions:
+                                title: Maximum number of answered options. 0 - no explicit limit, 1 -> 1, 2 -> 2, etc.
+                                description: Applicable for questionType:choice
+                                minimum: 0
+                                maximum: 50
+                                type: number
+                              enableCorrectOptions:
+                                description: Applicable for questionType:choice
+                                type: boolean
+                              revealCorrectOptions:
+                                title: Reveal correct isCorrect options property to participants.
+                                description: Applicable for questionType:choice
+                                type: boolean
+                              isLocked:
+                                title: Is question locked for interaction?
+                                description: If `true`, participants can not interact with the question.
+                                type: boolean
+                              revealResults:
+                                title: Reveal results to participants
+                                type: boolean
+                              questions:
+                                title: Poll questions
+                                description: 'Poll questions for survey. Questions are part of the poll body—fetched, created,
+
+                                  and patched atomically with the poll. No separate pagination; all questions returned in single response (max: 50).'
+                                maxProperties: 50
+                                type: object
+                                additionalProperties:
+                                  type: object
+                                  properties:
+                                    order:
+                                      title: Sort order of the question
+                                      type: number
+                                    isRequired:
+                                      title: Is this question required to answer?
+                                      type: boolean
+                                    questionType:
+                                      anyOf:
+                                      - type: string
+                                        enum:
+                                        - none
+                                      - type: string
+                                        enum:
+                                        - choice
+                                      - type: string
+                                        enum:
+                                        - text
+                                    title:
+                                      title: Question title
+                                      maxLength: 255
+                                      type: string
+                                    description:
+                                      title: Question description
+                                      maxLength: 1024
+                                      type: string
+                                    hideNames:
+                                      title: Hide respondent names
+                                      type: boolean
+                                    maxAnswers:
+                                      title: Explicit limit for number of answers per participant. 0 -> no explicit limit
+                                      description: Applicable for questionType:text
+                                      minimum: 0
+                                      maximum: 50
+                                      type: number
+                                    options:
+                                      title: Question options
+                                      description: Applicable for questionType:choice
+                                      maxProperties: 50
+                                      type: object
+                                      additionalProperties:
+                                        type: object
+                                        properties:
+                                          title:
+                                            title: Option title
+                                            maxLength: 255
+                                            type: string
+                                          isCorrect:
+                                            title: Marks correct answer
+                                            description: Meaningful only when `enableCorrectOptions` setting is `true`.
+                                            type: boolean
+                                          order:
+                                            title: Sort order of the option
+                                            type: number
+                                    maxOptions:
+                                      title: Maximum number of answered options. 0 - no explicit limit, 1 -> 1, 2 -> 2, etc.
+                                      description: Applicable for questionType:choice
+                                      minimum: 0
+                                      maximum: 50
+                                      type: number
+                                    enableCorrectOptions:
+                                      description: Applicable for questionType:choice
+                                      type: boolean
+                                    revealCorrectOptions:
+                                      title: Reveal correct isCorrect options property to participants.
+                                      description: Applicable for questionType:choice
+                                      type: boolean
+                                    isLocked:
+                                      title: Is question locked for interaction?
+                                      description: If `true`, participants can not interact with the question.
+                                      type: boolean
+                                    revealResults:
+                                      title: Reveal results to participants
+                                      type: boolean
+                              activePollResultId:
+                                title: pollResult id
+                                description: 'Poll carries `activePollResultId` and answers embed this `pollResultId`.
+
+                                  Answers are aggregated into results by the `pollResultId`.
+
+                                  Reset of question results is implemented as new `activePollResultId` assignment to the question,
+
+                                  making new clean space for the result.'
+                                pattern: '[a-z0-9-]*'
+                                minLength: 0
+                                maxLength: 128
+                                type: string
+                              order:
+                                title: Sort order of the poll
+                                description: Overrides default sorting by `createdAtMs`.
+                                type: number
+                          - description: 'Answer is a participant''s response to a poll.
+
+                              Owned by participants.
+
+                              For simple polls, answer content is at root level. For surveys, content is in questionAnswers.
+
+                              '
+                            additionalProperties: false
+                            type: object
+                            properties:
+                              type:
+                                title: pollAnswer type
+                                description: 'Answer is a participant''s response to a poll.
+
+                                  Owned by participants.
+
+                                  For simple polls, answer content is at root level. For surveys, content is in questionAnswers.
+
+                                  '
+                                type: string
+                                enum:
+                                - pollAnswer
+                              sessionId:
+                                title: session id
+                                description: Webex meeting instance ID (`{meetingSeriesId}_I_{conferenceId}`).
+                                pattern: '[a-z0-9-]*'
+                                minLength: 0
+                                maxLength: 128
+                                type: string
+                              userId:
+                                title: user id
+                                pattern: '[a-z0-9-]*'
+                                minLength: 0
+                                maxLength: 128
+                                type: string
+                              pollId:
+                                title: poll id
+                                pattern: '[a-z0-9-]*'
+                                minLength: 0
+                                maxLength: 128
+                                type: string
+                              pollResultId:
+                                title: pollResult id
+                                description: 'Poll carries `activePollResultId` and answers embed this `pollResultId`.
+
+                                  Answers are aggregated into results by the `pollResultId`.
+
+                                  Reset of question results is implemented as new `activePollResultId` assignment to the question,
+
+                                  making new clean space for the result.'
+                                pattern: '[a-z0-9-]*'
+                                minLength: 0
+                                maxLength: 128
+                                type: string
+                              pollAnswerId:
+                                title: pollAnswer id
+                                pattern: '[a-z0-9-]*'
+                                minLength: 0
+                                maxLength: 128
+                                type: string
+                              createdAtMs:
+                                description: Timestamp when the resource was created.
+                                type: number
+                              modifiedAtMs:
+                                description: Timestamp when the resource was last modified.
+                                type: number
+                              isDeleted:
+                                description: If `true` the resource was deleted.
+                                type: boolean
+                              isAnonymous:
+                                description: If `true`, the answer was posted anonymously.
+                                type: boolean
+                              text:
+                                description: Applicable for questionType:text
+                                maxLength: 500
+                                type: string
+                              options:
+                                title: Options selected by the participant
+                                description: Applicable for questionType:choice
+                                maxProperties: 50
+                                type: object
+                                additionalProperties:
+                                  type: object
+                                  properties: {}
+                              questionAnswers:
+                                title: Per-question answers
+                                description: 'Answer content for each question in a survey.
+
+                                  Keyed by questionId matching poll.questions keys. Not used for simple polls.'
+                                maxProperties: 50
+                                type: object
+                                additionalProperties:
+                                  title: Question answer
+                                  description: Answer content for a single question in a survey.
+                                  type: object
+                                  properties:
+                                    text:
+                                      description: Applicable for questionType:text
+                                      maxLength: 500
+                                      type: string
+                                    options:
+                                      title: Options selected by the participant
+                                      description: Applicable for questionType:choice
+                                      maxProperties: 50
+                                      type: object
+                                      additionalProperties:
+                                        type: object
+                                        properties: {}
+                          - description: Poll answer review is admin review of a participant answer. Owned by admin.
+                            additionalProperties: false
+                            type: object
+                            properties:
+                              type:
+                                title: pollAnswerReview type
+                                description: Poll answer review is admin review of a participant answer. Owned by admin.
+                                type: string
+                                enum:
+                                - pollAnswerReview
+                              sessionId:
+                                title: session id
+                                description: Webex meeting instance ID (`{meetingSeriesId}_I_{conferenceId}`).
+                                pattern: '[a-z0-9-]*'
+                                minLength: 0
+                                maxLength: 128
+                                type: string
+                              pollId:
+                                title: poll id
+                                pattern: '[a-z0-9-]*'
+                                minLength: 0
+                                maxLength: 128
+                                type: string
+                              pollResultId:
+                                title: pollResult id
+                                description: 'Poll carries `activePollResultId` and answers embed this `pollResultId`.
+
+                                  Answers are aggregated into results by the `pollResultId`.
+
+                                  Reset of question results is implemented as new `activePollResultId` assignment to the question,
+
+                                  making new clean space for the result.'
+                                pattern: '[a-z0-9-]*'
+                                minLength: 0
+                                maxLength: 128
+                                type: string
+                              pollAnswerId:
+                                title: pollAnswer id
+                                pattern: '[a-z0-9-]*'
+                                minLength: 0
+                                maxLength: 128
+                                type: string
+                              createdAtMs:
+                                description: Timestamp when the resource was created.
+                                type: number
+                              modifiedAtMs:
+                                description: Timestamp when the resource was last modified.
+                                type: number
+                              isDeleted:
+                                description: If `true` the resource was deleted.
+                                type: boolean
+                              approval:
+                                anyOf:
+                                - description: Neither approved, nor rejected.
+                                  type: string
+                                  enum:
+                                  - none
+                                - description: Answer is rejected.
+                                  type: string
+                                  enum:
+                                  - rejected
+                              questions:
+                                title: Poll question review decisions
+                                description: Applicable for survey polls. Maps questionId to review decision for that question.
+                                maxProperties: 50
+                                type: object
+                                additionalProperties:
+                                  type: object
+                                  properties:
+                                    approval:
+                                      anyOf:
+                                      - description: Neither approved, nor rejected.
+                                        type: string
+                                        enum:
+                                        - none
+                                      - description: Answer is rejected.
+                                        type: string
+                                        enum:
+                                        - rejected
+                          - description: Reference to an active poll question.
+                            additionalProperties: false
+                            type: object
+                            properties:
+                              type:
+                                title: activePoll type
+                                description: Reference to an active poll question.
+                                type: string
+                                enum:
+                                - activePoll
+                              sessionId:
+                                title: session id
+                                description: Webex meeting instance ID (`{meetingSeriesId}_I_{conferenceId}`).
+                                pattern: '[a-z0-9-]*'
+                                minLength: 0
+                                maxLength: 128
+                                type: string
+                              createdAtMs:
+                                description: Timestamp when the resource was created.
+                                type: number
+                              modifiedAtMs:
+                                description: Timestamp when the resource was last modified.
+                                type: number
+                              isDeleted:
+                                description: If `true` the resource was deleted.
+                                type: boolean
+                              activePollId:
+                                title: poll id
+                                pattern: '[a-z0-9-]*'
+                                minLength: 0
+                                maxLength: 128
+                                type: string
+                      required:
+                      - createdAtMs
+                      - sessionId
+                      - sessionOrgId
+                      - userId
+                      - data
+                  next:
+                    type: string
+                required:
+                - items
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+components:
+  securitySchemes:
+    oauth2:
+      flows:
+        authorizationCode:
+          authorizationUrl: /
+          scopes: {}
+          tokenUrl: /
+      type: oauth2
+    bearer-key:
+      type: http
+      description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
+      scheme: bearer
+      bearerFormat: JWT
+    bearerAuth:
+      type: oauth2
+      description: OAuth 2.0 Bearer token authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: https://webexapis.com/v1/authorize
+          tokenUrl: https://webexapis.com/v1/access_token
+          scopes:
+            spark:applications_token: Create access tokens for Service Apps
