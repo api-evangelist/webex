@@ -1,0 +1,165 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Webex Admin Address Book Contact List Management API",
+    "version": "1.0.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Contact List Management",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Create contact list",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/v3/campaign-management/campaigns/:campaignId/contact-list",
+            "params": [
+              {
+                "name": "campaignId",
+                "value": "CCV_123456789",
+                "type": "path",
+                "description": "Campaign ID to which the contact list belongs."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates and activates a contact list for a campaign. The system can activate a contact list even if there are no contact records within it."
+        },
+        {
+          "info": {
+            "name": "Create contacts within a contact list",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/v3/campaign-management/campaigns/:campaignId/contact-list/:contactListId/contacts",
+            "params": [
+              {
+                "name": "campaignId",
+                "value": "CCV_123456789",
+                "type": "path",
+                "description": "Campaign ID to which the contact list belongs."
+              },
+              {
+                "name": "contactListId",
+                "value": "501",
+                "type": "path",
+                "description": "Contact List ID (as a number string)."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates contacts within a contact list (only if that contact list was created using API method). If the contact record is invalid, it will be added as INVALID and reflected in the 'Processed' and 'Invalid' counts. This is an Asynchronous operation. The values within the 'contactAttributes' param should conform to datatypes of the contact attributes as specified in the 'Field mapping' associated with the campaign."
+        },
+        {
+          "info": {
+            "name": "Update a contact's status within a contact list",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/v3/campaign-management/campaigns/:campaignId/contact-list/:contactListId/contacts/:contactId",
+            "params": [
+              {
+                "name": "campaignId",
+                "value": "CCV_123456789",
+                "type": "path",
+                "description": "Campaign ID."
+              },
+              {
+                "name": "contactListId",
+                "value": "501",
+                "type": "path",
+                "description": "Contact List ID (as a number string)."
+              },
+              {
+                "name": "contactId",
+                "value": "CUST12345",
+                "type": "path",
+                "description": "Contact Unique ID (Customer Unique ID or Account Unique ID or Contact_Phone)"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates a contact's status within a contact list. After update, system overwrites 'Latest Telephony Outcome' to blank and 'Latest Business Outcome' to 'Closed via API call' if status is CLOSED. This is an Asynchronous operation."
+        },
+        {
+          "info": {
+            "name": "Update contact list status",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/v3/campaign-management/campaigns/:campaignId/contact-list/:contactListId/status",
+            "params": [
+              {
+                "name": "campaignId",
+                "value": "CCV_123456789",
+                "type": "path",
+                "description": "Campaign ID."
+              },
+              {
+                "name": "contactListId",
+                "value": "501",
+                "type": "path",
+                "description": "Contact List ID (as a number string)."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates the status of a contact list (e.g., EXPIRED). Note: This value is not case-sensitive."
+        },
+        {
+          "info": {
+            "name": "Get Contact Lists within a Campaign",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/v3/campaign-management/campaigns/:campaignId/contact-lists",
+            "params": [
+              {
+                "name": "campaignId",
+                "value": "CCV_123456789",
+                "type": "path",
+                "description": "Campaign ID."
+              },
+              {
+                "name": "status",
+                "value": "Active",
+                "type": "query",
+                "description": "Contact List Status filter (Active, Expired, UploadFailed, etc.)"
+              },
+              {
+                "name": "source",
+                "value": "API",
+                "type": "query",
+                "description": "Contact List Source filter (API, SFTP, ManualFile, GlobalUpload, GlobalSFTP)"
+              }
+            ]
+          },
+          "docs": "Retrieves all contact lists within a campaign, with optional filters for status and source."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

@@ -1,0 +1,541 @@
+openapi: 3.2.0
+info:
+  title: Webex Contact Center Activities API
+  version: 1.0.0
+  description: The Webex Contact Center APIs allow developers to deeply integrate, configure, and manage cloud-based contact center solutions. These APIs cover agent lifecycle management, queue and routing configuration, customer journey tracking, and access to real-time and historical analytics. Use cases include embedding agent controls in custom UIs, automating workforce management, integrating with CRM and ticketing systems, and building custom reporting dashboards. The APIs empower organizations to deliver personalized, efficient customer experiences and optimize contact center operations.
+  x-provenance:
+    method: harvested
+    authored_by: Cisco Webex
+    harvested_by: API Evangelist
+    harvested_on: '2026-08-19'
+    first_party: true
+    note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
+    provider_published: true
+  x-evidence:
+  - type: source
+    url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-contact-center.json
+  - type: raw
+    url: https://raw.githubusercontent.com/webex/webex-openapi-specs/main/public-spec/webex-contact-center.json
+tags:
+- name: Activities
+paths:
+  /{orgId}/project/{projectId}/v2/activities:
+    get:
+      tags:
+      - Activities
+      summary: List Activity Definitions
+      description: 'List all available activity types with their full schemas, including inputs, outputs, ports, and descriptions. The response is sufficient on its own to construct nodes — there is no separate schema endpoint.
+
+
+        Scope: `cjp:config_read`'
+      operationId: listActivityDefinitions
+      parameters:
+      - name: orgId
+        in: path
+        description: Organization ID.
+        required: true
+        schema:
+          type: string
+        example: 8eb7da9a-c81c-4d13-b08b-38fdeb7330d8
+      - name: projectId
+        in: path
+        description: 'Project ID. System generated value which is the same across orgs and environments. Always use: 5e5c9ad6d61f870d6d778c1b.'
+        required: true
+        schema:
+          type: string
+        example: 5e5c9ad6d61f870d6d778c1b
+      responses:
+        '200':
+          description: Array of activity definitions.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ActivityV2'
+                example:
+                - activityName: play-message
+                  displayName: Play Message
+                  category: core
+                  group: action
+                  activityType: action
+        '401':
+          description: Unauthorized.
+          content: {}
+        '403':
+          description: Forbidden.
+          content: {}
+        '404':
+          description: Not Found.
+          content: {}
+        '429':
+          description: Too Many Requests.
+          content: {}
+  /{orgId}/project/{projectId}/v2/activities/{activityName}:
+    get:
+      tags:
+      - Activities
+      summary: Describe an Activity
+      description: 'Retrieve a single activity''s full definition, including inputs, outputs, named ports, and the JSON Schema for its inputs — all returned inline.
+
+
+        Scope: `cjp:config_read`'
+      operationId: describeActivity
+      parameters:
+      - name: orgId
+        in: path
+        description: Organization ID.
+        required: true
+        schema:
+          type: string
+        example: 8eb7da9a-c81c-4d13-b08b-38fdeb7330d8
+      - name: projectId
+        in: path
+        description: 'Project ID. System generated value which is the same across orgs and environments. Always use: 5e5c9ad6d61f870d6d778c1b.'
+        required: true
+        schema:
+          type: string
+        example: 5e5c9ad6d61f870d6d778c1b
+      - name: activityName
+        in: path
+        description: Activity type name (e.g., `play-message`, `queue-contact`).
+        required: true
+        schema:
+          type: string
+        example: play-message
+      responses:
+        '200':
+          description: Activity definition.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivityV2'
+        '401':
+          description: Unauthorized.
+          content: {}
+        '403':
+          description: Forbidden.
+          content: {}
+        '404':
+          description: Not Found.
+          content: {}
+        '429':
+          description: Too Many Requests.
+          content: {}
+  /{orgId}/project/{projectId}/v2/activities/{activityName}/inputs/{inputName}/choices:
+    get:
+      tags:
+      - Activities
+      summary: Get Activity Input Choices
+      description: 'Resolve choices for an activity input. Use this when an activity input requires a value from a predefined or dynamically resolved set (e.g., available queues, audio files, agents).
+
+
+        This endpoint is only valid for inputs that expose choices (an input whose definition includes `allowedValues` or a `choicesEndpoint`, as returned by `describeActivity`). Calling it for an input that does not support choices returns 400.
+
+
+        Pass `search` to filter the choices (type-ahead). Add `validate=true` together with `search` to do a point-lookup of a single value instead of filtering — the match is against the choice''s `value` (its ID), not its display `name`. For a cascading input whose allowed values depend on a sibling input, supply the parent with `parentInputName` and `parentValue`; otherwise a cascading input returns 400.
+
+
+        Filtering and validation apply only to dynamic (`choicesEndpoint`-backed) inputs. A static input always returns its full enumerated list regardless of `search`/`validate`.
+
+
+        Scope: `cjp:config_read`'
+      operationId: getActivityInputChoices
+      parameters:
+      - name: orgId
+        in: path
+        description: Organization ID.
+        required: true
+        schema:
+          type: string
+        example: 8eb7da9a-c81c-4d13-b08b-38fdeb7330d8
+      - name: projectId
+        in: path
+        description: 'Project ID. System generated value which is the same across orgs and environments. Always use: 5e5c9ad6d61f870d6d778c1b.'
+        required: true
+        schema:
+          type: string
+        example: 5e5c9ad6d61f870d6d778c1b
+      - name: activityName
+        in: path
+        description: Activity type name.
+        required: true
+        schema:
+          type: string
+        example: queue-contact
+      - name: inputName
+        in: path
+        description: Input field name. Must be an input that exposes choices (has `allowedValues` or a `choicesEndpoint`).
+        required: true
+        schema:
+          type: string
+        example: channelType
+      - name: search
+        in: query
+        description: Search text used to filter the returned choices (type-ahead). When `validate=true`, this is instead the single value to look up.
+        required: false
+        schema:
+          type: string
+        example: support
+      - name: validate
+        in: query
+        description: When `true` and `search` is supplied, performs a point-lookup of the single value in `search` (matched against the choice's `value`/ID) instead of filtering.
+        required: false
+        schema:
+          type: boolean
+          default: false
+        example: false
+      - name: parentValue
+        in: query
+        description: Parent input value for a cascading/dynamic input (for example, the selected `channelType`).
+        required: false
+        schema:
+          type: string
+        example: TELEPHONY
+      - name: parentInputName
+        in: query
+        description: Parent input name for a cascading/dynamic input. Required when `parentValue` is provided.
+        required: false
+        schema:
+          type: string
+        example: channelType
+      responses:
+        '200':
+          description: Resolved choices for the input, plus resolution metadata.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivityInputChoices'
+        '400':
+          description: Bad Request — a cascading input was queried without its parent (`parentInputName`/`parentValue`), or the input does not support choices.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlowV2ErrorResponse'
+        '401':
+          description: Unauthorized.
+          content: {}
+        '403':
+          description: Forbidden.
+          content: {}
+        '404':
+          description: Not Found.
+          content: {}
+        '429':
+          description: Too Many Requests.
+          content: {}
+components:
+  schemas:
+    FlowV2ValidationError:
+      title: FlowV2ValidationError
+      type: object
+      description: A single validation error against a flow document.
+      properties:
+        activityName:
+          type: string
+          description: Name of the activity the error relates to.
+          example: play-message
+        condition:
+          type: string
+          description: Edge condition the error relates to, when applicable.
+          example: onTimeout
+        from:
+          type: string
+          description: Source node label of the offending edge, when applicable.
+          example: WelcomeMessage
+        edge:
+          type: string
+          description: Human-readable description of the offending edge, when applicable.
+          example: WelcomeMessage->DisconnectContact(onTimeout)
+        suggestion:
+          type: string
+          description: Suggested fix.
+          example: 'Use one of: default, error'
+        message:
+          type: string
+          description: Human-readable explanation of the error.
+          example: Condition 'onTimeout' is not valid for activity 'play-message'.
+        severity:
+          type: string
+          description: Severity of the issue.
+          enum:
+          - ERROR
+          example: ERROR
+    ActivityInputChoices:
+      title: ActivityInputChoices
+      type: object
+      description: Resolved choices for an activity input, returned by the activity input choices endpoint, along with resolution metadata.
+      additionalProperties: true
+      example:
+        count: 2
+        source: static
+        choices:
+        - name: Voice
+          value: TELEPHONY
+        - name: Work item
+          value: WORK_ITEM
+        parentInputName: ''
+        parentValue: ''
+        isSearchEnabled: false
+        resolvedInput: channelType
+        activity: queue-lookup
+        input: channelType
+      properties:
+        count:
+          type: integer
+          description: Number of choices returned.
+          example: 2
+        source:
+          type: string
+          description: How the choices were resolved.
+          enum:
+          - list
+          - search
+          - validate
+          - dynamic
+          - static
+          example: static
+        choices:
+          type: array
+          description: The resolved choices.
+          items:
+            $ref: '#/components/schemas/ActivityChoiceEntry'
+        parentInputName:
+          type: string
+          description: Parent input name echoed back for cascading resolution (empty when not cascading).
+          example: ''
+        parentValue:
+          type: string
+          description: Parent input value echoed back for cascading resolution (empty when not cascading).
+          example: ''
+        isSearchEnabled:
+          type: boolean
+          description: True when the input supports server-side search/filtering.
+          example: false
+        resolvedInput:
+          type: string
+          description: The input name the choices were resolved for.
+          example: channelType
+        activity:
+          type: string
+          description: The activity name the input belongs to.
+          example: queue-lookup
+        input:
+          type: string
+          description: The requested input name.
+          example: channelType
+    ActivityChoiceEntry:
+      title: ActivityChoiceEntry
+      type: object
+      description: A single resolved choice for an activity input.
+      additionalProperties: true
+      properties:
+        name:
+          type: string
+          description: Human-readable label shown in authoring UIs.
+          example: Main Support Queue
+        value:
+          type: string
+          description: The choice value/ID, suitable for use as the activity input value.
+          example: Main_Support_Queue
+    FlowV2ErrorResponse:
+      title: FlowV2ErrorResponse
+      type: object
+      description: Standard error envelope returned by flow endpoints. For 400 (bad request) and 422 (validation failure), `details[]` carries field-level error information.
+      additionalProperties: true
+      example:
+        code: INVALID_FLOW
+        message: Flow document failed validation.
+        details:
+        - path: /nodes/2/inputs/queue
+          code: UNKNOWN_QUEUE
+          message: Queue 'Main_Support_Quueue' was not found in the project.
+      properties:
+        code:
+          type: string
+          description: Stable, machine-readable error code.
+          example: INVALID_FLOW
+        message:
+          type: string
+          description: Human-readable error message.
+          example: Flow document failed validation.
+        details:
+          type: array
+          description: Per-issue error details. Populated for 400 and 422 responses.
+          items:
+            $ref: '#/components/schemas/FlowV2ValidationError'
+    ActivityOutput:
+      title: ActivityOutput
+      type: object
+      description: A single output field produced by an activity.
+      additionalProperties: true
+      properties:
+        name:
+          type: string
+          description: Output field name.
+          example: callerEnteredDigits
+        type:
+          type: string
+          description: Output data type.
+          example: STRING
+        description:
+          type: string
+          description: Human-readable description of the output.
+          example: Digits the caller entered before timeout.
+    ActivityOutputPort:
+      title: ActivityOutputPort
+      type: object
+      description: An output port the activity may exit through. Edges reference a port via their `condition`.
+      additionalProperties: true
+      properties:
+        condition:
+          type: string
+          description: Port condition. An edge's `condition` must match one of these verbatim (for example, `default`, `error`).
+          example: default
+        label:
+          type: string
+          description: Human-readable port label shown in authoring UIs. May be empty.
+          example: default
+        isErrorPath:
+          type: boolean
+          description: True if this port is the activity's error path.
+          example: false
+    ActivityV2:
+      title: ActivityV2
+      type: object
+      description: Definition of an activity type, including its inputs, outputs, and named output ports.
+      additionalProperties: true
+      example:
+        activityName: play-message
+        displayName: Play Message
+        category: core
+        group: action
+        activityType: action
+        inputs: []
+        outputs: []
+        outputPorts:
+        - condition: error
+          label: ''
+          isErrorPath: true
+        - condition: default
+          label: default
+          isErrorPath: false
+      properties:
+        activityName:
+          type: string
+          description: Stable activity type identifier referenced by a flow node's `properties.activityName`. Read the value verbatim from this endpoint; it is not always kebab-case (for example, `SetCallerID`, `Feedback-V2`, `queue-lookup`).
+          example: play-message
+        displayName:
+          type: string
+          description: Human-readable name shown in authoring UIs.
+          example: Play Message
+        category:
+          type: string
+          description: High-level grouping the activity belongs to (for example, `core`).
+          example: core
+        group:
+          type: string
+          description: Group the activity belongs to. An open set; observed values include `action`, `enum-gateway`, `http-request`, `parse-activity`, `set-variable`, and `terminating-action`. Read the value verbatim rather than assuming a fixed set.
+          example: action
+        activityType:
+          type: string
+          description: Underlying activity classification used by the runtime (for example, `action`, `start`).
+          example: action
+        inputs:
+          type: array
+          description: Declared inputs for the activity.
+          items:
+            $ref: '#/components/schemas/ActivityInput'
+        outputs:
+          type: array
+          description: Declared outputs for the activity.
+          items:
+            $ref: '#/components/schemas/ActivityOutput'
+        outputPorts:
+          type: array
+          description: Output ports the activity may exit through. An edge's `condition` must match one of these ports' `condition` values.
+          items:
+            $ref: '#/components/schemas/ActivityOutputPort'
+    ActivityInput:
+      title: ActivityInput
+      type: object
+      description: A single input field on an activity definition.
+      additionalProperties: true
+      properties:
+        name:
+          type: string
+          description: Input field name.
+          example: channelType
+        type:
+          type: string
+          description: Input data type (for example, `string`, `boolean`, `int`, `object[]`).
+          example: string
+        required:
+          type: boolean
+          description: True if the input must be supplied.
+          example: true
+        defaultValue:
+          description: Default value applied when the input is not supplied. May be null. Type matches `type`.
+          example: null
+        showOnCondition:
+          type:
+          - string
+          - 'null'
+          description: Expression controlling when this input is shown in authoring UIs, evaluated against sibling input values. Null when the input is always shown.
+          example: toggle == false
+        isSecure:
+          type: boolean
+          description: True if the input holds sensitive data that should be masked.
+          example: false
+        allowedValues:
+          type:
+          - array
+          - 'null'
+          description: Enumerated allowed values for a static-choice input. Null when the input is unconstrained or resolves its choices dynamically via `choicesEndpoint`.
+          items:
+            type: string
+          example:
+          - TELEPHONY
+          - WORK_ITEM
+        choicesEndpoint:
+          type:
+          - string
+          - 'null'
+          description: Relative endpoint used to resolve choices dynamically for this input. Null when the input has no dynamic choices.
+          example: GET /v2/activities/play-message/inputs/audioFile/choices
+        children:
+          type: array
+          description: Nested inputs for composite/object inputs. Empty when the input has no children.
+          items:
+            $ref: '#/components/schemas/ActivityInput'
+        description:
+          type: string
+          description: Human-readable description of the input.
+          example: Channel type the contact arrived on.
+  securitySchemes:
+    oauth2:
+      flows:
+        authorizationCode:
+          authorizationUrl: /
+          scopes: {}
+          tokenUrl: /
+      type: oauth2
+    bearer-key:
+      type: http
+      description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
+      scheme: bearer
+      bearerFormat: JWT
+    BEARER_TOKEN_FROM_CI:
+      type: http
+      in: header
+      scheme: bearer
+    Bearer:
+      type: http
+      description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
+      scheme: bearer
+      bearerFormat: JWT
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT bearer token authentication. Obtain your token from the Webex Developer Portal.

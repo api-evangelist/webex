@@ -1,8 +1,26 @@
-openapi: 3.0.0
+openapi: 3.2.0
 info:
-  title: Webex Admin Address Book DNC Management API
+  title: Webex DNC Management API
   version: 1.0.0
-  description: The Webex Admin APIs provide comprehensive programmatic access to administrative functions for managing Webex organizations, users, licenses, and settings. These APIs enable automation of user provisioning, license assignment, compliance management, and audit event retrieval. Administrators can integrate with enterprise identity systems, enforce security policies, monitor usage, and streamline onboarding/offboarding processes. The APIs support granular control over organizational resources, making them ideal for large-scale deployments and custom admin tooling.
+  description: 'Operations tagged DNC Management across 2 of this provider''s published API definitions: webex-contact-center-openapi.json,
+    webex-dnc-management-api-openapi.yml. Each path carries the servers of the definition it was published in.'
+  x-provenance:
+    method: harvested
+    authored_by: Cisco Webex
+    harvested_by: API Evangelist
+    harvested_on: '2026-08-19'
+    first_party: true
+    note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
+    provider_published: true
+    derived_view: Per-tag view of webex-contact-center-openapi.json, the provider's source document. Operations and schemas
+      are the provider's, unmodified; only the partition is ours.
+    derived_from: webex-contact-center-openapi.json
+    operation_coverage: 3/3
+  x-evidence:
+  - type: source
+    url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-contact-center.json
+  - type: raw
+    url: https://raw.githubusercontent.com/webex/webex-openapi-specs/main/public-spec/webex-contact-center.json
 tags:
 - name: DNC Management
   description: Operations for managing Do Not Contact (DNC) lists and phone number entries
@@ -13,14 +31,17 @@ paths:
       - DNC Management
       summary: Add Phone Number to DNC List
       operationId: addPhoneNumberToDncList
-      description: 'Adds a phone number to the specified Do Not Contact (DNC) list. This operation helps ensure compliance with applicable rules & regulations by preventing outbound calls to specific numbers.
+      description: 'Adds a phone number to the specified Do Not Contact (DNC) list. This operation helps ensure compliance
+        with applicable rules & regulations by preventing outbound calls to specific numbers.
 
 
-        **Note:** Phone numbers must be in E.164 format (e.g., +1234567890). Duplicate entries will be rejected with a 409 error.'
+        **Note:** Phone numbers must be in E.164 format (e.g., +1234567890). Duplicate entries will be rejected with a 409
+        error.'
       parameters:
       - name: dncListName
         in: path
-        description: This is the Name of the DNC list to which you want to add a phone number. List names are case-sensitive and must be URL-encoded if they contain special characters.
+        description: This is the Name of the DNC list to which you want to add a phone number. List names are case-sensitive
+          and must be URL-encoded if they contain special characters.
         required: true
         schema:
           type: string
@@ -60,7 +81,8 @@ paths:
                 addedDate: '2024-01-15T10:30:00Z'
                 addedBy: admin@example.com
         '400':
-          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message
+            will explain further.'
           content:
             application/json:
               schema:
@@ -72,7 +94,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/UnauthorizedError'
         '403':
-          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed. User lacks required permissions to manage DNC lists.'
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed. User lacks
+            required permissions to manage DNC lists.'
           content:
             application/json:
               schema:
@@ -90,7 +113,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/ConflictError'
         '429':
-          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has
+            been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before
+            a successful request can be made.'
           headers:
             Retry-After:
               schema:
@@ -101,13 +126,15 @@ paths:
               schema:
                 $ref: '#/components/schemas/TooManyRequestsError'
         '500':
-          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact
+            the [Webex Developer Support team](/explore/support).'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/InternalServerError'
         '502':
-          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the
+            request. Try again later.'
           content:
             application/json:
               schema:
@@ -119,7 +146,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/ServiceUnavailableError'
         '504':
-          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please
+            try to reduce it.'
           content:
             application/json:
               schema:
@@ -130,14 +158,16 @@ paths:
       - DNC Management
       summary: Get Phone Number from DNC List
       operationId: getPhoneNumberFromDncList
-      description: 'Retrieves details of a specific phone number from the specified Do Not Contact (DNC) list. This operation allows you to check if a number is present in the list and view associated metadata.
+      description: 'Retrieves details of a specific phone number from the specified Do Not Contact (DNC) list. This operation
+        allows you to check if a number is present in the list and view associated metadata.
 
 
         **Note:** Phone numbers must be URL-encoded and in E.164 format (e.g., %2B1234567890 for +1234567890).'
       parameters:
       - name: dncListName
         in: path
-        description: The name of the DNC list to search in. List names are case-sensitive and must be URL-encoded if they contain special characters.
+        description: The name of the DNC list to search in. List names are case-sensitive and must be URL-encoded if they
+          contain special characters.
         required: true
         schema:
           type: string
@@ -147,7 +177,8 @@ paths:
         example: corporate-dnc-list
       - name: phoneNumber
         in: path
-        description: The phone number to retrieve from the DNC list. Must be URL-encoded and in E.164 format (e.g., %2B1234567890 for +1234567890).
+        description: The phone number to retrieve from the DNC list. Must be URL-encoded and in E.164 format (e.g., %2B1234567890
+          for +1234567890).
         required: true
         schema:
           type: string
@@ -167,7 +198,8 @@ paths:
                 addedBy: admin@example.com
                 reason: Customer opted out via phone
         '400':
-          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message
+            will explain further.'
           content:
             application/json:
               schema:
@@ -179,13 +211,15 @@ paths:
               schema:
                 $ref: '#/components/schemas/UnauthorizedError'
         '403':
-          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed. User lacks required permissions to view DNC lists.'
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed. User lacks
+            required permissions to view DNC lists.'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ForbiddenError'
         '404':
-          description: 'Not Found: The specified DNC list does not exist, the phone number is not found in the list, or the user does not have access to it.'
+          description: 'Not Found: The specified DNC list does not exist, the phone number is not found in the list, or the
+            user does not have access to it.'
           content:
             application/json:
               schema:
@@ -195,7 +229,9 @@ paths:
                 message: Phone number +1234567890 not found in DNC list 'corporate-dnc-list'
                 trackingId: WXC-12345-67892
         '429':
-          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has
+            been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before
+            a successful request can be made.'
           headers:
             Retry-After:
               schema:
@@ -206,13 +242,15 @@ paths:
               schema:
                 $ref: '#/components/schemas/TooManyRequestsError'
         '500':
-          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact
+            the [Webex Developer Support team](/explore/support).'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/InternalServerError'
         '502':
-          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the
+            request. Try again later.'
           content:
             application/json:
               schema:
@@ -224,7 +262,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/ServiceUnavailableError'
         '504':
-          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please
+            try to reduce it.'
           content:
             application/json:
               schema:
@@ -234,14 +273,17 @@ paths:
       - DNC Management
       summary: Remove Phone Number from DNC List
       operationId: removePhoneNumberFromDncList
-      description: 'Removes a phone number from the specified Do Not Contact (DNC) list. This operation allows administrators to remove numbers that should no longer be blocked from receiving calls.
+      description: 'Removes a phone number from the specified Do Not Contact (DNC) list. This operation allows administrators
+        to remove numbers that should no longer be blocked from receiving calls.
 
 
-        **Note:** Phone numbers must be URL-encoded and in E.164 format (e.g., +1234567890 for +1234567890). If the number doesn''t exist in the list, a 404 error will be returned.'
+        **Note:** Phone numbers must be URL-encoded and in E.164 format (e.g., +1234567890 for +1234567890). If the number
+        doesn''t exist in the list, a 404 error will be returned.'
       parameters:
       - name: dncListName
         in: path
-        description: The name of the DNC list to remove the phone number from. List names are case-sensitive and must be URL-encoded if they contain special characters.
+        description: The name of the DNC list to remove the phone number from. List names are case-sensitive and must be URL-encoded
+          if they contain special characters.
         required: true
         schema:
           type: string
@@ -251,7 +293,8 @@ paths:
         example: corporate-dnc-list
       - name: phoneNumber
         in: path
-        description: The phone number to remove from the DNC list. Must be URL-encoded and in E.164 format (e.g., %2B1234567890 for +1234567890).
+        description: The phone number to remove from the DNC list. Must be URL-encoded and in E.164 format (e.g., %2B1234567890
+          for +1234567890).
         required: true
         schema:
           type: string
@@ -261,7 +304,8 @@ paths:
         '204':
           description: Phone number successfully removed from the DNC list. No content is returned.
         '400':
-          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message
+            will explain further.'
           content:
             application/json:
               schema:
@@ -273,13 +317,15 @@ paths:
               schema:
                 $ref: '#/components/schemas/UnauthorizedError'
         '403':
-          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed. User lacks required permissions to manage DNC lists.'
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed. User lacks
+            required permissions to manage DNC lists.'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ForbiddenError'
         '404':
-          description: 'Not Found: The specified DNC list does not exist, the phone number is not found in the list, or the user does not have access to it.'
+          description: 'Not Found: The specified DNC list does not exist, the phone number is not found in the list, or the
+            user does not have access to it.'
           content:
             application/json:
               schema:
@@ -289,7 +335,9 @@ paths:
                 message: Phone number +1234567890 not found in DNC list 'corporate-dnc-list'
                 trackingId: WXC-12345-67893
         '429':
-          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has
+            been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before
+            a successful request can be made.'
           headers:
             Retry-After:
               schema:
@@ -300,13 +348,15 @@ paths:
               schema:
                 $ref: '#/components/schemas/TooManyRequestsError'
         '500':
-          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact
+            the [Webex Developer Support team](/explore/support).'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/InternalServerError'
         '502':
-          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the
+            request. Try again later.'
           content:
             application/json:
               schema:
@@ -318,14 +368,15 @@ paths:
               schema:
                 $ref: '#/components/schemas/ServiceUnavailableError'
         '504':
-          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please
+            try to reduce it.'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/GatewayTimeoutError'
 components:
   schemas:
-    ConflictError:
+    GatewayTimeoutError:
       type: object
       required:
       - code
@@ -334,22 +385,22 @@ components:
         code:
           type: integer
           enum:
-          - 409
-          description: HTTP status code for Conflict.
-          example: 409
+          - 504
+          description: HTTP status code for Gateway Timeout.
+          example: 504
         message:
           type: string
-          description: A detailed error message explaining the conflict.
-          example: Phone number +1234567890 already exists in DNC list 'corporate-dnc-list'
+          description: A detailed error message explaining the timeout.
+          example: The server did not receive a timely response from an upstream server.
         trackingId:
           type: string
           description: A unique identifier for this error that can be used for debugging purposes.
-          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f594
+          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f599
       example:
-        code: 409
-        message: Phone number +1234567890 already exists in DNC list 'corporate-dnc-list'
-        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f594
-    BadRequestError:
+        code: 504
+        message: The server did not receive a timely response from an upstream server.
+        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f599
+    UnauthorizedError:
       type: object
       required:
       - code
@@ -358,29 +409,21 @@ components:
         code:
           type: integer
           enum:
-          - 1001
-          - 1002
-          - 1003
-          - 1004
-          - 1005
-          - 1006
-          - 1007
-          - 1008
-          - 1010
-          description: Mandatory field missing - Source should not be empty
-          example: 1001
+          - 401
+          description: HTTP status code for Unauthorized.
+          example: 401
         message:
           type: string
-          description: A detailed error message explaining what went wrong with the request.
-          example: Invalid phone number format. Phone numbers must be in E.164 format.
+          description: A detailed error message explaining the authentication failure.
+          example: Invalid or expired access token.
         trackingId:
           type: string
           description: A unique identifier for this error that can be used for debugging purposes.
-          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f594b
+          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f591
       example:
-        code: 1001
-        message: Mandatory field missing - Source should not be empty
-        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f594b
+        code: 401
+        message: Invalid or expired access token.
+        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f591
     BadGatewayError:
       type: object
       required:
@@ -401,26 +444,55 @@ components:
           type: string
           description: A unique identifier for this error that can be used for debugging purposes.
           example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f597
-        details:
-          type: object
-          description: Additional details about the gateway error.
-          properties:
-            upstreamService:
-              type: string
-              description: The upstream service that failed
-              example: dnc-service
-            retryRecommended:
-              type: boolean
-              description: Whether retrying the request is recommended
-              example: true
       example:
         code: 502
         message: The server received an invalid response from an upstream server.
-        trackingId: WXC-12345-67897
-        details:
-          upstreamService: dnc-service
-          retryRecommended: true
-    InternalServerError:
+        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f597
+    BadRequestError:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: integer
+          description: Application error code for the bad request.
+          example: 1001
+        message:
+          type: string
+          description: A detailed error message explaining what went wrong with the request.
+          example: Invalid pageSize. Allowed range is 1 to 100.
+        trackingId:
+          type: string
+          description: A unique identifier for this error that can be used for debugging purposes.
+          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f594b
+      example:
+        code: 1001
+        message: Invalid pageSize. Allowed range is 1 to 100.
+        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f594b
+    NotFoundError:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: integer
+          description: Application error code indicating resource not found.
+          example: 1004
+        message:
+          type: string
+          description: A detailed error message explaining what resource was not found.
+          example: Campaign group 'Carshield_25May2026' not found.
+        trackingId:
+          type: string
+          description: A unique identifier for this error that can be used for debugging purposes.
+          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f593
+      example:
+        code: 1004
+        message: Campaign group 'Carshield_25May2026' not found.
+        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f593
+    ForbiddenError:
       type: object
       required:
       - code
@@ -429,21 +501,21 @@ components:
         code:
           type: integer
           enum:
-          - 1006
-          description: An unexpected error occurred while processing your request. Contact https://developer.webex.com/support for assistance.
-          example: 1006
+          - 403
+          description: HTTP status code for Forbidden.
+          example: 403
         message:
           type: string
-          description: A detailed error message explaining the server error.
-          example: An unexpected error occurred while processing your request.
+          description: A detailed error message explaining the authorization failure.
+          example: Feature is not enabled for this organization.
         trackingId:
           type: string
-          description: A unique identifier for this error that can be used for debugging purposes. Include this when contacting support.
-          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f596
+          description: A unique identifier for this error that can be used for debugging purposes.
+          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f592
       example:
-        code: 1006
-        message: An unexpected error occurred while processing your request.
-        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f596
+        code: 403
+        message: Feature is not enabled for this organization.
+        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f592
     TooManyRequestsError:
       type: object
       required:
@@ -468,7 +540,30 @@ components:
         code: 429
         message: Too many requests. Rate limit exceeded.
         trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f595
-    NotFoundError:
+    InternalServerError:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: integer
+          description: Application error code for the internal server error.
+          example: 1006
+        message:
+          type: string
+          description: A detailed error message explaining the server error.
+          example: An unexpected error occurred while processing your request.
+        trackingId:
+          type: string
+          description: A unique identifier for this error that can be used for debugging purposes. Include this when contacting
+            support.
+          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f596
+      example:
+        code: 1006
+        message: An unexpected error occurred while processing your request.
+        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f596
+    ConflictError:
       type: object
       required:
       - code
@@ -477,29 +572,82 @@ components:
         code:
           type: integer
           enum:
-          - 1001
-          - 1002
-          - 1003
-          - 1004
-          - 1005
-          - 1006
-          - 1007
-          - 1008
-          - 1010
-          description: PhoneNumber +1234567890 not found in DNC List 'AT_DNC_DND'
-          example: 1004
+          - 409
+          description: HTTP status code for Conflict.
+          example: 409
         message:
           type: string
-          description: A detailed error message explaining what resource was not found.
-          example: Phone number +1234567890 not found in DNC list 'corporate-dnc-list'
+          description: A detailed error message explaining the conflict.
+          example: Phone number +1234567890 already exists in DNC list 'corporate-dnc-list'
         trackingId:
           type: string
           description: A unique identifier for this error that can be used for debugging purposes.
-          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f593
+          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f594
       example:
-        code: 1001
-        message: Phone number +1234567890 not found in DNC list 'corporate-dnc-list'
-        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f593
+        code: 409
+        message: Phone number +1234567890 already exists in DNC list 'corporate-dnc-list'
+        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f594
+    ServiceUnavailableError:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: integer
+          enum:
+          - 503
+          description: HTTP status code for Service Unavailable.
+          example: 503
+        message:
+          type: string
+          description: A detailed error message explaining the service unavailability.
+          example: Service is temporarily unavailable. Please try again later.
+        trackingId:
+          type: string
+          description: A unique identifier for this error that can be used for debugging purposes.
+          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f598
+      example:
+        code: 503
+        message: Service is temporarily unavailable. Please try again later.
+        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f598
+    DncEntryResponse:
+      type: object
+      properties:
+        phoneNumber:
+          type: string
+          pattern: ^\+[1-9]\d{1,14}$
+          description: The phone number in the DNC list, in E.164 format.
+          example: '+1234567890'
+        source:
+          type: string
+          description: The source or origin of the DNC entry.
+          example: customer-request
+        addedDate:
+          type: string
+          format: date-time
+          description: The date and time when the phone number was added to the DNC list.
+          example: '2024-01-15T10:30:00Z'
+        addedBy:
+          type: string
+          description: The user or system that added the phone number to the DNC list.
+          example: admin@example.com
+        reason:
+          type: string
+          description: The reason for adding the phone number to the DNC list, if provided.
+          example: Customer opted out via phone
+        lastModified:
+          type: string
+          format: date-time
+          description: The date and time when the DNC entry was last modified.
+          example: '2024-01-15T10:30:00Z'
+      example:
+        phoneNumber: '+1234567890'
+        source: customer-request
+        addedDate: '2024-01-15T10:30:00Z'
+        addedBy: admin@example.com
+        reason: Customer opted out via phone
+        lastModified: '2024-01-15T10:30:00Z'
     DncEntryRequest:
       type: object
       required:
@@ -526,7 +674,7 @@ components:
         phoneNumber: '+1234567890'
         source: customer-request
         reason: Customer opted out via email
-    GatewayTimeoutError:
+    GatewayTimeoutError_2:
       type: object
       required:
       - code
@@ -570,7 +718,160 @@ components:
           timeoutDuration: 30
           upstreamService: dnc-database
           retryRecommended: true
-    ServiceUnavailableError:
+    BadGatewayError_2:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: integer
+          enum:
+          - 502
+          description: HTTP status code for Bad Gateway.
+          example: 502
+        message:
+          type: string
+          description: A detailed error message explaining the gateway error.
+          example: The server received an invalid response from an upstream server.
+        trackingId:
+          type: string
+          description: A unique identifier for this error that can be used for debugging purposes.
+          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f597
+        details:
+          type: object
+          description: Additional details about the gateway error.
+          properties:
+            upstreamService:
+              type: string
+              description: The upstream service that failed
+              example: dnc-service
+            retryRecommended:
+              type: boolean
+              description: Whether retrying the request is recommended
+              example: true
+      example:
+        code: 502
+        message: The server received an invalid response from an upstream server.
+        trackingId: WXC-12345-67897
+        details:
+          upstreamService: dnc-service
+          retryRecommended: true
+    BadRequestError_2:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: integer
+          enum:
+          - 1001
+          - 1002
+          - 1003
+          - 1004
+          - 1005
+          - 1006
+          - 1007
+          - 1008
+          - 1010
+          description: Mandatory field missing - Source should not be empty
+          example: 1001
+        message:
+          type: string
+          description: A detailed error message explaining what went wrong with the request.
+          example: Invalid phone number format. Phone numbers must be in E.164 format.
+        trackingId:
+          type: string
+          description: A unique identifier for this error that can be used for debugging purposes.
+          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f594b
+      example:
+        code: 1001
+        message: Mandatory field missing - Source should not be empty
+        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f594b
+    NotFoundError_2:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: integer
+          enum:
+          - 1001
+          - 1002
+          - 1003
+          - 1004
+          - 1005
+          - 1006
+          - 1007
+          - 1008
+          - 1010
+          description: PhoneNumber +1234567890 not found in DNC List 'AT_DNC_DND'
+          example: 1004
+        message:
+          type: string
+          description: A detailed error message explaining what resource was not found.
+          example: Phone number +1234567890 not found in DNC list 'corporate-dnc-list'
+        trackingId:
+          type: string
+          description: A unique identifier for this error that can be used for debugging purposes.
+          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f593
+      example:
+        code: 1001
+        message: Phone number +1234567890 not found in DNC list 'corporate-dnc-list'
+        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f593
+    ForbiddenError_2:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: integer
+          enum:
+          - 403
+          description: HTTP status code for Forbidden.
+          example: 403
+        message:
+          type: string
+          description: A detailed error message explaining the authorization failure.
+          example: User lacks required permissions to manage DNC lists.
+        trackingId:
+          type: string
+          description: A unique identifier for this error that can be used for debugging purposes.
+          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f592
+      example:
+        code: 403
+        message: User lacks required permissions to manage DNC lists.
+        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f592
+    InternalServerError_2:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: integer
+          enum:
+          - 1006
+          description: An unexpected error occurred while processing your request. Contact https://developer.webex.com/support
+            for assistance.
+          example: 1006
+        message:
+          type: string
+          description: A detailed error message explaining the server error.
+          example: An unexpected error occurred while processing your request.
+        trackingId:
+          type: string
+          description: A unique identifier for this error that can be used for debugging purposes. Include this when contacting
+            support.
+          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f596
+      example:
+        code: 1006
+        message: An unexpected error occurred while processing your request.
+        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f596
+    ServiceUnavailableError_2:
       type: object
       required:
       - code
@@ -619,91 +920,6 @@ components:
             startTime: '2024-01-15T02:00:00Z'
             endTime: '2024-01-15T04:00:00Z'
           retryAfter: 3600
-    DncEntryResponse:
-      type: object
-      properties:
-        phoneNumber:
-          type: string
-          pattern: ^\+[1-9]\d{1,14}$
-          description: The phone number in the DNC list, in E.164 format.
-          example: '+1234567890'
-        source:
-          type: string
-          description: The source or origin of the DNC entry.
-          example: customer-request
-        addedDate:
-          type: string
-          format: date-time
-          description: The date and time when the phone number was added to the DNC list.
-          example: '2024-01-15T10:30:00Z'
-        addedBy:
-          type: string
-          description: The user or system that added the phone number to the DNC list.
-          example: admin@example.com
-        reason:
-          type: string
-          description: The reason for adding the phone number to the DNC list, if provided.
-          example: Customer opted out via phone
-        lastModified:
-          type: string
-          format: date-time
-          description: The date and time when the DNC entry was last modified.
-          example: '2024-01-15T10:30:00Z'
-      example:
-        phoneNumber: '+1234567890'
-        source: customer-request
-        addedDate: '2024-01-15T10:30:00Z'
-        addedBy: admin@example.com
-        reason: Customer opted out via phone
-        lastModified: '2024-01-15T10:30:00Z'
-    UnauthorizedError:
-      type: object
-      required:
-      - code
-      - message
-      properties:
-        code:
-          type: integer
-          enum:
-          - 401
-          description: HTTP status code for Unauthorized.
-          example: 401
-        message:
-          type: string
-          description: A detailed error message explaining the authentication failure.
-          example: Invalid or expired access token.
-        trackingId:
-          type: string
-          description: A unique identifier for this error that can be used for debugging purposes.
-          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f591
-      example:
-        code: 401
-        message: Invalid or expired access token.
-        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f591
-    ForbiddenError:
-      type: object
-      required:
-      - code
-      - message
-      properties:
-        code:
-          type: integer
-          enum:
-          - 403
-          description: HTTP status code for Forbidden.
-          example: 403
-        message:
-          type: string
-          description: A detailed error message explaining the authorization failure.
-          example: User lacks required permissions to manage DNC lists.
-        trackingId:
-          type: string
-          description: A unique identifier for this error that can be used for debugging purposes.
-          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f592
-      example:
-        code: 403
-        message: User lacks required permissions to manage DNC lists.
-        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f592
   securitySchemes:
     oauth2:
       flows:
@@ -717,12 +933,20 @@ components:
       description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
       scheme: bearer
       bearerFormat: JWT
+    BEARER_TOKEN_FROM_CI:
+      type: http
+      in: header
+      scheme: bearer
+    Bearer:
+      type: http
+      description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
+      scheme: bearer
+      bearerFormat: JWT
     bearerAuth:
-      type: oauth2
-      description: OAuth 2.0 Bearer token authentication
-      flows:
-        authorizationCode:
-          authorizationUrl: https://webexapis.com/v1/authorize
-          tokenUrl: https://webexapis.com/v1/access_token
-          scopes:
-            spark:applications_token: Create access tokens for Service Apps
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT bearer token authentication. Obtain your token from the Webex Developer Portal.
+x-refined-from:
+- webex-contact-center-openapi.json
+- webex-dnc-management-api-openapi.yml

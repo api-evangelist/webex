@@ -1,8 +1,26 @@
-openapi: 3.0.0
+openapi: 3.2.0
 info:
-  title: Webex Admin Address Book Captures API
+  title: Webex Captures API
   version: 1.0.0
-  description: The Webex Admin APIs provide comprehensive programmatic access to administrative functions for managing Webex organizations, users, licenses, and settings. These APIs enable automation of user provisioning, license assignment, compliance management, and audit event retrieval. Administrators can integrate with enterprise identity systems, enforce security policies, monitor usage, and streamline onboarding/offboarding processes. The APIs support granular control over organizational resources, making them ideal for large-scale deployments and custom admin tooling.
+  description: 'Operations tagged Captures across 2 of this provider''s published API definitions: webex-captures-api-openapi.yml,
+    webex-contact-center-openapi.json. Each path carries the servers of the definition it was published in.'
+  x-provenance:
+    method: harvested
+    authored_by: Cisco Webex
+    harvested_by: API Evangelist
+    harvested_on: '2026-08-19'
+    first_party: true
+    note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
+    provider_published: true
+    derived_view: Per-tag view of webex-contact-center-openapi.json, the provider's source document. Operations and schemas
+      are the provider's, unmodified; only the partition is ours.
+    derived_from: webex-contact-center-openapi.json
+    operation_coverage: 1/1
+  x-evidence:
+  - type: source
+    url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-contact-center.json
+  - type: raw
+    url: https://raw.githubusercontent.com/webex/webex-openapi-specs/main/public-spec/webex-contact-center.json
 tags:
 - name: Captures
 paths:
@@ -20,9 +38,11 @@ paths:
               $ref: '#/components/schemas/RecordingBodyParams'
       responses:
         '200':
-          description: 'Returns Recording and Transcription details. If a provided taskId is not found for the specified organization, the API will return a 200 OK response with empty recording and transcription fields for that task.
+          description: 'Returns Recording and Transcription details. If a provided taskId is not found for the specified organization,
+            the API will return a 200 OK response with empty recording and transcription fields for that task.
 
-            This behavior is intentional to allow partial results when multiple taskIds are provided; unmatched taskIds do not result in a 4xx error.'
+            This behavior is intentional to allow partial results when multiple taskIds are provided; unmatched taskIds do
+            not result in a 4xx error.'
           content:
             application/json:
               schema:
@@ -41,74 +61,45 @@ paths:
           description: An Unexpected Error Occurred
 components:
   schemas:
-    TranscriptMulti:
+    RecordingBodyParams:
+      required:
+      - query
       type: object
       properties:
-        Source:
-          type: string
-          description: Source of the transcription
-          example: recording|chat|sms etc.
-        Provider:
-          type: string
-          description: Provider of the generated transcription
-          example: CISCO
-        id:
-          type: string
-          description: 'Voice Channel Transcript: Ccai ConfigId, Digital Channel Transcript: Conversation Id'
-          example: cfg-id-101|CSRKT4K37D9OM2567
-        fileName:
-          type: string
-          description: The file name of the transcript.
-          example: voiceTranscript.json|emailTranscript.json|facebookTranscript.json etc.
-        filePath:
-          type: string
-          description: Capture download url. Please refer [Transcript Details Guide](/docs/digital-transcript-json-details) for more details.
-          example: https://cjp-ccone-devus1-media-storage-recording.s3.amazonaws.com/9e4895c9-787b-4615-b15f-f1b3b12c3091/
-        startTime:
-          type: string
-          description: Begin time of capture(epoch timestamp)
-          example: '1617373126000'
-        languageCode:
-          type: string
-          description: Language of the transcript
-          example: en-US
-        createTime:
-          type: string
-          description: Create time of capture(epoch timestamp)
-          example: '1617373126000'
-    RecordingQuery:
-      required:
-      - taskIds
+        query:
+          $ref: '#/components/schemas/RecordingQuery'
+    RecordingMetaData:
       type: object
       properties:
         orgId:
           type: string
-          description: Organization ID to use for this operation. If unspecified, inferred from token. Token must have permission to interact with this organization.
-          example: 8e18afdf-db79-449b-b4f5-ee4f14d9f45e
+          description: Organization ID used for this operation.
+          format: uuid
+          example: f1b130da-0cad-4d8b-91dd-7a3085440e89
         urlExpiration:
-          maximum: 60
           type: integer
-          description: Expiration time of returned s3 url (in minutes).
+          description: Number of minutes (from now) when the signed url expires.
           format: int32
           example: 30
-        taskIds:
-          maxItems: 10
-          uniqueItems: true
+    MultipleInteractionsRecording:
+      required:
+      - recording
+      - transcription
+      type: object
+      properties:
+        taskId:
+          type: string
+          description: The ID of the task.
+          format: uuid
+          example: e890a591-63f0-4984-a8f2-00e631368fb4
+        recording:
           type: array
-          description: Comma separated list of taskIds to gather captures for. Maximum number of taskIds allowed are 10
-          example:
-          - 8e18afdf-db79-449b-b4f5-ee4f14d9f45e
           items:
-            type: string
-            format: uuid
-        includeSegments:
-          type: boolean
-          description: Flag; (true) for individual capture segments of main recording, (false) for a stitched capture.
-          example: true
-        includeVARecordings:
-          type: boolean
-          description: Flag; (true) for including virtual agent (VA) recordings, (false) for excluding virtual agent recordings. The default value is false.
-          example: false
+            $ref: '#/components/schemas/RecordingMulti'
+        transcription:
+          type: array
+          items:
+            $ref: '#/components/schemas/TranscriptMulti'
     RecordingAttributes:
       type: object
       properties:
@@ -132,7 +123,8 @@ components:
           example: 1627373126000
         participants:
           type: array
-          description: Comma separated list of CI user Id (UUID) of agents, masked customer contact email/phone details and virtual agent id if any involved in the recording.
+          description: Comma separated list of CI user Id (UUID) of agents, masked customer contact email/phone details and
+            virtual agent id if any involved in the recording.
           example:
           - e890a591-63f0-4984-a8f2-00e631368fb4
           - +121****1219
@@ -140,7 +132,8 @@ components:
             type: string
         channel1:
           type: string
-          description: Caller - channel contains caller audio only, Agent - channel contains agent audio only for main call and its segments, VA - channel contains virtual agent audio only.
+          description: Caller - channel contains caller audio only, Agent - channel contains agent audio only for main call
+            and its segments, VA - channel contains virtual agent audio only.
           example: Caller|Agent|VA
         channel2:
           type: string
@@ -148,13 +141,150 @@ components:
           example: Caller|Agent|VA|Others
         callType:
           type: string
-          description: main if recording belongs to main call; consult if recording belongs to consult call; va-main if recording belongs to virtual agent in main call; va-consult if recording belongs to virtual agent in consult call.
+          description: main if recording belongs to main call; consult if recording belongs to consult call; va-main if recording
+            belongs to virtual agent in main call; va-consult if recording belongs to virtual agent in consult call.
           example: main|consult|va-main|va-consult
         sensitive:
           type: boolean
-          description: Applicable only to virtual agent recordings. Flag; (true) indicates the virtual agent recording may contain sensitive information, (false) otherwise.
+          description: Applicable only to virtual agent recordings. Flag; (true) indicates the virtual agent recording may
+            contain sensitive information, (false) otherwise.
           example: true
-    MultipleInteractionsRecording:
+    RecordingMulti:
+      required:
+      - attributes
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the recording.
+          example: f1b130da-0cad-4d8b-91dd-7a3085440e89
+        segment:
+          type: boolean
+          description: Flag; Indicates if this is the entire recording or only a segment of main recording. This flag will
+            be always false for consult callType.
+          example: true
+        attributes:
+          $ref: '#/components/schemas/RecordingAttributes'
+    RecordingQuery:
+      required:
+      - taskIds
+      type: object
+      properties:
+        orgId:
+          type: string
+          description: Organization ID to use for this operation. If unspecified, inferred from token. Token must have permission
+            to interact with this organization.
+          example: 8e18afdf-db79-449b-b4f5-ee4f14d9f45e
+        urlExpiration:
+          maximum: 60
+          type: integer
+          description: Expiration time of returned s3 url (in minutes).
+          format: int32
+          example: 30
+        taskIds:
+          maxItems: 10
+          uniqueItems: true
+          type: array
+          description: Comma separated list of taskIds to gather captures for. Maximum number of taskIds allowed are 10
+          example:
+          - 8e18afdf-db79-449b-b4f5-ee4f14d9f45e
+          items:
+            type: string
+            format: uuid
+        includeSegments:
+          type: boolean
+          description: Flag; (true) for individual capture segments of main recording, (false) for a stitched capture.
+          example: true
+        includeVARecordings:
+          type: boolean
+          description: Flag; (true) for including virtual agent (VA) recordings, (false) for excluding virtual agent recordings.
+            The default value is false.
+          example: false
+    DownloadMultipleInteractionsResponse:
+      required:
+      - data
+      - meta
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/RecordingMetaData'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/MultipleInteractionsRecording'
+    TranscriptMulti:
+      type: object
+      properties:
+        Source:
+          type: string
+          description: Source of the transcription
+          example: recording|chat|sms etc.
+        Provider:
+          type: string
+          description: Provider of the generated transcription
+          example: CISCO
+        id:
+          type: string
+          description: 'Voice Channel Transcript: Ccai ConfigId, Digital Channel Transcript: Conversation Id'
+          example: cfg-id-101|CSRKT4K37D9OM2567
+        fileName:
+          type: string
+          description: The file name of the transcript.
+          example: voiceTranscript.json|emailTranscript.json|facebookTranscript.json etc.
+        filePath:
+          type: string
+          description: Capture download url. Please refer [Transcript Details Guide](/docs/digital-transcript-json-details)
+            for more details.
+          example: https://cjp-ccone-devus1-media-storage-recording.s3.amazonaws.com/9e4895c9-787b-4615-b15f-f1b3b12c3091/
+        startTime:
+          type: string
+          description: Begin time of capture(epoch timestamp)
+          example: '1617373126000'
+        languageCode:
+          type: string
+          description: Language of the transcript
+          example: en-US
+        createTime:
+          type: string
+          description: Create time of capture(epoch timestamp)
+          example: '1617373126000'
+    ScreenRecordingAttributes:
+      required:
+      - fileName
+      - filePath
+      - startTime
+      - stopTime
+      - agentId
+      - screenId
+      type: object
+      properties:
+        fileName:
+          type: string
+          description: The file name of the screen recording.
+          example: 3305322a-630c-4791-a068-4a751529c4d7-segment.wav
+        filePath:
+          type: string
+          description: Screen recording download URL.
+          example: https://cjp-ccone-intgus1-media-storage-recording.s3.amazonaws.com/470c589d-ce3f-4afe-adec-575c73c0e472
+        startTime:
+          type: integer
+          description: Begin time of screen recording (epoch timestamp)
+          format: int64
+          example: 1617373126000
+        stopTime:
+          type: integer
+          description: End time of screen recording (epoch timestamp).
+          format: int64
+          example: 1627373126000
+        agentId:
+          type: string
+          description: The ID of the agent whose screen was recorded.
+          example: e890a591-63f0-4984-a8f2-00e631368fb4
+        screenId:
+          type: string
+          description: The ID of the screen being recorded.
+          example: 2e8f4a19-7b35-4c6d-93a1-d5f0b7c2e855
+    MultipleInteractionsRecording_2:
       required:
       - recording
       - transcription
@@ -172,54 +302,106 @@ components:
         transcription:
           type: array
           items:
-            $ref: '#/components/schemas/TranscriptMulti'
-    RecordingMulti:
+            $ref: '#/components/schemas/TranscriptMulti_2'
+        screenRecordings:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScreenRecordingMulti'
+    ScreenRecordingMulti:
       required:
+      - id
       - attributes
       type: object
       properties:
         id:
           type: string
-          description: The ID of the recording.
-          example: f1b130da-0cad-4d8b-91dd-7a3085440e89
-        segment:
-          type: boolean
-          description: Flag; Indicates if this is the entire recording or only a segment of main recording. This flag will be always false for consult callType.
-          example: true
+          description: The ID of the screen recording.
+          example: f13b9c64-0d72-4e8a-b5f1-9a6d3c2e7b15
         attributes:
-          $ref: '#/components/schemas/RecordingAttributes'
-    RecordingBodyParams:
+          $ref: '#/components/schemas/ScreenRecordingAttributes'
+    RecordingQuery_2:
       required:
-      - query
-      type: object
-      properties:
-        query:
-          $ref: '#/components/schemas/RecordingQuery'
-    DownloadMultipleInteractionsResponse:
-      required:
-      - data
-      - meta
-      type: object
-      properties:
-        meta:
-          $ref: '#/components/schemas/RecordingMetaData'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/MultipleInteractionsRecording'
-    RecordingMetaData:
+      - taskIds
       type: object
       properties:
         orgId:
           type: string
-          description: Organization ID used for this operation.
-          format: uuid
-          example: f1b130da-0cad-4d8b-91dd-7a3085440e89
+          description: Organization ID to use for this operation. If unspecified, inferred from token. Token must have permission
+            to interact with this organization.
+          example: 8e18afdf-db79-449b-b4f5-ee4f14d9f45e
         urlExpiration:
+          maximum: 60
           type: integer
-          description: Number of minutes (from now) when the signed url expires.
+          description: Expiration time of returned s3 url (in minutes).
           format: int32
           example: 30
+        taskIds:
+          maxItems: 10
+          uniqueItems: true
+          type: array
+          description: Comma separated list of taskIds to gather captures for. Maximum number of taskIds allowed are 10
+          example:
+          - 8e18afdf-db79-449b-b4f5-ee4f14d9f45e
+          items:
+            type: string
+            format: uuid
+        includeSegments:
+          type: boolean
+          description: Flag; (true) for individual capture segments of main recording, (false) for a stitched capture.
+          example: true
+        includeVARecordings:
+          type: boolean
+          description: Flag; (true) for including virtual agent (VA) recordings, (false) for excluding virtual agent recordings.
+            The default value is false.
+          example: false
+        includeScreenRecordings:
+          type: boolean
+          description: Flag; (true) will return screen recording if available else will return empty array, (false) will exclude
+            screen recordings. The default value is false.
+          example: false
+        includeAllDigitalVersions:
+          type: boolean
+          description: Flag; (true) returns all available digital transcript artifacts for each requested task, including
+            both legacy and schema-versioned digital transcript artifacts when both exist. (false) or omitted returns the
+            default Captures behavior. This field applies only to digital transcript artifacts and does not change recording
+            or voice transcript retrieval.
+          example: true
+    TranscriptMulti_2:
+      type: object
+      properties:
+        Source:
+          type: string
+          description: Source of the transcription
+          example: recording|realtime-voice|chat|sms|{{ <WorkItem> channel name }}|{{ <CustomMessaging> channel name }} etc.
+        Provider:
+          type: string
+          description: Provider of the generated transcription
+          example: CISCO
+        id:
+          type: string
+          description: 'Voice Channel Transcript: Ccai ConfigId, Digital Channel Transcript: Conversation Id'
+          example: cfg-id-101|CSRKT4K37D9OM2567
+        fileName:
+          type: string
+          description: The file name of the transcript.
+          example: voiceTranscript.json|emailTranscript.json|facebookTranscript.json etc.
+        filePath:
+          type: string
+          description: Capture download url. Please refer [Transcript Details Guide](/docs/digital-transcript-json-details)
+            for more details.
+          example: https://cjp-ccone-devus1-media-storage-recording.s3.amazonaws.com/9e4895c9-787b-4615-b15f-f1b3b12c3091/
+        startTime:
+          type: string
+          description: Begin time of capture(epoch timestamp)
+          example: '1617373126000'
+        languageCode:
+          type: string
+          description: Language of the transcript
+          example: en-US
+        createTime:
+          type: string
+          description: Create time of capture(epoch timestamp)
+          example: '1617373126000'
   securitySchemes:
     oauth2:
       flows:
@@ -242,3 +424,15 @@ components:
           tokenUrl: https://webexapis.com/v1/access_token
           scopes:
             spark:applications_token: Create access tokens for Service Apps
+    BEARER_TOKEN_FROM_CI:
+      type: http
+      in: header
+      scheme: bearer
+    Bearer:
+      type: http
+      description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
+      scheme: bearer
+      bearerFormat: JWT
+x-refined-from:
+- webex-captures-api-openapi.yml
+- webex-contact-center-openapi.json

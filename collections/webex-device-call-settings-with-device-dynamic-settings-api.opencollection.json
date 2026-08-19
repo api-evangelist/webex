@@ -1,0 +1,312 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Webex Admin Address Book Device Call Settings With Device Dynamic Settings API",
+    "version": "1.0.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Device Call Settings With Device Dynamic Settings",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Read the List of Supported Devices",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/telephony/config/supportedDevices",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE",
+                "type": "query",
+                "description": "List supported devices for an organization."
+              },
+              {
+                "name": "allowConfigureLayoutEnabled",
+                "value": "true",
+                "type": "query",
+                "description": "List supported devices that allow the user to configure the layout."
+              },
+              {
+                "name": "type",
+                "value": "MPP",
+                "type": "query",
+                "description": "List supported devices of a specific type. To excluded device types from a request or query, add `type=not:DEVICE_TYPE`. For example, `type=not:MPP`."
+              }
+            ]
+          },
+          "docs": "Gets the list of supported devices for an organization.\n\nRetrieving this list requires a full or read-only administrator auth token with a scope of `spark-admin:telephony_config_read`."
+        },
+        {
+          "info": {
+            "name": "Get Settings Groups",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/telephony/config/devices/dynamicSettings/settingsGroups",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE",
+                "type": "query",
+                "description": "Settings groups for devices in this organization."
+              },
+              {
+                "name": "familyOrModelDisplayName",
+                "value": "Poly",
+                "type": "query",
+                "description": "Device family or model display name to filter the `settingsGroups`."
+              },
+              {
+                "name": "includeSettingsType",
+                "value": "ALL",
+                "type": "query",
+                "description": "To show groups or tabs or both. Query param is case insensitive. Default is `ALL`."
+              }
+            ]
+          },
+          "docs": "This API returns the `settingsGroups` that define the structure and association of tags for device dynamic settings.\n\n The `settingsGroups` are used to organize the tags into logical groups, making it easier to manage and configure device dynamic settings."
+        },
+        {
+          "info": {
+            "name": "Get Customer Device Dynamic Settings",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/telephony/config/lists/devices/dynamicSettings/actions/getSettings/invoke",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE",
+                "type": "query",
+                "description": "List of device dynamic settings in this organization."
+              },
+              {
+                "name": "familyOrModelDisplayName",
+                "value": "Poly",
+                "type": "query",
+                "description": "The family or model name for the device. If no tag is specified, all tags related to `familyOrModelDisplayName` are returned."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Retrieve dynamic settings for specific device tags at customer level, allowing filters by `familyOrModelDisplayName` and `tag` identifier.\n\nThis API lets you request the values of multiple `Device Settings` at once by specifying a list of `familyOrModelDisplayName` and tag combinations.\n\nThis requires a full, device, or read-only administrator auth token with a scope of `spark-admin:telephony_config_read`."
+        },
+        {
+          "info": {
+            "name": "Get Location Device Dynamic Settings",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/telephony/config/lists/locations/:locationId/devices/dynamicSettings/actions/getSettings/invoke",
+            "params": [
+              {
+                "name": "locationId",
+                "value": "Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzMzZjBlZDFiLWQ1YjctNGI4Mi1iMzIzLTg4ZTFmODMzNGNmMw",
+                "type": "path",
+                "description": "Unique identifier for the `location`."
+              },
+              {
+                "name": "orgId",
+                "value": "Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE",
+                "type": "query",
+                "description": "Unique identifier for the `organization` to which this location belongs."
+              },
+              {
+                "name": "familyOrModelDisplayName",
+                "value": "Poly",
+                "type": "query",
+                "description": "The family or model name for the device. If no tag is specified, all tags related to `familyOrModelDisplayName` are returned."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Retrieve dynamic settings for specific device tags at the specified location level, allowing filters by `familyOrModelDisplayName` and `tag` identifier.\n\nThis API lets you request the values of multiple `Device Settings` at once by specifying a list of `familyOrModelDisplayName` and tag combinations for a specific location.\n\nThis requires a full, device, or read-only administrator auth token with a scope of `spark-admin:telephony_config_read`."
+        },
+        {
+          "info": {
+            "name": "Get Device Dynamic Settings",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/telephony/config/lists/devices/:deviceId/dynamicSettings/actions/getSettings/invoke",
+            "params": [
+              {
+                "name": "deviceId",
+                "value": "Y2lzY29zcGFyazovL3VybjpURUFNOnVzLWVhc3QtMV9pbnQxMy9DQUxMSU5HX0RFVklDRS8zMDAyZWJiZi1iMTVmLTQ1ODktYWNiZS1kZjY3OTA3MTU5NWE=",
+                "type": "path",
+                "description": "Device for which to retrieve settings."
+              },
+              {
+                "name": "orgId",
+                "value": "Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE",
+                "type": "query",
+                "description": "Organization to which the `device` belongs."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Retrieve settings for a specified device.\n\nThis API retrieves device settings based on the specified `tags`; if the `tags` field is empty or missing, all settings for the device are returned.\n\nThis requires a full, device, or read-only administrator auth token with a scope of `spark-admin:telephony_config_read`."
+        },
+        {
+          "info": {
+            "name": "Update Device Dynamic Settings",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/telephony/config/devices/:deviceId/dynamicSettings",
+            "params": [
+              {
+                "name": "deviceId",
+                "value": "Y2lzY29zcGFyazovL3VybjpURUFNOnVzLWVhc3QtMV9pbnQxMy9DQUxMSU5HX0RFVklDRS8zMDAyZWJiZi1iMTVmLTQ1ODktYWNiZS1kZjY3OTA3MTU5NWE=",
+                "type": "path",
+                "description": "Device for which to update settings."
+              },
+              {
+                "name": "orgId",
+                "value": "Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE",
+                "type": "query",
+                "description": "Organization to which the device belongs."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Modify dynamic settings for a specified device.\n\nThis API updates device settings based on the specified `tags`. If the `tags` field is empty, the request has no effect.\n\nThis requires a full, device, or read-only administrator auth token with a scope of `spark-admin:telephony_config_write`."
+        },
+        {
+          "info": {
+            "name": "List Device Dynamic Settings Jobs",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/telephony/config/jobs/devices/dynamicDeviceSettings",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE",
+                "type": "query",
+                "description": "Retrieve list of device dynamic settings jobs for this organization."
+              },
+              {
+                "name": "start",
+                "value": "0",
+                "type": "query",
+                "description": "Start at the zero-based offset in the list of jobs. Default is 0."
+              },
+              {
+                "name": "max",
+                "value": "100",
+                "type": "query",
+                "description": "Limit the number of jobs returned to this maximum count. Default is 2000."
+              }
+            ]
+          },
+          "docs": "List device dynamic settings jobs.\n\nLists all the jobs for job type `dynamicdevicesettings` for the given organization in order of most recent one to oldest one irrespective of its status.\n\nThis API requires a full or read-only administrator auth token with a scope of `spark-admin:telephony_config_read`."
+        },
+        {
+          "info": {
+            "name": "Update Device Dynamic Settings Across Organization or Location",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/telephony/config/jobs/devices/dynamicDeviceSettings",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE",
+                "type": "query",
+                "description": "Apply update device dynamic settings for all the devices under this organization."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a job to update device settings at location or organization level.\n\nThe job runs asynchronously and persistently, applying the requested settings in bulk to all relevant devices, which may belong to multiple families as specified in the request. If a `locationId` is provided, only devices in that location are affected.\n\nA unique job ID is returned to track status and errors.\n\nOnly one job can run per customer per organization at a time. Additionally, this job cannot run in parallel with "
+        },
+        {
+          "info": {
+            "name": "Get Device Dynamic Settings Job Status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/telephony/config/jobs/devices/dynamicDeviceSettings/:jobId",
+            "params": [
+              {
+                "name": "jobId",
+                "value": "Y2lzY29zcGFyazovL3VzL0pPQl9JRC8wMTA4NDJjMy1mNWQ5LTRjOWQtOGZiYi0yYzIxZmU4OWI0YzQ",
+                "type": "path",
+                "description": "Retrieve job details for this `jobId`."
+              }
+            ]
+          },
+          "docs": "Get device dynamic settings job status.\n\nProvides details of the job with `jobId` of `jobType` `dynamicdevicesettings`.\n\nThis API requires a full or read-only administrator auth token with a scope of `spark-admin:telephony_config_read`."
+        },
+        {
+          "info": {
+            "name": "List Device Dynamic Settings Job Errors",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/telephony/config/jobs/devices/dynamicDeviceSettings/:jobId/errors",
+            "params": [
+              {
+                "name": "jobId",
+                "value": "Y2lzY29zcGFyazovL3VzL0pPQl9JRC8wMTA4NDJjMy1mNWQ5LTRjOWQtOGZiYi0yYzIxZmU4OWI0YzQ",
+                "type": "path",
+                "description": "Retrieve job details for this `jobId`."
+              },
+              {
+                "name": "orgId",
+                "value": "Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE",
+                "type": "query",
+                "description": "Retrieve the status of job for this organization."
+              },
+              {
+                "name": "start",
+                "value": "0",
+                "type": "query",
+                "description": "Specifies the offset from the first result that you want to fetch. Default is 0."
+              },
+              {
+                "name": "max",
+                "value": "100",
+                "type": "query",
+                "description": "Specifies the maximum number of records that you want to fetch. Default is 2000"
+              }
+            ]
+          },
+          "docs": "List Update device dynamic settings job errors.\n\nLists all error details of the job with `jobId` of `jobType` `dynamicdevicesettings`.\n\nThis API requires a full or read-only administrator auth token with a scope of `spark-admin:telephony_config_read`."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

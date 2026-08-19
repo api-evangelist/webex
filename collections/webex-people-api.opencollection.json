@@ -1,0 +1,218 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Webex Admin Address Book People API",
+    "version": "1.0.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "People",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List People",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/people",
+            "params": [
+              {
+                "name": "email",
+                "value": "john.andersen@example.com",
+                "type": "query",
+                "description": "List people with this email address. For non-admin requests, either this or `displayName` are required. With the exception of partner admins and a managed org relationship, people lookup by email is only available for users in the same org."
+              },
+              {
+                "name": "displayName",
+                "value": "John Andersen",
+                "type": "query",
+                "description": "List people whose name starts with this string. For non-admin requests, either this or email are required."
+              },
+              {
+                "name": "id",
+                "value": "Y2lzY29zcGFyazovL3VzL1BFT1BMRS9mNWIzNjE4Ny1jOGRkLTQ3MjctOGIyZi1mOWM0NDdmMjkwNDY",
+                "type": "query",
+                "description": "List people by ID. Accepts up to 85 person IDs separated by commas. If this parameter is provided then presence information (such as the `lastActivity` or `status` properties) will not be included in the response."
+              },
+              {
+                "name": "orgId",
+                "value": "Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE",
+                "type": "query",
+                "description": "List people in this organization. Only admin users of another organization (such as partners) may use this parameter."
+              },
+              {
+                "name": "roles",
+                "value": "Y2lzY29zcGFyazovL3VzL1JPTEUvYXRsYXMtcG9ydGFsLnBhcnRuZXIuc2FsZXNhZG1pbg",
+                "type": "query",
+                "description": "List of roleIds separated by commas."
+              },
+              {
+                "name": "callingData",
+                "value": "true",
+                "type": "query",
+                "description": "Include Webex Calling user details in the response."
+              },
+              {
+                "name": "locationId",
+                "value": "Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzYzNzE1",
+                "type": "query",
+                "description": "List people present in this location."
+              },
+              {
+                "name": "max",
+                "value": "100",
+                "type": "query",
+                "description": "Limit the maximum number of people in the response. If `callingData`=true, then `max` will not be more than 100. If `locationId` is specified then `max` will not be more than 50."
+              },
+              {
+                "name": "excludeStatus",
+                "value": "true",
+                "type": "query",
+                "description": "Omit people status/availability to enhance query performance."
+              }
+            ]
+          },
+          "docs": "List people in your organization. For most users, either the `email` or `displayName` parameter is required. Admin users can omit these fields and list all users in their organization.\n\nResponse properties associated with a user's presence status, such as `status` or `lastActivity`, will only be returned for people within your organization or an organization you manage. Presence information will not be returned if the authenticated user has [disabled status sharing](https://help.webex.com/nkzs6w"
+        },
+        {
+          "info": {
+            "name": "Create a Person",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/people",
+            "params": [
+              {
+                "name": "callingData",
+                "value": "true",
+                "type": "query",
+                "description": "Include Webex Calling user details in the response."
+              },
+              {
+                "name": "minResponse",
+                "value": "true",
+                "type": "query",
+                "description": "Set to `true` to improve performance by omitting person details and returning only the ID in the response when successful. If unsuccessful the response will have optional error details."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new user account for a given organization. Only an admin can create a new user account.\n\nAt least one of the following body parameters is required to create a new user: `displayName`, `firstName`, `lastName`.\n\nCurrently, users may have only one email address associated with their account. The `emails` parameter is an array, which accepts multiple values to allow for future expansion, but currently only one email address will be used for the new user.\n\nAdmin users can include `Webex call"
+        },
+        {
+          "info": {
+            "name": "Get Person Details",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/people/:personId",
+            "params": [
+              {
+                "name": "personId",
+                "value": "Y2lzY29zcGFyazovL3VzL1BFT1BMRS9mNWIzNjE4Ny1jOGRkLTQ3MjctOGIyZi1mOWM0NDdmMjkwNDY",
+                "type": "path",
+                "description": "A unique identifier for the person."
+              },
+              {
+                "name": "callingData",
+                "value": "true",
+                "type": "query",
+                "description": "Include Webex Calling user details in the response."
+              }
+            ]
+          },
+          "docs": "Shows details for a person, by ID.\n\nResponse properties associated with a user's presence status, such as `status` or `lastActivity`, will only be displayed for people within your organization or an organization you manage. Presence information will not be shown if the authenticated user has [disabled status sharing](https://help.webex.com/nkzs6wl/).\n\nAdmin users can include `Webex Calling` (BroadCloud) user details in the response by specifying `callingData` parameter as `true`.\n\nSpecify the pe"
+        },
+        {
+          "info": {
+            "name": "Update a Person",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/people/:personId",
+            "params": [
+              {
+                "name": "personId",
+                "value": "Y2lzY29zcGFyazovL3VzL1BFT1BMRS9mNWIzNjE4Ny1jOGRkLTQ3MjctOGIyZi1mOWM0NDdmMjkwNDY",
+                "type": "path",
+                "description": "A unique identifier for the person."
+              },
+              {
+                "name": "callingData",
+                "value": "true",
+                "type": "query",
+                "description": "Include Webex Calling user details in the response."
+              },
+              {
+                "name": "showAllTypes",
+                "value": "true",
+                "type": "query",
+                "description": "Include additional user data like `#attendee` role."
+              },
+              {
+                "name": "minResponse",
+                "value": "true",
+                "type": "query",
+                "description": "Set to `true` to improve performance by omitting person details in the response. If unsuccessful the response will have optional error details."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update details for a person, by ID.\n\nSpecify the person ID in the `personId` parameter in the URI. Only an admin can update a person details.\n\nInclude all details for the person. This action expects all user details to be present in the request. A common approach is to first [GET the person's details](/docs/api/v1/people/get-person-details), make changes, then PUT both the changed and unchanged values.\n\nAdmin users can include `Webex Calling` (BroadCloud) user details in the response by specifyi"
+        },
+        {
+          "info": {
+            "name": "Delete a Person",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/people/:personId",
+            "params": [
+              {
+                "name": "personId",
+                "value": "Y2lzY29zcGFyazovL3VzL1BFT1BMRS9mNWIzNjE4Ny1jOGRkLTQ3MjctOGIyZi1mOWM0NDdmMjkwNDY",
+                "type": "path",
+                "description": "A unique identifier for the person."
+              }
+            ]
+          },
+          "docs": "Remove a person from the system.\n\n**Required Administrator Roles:**\n\nThe following administrators have permission to use this API:\n\n**Customer Organization:**\n- Full administrator\n- User administrator\n\n**Partner/External Access:**\n- External full administrator\n\n**Note:** External read-only administrators, provisioning administrators, and device administrators cannot delete users.\n\nSpecify the person ID in the `personId` parameter in the URI."
+        },
+        {
+          "info": {
+            "name": "Get My Own Details",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/people/me",
+            "params": [
+              {
+                "name": "callingData",
+                "value": "true",
+                "type": "query",
+                "description": "Include Webex Calling user details in the response."
+              }
+            ]
+          },
+          "docs": "Get profile details for the authenticated user. This is the same as GET `/people/{personId}` using the Person ID associated with your Auth token.\n\nAdmin users can include `Webex Calling` (BroadCloud) user details in the response by specifying `callingData` parameter as true."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

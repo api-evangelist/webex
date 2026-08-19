@@ -1,0 +1,209 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Webex Admin Address Book Organization Contacts API",
+    "version": "1.0.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Organization Contacts",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Create a Contact",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/contacts/organizations/:orgId/contacts",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "0ae87ade-8c8a-4952-af08-318798958d0c",
+                "type": "path",
+                "description": "Webex Identity assigned organization identifier for the user's organization or the organization he manages."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creating a new contact for a given organization requires an org admin role.\n\nAt least one of the following body parameters: `phoneNumbers`, `emails`, `sipAddresses` is required to create a new contact for source \"CH\",\n`displayName` is required to create a new contact for source \"Webex4Broadworks\".\n\nUse the optional `groupIds` field to add group IDs in an array within the organisation contact. This will become a group contact."
+        },
+        {
+          "info": {
+            "name": "Get a Contact",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/contacts/organizations/:orgId/contacts/:contactId",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "d23736ac-8055-433e-b85a-0fc55c96ead8",
+                "type": "path",
+                "description": "Webex Identity assigned organization identifier for the user's organization or the organization he manages."
+              },
+              {
+                "name": "contactId",
+                "value": "6847ee0f-5e9c-4403-9f0e-0aa8552f7828",
+                "type": "path",
+                "description": "The contact ID."
+              }
+            ]
+          },
+          "docs": "Shows details for an organization contact by ID.\nSpecify the organization ID in the `orgId` parameter in the URI, and specify the contact ID in the `contactId` parameter in the URI.\n\n**NOTE**:\nThe `orgId` used in the path for this API are the org UUIDs. They follow a xxxx-xxxx-xxxx-xxxx pattern. If you have an orgId in base64 encoded format (starting with Y2.....) you need to base64 decode the id and extract the UUID from the slug, before you use it in your API call."
+        },
+        {
+          "info": {
+            "name": "Update a Contact",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/contacts/organizations/:orgId/contacts/:contactId",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "d23736ac-8055-433e-b85a-0fc55c96ead8",
+                "type": "path",
+                "description": "Webex Identity assigned organization identifier for the user's organization or the organization he manages."
+              },
+              {
+                "name": "contactId",
+                "value": "6847ee0f-5e9c-4403-9f0e-0aa8552f7828",
+                "type": "path",
+                "description": "The contact ID."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update details for contact by ID. Only an admin can update a contact.\nSpecify the organization ID in the `orgId` parameter in the URI, and specify the contact ID in the `contactId` parameter in the URI.\n\nUse the optional `groupIds` field to update the group IDs by changing the existing array. You can add or remove one or all groups. To remove all associated groups, pass an empty array in the `groupIds` field."
+        },
+        {
+          "info": {
+            "name": "Delete a Contact",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/contacts/organizations/:orgId/contacts/:contactId",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "d23736ac-8055-433e-b85a-0fc55c96ead8",
+                "type": "path",
+                "description": "Webex Identity assigned organization identifier for the user's organization or the organization he manages."
+              },
+              {
+                "name": "contactId",
+                "value": "6847ee0f-5e9c-4403-9f0e-0aa8552f7828",
+                "type": "path",
+                "description": "The contact ID."
+              }
+            ]
+          },
+          "docs": "Remove a contact from the organization. Only an admin can remove a contact.\n\nSpecify the organization ID in the `orgId` parameter in the URI, and specify the contact ID in the `contactId` parameter in the URI."
+        },
+        {
+          "info": {
+            "name": "List Contacts",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/contacts/organizations/:orgId/contacts/search",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "d23736ac-8055-433e-b85a-0fc55c96ead8",
+                "type": "path",
+                "description": "The organization ID."
+              },
+              {
+                "name": "keyword",
+                "value": "john.andersen@example.com",
+                "type": "query",
+                "description": "List contacts with a keyword."
+              },
+              {
+                "name": "source",
+                "value": "CH",
+                "type": "query",
+                "description": "List contacts with source."
+              },
+              {
+                "name": "limit",
+                "value": "100",
+                "type": "query",
+                "description": "Limit the maximum number of contact in the response.\n        + Default: 100\n"
+              },
+              {
+                "name": "groupIds",
+                "value": "9ac175bf-0249-4287-8fb3-e320e525fcf6,23b95024-7063-404c-9a3c-37532f53a9ce",
+                "type": "query",
+                "description": "Filter contacts based on groups."
+              }
+            ]
+          },
+          "docs": "List contacts in the organization. The default limit is `100`.\n\n`keyword` can be the value of \"displayName\", \"firstName\", \"lastName\", \"email\". An empty string of `keyword` means get all contacts.\n\n`groupIds` is a comma separated list group IDs. Results are filtered based on those group IDs.\n\nLong result sets will be split into [pages](/docs/basics#pagination)."
+        },
+        {
+          "info": {
+            "name": "Bulk Create or Update Contacts",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/contacts/organizations/:orgId/contacts/bulk",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "0ae87ade-8c8a-4952-af08-318798958d0c",
+                "type": "path",
+                "description": "Webex Identity assigned organization identifier for the user's organization or the organization he manages."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create or update contacts in bulk. Update an existing contact by specifying the contact ID in the `contactId` parameter in the request body."
+        },
+        {
+          "info": {
+            "name": "Bulk Delete Contacts",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/contacts/organizations/:orgId/contacts/bulk/delete",
+            "params": [
+              {
+                "name": "orgId",
+                "value": "0ae87ade-8c8a-4952-af08-318798958d0c",
+                "type": "path",
+                "description": "Webex Identity assigned organization identifier for the user's organization or the organization he manages."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Delete contacts in bulk."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

@@ -1,8 +1,26 @@
-openapi: 3.0.0
+openapi: 3.2.0
 info:
-  title: Webex Admin Address Book Queues API
+  title: Webex Queues API
   version: 1.0.0
-  description: The Webex Admin APIs provide comprehensive programmatic access to administrative functions for managing Webex organizations, users, licenses, and settings. These APIs enable automation of user provisioning, license assignment, compliance management, and audit event retrieval. Administrators can integrate with enterprise identity systems, enforce security policies, monitor usage, and streamline onboarding/offboarding processes. The APIs support granular control over organizational resources, making them ideal for large-scale deployments and custom admin tooling.
+  description: 'Operations tagged Queues across 2 of this provider''s published API definitions: webex-contact-center-openapi.json,
+    webex-queues-api-openapi.yml. Each path carries the servers of the definition it was published in.'
+  x-provenance:
+    method: harvested
+    authored_by: Cisco Webex
+    harvested_by: API Evangelist
+    harvested_on: '2026-08-19'
+    first_party: true
+    note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
+    provider_published: true
+    derived_view: Per-tag view of webex-contact-center-openapi.json, the provider's source document. Operations and schemas
+      are the provider's, unmodified; only the partition is ours.
+    derived_from: webex-contact-center-openapi.json
+    operation_coverage: 1/1
+  x-evidence:
+  - type: source
+    url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-contact-center.json
+  - type: raw
+    url: https://raw.githubusercontent.com/webex/webex-openapi-specs/main/public-spec/webex-contact-center.json
 tags:
 - name: Queues
 paths:
@@ -11,12 +29,24 @@ paths:
       tags:
       - Queues
       summary: Get Queue Statistics
-      description: "Retrieve Queue statistics for a given interval of time. \nAn important thing to note is that each stat produced is for a specified time window (last 15, 30, or 60 minutes etc) and is not cumulative. \nContacts that span across intervals will also have stats broken down across intervals. For example: A contact that starts at 12:05 and ends at 12:25 will have stats for Interval A (12:00-12:15) and Interval B (12:15-12:30) assuming the interval window is for 15 minutes. \nStats that only require the start time of the contact like 'totalOfferedTasks' and 'totalAcceptedTasks' will be counted only once and it will be present in the interval where the contact started i.e. Interval A. \nWhereas, stats that require the end time as well for calculations like 'averageHandledTime', will be present in the interval where the contact ended i.e. interval B. \n\nFor this API, response compression using gzip can be enabled by including 'Accept-Encoding' header  in the request with its value as 'gzip'. \nThe response will be compressed only if its size exceeds 1 MB.\nIf the header is not present in the request or if gzip is not listed as one of the encodings in the header's value (comma separated encodings), then API response will not be compressed and this can impact the latency as observed from clients. \n"
+      description: "Retrieve Queue statistics for a given interval of time. \nAn important thing to note is that each stat\
+        \ produced is for a specified time window (last 15, 30, or 60 minutes etc) and is not cumulative. \nContacts that\
+        \ span across intervals will also have stats broken down across intervals. For example: A contact that starts at 12:05\
+        \ and ends at 12:25 will have stats for Interval A (12:00-12:15) and Interval B (12:15-12:30) assuming the interval\
+        \ window is for 15 minutes. \nStats that only require the start time of the contact like 'totalOfferedTasks' and 'totalAcceptedTasks'\
+        \ will be counted only once and it will be present in the interval where the contact started i.e. Interval A. \nWhereas,\
+        \ stats that require the end time as well for calculations like 'averageHandledTime', will be present in the interval\
+        \ where the contact ended i.e. interval B. \n\nFor this API, response compression using gzip can be enabled by including\
+        \ 'Accept-Encoding' header  in the request with its value as 'gzip'. \nThe response will be compressed only if its\
+        \ size exceeds 1 MB.\nIf the header is not present in the request or if gzip is not listed as one of the encodings\
+        \ in the header's value (comma separated encodings), then API response will not be compressed and this can impact\
+        \ the latency as observed from clients. \n"
       operationId: getDocumentByQueryParam_1
       parameters:
       - name: from
         in: query
-        description: Start time for the query (in epoch milliseconds). Any epoch time can be passed in the input, from date will be rounded down to nearest 15 minute window. For example, epoch time of 12:05 will be rounded down to 12:00.
+        description: Start time for the query (in epoch milliseconds). Any epoch time can be passed in the input, from date
+          will be rounded down to nearest 15 minute window. For example, epoch time of 12:05 will be rounded down to 12:00.
         required: true
         schema:
           type: integer
@@ -24,7 +54,9 @@ paths:
         example: 1651395600000
       - name: to
         in: query
-        description: "End time for the query (in epoch milliseconds). Any epoch time can be passed in the input, from date will be rounded down to nearest 15 minute window. For example, epoch time of 12:55 will be rounded down to 12:45.\n The difference between to and from time must be less than 24 hours (86400000 milliseconds)."
+        description: "End time for the query (in epoch milliseconds). Any epoch time can be passed in the input, from date\
+          \ will be rounded down to nearest 15 minute window. For example, epoch time of 12:55 will be rounded down to 12:45.\n\
+          \ The difference between to and from time must be less than 24 hours (86400000 milliseconds)."
         required: true
         schema:
           type: integer
@@ -32,7 +64,8 @@ paths:
         example: 1651438800000
       - name: interval
         in: query
-        description: Time interval (in minutes) to chunk statistics by i.e. break up the entire from-to timeframe by this interval amount so that statistics can be viewed incrementally. Supported values are 15, 30, or 60.
+        description: Time interval (in minutes) to chunk statistics by i.e. break up the entire from-to timeframe by this
+          interval amount so that statistics can be viewed incrementally. Supported values are 15, 30, or 60.
         required: false
         schema:
           type: integer
@@ -40,7 +73,8 @@ paths:
         example: 15
       - name: queueIds
         in: query
-        description: Comma-separated list of queue IDs. A maximum of 100 values is permitted. If values are not provided, all queues for an organization are returned.
+        description: Comma-separated list of queue IDs. A maximum of 100 values is permitted. If values are not provided,
+          all queues for an organization are returned.
         required: false
         schema:
           type: array
@@ -49,7 +83,8 @@ paths:
         example: 89cf3b93-f020-42c6-84dc-87db6a92eae7, 89cf3b93-f020-42c6-84dc-87db6a92fae7, 89cf3b93-f020-42c6-84dc-87db4a92eae7
       - name: orgId
         in: query
-        description: Organization ID to use for this operation. If unspecified, inferred from token. Token must have permission to interact with this organization.
+        description: Organization ID to use for this operation. If unspecified, inferred from token. Token must have permission
+          to interact with this organization.
         required: false
         schema:
           type: string
@@ -102,13 +137,22 @@ paths:
             application/json: {}
 components:
   schemas:
+    OperationError:
+      description: An error message providing details about the operation failure.
+      type: object
+      properties:
+        description:
+          type: string
+          description: A human readable explanation for the occurrence of an error.
+          example: Incorrect Credentials.
     ApiErrorResponse:
       description: Response body for an API error.
       type: object
       properties:
         trackingId:
           type: string
-          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
+          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in\
+            \ a request, it can be used for co-relating events across services"
           example: c1a4fcef-aee2-4dea-8977-29f594760552
         error:
           description: An object containing details about the error.
@@ -126,22 +170,6 @@ components:
           description: A message providing details about the error.
           items:
             $ref: '#/components/schemas/OperationError'
-    OperationError:
-      description: An error message providing details about the operation failure.
-      type: object
-      properties:
-        description:
-          type: string
-          description: A human readable explanation for the occurrence of an error.
-          example: Incorrect Credentials.
-    Meta:
-      type: object
-      properties:
-        orgId:
-          type: string
-          description: Organization ID to which resources belong.
-          example: 3dae8fdd-06e2-411a-9035-51f3719f5b65
-      description: Response metadata.
     OutQueueStatistics:
       type: object
       properties:
@@ -164,12 +192,14 @@ components:
           example: telephony
         totalOfferedTasks:
           type: integer
-          description: Number of times tasks were offered to the agents in the queue during the interval. This count includes the ones that are accepted or rejected by the agent.
+          description: Number of times tasks were offered to the agents in the queue during the interval. This count includes
+            the ones that are accepted or rejected by the agent.
           format: int32
           example: 7
         totalEnqueuedTasks:
           type: integer
-          description: Number of times tasks were parked in the queue during the interval. Tasks are not parked in queue if they are offered to an agent immediately since one is available.
+          description: Number of times tasks were parked in the queue during the interval. Tasks are not parked in queue if
+            they are offered to an agent immediately since one is available.
           format: int32
           example: 7
         totalAssignedTasks:
@@ -213,10 +243,19 @@ components:
           type: number
           description: 'The Service Level threshold % is an aggregate percentage based on how many contacts out of
 
-            the total handled have met the service level value and gives an indication of the timely pick-up of contacts by agents.'
+            the total handled have met the service level value and gives an indication of the timely pick-up of contacts by
+            agents.'
           format: double
           example: 25.34
       description: List of Queue statistics records retrieved according to query parameters.
+    Meta:
+      type: object
+      properties:
+        orgId:
+          type: string
+          description: Organization ID to which resources belong.
+          example: 3dae8fdd-06e2-411a-9035-51f3719f5b65
+      description: Response metadata.
     QueueApiResponse:
       required:
       - data
@@ -243,12 +282,20 @@ components:
       description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
       scheme: bearer
       bearerFormat: JWT
+    BEARER_TOKEN_FROM_CI:
+      type: http
+      in: header
+      scheme: bearer
+    Bearer:
+      type: http
+      description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
+      scheme: bearer
+      bearerFormat: JWT
     bearerAuth:
-      type: oauth2
-      description: OAuth 2.0 Bearer token authentication
-      flows:
-        authorizationCode:
-          authorizationUrl: https://webexapis.com/v1/authorize
-          tokenUrl: https://webexapis.com/v1/access_token
-          scopes:
-            spark:applications_token: Create access tokens for Service Apps
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT bearer token authentication. Obtain your token from the Webex Developer Portal.
+x-refined-from:
+- webex-contact-center-openapi.json
+- webex-queues-api-openapi.yml

@@ -1,0 +1,1063 @@
+openapi: 3.2.0
+info:
+  title: Webex Contact Center Functions API
+  version: 1.0.0
+  description: The Webex Contact Center APIs allow developers to deeply integrate, configure, and manage cloud-based contact center solutions. These APIs cover agent lifecycle management, queue and routing configuration, customer journey tracking, and access to real-time and historical analytics. Use cases include embedding agent controls in custom UIs, automating workforce management, integrating with CRM and ticketing systems, and building custom reporting dashboards. The APIs empower organizations to deliver personalized, efficient customer experiences and optimize contact center operations.
+  x-provenance:
+    method: harvested
+    authored_by: Cisco Webex
+    harvested_by: API Evangelist
+    harvested_on: '2026-08-19'
+    first_party: true
+    note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
+    provider_published: true
+  x-evidence:
+  - type: source
+    url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-contact-center.json
+  - type: raw
+    url: https://raw.githubusercontent.com/webex/webex-openapi-specs/main/public-spec/webex-contact-center.json
+tags:
+- name: Functions
+paths:
+  /v1/{orgId}/functions:
+    get:
+      tags:
+      - Functions
+      summary: List Custom Functions
+      description: 'List or search custom functions in the organization. Without filters, returns all custom functions. Supports filtering by name, language, and status, plus sorting and pagination.
+
+
+        Scope: `cjp:config_read`'
+      operationId: findAll
+      parameters:
+      - name: orgId
+        in: path
+        description: Organization ID.
+        required: true
+        schema:
+          type: string
+        example: 8eb7da9a-c81c-4d13-b08b-38fdeb7330d8
+      - name: isPartialMatch
+        in: query
+        description: Whether to search with partial matches. If `false`, search/filter is based on exact match.
+        required: false
+        schema:
+          type: boolean
+          default: true
+        example: true
+      - name: isCaseSensitive
+        in: query
+        description: Whether the search should be case-sensitive. Currently applicable only to the `name` field.
+        required: false
+        schema:
+          type: boolean
+          default: false
+        example: false
+      - name: name
+        in: query
+        description: Filter by function name.
+        required: false
+        schema:
+          type: string
+        example: validateZipCode
+      - name: language
+        in: query
+        description: Filter by programming language.
+        required: false
+        schema:
+          type: string
+          enum:
+          - js
+          - py
+        example: js
+      - name: status
+        in: query
+        description: Filter by one or more function statuses (comma-separated, no spaces). Case-sensitive.
+        required: false
+        schema:
+          type: string
+        example: Draft,Published
+      - name: sortBy
+        in: query
+        description: 'Comma-separated fields with order. Supported fields (case-sensitive): `name`, `language`, `status`, `lastModifiedDate`. Prefix a field with `-` for descending order; no prefix means ascending.'
+        required: false
+        schema:
+          type: string
+        example: name,-lastModifiedDate
+      - name: page
+        in: query
+        description: Zero-based page number for the paginated query.
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 0
+        example: 0
+      - name: size
+        in: query
+        description: Number of results per page.
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 100
+        example: 100
+      - name: ids
+        in: query
+        description: Comma-separated list of function IDs to fetch.
+        required: false
+        schema:
+          type: string
+        example: 64f1b2c3d4e5f6a7b8c9d0e1,64f1b2c3d4e5f6a7b8c9d0e2
+      - name: fields
+        in: query
+        description: Comma-separated list of function fields to include in the response.
+        required: false
+        schema:
+          type: string
+        example: id,name,status
+      - name: isValidation
+        in: query
+        description: Used by the Tenant Management team to validate the existence of functions with given IDs regardless of the user's RBAC access.
+        required: false
+        schema:
+          type: boolean
+          default: false
+        example: false
+      responses:
+        '200':
+          description: Custom functions retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FnListResponse'
+        '400':
+          description: Bad Request. A required parameter was missing or had an invalid format.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized.
+          content: {}
+        '404':
+          description: No records found matching the supplied filters.
+          content: {}
+        '500':
+          description: Internal Server Error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      tags:
+      - Functions
+      summary: Create a Custom Function
+      description: 'Create a new custom function. The source code is provided as an escaped string and the runtime defaults to the highest supported runtime for the given language.
+
+
+        Scope: `cjp:config_write`'
+      operationId: create
+      parameters:
+      - name: orgId
+        in: path
+        description: Organization ID.
+        required: true
+        schema:
+          type: string
+        example: 8eb7da9a-c81c-4d13-b08b-38fdeb7330d8
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FnCreateReq'
+        required: true
+      responses:
+        '201':
+          description: Custom function created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FnDataResp'
+        '400':
+          description: 'Bad Request. Causes include: function body missing or malformed payload.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized.
+          content: {}
+        '409':
+          description: Conflict. A function with the same name already exists in the org.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FnConflictResponse'
+        '500':
+          description: Internal Server Error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v1/{orgId}/functions/{id}:
+    get:
+      tags:
+      - Functions
+      summary: Get a Custom Function
+      description: 'Retrieve a custom function by its ID. Use `versionOrTag` to fetch a specific published version, or omit it to get the draft.
+
+
+        Scope: `cjp:config_read`'
+      operationId: findById
+      parameters:
+      - name: orgId
+        in: path
+        description: Organization ID.
+        required: true
+        schema:
+          type: string
+        example: 8eb7da9a-c81c-4d13-b08b-38fdeb7330d8
+      - name: id
+        in: path
+        description: Custom function ID. Hexadecimal ObjectId returned by the create or list APIs.
+        required: true
+        schema:
+          type: string
+        example: 64f1b2c3d4e5f6a7b8c9d0e1
+      - name: versionOrTag
+        in: query
+        description: Version number or publish tag of the source code to return (for example, `Dev`, `Live`, or `2`). If omitted, the draft version is returned.
+        required: false
+        schema:
+          type: string
+        example: Live
+      - name: metaDataOnly
+        in: query
+        description: If `true`, returns only metadata and excludes source code. If `false` or omitted, returns both metadata and source code.
+        required: false
+        schema:
+          type: string
+          default: 'false'
+        example: 'false'
+      responses:
+        '200':
+          description: Custom function retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FnDataResp'
+        '400':
+          description: Bad Request. A required parameter was missing or had an invalid format.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized.
+          content: {}
+        '404':
+          description: No function found for the supplied ID.
+          content: {}
+        '500':
+          description: Internal Server Error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags:
+      - Functions
+      summary: Update a Custom Function
+      description: 'Update an existing custom function by ID. Replaces the draft source code and metadata with the supplied body.
+
+
+        Scope: `cjp:config_write`'
+      operationId: update
+      parameters:
+      - name: orgId
+        in: path
+        description: Organization ID.
+        required: true
+        schema:
+          type: string
+        example: 8eb7da9a-c81c-4d13-b08b-38fdeb7330d8
+      - name: id
+        in: path
+        description: Custom function ID.
+        required: true
+        schema:
+          type: string
+        example: 64f1b2c3d4e5f6a7b8c9d0e1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FnCreateReq'
+        required: true
+      responses:
+        '200':
+          description: Custom function updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FnDataResp'
+        '400':
+          description: 'Bad Request. Causes include: function body missing, malformed payload, or duplicate function name.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized.
+          content: {}
+        '500':
+          description: Internal Server Error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags:
+      - Functions
+      summary: Delete a Custom Function
+      description: 'Delete a custom function by ID. Use `isForceDeletion=true` to delete even when the function is referenced by one or more flows.
+
+
+        Scope: `cjp:config_write`'
+      operationId: delete
+      parameters:
+      - name: orgId
+        in: path
+        description: Organization ID.
+        required: true
+        schema:
+          type: string
+        example: 8eb7da9a-c81c-4d13-b08b-38fdeb7330d8
+      - name: id
+        in: path
+        description: Custom function ID.
+        required: true
+        schema:
+          type: string
+        example: 64f1b2c3d4e5f6a7b8c9d0e1
+      - name: isForceDeletion
+        in: query
+        description: If `true`, deletes the function regardless of its usage in flows.
+        required: false
+        example: false
+        schema:
+          type: boolean
+          default: false
+      responses:
+        '204':
+          description: Custom function deleted successfully.
+          content: {}
+        '400':
+          description: Bad Request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized.
+          content: {}
+        '404':
+          description: No function found for the supplied ID.
+          content: {}
+        '500':
+          description: Internal Server Error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v1/{orgId}/functions:import:
+    post:
+      tags:
+      - Functions
+      summary: Import a Custom Function
+      description: 'Import a custom function from a previously exported function-definition JSON file, uploaded as the multipart `file` part (not a zip or base64 envelope). Use `overwrite=true` to replace any existing function with the same name.
+
+
+        Scope: `cjp:config_write`'
+      operationId: importFn
+      parameters:
+      - name: orgId
+        in: path
+        description: Organization ID.
+        required: true
+        schema:
+          type: string
+        example: 8eb7da9a-c81c-4d13-b08b-38fdeb7330d8
+      - name: overwrite
+        in: query
+        description: If `true`, overwrites a function with the same name if one already exists.
+        required: false
+        schema:
+          type: boolean
+          default: false
+        example: false
+      - name: associatedRcs
+        in: query
+        description: Optional list of associated routing-context IDs.
+        required: false
+        example:
+        - rc-1
+        - rc-2
+        schema:
+          type: array
+          items:
+            type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Function-definition JSON document produced by the export API, uploaded as the multipart file part (not a zip or base64 envelope).
+              required:
+              - file
+      responses:
+        '201':
+          description: Custom function imported successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FnDataResp'
+        '400':
+          description: Bad Request. The supplied function-definition file is corrupted or malformed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized.
+          content: {}
+        '500':
+          description: Internal Server Error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v1/{orgId}/functions/{id}:unlock:
+    post:
+      tags:
+      - Functions
+      summary: Unlock a Custom Function
+      description: 'Release the edit lock on a custom function so that other users can edit it.
+
+
+        Scope: `cjp:config_write`'
+      operationId: unlockFnById
+      parameters:
+      - name: orgId
+        in: path
+        description: Organization ID.
+        required: true
+        schema:
+          type: string
+        example: 8eb7da9a-c81c-4d13-b08b-38fdeb7330d8
+      - name: id
+        in: path
+        description: Custom function ID.
+        required: true
+        schema:
+          type: string
+        example: 64f1b2c3d4e5f6a7b8c9d0e1
+      responses:
+        '200':
+          description: Custom function unlocked successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FnStatusResponse'
+        '400':
+          description: Bad Request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized.
+          content: {}
+        '404':
+          description: No function found for the supplied ID.
+          content: {}
+        '500':
+          description: Internal Server Error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v1/{orgId}/functions/{id}:lock:
+    post:
+      tags:
+      - Functions
+      summary: Lock a Custom Function
+      description: 'Acquire an edit lock on a custom function to prevent concurrent writes by other users.
+
+
+        Scope: `cjp:config_write`'
+      operationId: lockFnById
+      parameters:
+      - name: orgId
+        in: path
+        description: Organization ID.
+        required: true
+        schema:
+          type: string
+        example: 8eb7da9a-c81c-4d13-b08b-38fdeb7330d8
+      - name: id
+        in: path
+        description: Custom function ID.
+        required: true
+        schema:
+          type: string
+        example: 64f1b2c3d4e5f6a7b8c9d0e1
+      responses:
+        '200':
+          description: Custom function locked successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FnStatusResponse'
+        '400':
+          description: Bad Request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized.
+          content: {}
+        '404':
+          description: No function found for the supplied ID.
+          content: {}
+        '500':
+          description: Internal Server Error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v1/{orgId}/functions/{id}:publish:
+    post:
+      tags:
+      - Functions
+      summary: Publish a Custom Function
+      description: 'Publish the latest draft of a custom function under one or more tags (`Dev`, `Test`, `Latest`, `Live`). Ensure the function has been created or updated before calling this API.
+
+
+        Scope: `cjp:config_write`'
+      operationId: publish
+      parameters:
+      - name: orgId
+        in: path
+        description: Organization ID.
+        required: true
+        schema:
+          type: string
+        example: 8eb7da9a-c81c-4d13-b08b-38fdeb7330d8
+      - name: id
+        in: path
+        description: Custom function ID.
+        required: true
+        schema:
+          type: string
+        example: 64f1b2c3d4e5f6a7b8c9d0e1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FnPublishReq'
+        required: true
+      responses:
+        '200':
+          description: Custom function published successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FnDataResp'
+        '400':
+          description: Bad Request. The function ID is missing or has an invalid format.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized.
+          content: {}
+        '500':
+          description: Publish failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v1/{orgId}/functions/{id}:export:
+    post:
+      tags:
+      - Functions
+      summary: Export a Custom Function
+      description: 'Export a custom function for the given version or publish tag. Returns the plain function-definition JSON (name, language, runtime, description, source code, inputs, and outputs), suitable for re-importing via the import API.
+
+
+        Scope: `cjp:config_read`'
+      operationId: exportFn
+      parameters:
+      - name: orgId
+        in: path
+        description: Organization ID.
+        required: true
+        schema:
+          type: string
+        example: 8eb7da9a-c81c-4d13-b08b-38fdeb7330d8
+      - name: id
+        in: path
+        description: Custom function ID.
+        required: true
+        schema:
+          type: string
+        example: 64f1b2c3d4e5f6a7b8c9d0e1
+      - name: versionOrTag
+        in: query
+        description: Version number or publish tag of the source code to export. If omitted, the latest published version is exported.
+        required: false
+        schema:
+          type: string
+        example: Live
+      responses:
+        '200':
+          description: Export succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FnExport'
+        '400':
+          description: Bad Request. The function ID has an invalid format.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized.
+          content: {}
+        '500':
+          description: Export failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    FnPublishReq:
+      title: FnPublishReq
+      type: object
+      description: Tags and comments for a publish operation. Tags are case-sensitive.
+      additionalProperties: true
+      properties:
+        tags:
+          type: array
+          description: Publish tags to apply to this version.
+          items:
+            type: string
+            enum:
+            - Dev
+            - Test
+            - Latest
+            - Live
+          example:
+          - Dev
+          - Latest
+        comment:
+          type: string
+          description: Optional publish comment.
+          example: Initial release.
+    FnConflictResponse:
+      title: FnConflictResponse
+      type: object
+      description: Conflict envelope returned when a function with the same name already exists in the org.
+      additionalProperties: true
+      properties:
+        status:
+          type: integer
+          description: HTTP status code.
+          example: 409
+        errors:
+          type: array
+          description: The conflicts encountered.
+          items:
+            type: object
+            additionalProperties: true
+            properties:
+              description:
+                type: string
+                description: Human-readable description of the conflict.
+                example: '409 CONFLICT "Function with name: validateZipCode already exists in org: 8eb7da9a-c81c-4d13-b08b-38fdeb7330d8. Please choose a different name."'
+              type:
+                type: string
+                description: Error type.
+                example: Conflict
+      example:
+        status: 409
+        errors:
+        - description: '409 CONFLICT "Function with name: validateZipCode already exists in org: 8eb7da9a-c81c-4d13-b08b-38fdeb7330d8. Please choose a different name."'
+          type: Conflict
+    FnExport:
+      title: FnExport
+      type: object
+      description: Exported function definition, suitable for re-importing via the import API as an uploaded JSON file.
+      additionalProperties: true
+      properties:
+        name:
+          type: string
+          description: Function name.
+          example: validateZipCode
+        language:
+          type: string
+          description: Source language of the function (for example, `js`, `py`).
+          example: js
+        runtime:
+          type: string
+          description: Runtime the function executes on.
+          example: nodejs22.x
+        description:
+          type: string
+          description: Human-readable description of the function.
+          example: Validates and normalizes a US ZIP code.
+        sourceCode:
+          type: string
+          description: Full function source code.
+          example: export const handle = (request, response) => { /* ... */ };
+        inputs:
+          type: array
+          description: Declared function inputs.
+          items:
+            type: object
+            additionalProperties: true
+        outputs:
+          type: string
+          description: Declared function outputs as a JSON-encoded string.
+          example: '{"myOutputVar1": 7, "myOutputVar2": "String data"}'
+      example:
+        name: validateZipCode
+        language: js
+        runtime: nodejs22.x
+        description: Validates and normalizes a US ZIP code.
+        sourceCode: export const handle = (request, response) => { /* ... */ };
+        inputs: []
+        outputs: '{"myOutputVar1": 7, "myOutputVar2": "String data"}'
+    FnDataResp:
+      title: FnDataResp
+      type: object
+      description: A single custom function. The source code is returned under `fnCode`, and all lifecycle metadata under `fnMetadata`.
+      additionalProperties: true
+      properties:
+        fnCode:
+          type: string
+          description: Function source code as an escaped string. The handler is an exported async function `export const handle = async (request, response) => { ... }`.
+          example: "export const handle = async (request, response) => {\n  response.data = { areaCode: String(request.inputs.ani || '').slice(-10).slice(0, 3) };\n  return response;\n}\n"
+        fnMetadata:
+          $ref: '#/components/schemas/FnMetadata'
+      example:
+        fnCode: "export const handle = async (request, response) => {\n  response.data = { areaCode: String(request.inputs.ani || '').slice(-10).slice(0, 3) };\n  return response;\n}\n"
+        fnMetadata:
+          id: 64f1b2c3d4e5f6a7b8c9d0e1
+          orgId: 8eb7da9a-c81c-4d13-b08b-38fdeb7330d8
+          name: validateZipCode
+          description: Returns true if the supplied US zip code is in a valid 5-digit format.
+          language: js
+          selectedRuntime: nodejs22.x
+          status: Published
+          timeoutInSec: 3
+          tagVersionMap:
+            Dev: '1'
+            Latest: '1'
+          lockedBy: ''
+          createdBy: user@example.com
+          createdDate: '2026-05-28T14:23:01Z'
+          lastModifiedBy: user@example.com
+          lastModifiedDate: '2026-05-28T14:23:01Z'
+    FnMetadata:
+      title: FnMetadata
+      type: object
+      description: Metadata for a custom function (no source code). Returned in list responses and inside the `fnMetadata` envelope of a single-function response.
+      additionalProperties: true
+      properties:
+        id:
+          type: string
+          description: Function ID. Hexadecimal ObjectId.
+          example: 64f1b2c3d4e5f6a7b8c9d0e1
+        orgId:
+          type: string
+          description: Organization ID that owns the function.
+          example: 8eb7da9a-c81c-4d13-b08b-38fdeb7330d8
+        name:
+          type: string
+          description: Function name.
+          example: validateZipCode
+        description:
+          type: string
+          description: Human-readable description of the function.
+          example: Returns true if the supplied US zip code is in a valid 5-digit format.
+        language:
+          type: string
+          description: Programming language.
+          enum:
+          - js
+          - py
+          example: js
+        selectedRuntime:
+          type: string
+          description: Runtime identifier.
+          example: nodejs22.x
+        status:
+          type: string
+          description: Lifecycle status.
+          enum:
+          - Draft
+          - Published
+          example: Published
+        timeoutInSec:
+          type: integer
+          format: int32
+          description: Maximum execution time for the function, in seconds.
+          example: 3
+        tagVersionMap:
+          type: object
+          description: Map of publish tag to the function version it currently points to.
+          additionalProperties: true
+          example:
+            Dev: '1'
+            Latest: '1'
+        lockedBy:
+          type: string
+          description: User ID currently holding the edit lock, or empty if unlocked.
+          example: ''
+        createdBy:
+          type: string
+          description: User ID that created the function.
+          example: user@example.com
+        createdDate:
+          type: string
+          format: date-time
+          description: Timestamp the function was created.
+          example: '2026-05-28T14:23:01Z'
+        lastModifiedBy:
+          type: string
+          description: User ID that last modified the function.
+          example: user@example.com
+        lastModifiedDate:
+          type: string
+          format: date-time
+          description: Timestamp of the most recent modification.
+          example: '2026-05-28T14:23:01Z'
+      example:
+        id: 64f1b2c3d4e5f6a7b8c9d0e1
+        orgId: 8eb7da9a-c81c-4d13-b08b-38fdeb7330d8
+        name: validateZipCode
+        description: Returns true if the supplied US zip code is in a valid 5-digit format.
+        language: js
+        selectedRuntime: nodejs22.x
+        status: Published
+        timeoutInSec: 3
+        tagVersionMap:
+          Dev: '1'
+          Latest: '1'
+        lockedBy: ''
+        createdBy: user@example.com
+        createdDate: '2026-05-28T14:23:01Z'
+        lastModifiedBy: user@example.com
+        lastModifiedDate: '2026-05-28T14:23:01Z'
+    FnCreateReq:
+      title: FnCreateReq
+      type: object
+      description: Source code and metadata of a custom function. `language` defaults to `js`. `selectedRuntime` defaults to the highest supported runtime for the chosen language. The `outputs` field is a stringified (escaped) JSON of output variable names mapped to sample values.
+      additionalProperties: true
+      properties:
+        name:
+          type: string
+          description: Function name. Must be unique within the organization.
+          example: validateZipCode
+        description:
+          type: string
+          description: Human-readable description of the function.
+          example: Returns true if the supplied US zip code is in a valid 5-digit format.
+        language:
+          type: string
+          description: Programming language. Defaults to `js`.
+          enum:
+          - js
+          - py
+          default: js
+          example: js
+        selectedRuntime:
+          type: string
+          description: Runtime identifier (case-sensitive). For example, `nodejs22.x` or `python3.13`. Defaults to the highest supported runtime for the chosen language.
+          example: nodejs22.x
+        timeoutInSec:
+          type: integer
+          format: int32
+          description: Maximum execution time for the function, in seconds.
+          example: 3
+        sourceCode:
+          type: string
+          description: Function source code as an escaped string. The handler must be an exported async function `export const handle = async (request, response) => { ... }`. Read inputs from `request.inputs.*`, set the result via `response.data = { ... }`, and `return response`.
+          example: "export const handle = async (request, response) => {\n  response.data = { areaCode: String(request.inputs.ani || '').slice(-10).slice(0, 3) };\n  return response;\n}\n"
+        inputs:
+          type: array
+          description: Declared inputs of the function.
+          items:
+            $ref: '#/components/schemas/FnInputDef'
+        outputs:
+          type: string
+          description: Stringified JSON of output variable names mapped to sample values.
+          example: '{"isValid":true}'
+      example:
+        name: validateZipCode
+        description: Returns true if the supplied US zip code is in a valid 5-digit format.
+        language: js
+        selectedRuntime: nodejs22.x
+        timeoutInSec: 3
+        sourceCode: "export const handle = async (request, response) => {\n  response.data = { areaCode: String(request.inputs.ani || '').slice(-10).slice(0, 3) };\n  return response;\n}\n"
+        inputs:
+        - name: zip
+          dataType: string
+          value: '94043'
+        outputs: '{"isValid":true}'
+    FnStatusResponse:
+      title: FnStatusResponse
+      type: string
+      description: Acknowledgement returned by lock/unlock operations. Returns the literal JSON string "OK" on success.
+      example: OK
+    FnListResponse:
+      title: FnListResponse
+      type: object
+      description: Paginated list of custom functions. Function metadata records are returned under `data`, with pagination details under `pageInfo`.
+      additionalProperties: true
+      properties:
+        data:
+          type: array
+          description: Page of custom function metadata records. Each entry carries metadata only; the source code is returned only when fetching a single function.
+          items:
+            $ref: '#/components/schemas/FnMetadata'
+        pageInfo:
+          $ref: '#/components/schemas/PageInfo'
+      example:
+        data:
+        - id: 64f1b2c3d4e5f6a7b8c9d0e1
+          orgId: 8eb7da9a-c81c-4d13-b08b-38fdeb7330d8
+          name: validateZipCode
+          description: Returns true if the supplied US zip code is in a valid 5-digit format.
+          language: js
+          selectedRuntime: nodejs22.x
+          status: Published
+          timeoutInSec: 3
+          tagVersionMap:
+            Dev: '1'
+            Latest: '1'
+          createdBy: user@example.com
+          createdDate: '2026-05-28T14:23:01Z'
+          lastModifiedBy: user@example.com
+          lastModifiedDate: '2026-05-28T14:23:01Z'
+        pageInfo:
+          currentPage: 0
+          pageSize: 100
+          totalPages: 1
+          totalRecords: 1
+    FnInputDef:
+      title: FnInputDef
+      type: object
+      description: A declared input variable of a custom function.
+      additionalProperties: true
+      properties:
+        name:
+          type: string
+          description: Input variable name.
+          example: zip
+        dataType:
+          type: string
+          description: Input data type.
+          enum:
+          - boolean
+          - datetime
+          - decimal
+          - integer
+          - json
+          - string
+          example: string
+        value:
+          description: Default or sample value for the input.
+          example: '94043'
+    ErrorResponse:
+      type: object
+      description: Error response
+      properties:
+        code:
+          type: string
+          description: Error code
+        message:
+          type: string
+          description: Error description
+      example:
+        code: InvalidRequest
+        message: The campaign ID is missing
+    PageInfo:
+      title: PageInfo
+      type: object
+      description: Pagination details for a paged list response.
+      additionalProperties: true
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+          description: Zero-based index of the returned page.
+          example: 0
+        pageSize:
+          type: integer
+          format: int32
+          description: Page size used by the query.
+          example: 100
+        totalPages:
+          type: integer
+          format: int32
+          description: Total number of pages.
+          example: 1
+        totalRecords:
+          type: integer
+          format: int64
+          description: Total number of records matching the query, across all pages.
+          example: 42
+      example:
+        currentPage: 0
+        pageSize: 100
+        totalPages: 1
+        totalRecords: 42
+  securitySchemes:
+    oauth2:
+      flows:
+        authorizationCode:
+          authorizationUrl: /
+          scopes: {}
+          tokenUrl: /
+      type: oauth2
+    bearer-key:
+      type: http
+      description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
+      scheme: bearer
+      bearerFormat: JWT
+    BEARER_TOKEN_FROM_CI:
+      type: http
+      in: header
+      scheme: bearer
+    Bearer:
+      type: http
+      description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
+      scheme: bearer
+      bearerFormat: JWT
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT bearer token authentication. Obtain your token from the Webex Developer Portal.

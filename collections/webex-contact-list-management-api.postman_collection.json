@@ -1,0 +1,989 @@
+{
+  "item": [
+    {
+      "id": "405490bb-22a5-4155-b2e7-ec2b4a3325f5",
+      "name": "Contact List Management",
+      "description": {
+        "content": "Operations for managing contact lists and contacts",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "07bbffa5-0774-42c6-ae41-5bae16f0ce60",
+          "name": "Create contact list",
+          "request": {
+            "name": "Create contact list",
+            "description": {
+              "content": "Creates and activates a contact list for a campaign. The system can activate a contact list even if there are no contact records within it.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v3",
+                "campaign-management",
+                "campaigns",
+                ":campaignId",
+                "contact-list"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "campaignId",
+                  "description": "(Required) Campaign ID to which the contact list belongs."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"supportedChannels\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"activationTimeLagMinutes\": \"<integer>\",\n  \"activationDateTime\": \"<string>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "53b0c467-6faa-4585-8d59-21c754ed8a6f",
+              "name": "Contact list created successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "campaign-management",
+                    "campaigns",
+                    ":campaignId",
+                    "contact-list"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "campaignId",
+                      "description": "(Required) Campaign ID to which the contact list belongs."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"supportedChannels\": [\n    \"Voice\",\n    \"SMS\"\n  ],\n  \"activationTimeLagMinutes\": 180\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"outcome\": \"Success\",\n  \"statusCode\": 0,\n  \"contactListId\": \"501\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "93706d2f-f542-4ffb-80c1-ef0a00ccddf4",
+              "name": "Invalid request",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "campaign-management",
+                    "campaigns",
+                    ":campaignId",
+                    "contact-list"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "campaignId",
+                      "description": "(Required) Campaign ID to which the contact list belongs."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"supportedChannels\": [\n    \"Voice\",\n    \"SMS\"\n  ],\n  \"activationTimeLagMinutes\": 180\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"InvalidRequest\",\n  \"message\": \"The contact list ID is missing\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "ef52fbdb-8bcc-4c80-a7ab-8eac985bf9f7",
+          "name": "Create contacts within a contact list",
+          "request": {
+            "name": "Create contacts within a contact list",
+            "description": {
+              "content": "Creates contacts within a contact list (only if that contact list was created using API method). If the contact record is invalid, it will be added as INVALID and reflected in the 'Processed' and 'Invalid' counts. This is an Asynchronous operation. The values within the 'contactAttributes' param should conform to datatypes of the contact attributes as specified in the 'Field mapping' associated with the campaign.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v3",
+                "campaign-management",
+                "campaigns",
+                ":campaignId",
+                "contact-list",
+                ":contactListId",
+                "contacts"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "campaignId",
+                  "description": "(Required) Campaign ID to which the contact list belongs."
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "contactListId",
+                  "description": "(Required) Contact List ID (as a number string)."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contacts\": [\n    {\n      \"contactAttributes\": [\n        {\n          \"fieldName\": \"<string>\",\n          \"value\": \"<string>\"\n        },\n        {\n          \"fieldName\": \"<string>\",\n          \"value\": \"<string>\"\n        }\n      ]\n    },\n    {\n      \"contactAttributes\": [\n        {\n          \"fieldName\": \"<string>\",\n          \"value\": \"<string>\"\n        },\n        {\n          \"fieldName\": \"<string>\",\n          \"value\": \"<string>\"\n        }\n      ]\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "f6a8d03f-af66-4b7e-89d1-b56dbf87e476",
+              "name": "Request accepted",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "campaign-management",
+                    "campaigns",
+                    ":campaignId",
+                    "contact-list",
+                    ":contactListId",
+                    "contacts"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "campaignId",
+                      "description": "(Required) Campaign ID to which the contact list belongs."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "contactListId",
+                      "description": "(Required) Contact List ID (as a number string)."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"contacts\": [\n    {\n      \"contactAttributes\": [\n        {\n          \"fieldName\": \"FirstName\",\n          \"value\": \"John\"\n        },\n        {\n          \"fieldName\": \"LastName\",\n          \"value\": \"Doe\"\n        },\n        {\n          \"fieldName\": \"AccountStatus\",\n          \"value\": \"Active\"\n        }\n      ]\n    },\n    {\n      \"contactAttributes\": [\n        {\n          \"fieldName\": \"FirstName\",\n          \"value\": \"John\"\n        },\n        {\n          \"fieldName\": \"LastName\",\n          \"value\": \"Doe\"\n        },\n        {\n          \"fieldName\": \"AccountStatus\",\n          \"value\": \"Active\"\n        }\n      ]\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Accepted",
+              "code": 202,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"outcome\": \"Queued\",\n  \"statusCode\": 0,\n  \"summary\": \"Queued for adding to the contact list\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "a2ae7cc2-f965-4c73-967d-66afc1d94193",
+              "name": "Invalid request",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "campaign-management",
+                    "campaigns",
+                    ":campaignId",
+                    "contact-list",
+                    ":contactListId",
+                    "contacts"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "campaignId",
+                      "description": "(Required) Campaign ID to which the contact list belongs."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "contactListId",
+                      "description": "(Required) Contact List ID (as a number string)."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"contacts\": [\n    {\n      \"contactAttributes\": [\n        {\n          \"fieldName\": \"FirstName\",\n          \"value\": \"John\"\n        },\n        {\n          \"fieldName\": \"LastName\",\n          \"value\": \"Doe\"\n        },\n        {\n          \"fieldName\": \"AccountStatus\",\n          \"value\": \"Active\"\n        }\n      ]\n    },\n    {\n      \"contactAttributes\": [\n        {\n          \"fieldName\": \"FirstName\",\n          \"value\": \"John\"\n        },\n        {\n          \"fieldName\": \"LastName\",\n          \"value\": \"Doe\"\n        },\n        {\n          \"fieldName\": \"AccountStatus\",\n          \"value\": \"Active\"\n        }\n      ]\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"InvalidRequest\",\n  \"message\": \"The contact list ID is missing\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "32679b81-5540-4c3e-8754-4465e05224de",
+          "name": "Update a contact's status within a contact list",
+          "request": {
+            "name": "Update a contact's status within a contact list",
+            "description": {
+              "content": "Updates a contact's status within a contact list. After update, system overwrites 'Latest Telephony Outcome' to blank and 'Latest Business Outcome' to 'Closed via API call' if status is CLOSED. This is an Asynchronous operation.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v3",
+                "campaign-management",
+                "campaigns",
+                ":campaignId",
+                "contact-list",
+                ":contactListId",
+                "contacts",
+                ":contactId"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "campaignId",
+                  "description": "(Required) Campaign ID."
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "contactListId",
+                  "description": "(Required) Contact List ID (as a number string)."
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "contactId",
+                  "description": "(Required) Contact Unique ID (Customer Unique ID or Account Unique ID or Contact_Phone)"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "PATCH",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contactStatus\": \"<string>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "83a5297b-e2bb-4a41-a1e8-8d353e2d3fc6",
+              "name": "Request queued",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "campaign-management",
+                    "campaigns",
+                    ":campaignId",
+                    "contact-list",
+                    ":contactListId",
+                    "contacts",
+                    ":contactId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "campaignId",
+                      "description": "(Required) Campaign ID."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "contactListId",
+                      "description": "(Required) Contact List ID (as a number string)."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "contactId",
+                      "description": "(Required) Contact Unique ID (Customer Unique ID or Account Unique ID or Contact_Phone)"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"contactStatus\": \"CLOSED\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Accepted",
+              "code": 202,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"outcome\": \"Queued\",\n  \"statusCode\": 0,\n  \"summary\": \"Queued for updating the contact status\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "fc388c4d-7019-4376-9eab-988c36d18006",
+              "name": "Invalid request",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "campaign-management",
+                    "campaigns",
+                    ":campaignId",
+                    "contact-list",
+                    ":contactListId",
+                    "contacts",
+                    ":contactId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "campaignId",
+                      "description": "(Required) Campaign ID."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "contactListId",
+                      "description": "(Required) Contact List ID (as a number string)."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "contactId",
+                      "description": "(Required) Contact Unique ID (Customer Unique ID or Account Unique ID or Contact_Phone)"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"contactStatus\": \"CLOSED\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"InvalidRequest\",\n  \"message\": \"The contact list ID is missing\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "f73a5881-71be-4e6d-9c76-6880756825ae",
+          "name": "Update contact list status",
+          "request": {
+            "name": "Update contact list status",
+            "description": {
+              "content": "Updates the status of a contact list (e.g., EXPIRED). Note: This value is not case-sensitive.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v3",
+                "campaign-management",
+                "campaigns",
+                ":campaignId",
+                "contact-list",
+                ":contactListId",
+                "status"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "campaignId",
+                  "description": "(Required) Campaign ID."
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "contactListId",
+                  "description": "(Required) Contact List ID (as a number string)."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "PATCH",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contactListStatus\": \"<string>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "4c17e1c9-3394-4593-9585-3a42a67b03ac",
+              "name": "Contact list status updated successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "campaign-management",
+                    "campaigns",
+                    ":campaignId",
+                    "contact-list",
+                    ":contactListId",
+                    "status"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "campaignId",
+                      "description": "(Required) Campaign ID."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "contactListId",
+                      "description": "(Required) Contact List ID (as a number string)."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"contactListStatus\": \"EXPIRED\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"outcome\": \"Success\",\n  \"statusCode\": 0,\n  \"summary\": \"Contact list status updated successfully\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "afc5aaa4-fdbf-45eb-84d9-e539e0990772",
+              "name": "Invalid request",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "campaign-management",
+                    "campaigns",
+                    ":campaignId",
+                    "contact-list",
+                    ":contactListId",
+                    "status"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "campaignId",
+                      "description": "(Required) Campaign ID."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "contactListId",
+                      "description": "(Required) Contact List ID (as a number string)."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"contactListStatus\": \"EXPIRED\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"InvalidRequest\",\n  \"message\": \"The contact list ID is missing\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "17d4932c-8296-4d95-be34-09394a8c7826",
+          "name": "Get Contact Lists within a Campaign",
+          "request": {
+            "name": "Get Contact Lists within a Campaign",
+            "description": {
+              "content": "Retrieves all contact lists within a campaign, with optional filters for status and source.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v3",
+                "campaign-management",
+                "campaigns",
+                ":campaignId",
+                "contact-lists"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "status",
+                  "value": "<string>",
+                  "description": "Contact List Status filter (Active, Expired, UploadFailed, etc.)"
+                },
+                {
+                  "disabled": false,
+                  "key": "source",
+                  "value": "<string>",
+                  "description": "Contact List Source filter (API, SFTP, ManualFile, GlobalUpload, GlobalSFTP)"
+                }
+              ],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "campaignId",
+                  "description": "(Required) Campaign ID."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "505b6cb0-19c9-46cb-b699-e7b64c88478c",
+              "name": "Contact lists retrieved successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "campaign-management",
+                    "campaigns",
+                    ":campaignId",
+                    "contact-lists"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "status",
+                      "value": "Active"
+                    },
+                    {
+                      "key": "source",
+                      "value": "API"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "campaignId",
+                      "description": "(Required) Campaign ID."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"outcome\": \"Success\",\n  \"statusCode\": 0,\n  \"contactLists\": [\n    {\n      \"contactListId\": \"501\",\n      \"contactListStatus\": \"Active\",\n      \"contactListRecordCount\": 100,\n      \"contactListSource\": \"API\",\n      \"dateOfCreation\": \"2025-08-01T10:00:00Z\",\n      \"dateOfActivation\": \"2025-08-01T12:00:00Z\",\n      \"dateOfExpiry\": \"2025-09-01T00:00:00Z\"\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "42d35261-66f2-4ecc-a698-c3173a04c70d",
+              "name": "Invalid request",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "campaign-management",
+                    "campaigns",
+                    ":campaignId",
+                    "contact-lists"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "status",
+                      "value": "Active"
+                    },
+                    {
+                      "key": "source",
+                      "value": "API"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "campaignId",
+                      "description": "(Required) Campaign ID."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"InvalidRequest\",\n  \"message\": \"The contact list ID is missing\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "/",
+      "key": "baseUrl"
+    }
+  ],
+  "info": {
+    "_postman_id": "fb8749f0-19ac-4199-b684-c5179dcdd4ad",
+    "name": "Webex Admin Address Book Contact List Management API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "The Webex Admin APIs provide comprehensive programmatic access to administrative functions for managing Webex organizations, users, licenses, and settings. These APIs enable automation of user provisioning, license assignment, compliance management, and audit event retrieval. Administrators can integrate with enterprise identity systems, enforce security policies, monitor usage, and streamline onboarding/offboarding processes. The APIs support granular control over organizational resources, making them ideal for large-scale deployments and custom admin tooling.",
+      "type": "text/plain"
+    }
+  }
+}

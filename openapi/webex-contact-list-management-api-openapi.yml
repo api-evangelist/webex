@@ -1,8 +1,26 @@
-openapi: 3.0.0
+openapi: 3.2.0
 info:
-  title: Webex Admin Address Book Contact List Management API
+  title: Webex Contact List Management API
   version: 1.0.0
-  description: The Webex Admin APIs provide comprehensive programmatic access to administrative functions for managing Webex organizations, users, licenses, and settings. These APIs enable automation of user provisioning, license assignment, compliance management, and audit event retrieval. Administrators can integrate with enterprise identity systems, enforce security policies, monitor usage, and streamline onboarding/offboarding processes. The APIs support granular control over organizational resources, making them ideal for large-scale deployments and custom admin tooling.
+  description: 'Operations tagged Contact List Management across 2 of this provider''s published API definitions: webex-contact-center-openapi.json,
+    webex-contact-list-management-api-openapi.yml. Each path carries the servers of the definition it was published in.'
+  x-provenance:
+    method: harvested
+    authored_by: Cisco Webex
+    harvested_by: API Evangelist
+    harvested_on: '2026-08-19'
+    first_party: true
+    note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
+    provider_published: true
+    derived_view: Per-tag view of webex-contact-center-openapi.json, the provider's source document. Operations and schemas
+      are the provider's, unmodified; only the partition is ours.
+    derived_from: webex-contact-center-openapi.json
+    operation_coverage: 7/7
+  x-evidence:
+  - type: source
+    url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-contact-center.json
+  - type: raw
+    url: https://raw.githubusercontent.com/webex/webex-openapi-specs/main/public-spec/webex-contact-center.json
 tags:
 - name: Contact List Management
   description: Operations for managing contact lists and contacts
@@ -13,7 +31,8 @@ paths:
       - Contact List Management
       summary: Create contact list
       operationId: createContactList
-      description: Creates and activates a contact list for a campaign. The system can activate a contact list even if there are no contact records within it.
+      description: Creates and activates a contact list for a campaign. The system can activate a contact list even if there
+        are no contact records within it.
       parameters:
       - name: campaignId
         in: path
@@ -65,7 +84,10 @@ paths:
       - Contact List Management
       summary: Create contacts within a contact list
       operationId: createContactsInContactList
-      description: Creates contacts within a contact list (only if that contact list was created using API method). If the contact record is invalid, it will be added as INVALID and reflected in the 'Processed' and 'Invalid' counts. This is an Asynchronous operation. The values within the 'contactAttributes' param should conform to datatypes of the contact attributes as specified in the 'Field mapping' associated with the campaign.
+      description: Creates contacts within a contact list (only if that contact list was created using API method). If the
+        contact record is invalid, it will be added as INVALID and reflected in the 'Processed' and 'Invalid' counts. This
+        is an Asynchronous operation. The values within the 'contactAttributes' param should conform to datatypes of the contact
+        attributes as specified in the 'Field mapping' associated with the campaign.
       parameters:
       - name: campaignId
         in: path
@@ -111,7 +133,8 @@ paths:
       - Contact List Management
       summary: Update a contact's status within a contact list
       operationId: updateContactStatusInContactList
-      description: Updates a contact's status within a contact list. After update, system overwrites 'Latest Telephony Outcome' to blank and 'Latest Business Outcome' to 'Closed via API call' if status is CLOSED. This is an Asynchronous operation.
+      description: Updates a contact's status within a contact list. After update, system overwrites 'Latest Telephony Outcome'
+        to blank and 'Latest Business Outcome' to 'Closed via API call' if status is CLOSED. This is an Asynchronous operation.
       parameters:
       - name: campaignId
         in: path
@@ -131,7 +154,7 @@ paths:
       - name: contactId
         in: path
         required: true
-        description: Contact Unique ID (Customer Unique ID or Account Unique ID or Contact_Phone)
+        description: Contact Unique ID (Contact Phone or Customer Unique ID or Account Unique ID)
         schema:
           type: string
         example: CUST12345
@@ -160,6 +183,170 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /v3/campaign-management/campaigns/{campaignId}/contacts/{contactId}:
+    patch:
+      tags:
+      - Contact List Management
+      summary: Update contact status across the campaign chain
+      operationId: updateContactStatusInCampaignChain
+      description: "Synchronously closes the specified contacts and returns the outcome in the same response. Contacts are\
+        \ identified using the same unique identifiers configured in your campaign field mappings, such as Contact Phone (format\
+        \ as per the associated field mapping) or Customer Unique ID or Account Unique ID (For more info, please refer to\
+        \ the [global variables help documentation](https://docs-campaign-for-contact-centers.webexcampaign.com/docs/global-variables)).\n\
+        \n By default, the API searches the specified campaign and any of its downstream target campaigns in the chain (across\
+        \ all active contact-lists associated with these campaigns), and closes the contact wherever it is found in a closeable\
+        \ state. Set `searchAcrossTheCampaignChain` to `no` to close the contact only in the campaign specified in the request\
+        \ path.\n\n**Optional query parameters**\n\n- `contactListId` - Search only the specific contact-list within the campaign\
+        \ specified in the request path. If `searchAcrossTheCampaignChain` is set to `yes` then all active contact-lists in\
+        \ the other downstream target campaigns in the chain are also searched.\n- `fields` - Return specified contact field\
+        \ values in the response for the matching contact records (for example: FirstName, LastName, AmountDue)."
+      parameters:
+      - name: campaignId
+        in: path
+        required: true
+        description: Campaign ID (as a string). All downstream target campaigns in the chain are included in the search.
+        schema:
+          type: string
+        example: CCV_1234567890
+      - name: contactId
+        in: path
+        required: true
+        description: Contact Unique ID (Contact Phone or Customer Unique ID or Account Unique ID)
+        schema:
+          type: string
+        example: 2125550199 or CUST1234 or ACC1234
+      - name: contactListId
+        in: query
+        required: false
+        description: Optional. Search only the specific contact-list within the campaign specified in the request path. If
+          `searchAcrossTheCampaignChain` is set to `yes`, then all active contact-lists in the other downstream target campaigns
+          in the chain are also searched. When omitted, all active contact lists in that campaign are searched.
+        schema:
+          type: string
+          pattern: ^\d+$
+        example: '501'
+      - name: fields
+        in: query
+        required: false
+        description: Optional. Contact field names to include in the response (comma-separated names).
+        schema:
+          type: string
+        examples:
+          csv:
+            value: FirstName, LastName, AmountDue
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateContactStatusWithinCampaignChainRequest'
+      responses:
+        '200':
+          description: Contact closed. See `outcome` and `records` for per-campaign details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateContactStatusResponse'
+              examples:
+                Success:
+                  summary: Closed in every campaign in the chain
+                  value:
+                    outcome: Success
+                    statusCode: 0
+                    records:
+                    - updated: true
+                      campaignId: CCV_1001
+                      campaignName: Renewals
+                      contactListId: '501'
+                      matchedBy:
+                        ContactHome: '+12125550199'
+                      fields:
+                        FirstName: John
+                        LastName: Doe
+                        AmountDue: '100.00'
+                      comment: Closed.
+                    - updated: true
+                      campaignId: CCV_1002
+                      campaignName: Renewals Outreach
+                      contactListId: '601'
+                      matchedBy:
+                        ContactHome: '+12125550199'
+                      fields:
+                        FirstName: John
+                        LastName: Doe
+                        AmountDue: '100.00'
+                      comment: Closed.
+                PartialSuccess:
+                  summary: Closed in some campaigns; non-closeable in others
+                  value:
+                    outcome: PartialSuccess
+                    statusCode: 0
+                    records:
+                    - updated: true
+                      campaignId: CCV_1001
+                      campaignName: Renewals
+                      contactListId: '501'
+                      matchedBy:
+                        ContactHome: '+12125550199'
+                      comment: Closed.
+                    - updated: false
+                      campaignId: CCV_1002
+                      campaignName: Renewals Outreach
+                      contactListId: '601'
+                      matchedBy:
+                        ContactHome: '+12125550199'
+                      comment: Cannot close; already sent to dialer.
+                NoChange:
+                  summary: Matched but not closeable in every campaign
+                  value:
+                    outcome: NoChange
+                    statusCode: 0
+                    records:
+                    - updated: false
+                      campaignId: CCV_1001
+                      campaignName: Renewals
+                      contactListId: '501'
+                      matchedBy:
+                        ContactHome: '+12125550199'
+                      comment: Cannot close; already sent to dialer.
+        '400':
+          description: Invalid request (for example, unsupported contactStatus, missing contactStatus, invalid contactListId,
+            or malformed fields query parameter).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: InvalidRequest
+                message: 'Unsupported contact status: OPEN'
+        '403':
+          description: This operation is not enabled for your organization.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: Forbidden
+                message: Feature is not enabled for this organization.
+        '404':
+          description: No matching contact record found in any campaign in scope.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateContactStatusResponse'
+              example:
+                outcome: Matching contact record not found.
+                statusCode: 0
+                records: []
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: '1007'
+                message: Too many requests. Throttle limit reached for the time window. Retry after 30 seconds.
   /v3/campaign-management/campaigns/{campaignId}/contact-list/{contactListId}/status:
     patch:
       tags:
@@ -174,7 +361,7 @@ paths:
         description: Campaign ID.
         schema:
           type: string
-        example: CCV_123456789
+        example: CCV_1234567890
       - name: contactListId
         in: path
         required: true
@@ -214,7 +401,14 @@ paths:
       - Contact List Management
       summary: Get Contact Lists within a Campaign
       operationId: getContactListsInCampaign
-      description: Retrieves all contact lists within a campaign, with optional filters for status and source.
+      description: 'Retrieves all contact lists within a campaign, with optional filters for status and source.
+
+
+        This is the **v3** endpoint. Each contact list entry includes `contactListRecordsProcessed` (total processed records).
+        For dialer counts, source file name, and per-status contact counts, use the **v4** endpoint (`GET /v4/campaign-management/campaigns/{campaignId}/contact-lists`).
+
+
+        **Caching:** Responses are cached for up to 30 seconds per campaign and filter combination.'
       parameters:
       - name: campaignId
         in: path
@@ -237,15 +431,13 @@ paths:
       - name: source
         in: query
         required: false
-        description: Contact List Source filter (API, SFTP, ManualFile, GlobalUpload, GlobalSFTP)
+        description: Contact List Source filter (API, SFTP, ManualFile)
         schema:
           type: string
           enum:
           - API
           - SFTP
           - ManualFile
-          - GlobalUpload
-          - GlobalSFTP
         example: API
       responses:
         '200':
@@ -260,11 +452,95 @@ paths:
                 contactLists:
                 - contactListId: '501'
                   contactListStatus: Active
-                  contactListRecordCount: 100
+                  contactListRecordsProcessed: 100
                   contactListSource: API
-                  dateOfCreation: '2025-08-01T10:00:00Z'
-                  dateOfActivation: '2025-08-01T12:00:00Z'
-                  dateOfExpiry: '2025-09-01T00:00:00Z'
+                  dateOfCreation: '2025-08-01T10:00:00'
+                  dateOfActivation: '2025-08-01T12:00:00'
+                  dateOfExpiry: '2025-09-01T00:00:00'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v4/campaign-management/campaigns/{campaignId}/contact-lists:
+    get:
+      tags:
+      - Contact List Management
+      summary: Get Contact Lists within a Campaign
+      operationId: getContactListsInACampaign
+      description: 'Retrieves all contact lists within a campaign. Use the optional `status` and `source` query parameters
+        to filter results.
+
+
+        Each contact list in the response includes the source file name, the time contact counts were last updated, and a
+        breakdown of contact counts by processing and dialer status (for example, processed, invalid, valid, eligible, fresh,
+        open, closed, and ready for dialer).
+
+
+        Responses may reflect the same data for up to 30 seconds when the same campaign and filters are requested repeatedly.'
+      parameters:
+      - name: campaignId
+        in: path
+        required: true
+        description: Campaign ID.
+        schema:
+          type: string
+        example: CCV_123456789
+      - name: status
+        in: query
+        required: false
+        description: Contact List Status filter (Active, Expired, UploadFailed, etc.)
+        schema:
+          type: string
+          enum:
+          - Active
+          - Expired
+          - UploadFailed
+        example: Active
+      - name: source
+        in: query
+        required: false
+        description: Contact List Source filter (API, SFTP, ManualFile)
+        schema:
+          type: string
+          enum:
+          - API
+          - SFTP
+          - ManualFile
+        example: API
+      responses:
+        '200':
+          description: Contact lists retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetContactListsResponse'
+              example:
+                outcome: Success
+                statusCode: 0
+                contactLists:
+                - contactListId: '501'
+                  contactListStatus: Active
+                  contactListSource: API
+                  contactListSourceFileName: contacts.csv
+                  contactListCountsTimestampUtc: '2025-08-01T14:30:00Z'
+                  processedContactsCount: 100
+                  invalidContactsCount: 2
+                  validContactsCount: 98
+                  eligibleContactsCount: 95
+                  freshContactsCount: 40
+                  openContactsCount: 30
+                  closedContactsCount: 20
+                  errorsContactsCount: 0
+                  readyForDialerContactsCount: 5
+                  sentToDialerAwaitingOutcomeContactsCount: 3
+                  expiredContactsCount: 0
+                  blockedContactsCount: 0
+                  closedTransferredToChainedCampaignContactsCount: 0
+                  dateOfCreation: '2025-08-01T10:00:00'
+                  dateOfActivation: '2025-08-01T12:00:00'
+                  dateOfExpiry: '2025-09-01T00:00:00'
         '400':
           description: Invalid request
           content:
@@ -273,31 +549,178 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
-    CreateContactResponse:
+    CreateContactListRequest:
       type: object
+      required:
+      - supportedChannels
+      properties:
+        supportedChannels:
+          type: array
+          items:
+            type: string
+            enum:
+            - Voice
+            - SMS
+            - Email
+          description: Supported channels for the contact list
+        activationTimeLagMinutes:
+          type: integer
+          description: Contact list activation time lag in minutes (0 = immediate activation, 180 = 3 hours delay). Required
+            if activationDateTime is not provided.
+          example: 180
+        activationDateTime:
+          type: string
+          description: 'Contact list activation DateTimeStamp (format: YYYY-MM-DDTHH:MM). Required if activationTimeLagMinutes
+            is not provided.'
+          example: 2025-09-24T18:47
+      example:
+        supportedChannels:
+        - Voice
+        activationTimeLagMinutes: 180
+        activationDateTime: '2025-09-24T18:47:00Z'
+    ContactListInfo:
+      type: object
+      description: Contact list details and contact counts by processing and dialer status. Count fields are `0` when counts
+        are not yet available for a newly created list.
+      properties:
+        contactListId:
+          type: string
+          description: Contact list ID within the campaign.
+          example: '501'
+        contactListStatus:
+          type: string
+          description: 'Contact list status (for example: Active, Expired, UploadFailed).'
+          example: Active
+        contactListSource:
+          type: string
+          description: How the contact list was created (for example, API, SFTP, ManualFile).
+          example: API
+        contactListSourceFileName:
+          type: string
+          description: Source file name for the contact list upload.
+          example: contacts.csv
+        contactListCountsTimestampUtc:
+          type: string
+          format: date-time
+          description: UTC timestamp when the counts were last updated.
+          example: '2025-08-01T14:30:00Z'
+        processedContactsCount:
+          type: integer
+          description: Total contacts processed for this contact list.
+          example: 100
+        invalidContactsCount:
+          type: integer
+          description: Number of invalid contacts.
+          example: 2
+        validContactsCount:
+          type: integer
+          description: 'Derived: `processedContactsCount` − `invalidContactsCount`.'
+          example: 98
+        eligibleContactsCount:
+          type: integer
+          description: 'Derived: `processedContactsCount` − `invalidContactsCount` − DNC-suppressed contacts.'
+          example: 95
+        freshContactsCount:
+          type: integer
+          description: Number of contacts in Fresh state.
+          example: 40
+        openContactsCount:
+          type: integer
+          description: Number of contacts in Open state.
+          example: 30
+        closedContactsCount:
+          type: integer
+          description: Number of contacts in Closed state.
+          example: 20
+        errorsContactsCount:
+          type: integer
+          description: Number of contacts in Error state.
+          example: 0
+        readyForDialerContactsCount:
+          type: integer
+          description: Number of contacts ready to be sent to the dialer.
+          example: 5
+        sentToDialerAwaitingOutcomeContactsCount:
+          type: integer
+          description: Number of contacts sent to the dialer and awaiting an outcome.
+          example: 3
+        expiredContactsCount:
+          type: integer
+          description: Number of expired contacts.
+          example: 0
+        blockedContactsCount:
+          type: integer
+          description: Number of blocked contacts.
+          example: 0
+        closedTransferredToChainedCampaignContactsCount:
+          type: integer
+          description: Number of contacts closed and transferred to a chained campaign.
+          example: 0
+        dateOfCreation:
+          type: string
+          format: date-time
+          description: Date and time the contact list was created, in the campaign time zone.
+          example: '2025-08-01T10:00:00'
+        dateOfActivation:
+          type: string
+          format: date-time
+          description: Date and time the contact list was activated.
+          example: '2025-08-01T12:00:00'
+        dateOfExpiry:
+          type: string
+          format: date-time
+          description: Date and time the contact list expires.
+          example: '2025-09-01T00:00:00'
+    UpdateContactStatusResponse:
+      type: object
+      description: Result of the "close contact record" request. Each item in `records` describes the outcome in the target
+        campaign where the contact was found.
+      required:
+      - outcome
+      - statusCode
+      - records
       properties:
         outcome:
           type: string
+          description: 'Overall result: `Success` if closed everywhere a match was found; `PartialSuccess` if some matching
+            contact records were closed but others were non-closeable; `NoChange` if none of the matching contact records
+            could be closed; `Matching contact record not found.` if no match (HTTP 404).'
           enum:
-          - Queued
-          - Failed
-          description: Outcome of the operation
-          example: Queued
+          - Success
+          - PartialSuccess
+          - NoChange
+          - Matching contact record not found.
+          example: Success
         statusCode:
           type: integer
-          description: 0 for Queued, non-zero for Failed
+          description: 0 for a completed API response.
           example: 0
-        summary:
+        records:
+          type: array
+          description: Per-campaign close outcome.
+          items:
+            $ref: '#/components/schemas/ContactCampaignUpdateResult'
+    ErrorResponse:
+      type: object
+      description: Error response
+      properties:
+        code:
           type: string
-          description: Summary of the operation
-          example: Queued for adding to the contact list
+          description: Error code
+        message:
+          type: string
+          description: Error description
       example:
-        outcome: Queued
-        statusCode: 0
-        summary: Queued for adding to the contact list
+        code: InvalidRequest
+        message: The campaign ID is missing
     GetContactListsResponse:
       type: object
-      description: Response containing a list of contact lists
+      description: Response containing contact lists within a campaign, including contact counts and dialer status breakdown
+        for each list.
+      required:
+      - outcome
+      - statusCode
+      - contactLists
       properties:
         outcome:
           type: string
@@ -312,50 +735,7 @@ components:
           type: array
           description: List of contact lists
           items:
-            type: object
-            properties:
-              contactListId:
-                type: string
-                description: Contact List ID
-                example: '501'
-              contactListStatus:
-                type: string
-                description: Contact List Status
-                example: Active
-              contactListRecordProcessed:
-                type: integer
-                description: Number of records in the contact list
-                example: 100
-              contactListSource:
-                type: string
-                description: Source of the contact list
-                example: API
-              dateOfCreation:
-                type: string
-                format: date-time
-                description: Date of creation
-                example: '2025-08-01T10:00:00Z'
-              dateOfActivation:
-                type: string
-                format: date-time
-                description: Date of activation
-                example: '2025-08-01T12:00:00Z'
-              dateOfExpiry:
-                type: string
-                format: date-time
-                description: Date of expiry
-                example: '2025-09-01T00:00:00Z'
-      example:
-        outcome: Success
-        statusCode: 0
-        contactLists:
-        - contactListId: '501'
-          contactListStatus: Active
-          contactListRecordProcessed: 100
-          contactListSource: API
-          dateOfCreation: '2025-08-01T10:00:00'
-          dateOfActivation: '2025-08-01T12:00:00'
-          dateOfExpiry: '2025-09-01T00:00:00'
+            $ref: '#/components/schemas/ContactListInfo'
     UpdateContactResponse:
       type: object
       properties:
@@ -378,75 +758,6 @@ components:
         outcome: Queued
         statusCode: 0
         summary: Queued for updating the contact status
-    CreateContactListRequest:
-      type: object
-      required:
-      - supportedChannels
-      properties:
-        supportedChannels:
-          type: array
-          items:
-            type: string
-            enum:
-            - Voice
-            - SMS
-            - Email
-          description: Supported channels for the contact list
-        activationTimeLagMinutes:
-          type: integer
-          description: Contact list activation time lag in minutes (0 = immediate activation, 180 = 3 hours delay). Required if activationDateTime is not provided.
-          example: 180
-        activationDateTime:
-          type: string
-          description: 'Contact list activation DateTimeStamp (format: YYYY-MM-DDTHH:MM). Required if activationTimeLagMinutes is not provided.'
-          example: 2025-09-24T18:47
-      example:
-        supportedChannels:
-        - Voice
-        activationTimeLagMinutes: 180
-        activationDateTime: '2025-09-24T18:47:00Z'
-    CreateContactRequest:
-      type: object
-      properties:
-        contacts:
-          type: array
-          description: Array of contact attributes, max 10 contacts per request
-          items:
-            type: object
-            required:
-            - contactAttributes
-            properties:
-              contactAttributes:
-                type: array
-                description: Array of field mapping field name & value pairs.
-                items:
-                  type: object
-                  properties:
-                    fieldName:
-                      type: string
-                      description: Field name
-                    value:
-                      type: string
-                      description: Field value
-                  example:
-                    fieldName: FirstName
-                    value: John
-                example:
-                - fieldName: FirstName
-                  value: John
-                - fieldName: LastName
-                  value: Doe
-                - fieldName: AccountStatus
-                  value: Active
-    UpdateContactRequest:
-      type: object
-      properties:
-        contactStatus:
-          type: string
-          enum:
-          - CLOSED
-          description: Contact status (CLOSED)
-          example: CLOSED
     UpdateContactListStatusRequest:
       type: object
       properties:
@@ -454,52 +765,28 @@ components:
           type: string
           description: 'Contact List Status (e.g., EXPIRED). Note: This value is not case-sensitive.'
           example: EXPIRED
-    ErrorResponse:
-      type: object
-      description: Error response
-      properties:
-        code:
-          type: string
-          description: Error code
-        message:
-          type: string
-          description: Error description
-      example:
-        code: InvalidRequest
-        message: The contact list ID is missing
-    CreateContactListResponse:
+    CreateContactResponse:
       type: object
       properties:
         outcome:
           type: string
           enum:
-          - Success
-          - Failure
+          - Queued
+          - Failed
           description: Outcome of the operation
-          example: Success
+          example: Queued
         statusCode:
           type: integer
-          description: 0 for success, non-zero for failure or validation failure
+          description: 0 for Queued, non-zero for Failed
           example: 0
-        contactListId:
+        summary:
           type: string
-          description: Contact List ID within the campaign (number only)
-          example: '501'
+          description: Summary of the operation
+          example: Queued for adding to the contact list
       example:
-        success:
-          summary: Contact list created successfully
-          value:
-            outcome: Success
-            statusCode: 0
-            contactListId: '501'
-        failure:
-          summary: Failed to create contact list
-          value:
-            outcome: Failure
-            statusCode: 400
-            error:
-              code: InvalidRequest
-              message: Invalid request parameters
+        outcome: Queued
+        statusCode: 0
+        summary: Queued for adding to the contact list
     UpdateContactListStatusResponse:
       type: object
       properties:
@@ -563,6 +850,215 @@ components:
             error:
               code: InvalidStatus
               message: Contact list status is invalid
+    UpdateContactRequest:
+      type: object
+      properties:
+        contactStatus:
+          type: string
+          enum:
+          - CLOSED
+          description: Contact status (CLOSED)
+          example: CLOSED
+    CreateContactRequest:
+      type: object
+      properties:
+        contacts:
+          type: array
+          description: Array of contact attributes, max 10 contacts per request
+          items:
+            type: object
+            required:
+            - contactAttributes
+            properties:
+              contactAttributes:
+                type: array
+                description: Array of field mapping field name & value pairs.
+                items:
+                  type: object
+                  properties:
+                    fieldName:
+                      type: string
+                      description: Field name
+                    value:
+                      type: string
+                      description: Field value
+                  example:
+                    fieldName: FirstName
+                    value: John
+                example:
+                - fieldName: FirstName
+                  value: John
+                - fieldName: LastName
+                  value: Doe
+                - fieldName: AccountStatus
+                  value: Active
+    ContactCampaignUpdateResult:
+      type: object
+      description: Close outcome for one campaign.
+      properties:
+        updated:
+          type: boolean
+          description: True when the contact was closed in this campaign.
+          example: true
+        campaignId:
+          type: string
+          description: Campaign ID for this record.
+          example: CCV_1001
+        campaignName:
+          type: string
+          description: Campaign Name.
+          example: Renewals
+        contactListId:
+          type: string
+          description: Contact list ID within the campaign where the contact was matched.
+          example: '501'
+        matchedBy:
+          type: object
+          additionalProperties:
+            type: string
+          description: Field header and value used to match the contact in this campaign.
+          example:
+            ContactHome: '+12125550199'
+        fields:
+          type: object
+          additionalProperties: true
+          description: Optional map of requested field names to values, present when the `fields` query parameter was supplied.
+            Omitted when no fields were requested.
+          example:
+            FirstName: John
+            LastName: Doe
+            AmountDue: '100.00'
+        comment:
+          type: string
+          description: 'Per-record result message. `Closed.` when the contact was successfully closed (`updated: true`). When
+            matched but in sent-to-dialer status, `Cannot close; already sent to dialer.` (`updated: false`).'
+          example: Closed.
+    CreateContactListResponse:
+      type: object
+      properties:
+        outcome:
+          type: string
+          enum:
+          - Success
+          - Failure
+          description: Outcome of the operation
+          example: Success
+        statusCode:
+          type: integer
+          description: 0 for success, non-zero for failure or validation failure
+          example: 0
+        contactListId:
+          type: string
+          description: Contact List ID within the campaign (number only)
+          example: '501'
+      example:
+        success:
+          summary: Contact list created successfully
+          value:
+            outcome: Success
+            statusCode: 0
+            contactListId: '501'
+        failure:
+          summary: Failed to create contact list
+          value:
+            outcome: Failure
+            statusCode: 400
+            error:
+              code: InvalidRequest
+              message: Invalid request parameters
+    UpdateContactStatusWithinCampaignChainRequest:
+      type: object
+      required:
+      - contactStatus
+      properties:
+        contactStatus:
+          type: string
+          enum:
+          - CLOSED
+          description: Contact status to apply. Only CLOSED is supported.
+          example: CLOSED
+        searchAcrossTheCampaignChain:
+          type: string
+          description: Whether to close the contact across all campaigns in the chain. When omitted, all campaigns in the
+            chain are included by default. Set to `no` to close only in the campaign specified in the request path.
+          enum:
+          - 'yes'
+          - 'no'
+          example: 'yes'
+    ErrorResponse_2:
+      type: object
+      description: Error response
+      properties:
+        code:
+          type: string
+          description: Error code
+        message:
+          type: string
+          description: Error description
+      example:
+        code: InvalidRequest
+        message: The contact list ID is missing
+    GetContactListsResponse_2:
+      type: object
+      description: Response containing a list of contact lists
+      properties:
+        outcome:
+          type: string
+          enum:
+          - Success
+          - Failure
+          description: Outcome of the operation
+        statusCode:
+          type: integer
+          description: 0 for success, non-zero for failure or validation failure
+        contactLists:
+          type: array
+          description: List of contact lists
+          items:
+            type: object
+            properties:
+              contactListId:
+                type: string
+                description: Contact List ID
+                example: '501'
+              contactListStatus:
+                type: string
+                description: Contact List Status
+                example: Active
+              contactListRecordProcessed:
+                type: integer
+                description: Number of records in the contact list
+                example: 100
+              contactListSource:
+                type: string
+                description: Source of the contact list
+                example: API
+              dateOfCreation:
+                type: string
+                format: date-time
+                description: Date of creation
+                example: '2025-08-01T10:00:00Z'
+              dateOfActivation:
+                type: string
+                format: date-time
+                description: Date of activation
+                example: '2025-08-01T12:00:00Z'
+              dateOfExpiry:
+                type: string
+                format: date-time
+                description: Date of expiry
+                example: '2025-09-01T00:00:00Z'
+      example:
+        outcome: Success
+        statusCode: 0
+        contactLists:
+        - contactListId: '501'
+          contactListStatus: Active
+          contactListRecordProcessed: 100
+          contactListSource: API
+          dateOfCreation: '2025-08-01T10:00:00'
+          dateOfActivation: '2025-08-01T12:00:00'
+          dateOfExpiry: '2025-09-01T00:00:00'
   securitySchemes:
     oauth2:
       flows:
@@ -576,12 +1072,20 @@ components:
       description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
       scheme: bearer
       bearerFormat: JWT
+    BEARER_TOKEN_FROM_CI:
+      type: http
+      in: header
+      scheme: bearer
+    Bearer:
+      type: http
+      description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
+      scheme: bearer
+      bearerFormat: JWT
     bearerAuth:
-      type: oauth2
-      description: OAuth 2.0 Bearer token authentication
-      flows:
-        authorizationCode:
-          authorizationUrl: https://webexapis.com/v1/authorize
-          tokenUrl: https://webexapis.com/v1/access_token
-          scopes:
-            spark:applications_token: Create access tokens for Service Apps
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT bearer token authentication. Obtain your token from the Webex Developer Portal.
+x-refined-from:
+- webex-contact-center-openapi.json
+- webex-contact-list-management-api-openapi.yml

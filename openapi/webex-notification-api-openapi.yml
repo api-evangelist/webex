@@ -1,8 +1,26 @@
-openapi: 3.0.0
+openapi: 3.2.0
 info:
-  title: Webex Admin Address Book Notification API
+  title: Webex Notification API
   version: 1.0.0
-  description: The Webex Admin APIs provide comprehensive programmatic access to administrative functions for managing Webex organizations, users, licenses, and settings. These APIs enable automation of user provisioning, license assignment, compliance management, and audit event retrieval. Administrators can integrate with enterprise identity systems, enforce security policies, monitor usage, and streamline onboarding/offboarding processes. The APIs support granular control over organizational resources, making them ideal for large-scale deployments and custom admin tooling.
+  description: 'Operations tagged Notification across 2 of this provider''s published API definitions: webex-contact-center-openapi.json,
+    webex-notification-api-openapi.yml. Each path carries the servers of the definition it was published in.'
+  x-provenance:
+    method: harvested
+    authored_by: Cisco Webex
+    harvested_by: API Evangelist
+    harvested_on: '2026-08-19'
+    first_party: true
+    note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
+    provider_published: true
+    derived_view: Per-tag view of webex-contact-center-openapi.json, the provider's source document. Operations and schemas
+      are the provider's, unmodified; only the partition is ours.
+    derived_from: webex-contact-center-openapi.json
+    operation_coverage: 1/1
+  x-evidence:
+  - type: source
+    url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-contact-center.json
+  - type: raw
+    url: https://raw.githubusercontent.com/webex/webex-openapi-specs/main/public-spec/webex-contact-center.json
 tags:
 - name: Notification
 paths:
@@ -11,7 +29,9 @@ paths:
       tags:
       - Notification
       summary: Subscribe Notification
-      description: Access this endpoint when the user has to register for a WebSocket Session. Requires 'cjp:user' scope or roles 'id_full_admin', 'id_readonly_admin', 'atlas-portal.partner.salesadmin', 'cjp.supervisor', 'cjp.admin', 'atlas-portal.partner.provision_admin', 'cloud-contact-center:pod_conv' for authorization
+      description: Access this endpoint when the user has to register for a WebSocket Session. Requires 'cjp:user' scope or
+        roles 'id_full_admin', 'id_readonly_admin', 'atlas-portal.partner.salesadmin', 'cjp.supervisor', 'cjp.admin', 'atlas-portal.partner.provision_admin',
+        'cloud-contact-center:pod_conv' for authorization
       operationId: subscribeNotificationRoute
       parameters: []
       requestBody:
@@ -53,23 +73,30 @@ components:
     NotificationRequest:
       properties:
         isKeepAliveEnabled:
-          description: This represents that a json message {\"keepalive\":\"true\"} is expected over the websocket connection from Client. This should be sent periodically (usually 4s). If there are no keep-alive messages from the client for a period of 16 seconds, the server will drop the websocket.
+          description: This represents that a json message {\"keepalive\":\"true\"} is expected over the websocket connection
+            from Client. This should be sent periodically (usually 4s). If there are no keep-alive messages from the client
+            for a period of 16 seconds, the server will drop the websocket.
           example: true
           default: false
           type: boolean
         clientType:
-          description: ClientType is used to identify a web application differently from other web applications. It is used to group connections together for a specific user coming from that specific web application, maximum length 20 characters.
+          description: ClientType is used to identify a web application differently from other web applications. It is used
+            to group connections together for a specific user coming from that specific web application, maximum length 20
+            characters.
           example: AgentDesktop
           type: string
           default: DefaultClient
           maxLength: 20
         allowMultiLogin:
-          description: This cannot be used without providing \"clientType\". When set to true, it informs the server to allow multiple logins for this user coming from the same clientType. Upto 10 multiple logins will be allowed.
+          description: This cannot be used without providing \"clientType\". When set to true, it informs the server to allow
+            multiple logins for this user coming from the same clientType. Upto 10 multiple logins will be allowed.
           example: false
           default: false
           type: boolean
         force:
-          description: When true, will drop a random connection and then subscribes if connections for a user exceed maximum limit. When allowMultiLogin is false and a multi-login is attempted, if set to true will drop all connections for that user of that clientType & then subscribes.
+          description: When true, will drop a random connection and then subscribes if connections for a user exceed maximum
+            limit. When allowMultiLogin is false and a multi-login is attempted, if set to true will drop all connections
+            for that user of that clientType & then subscribes.
           example: false
           default: false
           type: boolean
@@ -87,12 +114,20 @@ components:
       description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
       scheme: bearer
       bearerFormat: JWT
+    BEARER_TOKEN_FROM_CI:
+      type: http
+      in: header
+      scheme: bearer
+    Bearer:
+      type: http
+      description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
+      scheme: bearer
+      bearerFormat: JWT
     bearerAuth:
-      type: oauth2
-      description: OAuth 2.0 Bearer token authentication
-      flows:
-        authorizationCode:
-          authorizationUrl: https://webexapis.com/v1/authorize
-          tokenUrl: https://webexapis.com/v1/access_token
-          scopes:
-            spark:applications_token: Create access tokens for Service Apps
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT bearer token authentication. Obtain your token from the Webex Developer Portal.
+x-refined-from:
+- webex-contact-center-openapi.json
+- webex-notification-api-openapi.yml

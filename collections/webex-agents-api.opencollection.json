@@ -1,0 +1,205 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Webex Admin Address Book Agents API",
+    "version": "1.0.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Agents",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Login",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/v1/agents/login",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Allows the user to login to their desktop. It does not allow a duplicate login and sends an error message over websocket, if an active session already exists. Requires 'cjp:user' scope for authorization. For a list of possible response messages, see the [Call Control API Guide](/docs/contact-control-apis)."
+        },
+        {
+          "info": {
+            "name": "Logout",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/v1/agents/logout",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Allows the user to logout from their Desktop. This API needs to be called once the WSS session has been successfully established. Requires 'cjp:user','id_full_admin','id_readonly_admin','atlas-portal.partner.salesadmin','cjp.admin','cjp.supervisor','atlas-portal.partner.provision_admin' scope for authorization. For a list of possible response messages, see the [Call Control API Guide](/docs/contact-control-apis)."
+        },
+        {
+          "info": {
+            "name": "State Change",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/v1/agents/session/state",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Allows the user to toggle between the Idle and Available states. An Administrator within the organization having an Agent license can perform a self state change when they have an active agent session. Supervisors can perform a self state change as well as state changes for agents and admin users within their authorized teams when 'Change Agent States' module is enabled. Requires 'cjp:user' scope for authorization.For a list of possible response messages, see the [Call Control API Guide](/docs/c"
+        },
+        {
+          "info": {
+            "name": "Reload",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/v1/agents/reload"
+          },
+          "docs": "Allows the user to receive all the contact assigned to particular agent and state. Requires 'cjp:user' scope for authorization."
+        },
+        {
+          "info": {
+            "name": "Buddy Agents List",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/v1/agents/buddyList",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Returns the list of agents in the given state and media according to agent profile settings. Requires 'cjp:user' scope for authorization."
+        },
+        {
+          "info": {
+            "name": "Get Agent Activities",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/v1/agents/activities",
+            "headers": [
+              {
+                "name": "TrackingId",
+                "value": "INTEGRATION-9bcdc696-57fa-4e91-b5aa-57a66a347c23"
+              }
+            ],
+            "params": [
+              {
+                "name": "agentIds",
+                "value": "89cf3b93-f020-42c6-84dc-87db6a92eae7,89cf3b93-f020-42c6-84dc-87db6a92fae7,89cf3b93-f020-42c6-84dc-87db4a92eae7",
+                "type": "query",
+                "description": "Filter agent activities by agent ids separated with commas if more than one value (max 100). By default, there is no agent filtering."
+              },
+              {
+                "name": "teamIds",
+                "value": "89cf3b93-f020-42c6-84dc-87db6a92eae7,89cf3b93-f020-42c6-84dc-87db6a92fae7,89cf3b93-f020-42c6-84dc-87db4a92eae7",
+                "type": "query",
+                "description": "Filter agent activities by team ids separated with commas if more than one value (max 100). By default, there is no team filtering."
+              },
+              {
+                "name": "channelTypes",
+                "value": "email,chat,telephony",
+                "type": "query",
+                "description": "Channel type(s) permitted in response. Separate values with commas. Must be lowercase. By default, there is no channelType filtering."
+              },
+              {
+                "name": "from",
+                "value": "1591702170000",
+                "type": "query",
+                "description": "Filter agent activities created after given epoch timestamp in UTC (in milliseconds)."
+              },
+              {
+                "name": "to",
+                "value": "1591802180000",
+                "type": "query",
+                "description": "Filter agent activities created before given epoch timestamp in UTC (in milliseconds). If unspecified, queries up to the present.\n The difference between to and from timestamps must be less than 24 hours (86400000 milli seconds)"
+              },
+              {
+                "name": "pageSize",
+                "value": "100",
+                "type": "query",
+                "description": "Maximum page size in response. Maximum allowed value is 1000. Defaults to 100 items per page."
+              },
+              {
+                "name": "page",
+                "value": "1",
+                "type": "query",
+                "description": "Page number to be passed. Maximum number of records that can be fetched for the given from and to is 10,000. So maximum page number allowed is based on it. Defaults to 0."
+              },
+              {
+                "name": "orgId",
+                "value": "97cdbf45-ebe2-4687-8341-44d5c7abf101",
+                "type": "query",
+                "description": "Organization ID to use for this operation. If unspecified, inferred from token. Token must have permission to interact with this organization."
+              }
+            ]
+          },
+          "docs": "Retrieve agent activities. Sorted by start time ascending.\nMaximum number of records that can be fetched for the given from and to is 10,000. \nFor this API, response compression using gzip can be enabled by including 'Accept-Encoding' header  in the request with its value as 'gzip'. \nThe response will be compressed only if its size exceeds 1 MB.\nIf the header is not present in the request or if gzip is not listed as one of the encodings in the header's value (comma separated encodings), then API"
+        },
+        {
+          "info": {
+            "name": "Get Agent Statistics",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/v1/agents/statistics",
+            "headers": [
+              {
+                "name": "TrackingId",
+                "value": "INTEGRATION-9bcdc696-57fa-4e91-b5aa-57a66a347c23"
+              }
+            ],
+            "params": [
+              {
+                "name": "from",
+                "value": "1651395600000",
+                "type": "query",
+                "description": "Start time for the query (in epoch milliseconds). Any epoch time can be passed in the input, from date will be rounded down to nearest 15 minute window. For example, epoch time of 12:05 will be rounded down to 12:00."
+              },
+              {
+                "name": "to",
+                "value": "1651438800000",
+                "type": "query",
+                "description": "End time for the query (in epoch milliseconds). Any epoch time can be passed in the input, from date will be rounded down to nearest 15 minute window. For example, epoch time of 12:55 will be rounded down to 12:45.\n The difference between to and from time must be less than 24 hours (86400000 milliseconds)."
+              },
+              {
+                "name": "interval",
+                "value": "15",
+                "type": "query",
+                "description": "Time interval (in minutes) to chunk statistics by i.e. break up the entire from-to timeframe by this interval amount so that statistics can be viewed incrementally. Supported values are 15, 30, or 60."
+              },
+              {
+                "name": "agentIds",
+                "value": "89cf3b93-f020-42c6-84dc-87db6a92eae7,89cf3b93-f020-42c6-84dc-87db6a92fae7,89cf3b93-f020-42c6-84dc-87db4a92eae7",
+                "type": "query",
+                "description": "Comma-separated list of agent IDs. A maximum of 100 values is permitted. If values are not provided, all agents of an organization are returned."
+              },
+              {
+                "name": "orgId",
+                "value": "97cdbf45-ebe2-4687-8341-44d5c7abf101",
+                "type": "query",
+                "description": "Organization ID to use for this operation. If unspecified, inferred from token. Token must have permission to interact with this organization."
+              }
+            ]
+          },
+          "docs": "Retrieve Agent statistics information for specified time duration and interval.\nFor this API, response compression using gzip can be enabled by including 'Accept-Encoding' header  in the request with its value as 'gzip'. \nThe response will be compressed only if its size exceeds 1 MB.\nIf the header is not present in the request or if gzip is not listed as one of the encodings in the header's value (comma separated encodings), then API response will not be compressed and this can impact the latenc"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

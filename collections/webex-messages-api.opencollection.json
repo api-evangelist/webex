@@ -1,0 +1,193 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Webex Admin Address Book Messages API",
+    "version": "1.0.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Messages",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Delete a Meeting Message",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/meeting/messages/:meetingMessageId",
+            "params": [
+              {
+                "name": "meetingMessageId",
+                "value": "Y2lzY29zcGFyazovL3VzL01FRVRJTkdfTUVTU0FHRS85MmRiM2JlMC00M2JkLTExZTYtOGFlOS1kZDViM2RmYzU2NWQ",
+                "type": "path",
+                "description": "The unique identifier for the message."
+              }
+            ]
+          },
+          "docs": "Deletes a Meeting Message from the In Meeting Chat, using its ID.\n\nThis ID can be retrieved by a Compliance Officer using the [events API](/docs/api/v1/events/list-events) filtering on the `meetingMessages` resource type.\n\nNOTE: When viewing the response from the events API, there are 2 `id` fields. The ID to be used here can be found under the `data` field in the response.\n\nSpecify the `meetingMessage` ID in the `meetingMessageId` parameter in the URI."
+        },
+        {
+          "info": {
+            "name": "List Messages",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/messages",
+            "params": [
+              {
+                "name": "roomId",
+                "value": "Y2lzY29zcGFyazovL3VzL1JPT00vYmJjZWIxYWQtNDNmMS0zYjU4LTkxNDctZjE0YmIwYzRkMTU0",
+                "type": "query",
+                "description": "List messages in a room, by ID."
+              },
+              {
+                "name": "parentId",
+                "value": "Y2lzY29zcGFyazovL3VzL01FU1NBR0UvZWM1ZTIzZjAtN2RhMS0xMWU5LTg2NTgtZTkzYzNiODZjZmFm",
+                "type": "query",
+                "description": "List messages with a parent, by ID."
+              },
+              {
+                "name": "mentionedPeople",
+                "value": "Y2lzY29zcGFyazovL3VzL1BFT1BMRS8yNDlmNzRkOS1kYjhhLTQzY2EtODk2Yi04NzllZDI0MGFjNTM",
+                "type": "query",
+                "description": "List messages with these people mentioned, by ID. Use `me` as a shorthand for the current API user. Only `me` or the person ID of the current user may be specified. Bots must include this parameter to list messages in group rooms (spaces)."
+              },
+              {
+                "name": "before",
+                "value": "2016-04-21T19:01:55.966Z",
+                "type": "query",
+                "description": "List messages sent before a date and time."
+              },
+              {
+                "name": "beforeMessage",
+                "value": "Y2lzY29zcGFyazovL3VzL01FU1NBR0UvOTJkYjNiZTAtNDNiZC0xMWU2LThhZTktZGQ1YjNkZmM1NjVk",
+                "type": "query",
+                "description": "List messages sent before a message, by ID."
+              },
+              {
+                "name": "max",
+                "value": "100",
+                "type": "query",
+                "description": "Limit the maximum number of messages in the response. Cannot exceed 100 if used with `mentionedPeople`."
+              }
+            ]
+          },
+          "docs": "Lists all messages in a room.  Each message will include content attachments if present.\n\nThe list sorts the messages in descending order by creation date.\n\nLong result sets will be split into [pages](/docs/basics#pagination)."
+        },
+        {
+          "info": {
+            "name": "Create a Message",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/messages",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Post a plain text or [rich text](/docs/basics#formatting-messages) message, and optionally, a [file attachment](/docs/basics#message-attachments) attachment, to a room.\n\nThe `files` parameter is an array, which accepts multiple values to allow for future expansion, but currently only one file may be included with the message. File previews are only rendered for attachments of 1MB or less."
+        },
+        {
+          "info": {
+            "name": "List Direct Messages",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/messages/direct",
+            "params": [
+              {
+                "name": "parentId",
+                "value": "Y2lzY29zcGFyazovL3VzL01FU1NBR0UvZWM1ZTIzZjAtN2RhMS0xMWU5LTg2NTgtZTkzYzNiODZjZmFm",
+                "type": "query",
+                "description": "List messages with a parent, by ID."
+              },
+              {
+                "name": "personId",
+                "value": "Y2lzY29zcGFyazovL3VzL1BFT1BMRS9mNWIzNjE4Ny1jOGRkLTQ3MjctOGIyZi1mOWM0NDdmMjkwNDY",
+                "type": "query",
+                "description": "List messages in a 1:1 room, by person ID."
+              },
+              {
+                "name": "personEmail",
+                "value": "matt@example.com",
+                "type": "query",
+                "description": "List messages in a 1:1 room, by person email."
+              }
+            ]
+          },
+          "docs": "List all messages in a 1:1 (direct) room. Use the `personId` or `personEmail` query parameter to specify the room. Each message will include content attachments if present.\n\nThe list sorts the messages in descending order by creation date."
+        },
+        {
+          "info": {
+            "name": "Get Message Details",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/messages/:messageId",
+            "params": [
+              {
+                "name": "messageId",
+                "value": "Y2lzY29zcGFyazovL3VzL01FU1NBR0UvOTJkYjNiZTAtNDNiZC0xMWU2LThhZTktZGQ1YjNkZmM1NjVk",
+                "type": "path",
+                "description": "The unique identifier for the message."
+              }
+            ]
+          },
+          "docs": "Show details for a message, by message ID.\n\nSpecify the message ID in the `messageId` parameter in the URI."
+        },
+        {
+          "info": {
+            "name": "Edit a Message",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/messages/:messageId",
+            "params": [
+              {
+                "name": "messageId",
+                "value": "Y2lzY29zcGFyazovL3VzL01FU1NBR0UvOTJkYjNiZTAtNDNiZC0xMWU2LThhZTktZGQ1YjNkZmM1NjVk",
+                "type": "path",
+                "description": "The unique identifier for the message."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a message you have posted not more than 10 times.\n\nSpecify the `messageId` of the message you want to edit.\n\nEdits of messages containing files or attachments are not currently supported.\nIf a user attempts to edit a message containing files or attachments a `400 Bad Request` will be returned by the API with a message stating that the feature is currently unsupported.\n\nThere is also a maximum number of times a user can edit a message. The maximum currently supported is 10 edits per messag"
+        },
+        {
+          "info": {
+            "name": "Delete a Message",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/messages/:messageId",
+            "params": [
+              {
+                "name": "messageId",
+                "value": "Y2lzY29zcGFyazovL3VzL01FU1NBR0UvOTJkYjNiZTAtNDNiZC0xMWU2LThhZTktZGQ1YjNkZmM1NjVk",
+                "type": "path",
+                "description": "The unique identifier for the message."
+              }
+            ]
+          },
+          "docs": "Delete a message, by message ID.\n\nSpecify the message ID in the `messageId` parameter in the URI."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

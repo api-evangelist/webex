@@ -1,8 +1,25 @@
-openapi: 3.0.0
+openapi: 3.2.0
 info:
-  title: Webex Admin Address Book Meeting Qualities API
+  title: Webex Meeting Qualities API
   version: 1.0.0
-  description: The Webex Admin APIs provide comprehensive programmatic access to administrative functions for managing Webex organizations, users, licenses, and settings. These APIs enable automation of user provisioning, license assignment, compliance management, and audit event retrieval. Administrators can integrate with enterprise identity systems, enforce security policies, monitor usage, and streamline onboarding/offboarding processes. The APIs support granular control over organizational resources, making them ideal for large-scale deployments and custom admin tooling.
+  description: 'Operations tagged Meeting Qualities across 3 of this provider''s published API definitions: webex-admin-openapi.json,
+    webex-meeting-openapi.json, webex-meeting-qualities-api-openapi.yml. Each path carries the servers of the definition it
+    was published in.'
+  x-provenance:
+    method: harvested
+    authored_by: Cisco Webex
+    harvested_by: API Evangelist
+    harvested_on: '2026-08-19'
+    first_party: true
+    note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
+    provider_published: true
+    derived_view: Per-tag view of the provider's source document. Operations and schemas are the provider's, unmodified; only
+      the partition is ours.
+  x-evidence:
+  - type: source
+    url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-meeting.json
+  - type: raw
+    url: https://raw.githubusercontent.com/webex/webex-openapi-specs/main/public-spec/webex-meeting.json
 tags:
 - name: Meeting Qualities
 paths:
@@ -130,44 +147,57 @@ paths:
                     systemAverageCPU: []
                     systemMaxCPU: []
         '400':
-          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message
+            will explain further.'
         '401':
           description: 'Unauthorized: Authentication credentials were missing or incorrect.'
         '403':
           description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
         '404':
-          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist.
+            Also returned when the requested format is not supported by the requested method.'
         '405':
           description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
         '409':
-          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the
+            system. For example, a person may not be added to a room more than once.'
         '410':
           description: 'Gone: The requested resource is no longer available.'
         '415':
-          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used
+            a media type that is not supported.'
         '423':
-          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that
+            specifies how many seconds you need to wait before attempting the request again.'
         '428':
           description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
         '429':
-          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has
+            been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before
+            a successful request can be made.'
         '500':
-          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact
+            the [Webex Developer Support team](/explore/support).'
         '502':
-          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the
+            request. Try again later.'
         '503':
           description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
         '504':
-          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please
+            try to reduce it.'
       summary: Get Meeting Qualities
       operationId: getMeetingQualities
-      description: Get quality data for a meeting, by `meetingId`. Only organization administrators can retrieve meeting quality data.
+      description: Get quality data for a meeting, by `meetingId`. Only organization administrators can retrieve meeting quality
+        data.
       tags:
       - Meeting Qualities
       parameters:
       - name: meetingId
         in: query
-        description: Unique identifier for the specific meeting instance. **Note:** The `meetingId` can be obtained via the Meeting List API when meetingType=meeting. The `id` attribute in the Meeting List Response is what is needed, for example, `e5dba9613a9d455aa49f6ffdafb6e7db_I_191395283063545470`.
+        description: Unique identifier for the specific meeting instance. **Note:** The `meetingId` can be obtained via the
+          Meeting List API when meetingType=meeting. The `id` attribute in the Meeting List Response is what is needed, for
+          example, `e5dba9613a9d455aa49f6ffdafb6e7db_I_191395283063545470`.
         required: true
         example: e5dba9613a9d455aa49f6ffdafb6e7db_I_191395283063545470
         schema:
@@ -187,6 +217,62 @@ paths:
           type: number
 components:
   schemas:
+    AudioOut:
+      type: object
+      properties:
+        samplingInterval:
+          type: number
+          example: 60
+          description: The sampling interval, in seconds, of the upstream audio quality data.
+        startTime:
+          type: string
+          example: '2020-04-10T17:00:00.000Z'
+          description: The date and time when this audio session started.
+        endTime:
+          type: string
+          example: '2020-04-10T18:00:00.000Z'
+          description: The date and time when this audio session ended.
+        packetLoss:
+          type: array
+          items:
+            type: number
+          description: The percentage of audio packet loss, as a float between 0.0 and 100.0, during each sampling interval.
+        latency:
+          type: array
+          items:
+            type: number
+          description: The average latency, in milliseconds, during each sampling interval.
+        resolutionHeight:
+          type: array
+          items:
+            type: number
+          description: Not applicable to audio out.
+        frameRate:
+          type: array
+          items:
+            type: number
+            example: 25.940001
+          description: Not applicable to audio out.
+        mediaBitRate:
+          type: array
+          items:
+            type: number
+          description: The bit rate of the outgoing audio.
+        codec:
+          type: string
+          example: Opus
+          description: The audio codec.
+        jitter:
+          type: array
+          items:
+            type: number
+          description: The outgoing audio jitter.
+        transportType:
+          type: string
+          enum:
+          - UDP
+          - TCP
+          description: The network protocol used for video transmission.
     AudioIn:
       type: object
       properties:
@@ -383,204 +469,6 @@ components:
           items:
             $ref: '#/components/schemas/Resources'
           description: Device resources such as CPU and memory.
-    MeetingQualitiesResponse:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/MediaSessionQuality'
-    VideoOut:
-      type: object
-      properties:
-        samplingInterval:
-          type: number
-          example: 60
-          description: The sampling interval, in seconds, of the upstream video quality data.
-        startTime:
-          type: string
-          example: '2020-04-10T17:00:00.000Z'
-          description: The date and time when this video session started.
-        endTime:
-          type: string
-          example: '2020-04-10T18:00:00.000Z'
-          description: The date and time when this video session ended.
-        packetLoss:
-          type: array
-          items:
-            type: number
-          description: The percentage of video packet loss, in float between 0.0 and 100.0, during each sampling interval.
-        latency:
-          type: array
-          items:
-            type: number
-          description: The average latency, in milliseconds, during each sampling interval.
-        resolutionHeight:
-          type: array
-          items:
-            type: number
-          description: The pixel height of the outgoing video.
-        frameRate:
-          type: array
-          items:
-            type: number
-            example: 25.940001
-          description: The frames per second of the outgoing video.
-        mediaBitRate:
-          type: array
-          items:
-            type: number
-          description: The bit rate of the outgoing video.
-        codec:
-          type: string
-          example: H.264 BP
-          description: The outgoing video codec.
-        jitter:
-          type: array
-          items:
-            type: number
-          description: The outgoing video jitter.
-        transportType:
-          type: string
-          enum:
-          - UDP
-          - TCP
-          description: The network protocol used for video transmission.
-    ShareOut:
-      type: object
-      properties:
-        samplingInterval:
-          type: number
-          example: 60
-          description: The sampling interval, in seconds, of the upstream content sharing data.
-        startTime:
-          type: string
-          example: '2020-04-10T17:00:00.000Z'
-          description: The date and time when this content sharing session started.
-        endTime:
-          type: string
-          example: '2020-04-10T18:00:00.000Z'
-          description: The date and time when this content sharing session ended.
-        packetLoss:
-          type: array
-          items:
-            type: number
-          description: The percentage of content sharing packet loss, in float between 0.0 and 100.0, during each sampling interval.
-        latency:
-          type: array
-          items:
-            type: number
-          description: The average latency, in milliseconds, during each sampling interval.
-        resolutionHeight:
-          type: array
-          items:
-            type: number
-          description: The height in pixels of the outgoing share video.
-        frameRate:
-          type: array
-          items:
-            type: number
-            example: 25.940001
-          description: The frame rate of the outgoing share video.
-        mediaBitRate:
-          type: array
-          items:
-            type: number
-          description: The bit rate of the outgoing share video.
-        codec:
-          type: string
-          example: H.264 BP
-          description: The codec of the outgoing share video.
-        jitter:
-          type: array
-          items:
-            type: number
-          description: The jitter for the outgoing share video.
-        transportType:
-          type: string
-          enum:
-          - UDP
-          - TCP
-          description: The network protocol used for video transmission.
-    ShareIn:
-      type: object
-      properties:
-        samplingInterval:
-          type: number
-          example: 60
-          description: The sampling interval, in seconds, of the downstream content sharing data.
-        startTime:
-          type: string
-          example: '2020-04-10T17:00:00.000Z'
-          description: The date and time when this content sharing session started.
-        endTime:
-          type: string
-          example: '2020-04-10T18:00:00.000Z'
-          description: The date and time when this content sharing session ended.
-        packetLoss:
-          type: array
-          items:
-            type: number
-          description: The percentage of content sharing packet loss, as a float between 0.0 and 100.0, during each sampling interval.
-        latency:
-          type: array
-          items:
-            type: number
-          description: The average latency, in milliseconds, during each sampling interval.
-        resolutionHeight:
-          type: array
-          items:
-            type: number
-          description: The height in pixels of the incoming share video.
-        frameRate:
-          type: array
-          items:
-            type: number
-            example: 25.940001
-          description: The frame rate of the incoming share video.
-        mediaBitRate:
-          type: array
-          items:
-            type: number
-          description: The bit rate for the incoming share video.
-        codec:
-          type: string
-          example: H.264 BP
-          description: The codec for the incoming share video.
-        jitter:
-          type: array
-          items:
-            type: number
-          description: The jitter for the incoming share video.
-        transportType:
-          type: string
-          enum:
-          - UDP
-          - TCP
-          description: The network protocol used for video transmission.
-    Resources:
-      type: object
-      properties:
-        processAverageCPU:
-          type: array
-          items:
-            type: number
-          description: The average percent CPU for the process.
-        processMaxCPU:
-          type: array
-          items:
-            type: number
-          description: The max percent CPU for the process.
-        systemAverageCPU:
-          type: array
-          items:
-            type: number
-          description: The average percent CPU for the system.
-        systemMaxCPU:
-          type: array
-          items:
-            type: number
-          description: The max percent CPU for the system.
     VideoIn:
       type: object
       properties:
@@ -638,26 +526,50 @@ components:
           - UDP
           - TCP
           description: The network protocol used for video transmission.
-    AudioOut:
+    Resources:
+      type: object
+      properties:
+        processAverageCPU:
+          type: array
+          items:
+            type: number
+          description: The average percent CPU for the process.
+        processMaxCPU:
+          type: array
+          items:
+            type: number
+          description: The max percent CPU for the process.
+        systemAverageCPU:
+          type: array
+          items:
+            type: number
+          description: The average percent CPU for the system.
+        systemMaxCPU:
+          type: array
+          items:
+            type: number
+          description: The max percent CPU for the system.
+    ShareIn:
       type: object
       properties:
         samplingInterval:
           type: number
           example: 60
-          description: The sampling interval, in seconds, of the upstream audio quality data.
+          description: The sampling interval, in seconds, of the downstream content sharing data.
         startTime:
           type: string
           example: '2020-04-10T17:00:00.000Z'
-          description: The date and time when this audio session started.
+          description: The date and time when this content sharing session started.
         endTime:
           type: string
           example: '2020-04-10T18:00:00.000Z'
-          description: The date and time when this audio session ended.
+          description: The date and time when this content sharing session ended.
         packetLoss:
           type: array
           items:
             type: number
-          description: The percentage of audio packet loss, as a float between 0.0 and 100.0, during each sampling interval.
+          description: The percentage of content sharing packet loss, as a float between 0.0 and 100.0, during each sampling
+            interval.
         latency:
           type: array
           items:
@@ -667,27 +579,147 @@ components:
           type: array
           items:
             type: number
-          description: Not applicable to audio out.
+          description: The height in pixels of the incoming share video.
         frameRate:
           type: array
           items:
             type: number
             example: 25.940001
-          description: Not applicable to audio out.
+          description: The frame rate of the incoming share video.
         mediaBitRate:
           type: array
           items:
             type: number
-          description: The bit rate of the outgoing audio.
+          description: The bit rate for the incoming share video.
         codec:
           type: string
-          example: Opus
-          description: The audio codec.
+          example: H.264 BP
+          description: The codec for the incoming share video.
         jitter:
           type: array
           items:
             type: number
-          description: The outgoing audio jitter.
+          description: The jitter for the incoming share video.
+        transportType:
+          type: string
+          enum:
+          - UDP
+          - TCP
+          description: The network protocol used for video transmission.
+    MeetingQualitiesResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/MediaSessionQuality'
+    ShareOut:
+      type: object
+      properties:
+        samplingInterval:
+          type: number
+          example: 60
+          description: The sampling interval, in seconds, of the upstream content sharing data.
+        startTime:
+          type: string
+          example: '2020-04-10T17:00:00.000Z'
+          description: The date and time when this content sharing session started.
+        endTime:
+          type: string
+          example: '2020-04-10T18:00:00.000Z'
+          description: The date and time when this content sharing session ended.
+        packetLoss:
+          type: array
+          items:
+            type: number
+          description: The percentage of content sharing packet loss, in float between 0.0 and 100.0, during each sampling
+            interval.
+        latency:
+          type: array
+          items:
+            type: number
+          description: The average latency, in milliseconds, during each sampling interval.
+        resolutionHeight:
+          type: array
+          items:
+            type: number
+          description: The height in pixels of the outgoing share video.
+        frameRate:
+          type: array
+          items:
+            type: number
+            example: 25.940001
+          description: The frame rate of the outgoing share video.
+        mediaBitRate:
+          type: array
+          items:
+            type: number
+          description: The bit rate of the outgoing share video.
+        codec:
+          type: string
+          example: H.264 BP
+          description: The codec of the outgoing share video.
+        jitter:
+          type: array
+          items:
+            type: number
+          description: The jitter for the outgoing share video.
+        transportType:
+          type: string
+          enum:
+          - UDP
+          - TCP
+          description: The network protocol used for video transmission.
+    VideoOut:
+      type: object
+      properties:
+        samplingInterval:
+          type: number
+          example: 60
+          description: The sampling interval, in seconds, of the upstream video quality data.
+        startTime:
+          type: string
+          example: '2020-04-10T17:00:00.000Z'
+          description: The date and time when this video session started.
+        endTime:
+          type: string
+          example: '2020-04-10T18:00:00.000Z'
+          description: The date and time when this video session ended.
+        packetLoss:
+          type: array
+          items:
+            type: number
+          description: The percentage of video packet loss, in float between 0.0 and 100.0, during each sampling interval.
+        latency:
+          type: array
+          items:
+            type: number
+          description: The average latency, in milliseconds, during each sampling interval.
+        resolutionHeight:
+          type: array
+          items:
+            type: number
+          description: The pixel height of the outgoing video.
+        frameRate:
+          type: array
+          items:
+            type: number
+            example: 25.940001
+          description: The frames per second of the outgoing video.
+        mediaBitRate:
+          type: array
+          items:
+            type: number
+          description: The bit rate of the outgoing video.
+        codec:
+          type: string
+          example: H.264 BP
+          description: The outgoing video codec.
+        jitter:
+          type: array
+          items:
+            type: number
+          description: The outgoing video jitter.
         transportType:
           type: string
           enum:
@@ -716,3 +748,7 @@ components:
           tokenUrl: https://webexapis.com/v1/access_token
           scopes:
             spark:applications_token: Create access tokens for Service Apps
+x-refined-from:
+- webex-admin-openapi.json
+- webex-meeting-openapi.json
+- webex-meeting-qualities-api-openapi.yml

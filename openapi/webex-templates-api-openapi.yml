@@ -1,0 +1,410 @@
+openapi: 3.2.0
+info:
+  title: Webex Contact Center Templates API
+  version: 1.0.0
+  description: The Webex Contact Center APIs allow developers to deeply integrate, configure, and manage cloud-based contact center solutions. These APIs cover agent lifecycle management, queue and routing configuration, customer journey tracking, and access to real-time and historical analytics. Use cases include embedding agent controls in custom UIs, automating workforce management, integrating with CRM and ticketing systems, and building custom reporting dashboards. The APIs empower organizations to deliver personalized, efficient customer experiences and optimize contact center operations.
+  x-provenance:
+    method: harvested
+    authored_by: Cisco Webex
+    harvested_by: API Evangelist
+    harvested_on: '2026-08-19'
+    first_party: true
+    note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
+    provider_published: true
+  x-evidence:
+  - type: source
+    url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-contact-center.json
+  - type: raw
+    url: https://raw.githubusercontent.com/webex/webex-openapi-specs/main/public-spec/webex-contact-center.json
+tags:
+- name: Templates
+paths:
+  /templates:
+    get:
+      tags:
+      - Templates
+      summary: List Flow Templates
+      description: 'List available flow templates that can be used to create new flows.
+
+
+        Scope: `cjp:config_read`'
+      operationId: listFlowTemplates
+      parameters:
+      - name: type
+        in: query
+        description: Filter by flow or subflow.
+        required: false
+        schema:
+          type: string
+          enum:
+          - flow
+          - subflow
+        example: flow
+      responses:
+        '200':
+          description: Array of template metadata with IDs, names, and descriptions.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FlowTemplate'
+                example:
+                - id: tmpl-customer-callback
+                  name: Customer Callback
+                  description: Offers a callback when estimated wait time exceeds a threshold.
+                  type: flow
+        '401':
+          description: Unauthorized.
+          content: {}
+        '403':
+          description: Forbidden.
+          content: {}
+        '404':
+          description: Not Found.
+          content: {}
+        '429':
+          description: Too Many Requests.
+          content: {}
+  /templates/{id}:
+    get:
+      tags:
+      - Templates
+      summary: Get a Flow Template
+      description: 'Retrieve a specific flow template by its ID. Use this to inspect a template''s flow structure before creating a flow from it.
+
+
+        Scope: `cjp:config_read`'
+      operationId: getFlowTemplate
+      parameters:
+      - name: id
+        in: path
+        description: Template ID.
+        required: true
+        schema:
+          type: string
+        example: tmpl-customer-callback
+      responses:
+        '200':
+          description: Template metadata and flow structure.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlowTemplate'
+        '401':
+          description: Unauthorized.
+          content: {}
+        '403':
+          description: Forbidden.
+          content: {}
+        '404':
+          description: Not Found.
+          content: {}
+        '429':
+          description: Too Many Requests.
+          content: {}
+components:
+  schemas:
+    FlowV2Variable:
+      title: FlowV2Variable
+      type: object
+      description: A flow variable.
+      additionalProperties: true
+      properties:
+        name:
+          type: string
+          description: Variable name.
+          example: FlowVar1
+        type:
+          type: string
+          description: Variable data type (for example, `STRING`, `INTEGER`, `BOOLEAN`).
+          example: STRING
+        value:
+          type: string
+          description: Default value as a string.
+          example: var1
+        description:
+          type: string
+          description: Human-readable description of the variable.
+          example: ''
+        isCAD:
+          type: boolean
+          description: True if this variable is exposed as Call-Associated Data.
+          example: true
+        isAgentEditable:
+          type: boolean
+          description: True if agents can edit the variable value at runtime.
+          example: true
+        isReportable:
+          type: boolean
+          description: True if the variable is included in reporting.
+          example: false
+        isSecure:
+          type: boolean
+          description: True if the variable holds sensitive data and must be masked in logs and reports.
+          example: false
+    FlowV2Edge:
+      title: FlowV2Edge
+      type: object
+      description: 'An edge connecting two flow nodes. Edge `condition` aliases are normalized server-side: `done` is rewritten to `out`, `NewPhoneContact` is rewritten to `out`, and `defaultBranch` is rewritten to `default`.'
+      additionalProperties: true
+      properties:
+        key:
+          type: string
+          description: Stable, unique edge key within the flow. Used as the patch-merge key for `upsert_edges` and `remove_edge_keys`.
+          example: edge-1
+        from_node:
+          type: string
+          description: Name of the source node. Must reference a node in the same process.
+          example: NewPhoneContact
+        from_port:
+          type: string
+          description: Output port name on the source node. Must match an `outputPorts[].name` exposed by the source activity definition.
+          example: out
+        to_node:
+          type: string
+          description: Name of the target node. Must reference a node in the same process.
+          example: PlayMessage_1
+        condition:
+          type: string
+          description: 'Branch condition this edge fires on. Aliases: `done` -> `out`, `NewPhoneContact` -> `out`, `defaultBranch` -> `default`.'
+          example: out
+    FlowV2:
+      title: FlowV2
+      type: object
+      description: Flow JSON document (formerly Flow IR / FDL 2.0). Describes a flow as top-level metadata plus arrays of nodes, edges, variables, event flows, and preferences.
+      additionalProperties: true
+      properties:
+        flowName:
+          type: string
+          description: Name of the flow.
+          example: Customer_Support_Main
+        flowType:
+          type: string
+          description: Flow type. One of `FLOW` or `SUBFLOW`.
+          enum:
+          - FLOW
+          - SUBFLOW
+          example: FLOW
+        contactType:
+          type: string
+          description: Channel type the flow is intended for (for example, `telephony`, `customMessaging`, `workItem`, `genericAction`).
+          example: telephony
+        description:
+          type: string
+          description: Human-readable description of the flow.
+          example: Routes inbound support calls to the main support queue.
+        version:
+          type: integer
+          format: int64
+          description: Monotonically increasing version number of the document.
+          example: 3
+        status:
+          type: string
+          description: Lifecycle state of the document. One of `Draft` or `Published`.
+          enum:
+          - Draft
+          - Published
+          example: Draft
+        nodes:
+          type: array
+          description: Activity nodes in the main flow process.
+          items:
+            $ref: '#/components/schemas/FlowV2Node'
+        edges:
+          type: array
+          description: Edges connecting nodes in the main flow process.
+          items:
+            $ref: '#/components/schemas/FlowV2Edge'
+        variables:
+          type: array
+          description: Flow variables.
+          items:
+            $ref: '#/components/schemas/FlowV2Variable'
+        eventFlows:
+          type: array
+          description: Event-handler subflows bound to specific events.
+          items:
+            $ref: '#/components/schemas/FlowV2EventFlow'
+        preferences:
+          type: array
+          description: Flow-level preferences.
+          items:
+            $ref: '#/components/schemas/FlowV2Preference'
+      example:
+        flowName: Customer_Support_Main
+        flowType: FLOW
+        contactType: telephony
+        description: Routes inbound support calls to the main support queue.
+        version: 3
+        status: Draft
+        nodes:
+        - name: NewPhoneContact
+          activityName: NewPhoneContact
+          inputs: {}
+          outputs: {}
+          position:
+            x: 100
+            y: 200
+        - name: PlayMessage_1
+          activityName: PlayMessage
+          inputs:
+            audioFile: welcome.wav
+          outputs: {}
+          position:
+            x: 300
+            y: 200
+        edges:
+        - key: edge-1
+          from_node: NewPhoneContact
+          from_port: out
+          to_node: PlayMessage_1
+          condition: out
+        variables:
+        - name: FlowVar1
+          type: STRING
+          value: var1
+          description: ''
+          isCAD: true
+          isAgentEditable: true
+          isReportable: false
+          isSecure: false
+        eventFlows: []
+        preferences:
+        - name: hideSecureCADWarning
+          type: Boolean
+          value: 'true'
+    FlowV2Node:
+      title: FlowV2Node
+      type: object
+      description: A node in a flow process graph. Each node represents one activity instance.
+      additionalProperties: true
+      properties:
+        name:
+          type: string
+          description: Stable, unique node name within the flow. Used as the patch-merge key for `upsert_nodes` and `remove_node_names`.
+          example: PlayMessage_1
+        activityName:
+          type: string
+          description: Activity type this node instantiates. Must match an `activityName` returned by `listActivityDefinitions`.
+          example: PlayMessage
+        inputs:
+          type: object
+          description: Input values for the activity, keyed by input name. Shape depends on the activity definition.
+          additionalProperties: true
+          example:
+            audioFile: welcome.wav
+        outputs:
+          type: object
+          description: Declared output bindings for the activity, keyed by output name. Used to map activity outputs to flow variables.
+          additionalProperties: true
+          example: {}
+        position:
+          type: object
+          description: Node position on the flow canvas.
+          properties:
+            x:
+              type: number
+              description: Horizontal coordinate in pixels.
+              example: 300
+            y:
+              type: number
+              description: Vertical coordinate in pixels.
+              example: 200
+    FlowV2Preference:
+      title: FlowV2Preference
+      type: object
+      description: A flow-level preference.
+      additionalProperties: true
+      properties:
+        name:
+          type: string
+          description: Preference name.
+          example: hideSecureCADWarning
+        type:
+          type: string
+          description: Preference value type.
+          example: Boolean
+        value:
+          type: string
+          description: Preference value, encoded as a string.
+          example: 'true'
+    FlowTemplate:
+      title: FlowTemplate
+      type: object
+      description: Flow template metadata and flow structure used to seed new flows.
+      additionalProperties: true
+      example:
+        id: tmpl-customer-callback
+        name: Customer Callback
+        description: Offers a callback when estimated wait time exceeds a threshold.
+        type: flow
+      properties:
+        id:
+          type: string
+          description: Template ID.
+          example: tmpl-customer-callback
+        name:
+          type: string
+          description: Template name.
+          example: Customer Callback
+        description:
+          type: string
+          description: Human-readable description of the template.
+          example: Offers a callback when estimated wait time exceeds a threshold.
+        type:
+          type: string
+          description: Template kind. One of `flow` or `subflow`.
+          enum:
+          - flow
+          - subflow
+          example: flow
+        flow:
+          $ref: '#/components/schemas/FlowV2'
+    FlowV2EventFlow:
+      title: FlowV2EventFlow
+      type: object
+      description: An event-handler subflow bound to a specific event. The subflow runs when its bound event fires.
+      additionalProperties: true
+      properties:
+        event:
+          type: string
+          description: Name of the event this subflow handles. Must reference an event from `listEventSpecifications`.
+          example: AgentDisconnected
+        nodes:
+          type: array
+          description: Activity nodes in the event-handler process.
+          items:
+            $ref: '#/components/schemas/FlowV2Node'
+        edges:
+          type: array
+          description: Edges in the event-handler process.
+          items:
+            $ref: '#/components/schemas/FlowV2Edge'
+  securitySchemes:
+    oauth2:
+      flows:
+        authorizationCode:
+          authorizationUrl: /
+          scopes: {}
+          tokenUrl: /
+      type: oauth2
+    bearer-key:
+      type: http
+      description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
+      scheme: bearer
+      bearerFormat: JWT
+    BEARER_TOKEN_FROM_CI:
+      type: http
+      in: header
+      scheme: bearer
+    Bearer:
+      type: http
+      description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
+      scheme: bearer
+      bearerFormat: JWT
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT bearer token authentication. Obtain your token from the Webex Developer Portal.
