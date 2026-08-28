@@ -1,0 +1,222 @@
+slug: webex
+provider: Webex
+generated_by: planning/capability-mapping/scripts/classify_capabilities.py
+model: claude-opus-5
+frame:
+- Banking & Capital Markets
+- Software & Technology
+min_confidence: 0.7
+capability_model:
+  source: https://github.com/vincentmakes/turbo-ea-capabilities
+  license: CC-BY-4.0
+  attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
+    CC BY 4.0
+  notice: NOTICE
+edge_count: 20
+edges:
+- tag: Agents
+  spec_file: webex-agents-api-openapi.yml
+  capability_id: BC-430.30
+  capability_id_l1: BC-430
+  capability_name: Contact Centre Operations Management
+  confidence: 0.85
+  evidence: POST /v1/agents/login 'Login'; PUT /v1/agents/session/state 'State Change'; GET /v1/agents/statistics
+    'Get Agent Statistics'
+  reason: Contact-centre agent session control (login/logout, availability state, buddy lists, agent activity
+    and statistics) — core contact centre operations, not generic user management.
+- tag: Contact Service Queue
+  spec_file: webex-contact-service-queue-api-openapi.yml
+  capability_id: BC-430.30
+  capability_id_l1: BC-430
+  capability_name: Contact Centre Operations Management
+  confidence: 0.85
+  evidence: '"List Contact Service Queues", "List skill-based Contact Service Queues by skill profile
+    ID", schemas CallDistributionGroupDTO_2, QueueAgentsDTO_2; doc: "queue and routing configuration"'
+  reason: Queue definition, skill-based routing and agent/queue distribution configuration is core contact-centre
+    operations management.
+- tag: SCIM 2 Users
+  spec_file: webex-scim-2-users-api-openapi.yml
+  capability_id: BC-620.20
+  capability_id_l1: BC-620
+  capability_name: Identity & Access Management
+  confidence: 0.85
+  evidence: POST /identity/scim/{orgId}/v2/Users  Create a user; DELETE /identity/scim/{orgId}/v2/Users/{userId}  Delete
+    a user
+  reason: SCIM user provisioning and deprovisioning against an org identity store is joiner-mover-leaver
+    identity administration — Identity & Access Management.
+- tag: 'Features: Customer Assist'
+  spec_file: webex-features-customer-assist-api-openapi.yml
+  capability_id: BC-430.30
+  capability_id_l1: BC-430
+  capability_name: Contact Centre Operations Management
+  confidence: 0.8
+  evidence: Create Wrap Up Reason; Read Wrap Up Reason Settings (locations/{locationId}/queues/{queueId}/wrapup/settings);
+    Update Screen Pop Configuration; List Available Agents
+  reason: Wrap-up reasons, queue wrap-up settings, screen pop and available agents are contact-centre
+    agent desktop and queue operations constructs, squarely Contact Centre Operations Management.
+- tag: Identity Organization
+  spec_file: webex-identity-organization-api-openapi.yml
+  capability_id: BC-620.20
+  capability_id_l1: BC-620
+  capability_name: Identity & Access Management
+  confidence: 0.8
+  evidence: '"Update Organization Authentication Configuration Settings", "Update Organization Password
+    Policy", "Generate OTP"; schemas PasswordPolicyObject, AuthenticationConfigResponse'
+  reason: Managing organisation authentication configuration, password policy and one-time passcodes for
+    users is identity and access management. Some ambiguity with tenant identity federation, but IAM is
+    the clearest fit.
+- tag: SCIM 2 Groups
+  spec_file: webex-scim-2-groups-api-openapi.yml
+  capability_id: BC-620.20
+  capability_id_l1: BC-620
+  capability_name: Identity & Access Management
+  confidence: 0.8
+  evidence: POST /identity/scim/{orgId}/v2/Groups  Create a group; GET /identity/scim/{orgId}/v2/Groups/{groupId}/Members  Get
+    Group Members
+  reason: SCIM 2.0 group provisioning under an /identity/ path is directory group lifecycle and membership
+    — squarely Identity & Access Management.
+- tag: Bulk Manage SCIM 2 Users and Groups
+  spec_file: webex-bulk-manage-scim-2-users-and-groups-api-openapi.yml
+  capability_id: BC-620.20
+  capability_id_l1: BC-620
+  capability_name: Identity & Access Management
+  confidence: 0.75
+  evidence: POST /identity/scim/{orgId}/v2/Bulk  User bulk API; BulkUser
+  reason: SCIM 2.0 bulk user/group provisioning is identity and access management (directory user lifecycle).
+    Could alternatively be tenant identity federation; kept at IAM with moderate confidence.
+- tag: Call Monitoring
+  spec_file: webex-call-monitoring-api-openapi.yml
+  capability_id: BC-430.30
+  capability_id_l1: BC-430
+  capability_name: Contact Centre Operations Management
+  confidence: 0.75
+  evidence: POST /v1/monitor/{taskId}/bargeIn  BargeIn Request; GET /v1/monitor/sessions  Fetch Monitoring
+    Sessions; 'supervisorHoldMonitoringRoute' (webex-contact-center-openapi.json)
+  reason: Supervisor silent-monitor / barge-in on agent tasks in the Webex Contact Center spec — a contact-centre
+    operations (telephony supervision) capability, not generic monitoring/observability.
+- tag: Journey - Customer Identification API
+  spec_file: webex-journey-customer-identification-api-api-openapi.yml
+  capability_id: BC-420.10
+  capability_id_l1: BC-420
+  capability_name: Customer Data Management
+  confidence: 0.75
+  evidence: '"mergeIdentities  Creates or merges aliases to an Individual in JDS", "getPersonbyAliases  Search
+    for an Identity via aliases", schema "CreateOrUpdatePersonRequestModel"'
+  reason: 'Contact-center customer journey identity store: creating persons, merging aliases into a primary
+    identity, searching by alias. That is customer master / identity resolution (golden record) for customer
+    data, not authentication of platform users.'
+- tag: Auto CSAT
+  spec_file: webex-auto-csat-api-openapi.yml
+  capability_id: BC-430.50
+  capability_id_l1: BC-430
+  capability_name: Customer Feedback Management
+  confidence: 0.72
+  evidence: Create a new Auto CSAT mapped Question; List Auto CSAT resource(s) — contact center automated
+    customer satisfaction survey configuration
+  reason: CSAT question configuration in a contact-center product is customer feedback/survey management
+    (BC-430.50). Confidence moderated because it is config-only surface within a contact centre platform.
+- tag: Multimedia Profile
+  spec_file: webex-multimedia-profile-api-openapi.yml
+  capability_id: BC-430.30
+  capability_id_l1: BC-430
+  capability_name: Contact Centre Operations Management
+  confidence: 0.72
+  evidence: published in webex-contact-center-openapi.json; POST /organization/{orgid}/multimedia-profile  Create
+    a new Multimedia Profile; schema MultimediaProfileChannelDTO
+  reason: Contact-centre configuration entity defining per-channel media handling profiles assigned to
+    agents/teams, hosted in the contact center API. That is contact-centre operational setup, hence Contact
+    Centre Operations Management; confidence tempered because the operations are generic config CRUD.
+- tag: Tasks
+  spec_file: webex-tasks-api-openapi.yml
+  capability_id: BC-430.30
+  capability_id_l1: BC-430
+  capability_name: Contact Centre Operations Management
+  confidence: 0.72
+  evidence: POST /v1/tasks/{taskId}/accept  Accept Task; POST /v1/tasks/{taskId}/wrapup  Wrap Up Task;
+    POST /v1/tasks/{taskId}/transfer  Transfer Task; schema TaskQueue, Telephony
+  reason: Tasks here are live contact-centre interactions handled by agents (accept, hold, transfer, wrap-up,
+    pause recording), which is contact centre operations / customer contact handling.
+- tag: User Profiles
+  spec_file: webex-user-profiles-api-openapi.yml
+  capability_id: BC-620.20
+  capability_id_l1: BC-620
+  capability_name: Identity & Access Management
+  confidence: 0.72
+  evidence: GET /organization/{orgid}/v3/user-profile/{id}/acl  Get specific User Profile ACL by ID; schemas
+    UserProfilePermissionsDTO, AccessControlListDTO
+  reason: Contact-centre 'user profiles' here are granular-access permission bundles with ACLs — access-rights
+    administration, which is Identity & Access Management rather than HR profiles.
+- tag: Authorizations
+  spec_file: webex-authorizations-api-openapi.yml
+  capability_id: BC-620.20
+  capability_id_l1: BC-620
+  capability_name: Identity & Access Management
+  confidence: 0.7
+  evidence: GET /authorizations 'List authorizations for a user'; DELETE /authorizations 'Delete authorization
+    of org and client ID'; GET /authorizations/tokenExpiry 'Get expiration status for a token'
+  reason: Administration of OAuth authorisations/tokens granted by users to client applications, including
+    revocation — access management. Partly technical auth plumbing, so confidence is moderate rather than
+    high.
+- tag: BroadWorks Subscribers
+  spec_file: webex-broadworks-subscribers-api-openapi.yml
+  capability_id: BC-4240.30
+  capability_id_l1: BC-4240
+  capability_name: Subscription Provisioning
+  confidence: 0.7
+  evidence: Provision a BroadWorks Subscriber; Precheck a Broadworks Subscriber Provisioning; Remove a
+    BroadWorks Subscriber
+  reason: Provisioning, updating and removing subscriber service entitlements for a partner-sold service
+    = subscription provisioning/lifecycle. Some ambiguity vs tenant user provisioning.
+- tag: Campaign Manager
+  spec_file: webex-campaign-manager-api-openapi.yml
+  capability_id: BC-430.30
+  capability_id_l1: BC-430
+  capability_name: Contact Centre Operations Management
+  confidence: 0.7
+  evidence: POST /v1/dialer/campaign "Start Campaign Request", DELETE /v1/dialer/campaign/{campaignId}
+    "Stop Campaign Request", schema CallProgressAnalysisParamsRequest
+  reason: Starting/stopping dialer campaigns with call-progress analysis is outbound contact-centre dialing
+    operation, i.e. contact centre operations management for this collaboration/CC vendor.
+- tag: Entry Point
+  spec_file: webex-entry-point-api-openapi.yml
+  capability_id: BC-430.30
+  capability_id_l1: BC-430
+  capability_name: Contact Centre Operations Management
+  confidence: 0.7
+  evidence: Operations tagged Entry Point across ... webex-contact-center-openapi.json; "Create a new
+    Entry Point", schema EntryPointDTO with FlowOverrideSettingDTO
+  reason: Entry Points are the contact-centre inbound contact entry/routing configuration objects in Webex
+    Contact Center, managed per organisation. That is contact centre operations configuration. Confidence
+    moderate because the surface is generic CRUD-over-config (bulk save, purge inactive) and the business
+    meaning rests on the contact-center spec provenance.
+- tag: Estimated Wait Time
+  spec_file: webex-estimated-wait-time-api-openapi.yml
+  capability_id: BC-430.30
+  capability_id_l1: BC-430
+  capability_name: Contact Centre Operations Management
+  confidence: 0.7
+  evidence: GET /v1/ewt  getEwt  Get Estimated Wait Time (webex-contact-center-openapi.json), schema EWTApiResponse
+  reason: Estimated wait time for queued contacts is a contact-centre queue-management metric, so it realises
+    contact centre operations. Single thin operation, hence moderate confidence.
+- tag: Flows
+  spec_file: webex-flows-api-openapi.yml
+  capability_id: BC-430.30
+  capability_id_l1: BC-430
+  capability_name: Contact Centre Operations Management
+  confidence: 0.7
+  evidence: 'openapi description: ''The Webex Contact Center APIs ... queue and routing configuration'';
+    Validate a Flow; Save a Flow Draft; Publish a Flow or Subflow'
+  reason: Authoring, validating and publishing contact-centre routing/IVR flows — configuration of how
+    customer contacts are handled, i.e. Contact Centre Operations Management. Some ambiguity remains as
+    the surface is a flow-authoring toolchain (lock/unlock/import/draft).
+- tag: Journey - Profile Creation & Insights API
+  spec_file: webex-journey-profile-creation-insights-api-api-openapi.yml
+  capability_id: BC-420.10
+  capability_id_l1: BC-420
+  capability_name: Customer Data Management
+  confidence: 0.7
+  evidence: '"Historic Progressive Profile View by Template Name", "createTemplate  Create Template" for
+    /profile-view-template, schemas "ProgressiveProfileViewModel", "ProfileResponse"'
+  reason: Builds and reads unified customer profile views (progressive profiles) per person/identity from
+    journey data — customer data/profile management within CRM. Templates are configuration of those profile
+    views rather than a separate capability.
