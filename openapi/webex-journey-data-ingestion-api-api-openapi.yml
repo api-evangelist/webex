@@ -1,9 +1,8 @@
 openapi: 3.2.0
 info:
-  title: Webex Journey - Data Ingestion API API
+  title: Webex Journey - Data Ingestion API
   version: 1.0.0
-  description: 'Operations tagged Journey - Data Ingestion API across 2 of this provider''s published API definitions: webex-contact-center-openapi.json,
-    webex-journey-data-ingestion-api-api-openapi.yml. Each path carries the servers of the definition it was published in.'
+  description: 'Operations tagged Journey - Data Ingestion API across 2 of this provider''s published API definitions: webex-contact-center-openapi.json, webex-journey-data-ingestion-api-api-openapi.yml. Each path carries the servers of the definition it was published in.'
   x-provenance:
     method: harvested
     authored_by: Cisco Webex
@@ -12,8 +11,7 @@ info:
     first_party: true
     note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
     provider_published: true
-    derived_view: Per-tag view of webex-contact-center-openapi.json, the provider's source document. Operations and schemas
-      are the provider's, unmodified; only the partition is ours.
+    derived_view: Per-tag view of webex-contact-center-openapi.json, the provider's source document. Operations and schemas are the provider's, unmodified; only the partition is ours.
     derived_from: webex-contact-center-openapi.json
     operation_coverage: 1/1
   x-evidence:
@@ -29,10 +27,7 @@ paths:
       tags:
       - Journey - Data Ingestion API
       summary: Journey Event Posting
-      description: "Journey Event Posting API accepts events that describe what occurred, when, and by whom on every interaction\
-        \ across touch points and applications. Data Ingestion is based on Cloud Events specification for describing event\
-        \ data in a common way. API accepts data in the form of POST with support for Header based authorization. \n\nRole\
-        \ and Scope: Requires id full admin role with cjds:admin_org_write or any role with cjp:config_write scope."
+      description: "Journey Event Posting API accepts events that describe what occurred, when, and by whom on every interaction across touch points and applications. Data Ingestion is based on Cloud Events specification for describing event data in a common way. API accepts data in the form of POST with support for Header based authorization. \n\nRole and Scope: Requires id full admin role with cjds:admin_org_write or any role with cjp:config_write scope."
       operationId: journeyEventPosting
       parameters:
       - name: workspaceId
@@ -83,263 +78,48 @@ paths:
       - bearerAuth: []
 components:
   schemas:
-    BaseDataMessageResponseEnvelope:
+    eventData:
       type: object
       properties:
-        message:
+        agentId:
           type: string
-          description: message
-          example: Accepted for processing
-      description: Data part of the response
-    ApiError500:
-      required:
-      - trackingId
+          description: Agent Id
+          example: 109332be-7fc4-4d4d-9488-ebdb8e13b9bbe
+        destination:
+          type: string
+          description: destination
+          example: '+12147651210'
+        profileType:
+          type: string
+          description: profileType
+          example: BLENDED
+        currentState:
+          type: string
+          description: currentState
+          example: idle
+        idleCodeId:
+          type: string
+          description: idleCodeId
+          example: AXUr0jX9H5Tuplm_IxiC
+        createdTime:
+          type: string
+          description: createdTime
+          example: '1645819554383'
+      description: Event Data
+    BaseMetaWithWorkspaceResponseEnvelope:
       type: object
       properties:
-        status:
+        organizationId:
           type: string
-          description: Http Status Description
-          example: 500 INTERNAL_SERVER_ERROR
-          enum:
-          - 100 CONTINUE
-          - 101 SWITCHING_PROTOCOLS
-          - 102 PROCESSING
-          - 103 EARLY_HINTS
-          - 103 CHECKPOINT
-          - 200 OK
-          - 201 CREATED
-          - 202 ACCEPTED
-          - 203 NON_AUTHORITATIVE_INFORMATION
-          - 204 NO_CONTENT
-          - 205 RESET_CONTENT
-          - 206 PARTIAL_CONTENT
-          - 207 MULTI_STATUS
-          - 208 ALREADY_REPORTED
-          - 226 IM_USED
-          - 300 MULTIPLE_CHOICES
-          - 301 MOVED_PERMANENTLY
-          - 302 FOUND
-          - 302 MOVED_TEMPORARILY
-          - 303 SEE_OTHER
-          - 304 NOT_MODIFIED
-          - 305 USE_PROXY
-          - 307 TEMPORARY_REDIRECT
-          - 308 PERMANENT_REDIRECT
-          - 400 BAD_REQUEST
-          - 401 UNAUTHORIZED
-          - 402 PAYMENT_REQUIRED
-          - 403 FORBIDDEN
-          - 404 NOT_FOUND
-          - 405 METHOD_NOT_ALLOWED
-          - 406 NOT_ACCEPTABLE
-          - 407 PROXY_AUTHENTICATION_REQUIRED
-          - 408 REQUEST_TIMEOUT
-          - 409 CONFLICT
-          - 410 GONE
-          - 411 LENGTH_REQUIRED
-          - 412 PRECONDITION_FAILED
-          - 413 PAYLOAD_TOO_LARGE
-          - 413 REQUEST_ENTITY_TOO_LARGE
-          - 414 URI_TOO_LONG
-          - 414 REQUEST_URI_TOO_LONG
-          - 415 UNSUPPORTED_MEDIA_TYPE
-          - 416 REQUESTED_RANGE_NOT_SATISFIABLE
-          - 417 EXPECTATION_FAILED
-          - 418 I_AM_A_TEAPOT
-          - 419 INSUFFICIENT_SPACE_ON_RESOURCE
-          - 420 METHOD_FAILURE
-          - 421 DESTINATION_LOCKED
-          - 422 UNPROCESSABLE_ENTITY
-          - 423 LOCKED
-          - 424 FAILED_DEPENDENCY
-          - 425 TOO_EARLY
-          - 426 UPGRADE_REQUIRED
-          - 428 PRECONDITION_REQUIRED
-          - 429 TOO_MANY_REQUESTS
-          - 431 REQUEST_HEADER_FIELDS_TOO_LARGE
-          - 451 UNAVAILABLE_FOR_LEGAL_REASONS
-          - 500 INTERNAL_SERVER_ERROR
-          - 501 NOT_IMPLEMENTED
-          - 502 BAD_GATEWAY
-          - 503 SERVICE_UNAVAILABLE
-          - 504 GATEWAY_TIMEOUT
-          - 505 HTTP_VERSION_NOT_SUPPORTED
-          - 506 VARIANT_ALSO_NEGOTIATES
-          - 507 INSUFFICIENT_STORAGE
-          - 508 LOOP_DETECTED
-          - 509 BANDWIDTH_LIMIT_EXCEEDED
-          - 510 NOT_EXTENDED
-          - 511 NETWORK_AUTHENTICATION_REQUIRED
-        message:
+          description: Organization ID
+          example: 1eb65fdf-9643-417f-9974-ad72cae0e10f
+        workspaceId:
           type: string
-          description: Error Message
-          example: Internal server error
-        errors:
-          type: array
-          description: Internal server error
-          example:
-          - 'Internal server error '
-          items:
-            type: string
-        timestamp:
-          type: string
-          description: Occurred timestamp
-          format: date-time
-          example: '2023-03-27T20:59:32.376Z'
-        trackingId:
-          type: string
-          description: Unique ID by which a request can be debugged. Please provide if opening a support case.
-          example: 76cd71d0e678a8bb
-    JourneyCloudEventModel:
-      required:
-      - data
-      - datacontenttype
-      - id
-      - identity
-      - identitytype
-      - source
-      - specversion
-      - type
-      type: object
-      properties:
-        id:
-          type: string
-          description: Event ID
-          example: 9ab65fdf-9643-417f-9974-ad72cae0e10f
-        specversion:
-          type: string
-          description: Event Spec Version
-          example: '1.0'
-        type:
-          type: string
-          description: Event Type
-          example: com.cisco.wxcc.event.agent
-        source:
-          type: string
-          description: Event Source
-          example: /com/cisco/wxcc/123
-        time:
-          type: string
-          description: Event Time
-          example: '2022-08-15T22:29:43.768Z'
-        identity:
-          type: string
-          description: Identity
-          example: sjohndeo@cisco.com
-        identitytype:
-          type: string
-          description: Identity Type
-          example: email
-        previousidentity:
-          type: string
-          description: Previous Identity
-          example: sdeo@cisco.com
-        datacontenttype:
-          type: string
-          description: Event Data Content Type
-          example: application/json
-        data:
-          $ref: '#/components/schemas/eventData'
-      description: Journey Cloud Event Model
-    ApiError404:
-      required:
-      - trackingId
-      type: object
-      properties:
-        status:
-          type: string
-          description: Http Status Description
-          example: 404 NOT_FOUND
-          enum:
-          - 100 CONTINUE
-          - 101 SWITCHING_PROTOCOLS
-          - 102 PROCESSING
-          - 103 EARLY_HINTS
-          - 103 CHECKPOINT
-          - 200 OK
-          - 201 CREATED
-          - 202 ACCEPTED
-          - 203 NON_AUTHORITATIVE_INFORMATION
-          - 204 NO_CONTENT
-          - 205 RESET_CONTENT
-          - 206 PARTIAL_CONTENT
-          - 207 MULTI_STATUS
-          - 208 ALREADY_REPORTED
-          - 226 IM_USED
-          - 300 MULTIPLE_CHOICES
-          - 301 MOVED_PERMANENTLY
-          - 302 FOUND
-          - 302 MOVED_TEMPORARILY
-          - 303 SEE_OTHER
-          - 304 NOT_MODIFIED
-          - 305 USE_PROXY
-          - 307 TEMPORARY_REDIRECT
-          - 308 PERMANENT_REDIRECT
-          - 400 BAD_REQUEST
-          - 401 UNAUTHORIZED
-          - 402 PAYMENT_REQUIRED
-          - 403 FORBIDDEN
-          - 404 NOT_FOUND
-          - 405 METHOD_NOT_ALLOWED
-          - 406 NOT_ACCEPTABLE
-          - 407 PROXY_AUTHENTICATION_REQUIRED
-          - 408 REQUEST_TIMEOUT
-          - 409 CONFLICT
-          - 410 GONE
-          - 411 LENGTH_REQUIRED
-          - 412 PRECONDITION_FAILED
-          - 413 PAYLOAD_TOO_LARGE
-          - 413 REQUEST_ENTITY_TOO_LARGE
-          - 414 URI_TOO_LONG
-          - 414 REQUEST_URI_TOO_LONG
-          - 415 UNSUPPORTED_MEDIA_TYPE
-          - 416 REQUESTED_RANGE_NOT_SATISFIABLE
-          - 417 EXPECTATION_FAILED
-          - 418 I_AM_A_TEAPOT
-          - 419 INSUFFICIENT_SPACE_ON_RESOURCE
-          - 420 METHOD_FAILURE
-          - 421 DESTINATION_LOCKED
-          - 422 UNPROCESSABLE_ENTITY
-          - 423 LOCKED
-          - 424 FAILED_DEPENDENCY
-          - 425 TOO_EARLY
-          - 426 UPGRADE_REQUIRED
-          - 428 PRECONDITION_REQUIRED
-          - 429 TOO_MANY_REQUESTS
-          - 431 REQUEST_HEADER_FIELDS_TOO_LARGE
-          - 451 UNAVAILABLE_FOR_LEGAL_REASONS
-          - 500 INTERNAL_SERVER_ERROR
-          - 501 NOT_IMPLEMENTED
-          - 502 BAD_GATEWAY
-          - 503 SERVICE_UNAVAILABLE
-          - 504 GATEWAY_TIMEOUT
-          - 505 HTTP_VERSION_NOT_SUPPORTED
-          - 506 VARIANT_ALSO_NEGOTIATES
-          - 507 INSUFFICIENT_STORAGE
-          - 508 LOOP_DETECTED
-          - 509 BANDWIDTH_LIMIT_EXCEEDED
-          - 510 NOT_EXTENDED
-          - 511 NETWORK_AUTHENTICATION_REQUIRED
-        message:
-          type: string
-          description: Error Message
-          example: Resource not found
-        errors:
-          type: array
-          description: Resource Already Found
-          example:
-          - Id 3249892348-sdfjsdhf-345hdsf-345345 Not Found
-          items:
-            type: string
-        timestamp:
-          type: string
-          description: Occurred timestamp
-          format: date-time
-          example: '2023-03-27T20:59:32.376Z'
-        trackingId:
-          type: string
-          description: Unique ID by which a request can be debugged. Please provide if opening a support case.
-          example: 76cd71d0e678a8bb
+          description: Workspace ID
+          example: ad72cae0e10f-417f-9974-417f-ad72cae0e10f
+      description: Meta information of the response
+      example:
+        organizationId: 1eb65fdf-9643-417f-9974-ad72cae0e10f
     ApiError429:
       required:
       - trackingId
@@ -439,34 +219,164 @@ components:
           type: string
           description: Unique ID by which a request can be debugged. Please provide if opening a support case.
           example: 76cd71d0e678a8bb
-    eventData:
+    ApiError404:
+      required:
+      - trackingId
       type: object
       properties:
-        agentId:
+        status:
           type: string
-          description: Agent Id
-          example: 109332be-7fc4-4d4d-9488-ebdb8e13b9bbe
-        destination:
+          description: Http Status Description
+          example: 404 NOT_FOUND
+          enum:
+          - 100 CONTINUE
+          - 101 SWITCHING_PROTOCOLS
+          - 102 PROCESSING
+          - 103 EARLY_HINTS
+          - 103 CHECKPOINT
+          - 200 OK
+          - 201 CREATED
+          - 202 ACCEPTED
+          - 203 NON_AUTHORITATIVE_INFORMATION
+          - 204 NO_CONTENT
+          - 205 RESET_CONTENT
+          - 206 PARTIAL_CONTENT
+          - 207 MULTI_STATUS
+          - 208 ALREADY_REPORTED
+          - 226 IM_USED
+          - 300 MULTIPLE_CHOICES
+          - 301 MOVED_PERMANENTLY
+          - 302 FOUND
+          - 302 MOVED_TEMPORARILY
+          - 303 SEE_OTHER
+          - 304 NOT_MODIFIED
+          - 305 USE_PROXY
+          - 307 TEMPORARY_REDIRECT
+          - 308 PERMANENT_REDIRECT
+          - 400 BAD_REQUEST
+          - 401 UNAUTHORIZED
+          - 402 PAYMENT_REQUIRED
+          - 403 FORBIDDEN
+          - 404 NOT_FOUND
+          - 405 METHOD_NOT_ALLOWED
+          - 406 NOT_ACCEPTABLE
+          - 407 PROXY_AUTHENTICATION_REQUIRED
+          - 408 REQUEST_TIMEOUT
+          - 409 CONFLICT
+          - 410 GONE
+          - 411 LENGTH_REQUIRED
+          - 412 PRECONDITION_FAILED
+          - 413 PAYLOAD_TOO_LARGE
+          - 413 REQUEST_ENTITY_TOO_LARGE
+          - 414 URI_TOO_LONG
+          - 414 REQUEST_URI_TOO_LONG
+          - 415 UNSUPPORTED_MEDIA_TYPE
+          - 416 REQUESTED_RANGE_NOT_SATISFIABLE
+          - 417 EXPECTATION_FAILED
+          - 418 I_AM_A_TEAPOT
+          - 419 INSUFFICIENT_SPACE_ON_RESOURCE
+          - 420 METHOD_FAILURE
+          - 421 DESTINATION_LOCKED
+          - 422 UNPROCESSABLE_ENTITY
+          - 423 LOCKED
+          - 424 FAILED_DEPENDENCY
+          - 425 TOO_EARLY
+          - 426 UPGRADE_REQUIRED
+          - 428 PRECONDITION_REQUIRED
+          - 429 TOO_MANY_REQUESTS
+          - 431 REQUEST_HEADER_FIELDS_TOO_LARGE
+          - 451 UNAVAILABLE_FOR_LEGAL_REASONS
+          - 500 INTERNAL_SERVER_ERROR
+          - 501 NOT_IMPLEMENTED
+          - 502 BAD_GATEWAY
+          - 503 SERVICE_UNAVAILABLE
+          - 504 GATEWAY_TIMEOUT
+          - 505 HTTP_VERSION_NOT_SUPPORTED
+          - 506 VARIANT_ALSO_NEGOTIATES
+          - 507 INSUFFICIENT_STORAGE
+          - 508 LOOP_DETECTED
+          - 509 BANDWIDTH_LIMIT_EXCEEDED
+          - 510 NOT_EXTENDED
+          - 511 NETWORK_AUTHENTICATION_REQUIRED
+        message:
           type: string
-          description: destination
-          example: '+12147651210'
-        profileType:
+          description: Error Message
+          example: Resource not found
+        errors:
+          type: array
+          description: Resource Already Found
+          example:
+          - Id 3249892348-sdfjsdhf-345hdsf-345345 Not Found
+          items:
+            type: string
+        timestamp:
           type: string
-          description: profileType
-          example: BLENDED
-        currentState:
+          description: Occurred timestamp
+          format: date-time
+          example: '2023-03-27T20:59:32.376Z'
+        trackingId:
           type: string
-          description: currentState
-          example: idle
-        idleCodeId:
+          description: Unique ID by which a request can be debugged. Please provide if opening a support case.
+          example: 76cd71d0e678a8bb
+    BaseDataMessageResponseEnvelope:
+      type: object
+      properties:
+        message:
           type: string
-          description: idleCodeId
-          example: AXUr0jX9H5Tuplm_IxiC
-        createdTime:
+          description: message
+          example: Accepted for processing
+      description: Data part of the response
+    JourneyCloudEventModel:
+      required:
+      - data
+      - datacontenttype
+      - id
+      - identity
+      - identitytype
+      - source
+      - specversion
+      - type
+      type: object
+      properties:
+        id:
           type: string
-          description: createdTime
-          example: '1645819554383'
-      description: Event Data
+          description: Event ID
+          example: 9ab65fdf-9643-417f-9974-ad72cae0e10f
+        specversion:
+          type: string
+          description: Event Spec Version
+          example: '1.0'
+        type:
+          type: string
+          description: Event Type
+          example: com.cisco.wxcc.event.agent
+        source:
+          type: string
+          description: Event Source
+          example: /com/cisco/wxcc/123
+        time:
+          type: string
+          description: Event Time
+          example: '2022-08-15T22:29:43.768Z'
+        identity:
+          type: string
+          description: Identity
+          example: sjohndeo@cisco.com
+        identitytype:
+          type: string
+          description: Identity Type
+          example: email
+        previousidentity:
+          type: string
+          description: Previous Identity
+          example: sdeo@cisco.com
+        datacontenttype:
+          type: string
+          description: Event Data Content Type
+          example: application/json
+        data:
+          $ref: '#/components/schemas/eventData'
+      description: Journey Cloud Event Model
     ApiError409:
       required:
       - trackingId
@@ -566,6 +476,105 @@ components:
           type: string
           description: Unique ID by which a request can be debugged. Please provide if opening a support case.
           example: 76cd71d0e678a8bb
+    ApiError500:
+      required:
+      - trackingId
+      type: object
+      properties:
+        status:
+          type: string
+          description: Http Status Description
+          example: 500 INTERNAL_SERVER_ERROR
+          enum:
+          - 100 CONTINUE
+          - 101 SWITCHING_PROTOCOLS
+          - 102 PROCESSING
+          - 103 EARLY_HINTS
+          - 103 CHECKPOINT
+          - 200 OK
+          - 201 CREATED
+          - 202 ACCEPTED
+          - 203 NON_AUTHORITATIVE_INFORMATION
+          - 204 NO_CONTENT
+          - 205 RESET_CONTENT
+          - 206 PARTIAL_CONTENT
+          - 207 MULTI_STATUS
+          - 208 ALREADY_REPORTED
+          - 226 IM_USED
+          - 300 MULTIPLE_CHOICES
+          - 301 MOVED_PERMANENTLY
+          - 302 FOUND
+          - 302 MOVED_TEMPORARILY
+          - 303 SEE_OTHER
+          - 304 NOT_MODIFIED
+          - 305 USE_PROXY
+          - 307 TEMPORARY_REDIRECT
+          - 308 PERMANENT_REDIRECT
+          - 400 BAD_REQUEST
+          - 401 UNAUTHORIZED
+          - 402 PAYMENT_REQUIRED
+          - 403 FORBIDDEN
+          - 404 NOT_FOUND
+          - 405 METHOD_NOT_ALLOWED
+          - 406 NOT_ACCEPTABLE
+          - 407 PROXY_AUTHENTICATION_REQUIRED
+          - 408 REQUEST_TIMEOUT
+          - 409 CONFLICT
+          - 410 GONE
+          - 411 LENGTH_REQUIRED
+          - 412 PRECONDITION_FAILED
+          - 413 PAYLOAD_TOO_LARGE
+          - 413 REQUEST_ENTITY_TOO_LARGE
+          - 414 URI_TOO_LONG
+          - 414 REQUEST_URI_TOO_LONG
+          - 415 UNSUPPORTED_MEDIA_TYPE
+          - 416 REQUESTED_RANGE_NOT_SATISFIABLE
+          - 417 EXPECTATION_FAILED
+          - 418 I_AM_A_TEAPOT
+          - 419 INSUFFICIENT_SPACE_ON_RESOURCE
+          - 420 METHOD_FAILURE
+          - 421 DESTINATION_LOCKED
+          - 422 UNPROCESSABLE_ENTITY
+          - 423 LOCKED
+          - 424 FAILED_DEPENDENCY
+          - 425 TOO_EARLY
+          - 426 UPGRADE_REQUIRED
+          - 428 PRECONDITION_REQUIRED
+          - 429 TOO_MANY_REQUESTS
+          - 431 REQUEST_HEADER_FIELDS_TOO_LARGE
+          - 451 UNAVAILABLE_FOR_LEGAL_REASONS
+          - 500 INTERNAL_SERVER_ERROR
+          - 501 NOT_IMPLEMENTED
+          - 502 BAD_GATEWAY
+          - 503 SERVICE_UNAVAILABLE
+          - 504 GATEWAY_TIMEOUT
+          - 505 HTTP_VERSION_NOT_SUPPORTED
+          - 506 VARIANT_ALSO_NEGOTIATES
+          - 507 INSUFFICIENT_STORAGE
+          - 508 LOOP_DETECTED
+          - 509 BANDWIDTH_LIMIT_EXCEEDED
+          - 510 NOT_EXTENDED
+          - 511 NETWORK_AUTHENTICATION_REQUIRED
+        message:
+          type: string
+          description: Error Message
+          example: Internal server error
+        errors:
+          type: array
+          description: Internal server error
+          example:
+          - 'Internal server error '
+          items:
+            type: string
+        timestamp:
+          type: string
+          description: Occurred timestamp
+          format: date-time
+          example: '2023-03-27T20:59:32.376Z'
+        trackingId:
+          type: string
+          description: Unique ID by which a request can be debugged. Please provide if opening a support case.
+          example: 76cd71d0e678a8bb
     JourneyEventPostingResponse:
       type: object
       properties:
@@ -573,20 +582,6 @@ components:
           $ref: '#/components/schemas/BaseMetaWithWorkspaceResponseEnvelope'
         data:
           $ref: '#/components/schemas/BaseDataMessageResponseEnvelope'
-    BaseMetaWithWorkspaceResponseEnvelope:
-      type: object
-      properties:
-        organizationId:
-          type: string
-          description: Organization ID
-          example: 1eb65fdf-9643-417f-9974-ad72cae0e10f
-        workspaceId:
-          type: string
-          description: Workspace ID
-          example: ad72cae0e10f-417f-9974-417f-ad72cae0e10f
-      description: Meta information of the response
-      example:
-        organizationId: 1eb65fdf-9643-417f-9974-ad72cae0e10f
   securitySchemes:
     oauth2:
       flows:

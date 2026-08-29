@@ -940,6 +940,172 @@ paths:
           type: string
 components:
   schemas:
+    alarmOccurrence:
+      type: object
+      properties:
+        raisedAt:
+          type: string
+          format: date-time
+          example: '2025-06-14T15:53:00Z'
+          description: Timestamp when the alarm was raised.
+        clearedAt:
+          type: string
+          format: date-time
+          example: '2025-06-15T15:53:00Z'
+          description: Timestamp when the alarm was cleared.
+    clusterNodesResponse:
+      type: object
+      properties:
+        nodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/nodeDetailsResponse'
+          description: List of nodes in the cluster.
+    clusterDetailsResponse:
+      type: object
+      properties:
+        context:
+          type: object
+          properties:
+            orgId:
+              type: string
+              example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi8yYzNjOWY5NS03M2Q5LTQ0NjAtYTY2OC0wNDcxNjJmZjFiYWQ=
+              description: Unique ID of the organization.
+          description: Metadata information about the organization for which the cluster details are being retrieved.
+        clusterId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0hZQlJJRF9DTFVTVEVSLzJjM2M5Zjk1LTczZDktNDQ2MC1hNjY4LTA0NzE2MmZmMWJhZDpmMWJmMGI1MC0yMDUyLTQ3ZmUtYjg3ZC01MTFjMmZlNzQ3MWI
+          description: Unique ID of the cluster.
+        clusterName:
+          type: string
+          example: Bangalore
+          description: Name of the cluster.
+        clusterStatus:
+          type: string
+          example: Operational
+          description: Current status of the cluster.
+        releaseChannel:
+          type: string
+          example: beta
+          description: Release channel of the cluster.
+        upgradeSchedule:
+          type: object
+          properties:
+            scheduleDays:
+              type: array
+              items:
+                type: string
+                example: sunday
+              description: Days of the week when upgrades are scheduled.
+            scheduleTime:
+              type: string
+              example: 02:00
+              description: Time of the day when upgrades are scheduled.
+            scheduleTimeZone:
+              type: string
+              example: Asia/Kolkata
+              description: Time zone for the scheduled upgrade time.
+            nextUpgradeTime:
+              type: string
+              example: '2025-07-25T20:30:00Z'
+              description: Next scheduled upgrade time.
+          description: Upgrade schedule details of the cluster.
+    networkTestTypeResult:
+      type: object
+      properties:
+        type:
+          type: string
+          example: DNSResolutionTest
+          description: Type of network test.
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/serviceTestResults'
+          description: List of service type test results.
+    networkTestsResultsResponse:
+      type: object
+      properties:
+        context:
+          type: object
+          properties:
+            orgId:
+              type: string
+              example: Y2lzY29zcGFyazovL3VzL0hZQlJJRF9DTFVTVEVSLzFlYjY1ZmRmLTk2NDMtNDE3Zi05OTc0LWFkNzJVGNG
+              description: Unique ID of the organization.
+            clusterId:
+              type: string
+              example: Y2lzY29zcGFyazovL3VzL0hZQlJJRF9DTFVTVEVSLzJjM2M5Zjk1LTczZDktNDQ2MC1hNjY4LTA0NzE2MmZmMWJhZDpmMWJmMGI1MC0yMDUyLTQ3ZmUtYjg3ZC01MTFjMmZlNzQ3MWI=
+              description: Unique ID of the cluster.
+            clusterName:
+              type: string
+              example: hds_bangalore
+              description: Name of the cluster.
+            nodeId:
+              type: string
+              example: Y2lzY29zcGFyazovL3VzL0hZQlJJRF9DT05ORUNUT1IvMmMzYzlmOTUtNzNkOS00NDYwLWE2NjgtMDQ3MTYyZmYxYmFkOjE1NmRmNzg5Yzg1NTRkNTVhMjc1ZGY5OTc4Zjk5MDJk
+              description: Unique ID of the node.
+            hostName:
+              type: string
+              example: abc.xyz.com
+              description: Hostname of the Hybrid Data Security node.
+            hostIP:
+              type: string
+              example: 10.196.5.82
+              description: IP address of the Hybrid Data Security node.
+          description: Metadata information about the node for which network test results are being retrieved.
+        testResults:
+          type: array
+          items:
+            $ref: '#/components/schemas/networkTestResult'
+          description: List of network test results.
+    nodeAlarm:
+      type: object
+      properties:
+        alarmId:
+          type: string
+          example: AUTH_WARN.expiring-60
+          description: Unique identifier of the alarm.
+        alarmName:
+          type: string
+          example: Hybrid Data Security Machine Accounts Expiring in 60 days
+          description: Name of the alarm.
+        alarmSeverity:
+          type: string
+          example: Warning
+          description: Severity level of the alarm.
+        alarmDetails:
+          type: string
+          example: Expiration Details
+          description: Additional details about the alarm.
+        possibleRemediation:
+          type: string
+          example: Refresh Hybrid Data Security Machine Accounts using Hybrid Data Security Setup Tool
+          description: Suggested remediation steps for the alarm.
+        currentStatus:
+          type: string
+          example: Active
+          description: Current status of the alarm.
+        occurrences:
+          type: object
+          properties:
+            total:
+              type: string
+              example: '4'
+              description: Total number of occurrences of the alarm.
+            details:
+              type: array
+              items:
+                $ref: '#/components/schemas/alarmOccurrence'
+              description: List of individual alarm occurrence details.
+          description: Occurrence details of the alarm.
+    orgClustersResponse:
+      type: object
+      properties:
+        clusters:
+          type: array
+          items:
+            $ref: '#/components/schemas/clusterDetailsResponse'
+          description: List of clusters in the organization.
     singleServiceTestResult:
       type: object
       properties:
@@ -953,116 +1119,6 @@ components:
           description: Result of the test for the service.
         failureDetails:
           $ref: '#/components/schemas/networkTestFailureDetails'
-    nodeResourceUsageSegment:
-      type: object
-      properties:
-        startTime:
-          type: string
-          format: date-time
-          example: '2025-06-15T15:00:00Z'
-          description: Start time of the resource usage segment.
-        endTime:
-          type: string
-          format: date-time
-          example: '2025-06-15T15:10:00Z'
-          description: End time of the resource usage segment.
-        cpuUsage:
-          type: object
-          properties:
-            peakCpuUsagePercent:
-              type: number
-              example: 30.78
-              description: Peak CPU usage percentage in the segment.
-            averageCpuUsagePercent:
-              type: number
-              example: 8.9
-              description: Average CPU usage percentage in the segment.
-          description: CPU usage details for the segment.
-        memoryUsage:
-          type: object
-          properties:
-            totalMemoryUsageInMB:
-              type: number
-              example: 7454
-              description: Total memory available on the node in MB.
-            peakMemoryUsageInMB:
-              type: number
-              example: 6075
-              description: Peak memory usage in MB in the segment.
-            peakMemoryUsagePercent:
-              type: number
-              example: 81.5
-              description: Peak memory usage percentage in the segment.
-            averageMemoryUsageInMB:
-              type: number
-              example: 6042
-              description: Average memory usage in MB in the segment.
-            averageMemoryUsagePercent:
-              type: number
-              example: 81.06
-              description: Average memory usage percentage in the segment.
-          description: Memory usage details for the segment.
-        diskUsage:
-          type: object
-          properties:
-            totalDiskSpaceUsageInMB:
-              type: number
-              example: 37308
-              description: Total disk space available on the node in MB.
-            peakDiskSpaceUsageInMB:
-              type: number
-              example: 18874
-              description: Peak disk space usage in MB in the segment.
-            peakDiskUsagePercent:
-              type: number
-              example: 50.59
-              description: Peak disk usage percentage in the segment.
-            averageDiskUsage:
-              type: number
-              example: 18874
-              description: Average disk usage in MB in the segment.
-            averageDiskUsagePercent:
-              type: number
-              example: 50.59
-              description: Average disk usage percentage in the segment.
-          description: Disk usage details for the segment.
-    networkTestTypeResult:
-      type: object
-      properties:
-        type:
-          type: string
-          example: DNSResolutionTest
-          description: Type of network test.
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/serviceTestResults'
-          description: List of service type test results.
-    availabilitySegment:
-      type: object
-      properties:
-        segmentStartTime:
-          type: string
-          format: date-time
-          example: '2026-01-01T00:00:00Z'
-          description: Start time of the availability segment.
-        segmentEndTime:
-          type: string
-          format: date-time
-          example: '2026-01-02T00:00:00Z'
-          description: End time of the availability segment.
-        noOfOnlineNodes:
-          type: integer
-          example: 1
-          description: Number of online nodes in the cluster in the segment.
-        noOfOfflineNodes:
-          type: integer
-          example: 1
-          description: Number of offline nodes in the cluster in the segment.
-        totalNodes:
-          type: integer
-          example: 2
-          description: Total number of nodes in the cluster in the segment.
     tenantDetails:
       type: object
       properties:
@@ -1082,18 +1138,71 @@ components:
           type: string
           example: Setup complete
           description: Current state of the tenant organization.
-    serviceTestResults:
+    orgDetailsResponse:
       type: object
       properties:
-        serviceType:
+        orgId:
           type: string
-          example: WebexCloud
-          description: Type of service.
-        services:
+          example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi8yYzNjOWY5NS03M2Q5LTQ0NjAtYTY2OC0wNDcxNjJmZjFiYWQ
+          description: Unique ID of the organization.
+        orgName:
+          type: string
+          example: HDS_Demo
+          description: Name of the organization.
+        orgType:
+          type: string
+          example: Single Tenant
+          description: Type of the organization.
+        orgMode:
+          type: string
+          example: Production
+          description: Mode of the organization.
+    nodeResourceUsageResponse:
+      type: object
+      properties:
+        context:
+          type: object
+          properties:
+            orgId:
+              type: string
+              example: Y2lzY29zcGFyazovL3VzL0hZQlJJRF9DTFVTVEVSLzFlYjY1ZmRmLTk2NDMtNDE3Zi05OTc0LWFkNzJVGNG
+              description: Unique ID of the organization.
+            clusterId:
+              type: string
+              example: Y2lzY29zcGFyazovL3VzL0hZQlJJRF9DTFVTVEVSLzFlYjY1ZmRmLTk2NDMtNDE3Zi05OTc0LWFkNzJjYWUwZTEwZjpiMzdmNTgzYy1kZGRjLTQyOGItODJlNS1jYmU2ODFkYjQ5NjI
+              description: Unique ID of the cluster.
+            clusterName:
+              type: string
+              example: cluster-1
+              description: Name of the cluster.
+            nodeId:
+              type: string
+              example: Y2lzY29zcGFyazovL3VzL0hZQlJJRF9DTFVTVEVSLzFlYjY1ZmRmLTk2NDMtNDE3Zi05OTc0LWFkNzJjYWUwZTEwZjpiMzdmNTgzYy1kZGRjLTQyOGItODJlNS1jYmU2ODFkYjQ5NjI
+              description: Unique ID of the node.
+            host:
+              type: string
+              example: xyz.abc.com
+              description: Host name or IP address of the Hybrid Data Security node.
+          description: Metadata information about the node for which resource usage is being retrieved.
+        resourceUsage:
           type: array
           items:
-            $ref: '#/components/schemas/singleServiceTestResult'
-          description: List of individual service test results.
+            $ref: '#/components/schemas/nodeResourceUsageSegment'
+          description: List of resource usage segments over the requested time range.
+        timeRange:
+          type: object
+          properties:
+            from:
+              type: string
+              format: date-time
+              example: '2025-06-15T15:00:00Z'
+              description: Start time of the requested data range.
+            to:
+              type: string
+              format: date-time
+              example: '2025-06-15T15:20:00Z'
+              description: End time of the requested data range.
+          description: The time range for the resource usage data.
     nodeDetailsResponse:
       type: object
       properties:
@@ -1169,7 +1278,109 @@ components:
           type: string
           example: Dev
           description: Build type of the Hybrid Data Security node.
-    nodeResourceUsageResponse:
+    networkTestResult:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          example: '2025-06-15T15:53:00Z'
+          description: Timestamp when the test was triggered.
+        triggerType:
+          type: string
+          example: OnDemand
+          description: Type of trigger for the test.
+        result:
+          type: array
+          items:
+            $ref: '#/components/schemas/networkTestTypeResult'
+          description: List of results per test type.
+    nodeResourceUsageSegment:
+      type: object
+      properties:
+        startTime:
+          type: string
+          format: date-time
+          example: '2025-06-15T15:00:00Z'
+          description: Start time of the resource usage segment.
+        endTime:
+          type: string
+          format: date-time
+          example: '2025-06-15T15:10:00Z'
+          description: End time of the resource usage segment.
+        cpuUsage:
+          type: object
+          properties:
+            peakCpuUsagePercent:
+              type: number
+              example: 30.78
+              description: Peak CPU usage percentage in the segment.
+            averageCpuUsagePercent:
+              type: number
+              example: 8.9
+              description: Average CPU usage percentage in the segment.
+          description: CPU usage details for the segment.
+        memoryUsage:
+          type: object
+          properties:
+            totalMemoryUsageInMB:
+              type: number
+              example: 7454
+              description: Total memory available on the node in MB.
+            peakMemoryUsageInMB:
+              type: number
+              example: 6075
+              description: Peak memory usage in MB in the segment.
+            peakMemoryUsagePercent:
+              type: number
+              example: 81.5
+              description: Peak memory usage percentage in the segment.
+            averageMemoryUsageInMB:
+              type: number
+              example: 6042
+              description: Average memory usage in MB in the segment.
+            averageMemoryUsagePercent:
+              type: number
+              example: 81.06
+              description: Average memory usage percentage in the segment.
+          description: Memory usage details for the segment.
+        diskUsage:
+          type: object
+          properties:
+            totalDiskSpaceUsageInMB:
+              type: number
+              example: 37308
+              description: Total disk space available on the node in MB.
+            peakDiskSpaceUsageInMB:
+              type: number
+              example: 18874
+              description: Peak disk space usage in MB in the segment.
+            peakDiskUsagePercent:
+              type: number
+              example: 50.59
+              description: Peak disk usage percentage in the segment.
+            averageDiskUsage:
+              type: number
+              example: 18874
+              description: Average disk usage in MB in the segment.
+            averageDiskUsagePercent:
+              type: number
+              example: 50.59
+              description: Average disk usage percentage in the segment.
+          description: Disk usage details for the segment.
+    serviceTestResults:
+      type: object
+      properties:
+        serviceType:
+          type: string
+          example: WebexCloud
+          description: Type of service.
+        services:
+          type: array
+          items:
+            $ref: '#/components/schemas/singleServiceTestResult'
+          description: List of individual service test results.
+    clustersAvailabilityDetailsResponse:
       type: object
       properties:
         context:
@@ -1177,84 +1388,36 @@ components:
           properties:
             orgId:
               type: string
-              example: Y2lzY29zcGFyazovL3VzL0hZQlJJRF9DTFVTVEVSLzFlYjY1ZmRmLTk2NDMtNDE3Zi05OTc0LWFkNzJVGNG
+              example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi8yYzNjOWY5NS03M2Q5LTQ0NjAtYTY2OC0wNDcxNjJmZjFiYWQ
               description: Unique ID of the organization.
             clusterId:
               type: string
-              example: Y2lzY29zcGFyazovL3VzL0hZQlJJRF9DTFVTVEVSLzFlYjY1ZmRmLTk2NDMtNDE3Zi05OTc0LWFkNzJjYWUwZTEwZjpiMzdmNTgzYy1kZGRjLTQyOGItODJlNS1jYmU2ODFkYjQ5NjI
+              example: Y2lzY29zcGFyazovL3VzL0hZQlJJRF9DTFVTVEVSLzJjM2M5Zjk1LTczZDktNDQ2MC1hNjY4LTA0NzE2MmZmMWJhZDpiMzdmNTgzYy1kZGRjLTQyOGItODJlNS1jYmU2ODFkYjQ5NjI=
               description: Unique ID of the cluster.
             clusterName:
               type: string
-              example: cluster-1
+              example: San Jose
               description: Name of the cluster.
-            nodeId:
-              type: string
-              example: Y2lzY29zcGFyazovL3VzL0hZQlJJRF9DTFVTVEVSLzFlYjY1ZmRmLTk2NDMtNDE3Zi05OTc0LWFkNzJjYWUwZTEwZjpiMzdmNTgzYy1kZGRjLTQyOGItODJlNS1jYmU2ODFkYjQ5NjI
-              description: Unique ID of the node.
-            host:
-              type: string
-              example: xyz.abc.com
-              description: Host name or IP address of the Hybrid Data Security node.
-          description: Metadata information about the node for which resource usage is being retrieved.
-        resourceUsage:
+          description: Metadata information about the cluster for which availability details are being retrieved.
+        availabilitySegments:
           type: array
           items:
-            $ref: '#/components/schemas/nodeResourceUsageSegment'
-          description: List of resource usage segments over the requested time range.
+            $ref: '#/components/schemas/availabilitySegment'
+          description: List of availability segments for the cluster.
         timeRange:
           type: object
           properties:
             from:
               type: string
               format: date-time
-              example: '2025-06-15T15:00:00Z'
+              example: '2025-06-15T15:53:00Z'
               description: Start time of the requested data range.
             to:
               type: string
               format: date-time
-              example: '2025-06-15T15:20:00Z'
+              example: '2025-06-17T15:53:00Z'
               description: End time of the requested data range.
-          description: The time range for the resource usage data.
-    nodeAlarm:
-      type: object
-      properties:
-        alarmId:
-          type: string
-          example: AUTH_WARN.expiring-60
-          description: Unique identifier of the alarm.
-        alarmName:
-          type: string
-          example: Hybrid Data Security Machine Accounts Expiring in 60 days
-          description: Name of the alarm.
-        alarmSeverity:
-          type: string
-          example: Warning
-          description: Severity level of the alarm.
-        alarmDetails:
-          type: string
-          example: Expiration Details
-          description: Additional details about the alarm.
-        possibleRemediation:
-          type: string
-          example: Refresh Hybrid Data Security Machine Accounts using Hybrid Data Security Setup Tool
-          description: Suggested remediation steps for the alarm.
-        currentStatus:
-          type: string
-          example: Active
-          description: Current status of the alarm.
-        occurrences:
-          type: object
-          properties:
-            total:
-              type: string
-              example: '4'
-              description: Total number of occurrences of the alarm.
-            details:
-              type: array
-              items:
-                $ref: '#/components/schemas/alarmOccurrence'
-              description: List of individual alarm occurrence details.
-          description: Occurrence details of the alarm.
+          description: The time range for the availability data.
     nodeAlarmsResponse:
       type: object
       properties:
@@ -1301,33 +1464,50 @@ components:
               example: '2025-06-16T15:53:00Z'
               description: End time of the requested data range.
           description: The time range for the alarms data.
-    orgDetailsResponse:
+    availabilitySegment:
       type: object
       properties:
-        orgId:
+        segmentStartTime:
           type: string
-          example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi8yYzNjOWY5NS03M2Q5LTQ0NjAtYTY2OC0wNDcxNjJmZjFiYWQ
-          description: Unique ID of the organization.
-        orgName:
+          format: date-time
+          example: '2026-01-01T00:00:00Z'
+          description: Start time of the availability segment.
+        segmentEndTime:
           type: string
-          example: HDS_Demo
-          description: Name of the organization.
-        orgType:
-          type: string
-          example: Single Tenant
-          description: Type of the organization.
-        orgMode:
-          type: string
-          example: Production
-          description: Mode of the organization.
-    orgClustersResponse:
+          format: date-time
+          example: '2026-01-02T00:00:00Z'
+          description: End time of the availability segment.
+        noOfOnlineNodes:
+          type: integer
+          example: 1
+          description: Number of online nodes in the cluster in the segment.
+        noOfOfflineNodes:
+          type: integer
+          example: 1
+          description: Number of offline nodes in the cluster in the segment.
+        totalNodes:
+          type: integer
+          example: 2
+          description: Total number of nodes in the cluster in the segment.
+    databaseDetailsResponse:
       type: object
       properties:
-        clusters:
-          type: array
-          items:
-            $ref: '#/components/schemas/clusterDetailsResponse'
-          description: List of clusters in the organization.
+        context:
+          type: object
+          properties:
+            orgId:
+              type: string
+              example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi8yYzNjOWY5NS03M2Q5LTQ0NjAtYTY2OC0wNDcxNjJmZjFiYWQ=
+              description: Unique ID of the organization.
+          description: Context for the response payload.
+        databaseType:
+          type: string
+          example: PostgreSQL
+          description: Type of the database.
+        databaseVersion:
+          type: string
+          example: PostgreSQL 16.9 (Ubuntu 16.9-1.pgdg24.04+1) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0, 64-bit
+          description: Version of the database.
     multiTenantHDSOrgDetailsResponse:
       type: object
       properties:
@@ -1362,186 +1542,6 @@ components:
           - Please ensure that the configured DNS Servers are correct and healthy, and verify the network settings are adhering to the Hybrid Data Security Deployment Guide.
           description: List of suggested remediation steps.
       description: Failure details for a failed network test, present only when testResult is Failed.
-    clustersAvailabilityDetailsResponse:
-      type: object
-      properties:
-        context:
-          type: object
-          properties:
-            orgId:
-              type: string
-              example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi8yYzNjOWY5NS03M2Q5LTQ0NjAtYTY2OC0wNDcxNjJmZjFiYWQ
-              description: Unique ID of the organization.
-            clusterId:
-              type: string
-              example: Y2lzY29zcGFyazovL3VzL0hZQlJJRF9DTFVTVEVSLzJjM2M5Zjk1LTczZDktNDQ2MC1hNjY4LTA0NzE2MmZmMWJhZDpiMzdmNTgzYy1kZGRjLTQyOGItODJlNS1jYmU2ODFkYjQ5NjI=
-              description: Unique ID of the cluster.
-            clusterName:
-              type: string
-              example: San Jose
-              description: Name of the cluster.
-          description: Metadata information about the cluster for which availability details are being retrieved.
-        availabilitySegments:
-          type: array
-          items:
-            $ref: '#/components/schemas/availabilitySegment'
-          description: List of availability segments for the cluster.
-        timeRange:
-          type: object
-          properties:
-            from:
-              type: string
-              format: date-time
-              example: '2025-06-15T15:53:00Z'
-              description: Start time of the requested data range.
-            to:
-              type: string
-              format: date-time
-              example: '2025-06-17T15:53:00Z'
-              description: End time of the requested data range.
-          description: The time range for the availability data.
-    networkTestsResultsResponse:
-      type: object
-      properties:
-        context:
-          type: object
-          properties:
-            orgId:
-              type: string
-              example: Y2lzY29zcGFyazovL3VzL0hZQlJJRF9DTFVTVEVSLzFlYjY1ZmRmLTk2NDMtNDE3Zi05OTc0LWFkNzJVGNG
-              description: Unique ID of the organization.
-            clusterId:
-              type: string
-              example: Y2lzY29zcGFyazovL3VzL0hZQlJJRF9DTFVTVEVSLzJjM2M5Zjk1LTczZDktNDQ2MC1hNjY4LTA0NzE2MmZmMWJhZDpmMWJmMGI1MC0yMDUyLTQ3ZmUtYjg3ZC01MTFjMmZlNzQ3MWI=
-              description: Unique ID of the cluster.
-            clusterName:
-              type: string
-              example: hds_bangalore
-              description: Name of the cluster.
-            nodeId:
-              type: string
-              example: Y2lzY29zcGFyazovL3VzL0hZQlJJRF9DT05ORUNUT1IvMmMzYzlmOTUtNzNkOS00NDYwLWE2NjgtMDQ3MTYyZmYxYmFkOjE1NmRmNzg5Yzg1NTRkNTVhMjc1ZGY5OTc4Zjk5MDJk
-              description: Unique ID of the node.
-            hostName:
-              type: string
-              example: abc.xyz.com
-              description: Hostname of the Hybrid Data Security node.
-            hostIP:
-              type: string
-              example: 10.196.5.82
-              description: IP address of the Hybrid Data Security node.
-          description: Metadata information about the node for which network test results are being retrieved.
-        testResults:
-          type: array
-          items:
-            $ref: '#/components/schemas/networkTestResult'
-          description: List of network test results.
-    clusterDetailsResponse:
-      type: object
-      properties:
-        context:
-          type: object
-          properties:
-            orgId:
-              type: string
-              example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi8yYzNjOWY5NS03M2Q5LTQ0NjAtYTY2OC0wNDcxNjJmZjFiYWQ=
-              description: Unique ID of the organization.
-          description: Metadata information about the organization for which the cluster details are being retrieved.
-        clusterId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0hZQlJJRF9DTFVTVEVSLzJjM2M5Zjk1LTczZDktNDQ2MC1hNjY4LTA0NzE2MmZmMWJhZDpmMWJmMGI1MC0yMDUyLTQ3ZmUtYjg3ZC01MTFjMmZlNzQ3MWI
-          description: Unique ID of the cluster.
-        clusterName:
-          type: string
-          example: Bangalore
-          description: Name of the cluster.
-        clusterStatus:
-          type: string
-          example: Operational
-          description: Current status of the cluster.
-        releaseChannel:
-          type: string
-          example: beta
-          description: Release channel of the cluster.
-        upgradeSchedule:
-          type: object
-          properties:
-            scheduleDays:
-              type: array
-              items:
-                type: string
-                example: sunday
-              description: Days of the week when upgrades are scheduled.
-            scheduleTime:
-              type: string
-              example: 02:00
-              description: Time of the day when upgrades are scheduled.
-            scheduleTimeZone:
-              type: string
-              example: Asia/Kolkata
-              description: Time zone for the scheduled upgrade time.
-            nextUpgradeTime:
-              type: string
-              example: '2025-07-25T20:30:00Z'
-              description: Next scheduled upgrade time.
-          description: Upgrade schedule details of the cluster.
-    clusterNodesResponse:
-      type: object
-      properties:
-        nodes:
-          type: array
-          items:
-            $ref: '#/components/schemas/nodeDetailsResponse'
-          description: List of nodes in the cluster.
-    databaseDetailsResponse:
-      type: object
-      properties:
-        context:
-          type: object
-          properties:
-            orgId:
-              type: string
-              example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi8yYzNjOWY5NS03M2Q5LTQ0NjAtYTY2OC0wNDcxNjJmZjFiYWQ=
-              description: Unique ID of the organization.
-          description: Context for the response payload.
-        databaseType:
-          type: string
-          example: PostgreSQL
-          description: Type of the database.
-        databaseVersion:
-          type: string
-          example: PostgreSQL 16.9 (Ubuntu 16.9-1.pgdg24.04+1) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0, 64-bit
-          description: Version of the database.
-    alarmOccurrence:
-      type: object
-      properties:
-        raisedAt:
-          type: string
-          format: date-time
-          example: '2025-06-14T15:53:00Z'
-          description: Timestamp when the alarm was raised.
-        clearedAt:
-          type: string
-          format: date-time
-          example: '2025-06-15T15:53:00Z'
-          description: Timestamp when the alarm was cleared.
-    networkTestResult:
-      type: object
-      properties:
-        timestamp:
-          type: string
-          format: date-time
-          example: '2025-06-15T15:53:00Z'
-          description: Timestamp when the test was triggered.
-        triggerType:
-          type: string
-          example: OnDemand
-          description: Type of trigger for the test.
-        result:
-          type: array
-          items:
-            $ref: '#/components/schemas/networkTestTypeResult'
-          description: List of results per test type.
   securitySchemes:
     oauth2:
       flows:

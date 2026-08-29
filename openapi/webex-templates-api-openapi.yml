@@ -105,6 +105,121 @@ paths:
           content: {}
 components:
   schemas:
+    FlowTemplate:
+      title: FlowTemplate
+      type: object
+      description: Flow template metadata and flow structure used to seed new flows.
+      additionalProperties: true
+      example:
+        id: tmpl-customer-callback
+        name: Customer Callback
+        description: Offers a callback when estimated wait time exceeds a threshold.
+        type: flow
+      properties:
+        id:
+          type: string
+          description: Template ID.
+          example: tmpl-customer-callback
+        name:
+          type: string
+          description: Template name.
+          example: Customer Callback
+        description:
+          type: string
+          description: Human-readable description of the template.
+          example: Offers a callback when estimated wait time exceeds a threshold.
+        type:
+          type: string
+          description: Template kind. One of `flow` or `subflow`.
+          enum:
+          - flow
+          - subflow
+          example: flow
+        flow:
+          $ref: '#/components/schemas/FlowV2'
+    FlowV2Node:
+      title: FlowV2Node
+      type: object
+      description: A node in a flow process graph. Each node represents one activity instance.
+      additionalProperties: true
+      properties:
+        name:
+          type: string
+          description: Stable, unique node name within the flow. Used as the patch-merge key for `upsert_nodes` and `remove_node_names`.
+          example: PlayMessage_1
+        activityName:
+          type: string
+          description: Activity type this node instantiates. Must match an `activityName` returned by `listActivityDefinitions`.
+          example: PlayMessage
+        inputs:
+          type: object
+          description: Input values for the activity, keyed by input name. Shape depends on the activity definition.
+          additionalProperties: true
+          example:
+            audioFile: welcome.wav
+        outputs:
+          type: object
+          description: Declared output bindings for the activity, keyed by output name. Used to map activity outputs to flow variables.
+          additionalProperties: true
+          example: {}
+        position:
+          type: object
+          description: Node position on the flow canvas.
+          properties:
+            x:
+              type: number
+              description: Horizontal coordinate in pixels.
+              example: 300
+            y:
+              type: number
+              description: Vertical coordinate in pixels.
+              example: 200
+    FlowV2Edge:
+      title: FlowV2Edge
+      type: object
+      description: 'An edge connecting two flow nodes. Edge `condition` aliases are normalized server-side: `done` is rewritten to `out`, `NewPhoneContact` is rewritten to `out`, and `defaultBranch` is rewritten to `default`.'
+      additionalProperties: true
+      properties:
+        key:
+          type: string
+          description: Stable, unique edge key within the flow. Used as the patch-merge key for `upsert_edges` and `remove_edge_keys`.
+          example: edge-1
+        from_node:
+          type: string
+          description: Name of the source node. Must reference a node in the same process.
+          example: NewPhoneContact
+        from_port:
+          type: string
+          description: Output port name on the source node. Must match an `outputPorts[].name` exposed by the source activity definition.
+          example: out
+        to_node:
+          type: string
+          description: Name of the target node. Must reference a node in the same process.
+          example: PlayMessage_1
+        condition:
+          type: string
+          description: 'Branch condition this edge fires on. Aliases: `done` -> `out`, `NewPhoneContact` -> `out`, `defaultBranch` -> `default`.'
+          example: out
+    FlowV2EventFlow:
+      title: FlowV2EventFlow
+      type: object
+      description: An event-handler subflow bound to a specific event. The subflow runs when its bound event fires.
+      additionalProperties: true
+      properties:
+        event:
+          type: string
+          description: Name of the event this subflow handles. Must reference an event from `listEventSpecifications`.
+          example: AgentDisconnected
+        nodes:
+          type: array
+          description: Activity nodes in the event-handler process.
+          items:
+            $ref: '#/components/schemas/FlowV2Node'
+        edges:
+          type: array
+          description: Edges in the event-handler process.
+          items:
+            $ref: '#/components/schemas/FlowV2Edge'
     FlowV2Variable:
       title: FlowV2Variable
       type: object
@@ -143,32 +258,6 @@ components:
           type: boolean
           description: True if the variable holds sensitive data and must be masked in logs and reports.
           example: false
-    FlowV2Edge:
-      title: FlowV2Edge
-      type: object
-      description: 'An edge connecting two flow nodes. Edge `condition` aliases are normalized server-side: `done` is rewritten to `out`, `NewPhoneContact` is rewritten to `out`, and `defaultBranch` is rewritten to `default`.'
-      additionalProperties: true
-      properties:
-        key:
-          type: string
-          description: Stable, unique edge key within the flow. Used as the patch-merge key for `upsert_edges` and `remove_edge_keys`.
-          example: edge-1
-        from_node:
-          type: string
-          description: Name of the source node. Must reference a node in the same process.
-          example: NewPhoneContact
-        from_port:
-          type: string
-          description: Output port name on the source node. Must match an `outputPorts[].name` exposed by the source activity definition.
-          example: out
-        to_node:
-          type: string
-          description: Name of the target node. Must reference a node in the same process.
-          example: PlayMessage_1
-        condition:
-          type: string
-          description: 'Branch condition this edge fires on. Aliases: `done` -> `out`, `NewPhoneContact` -> `out`, `defaultBranch` -> `default`.'
-          example: out
     FlowV2:
       title: FlowV2
       type: object
@@ -274,43 +363,6 @@ components:
         - name: hideSecureCADWarning
           type: Boolean
           value: 'true'
-    FlowV2Node:
-      title: FlowV2Node
-      type: object
-      description: A node in a flow process graph. Each node represents one activity instance.
-      additionalProperties: true
-      properties:
-        name:
-          type: string
-          description: Stable, unique node name within the flow. Used as the patch-merge key for `upsert_nodes` and `remove_node_names`.
-          example: PlayMessage_1
-        activityName:
-          type: string
-          description: Activity type this node instantiates. Must match an `activityName` returned by `listActivityDefinitions`.
-          example: PlayMessage
-        inputs:
-          type: object
-          description: Input values for the activity, keyed by input name. Shape depends on the activity definition.
-          additionalProperties: true
-          example:
-            audioFile: welcome.wav
-        outputs:
-          type: object
-          description: Declared output bindings for the activity, keyed by output name. Used to map activity outputs to flow variables.
-          additionalProperties: true
-          example: {}
-        position:
-          type: object
-          description: Node position on the flow canvas.
-          properties:
-            x:
-              type: number
-              description: Horizontal coordinate in pixels.
-              example: 300
-            y:
-              type: number
-              description: Vertical coordinate in pixels.
-              example: 200
     FlowV2Preference:
       title: FlowV2Preference
       type: object
@@ -329,58 +381,6 @@ components:
           type: string
           description: Preference value, encoded as a string.
           example: 'true'
-    FlowTemplate:
-      title: FlowTemplate
-      type: object
-      description: Flow template metadata and flow structure used to seed new flows.
-      additionalProperties: true
-      example:
-        id: tmpl-customer-callback
-        name: Customer Callback
-        description: Offers a callback when estimated wait time exceeds a threshold.
-        type: flow
-      properties:
-        id:
-          type: string
-          description: Template ID.
-          example: tmpl-customer-callback
-        name:
-          type: string
-          description: Template name.
-          example: Customer Callback
-        description:
-          type: string
-          description: Human-readable description of the template.
-          example: Offers a callback when estimated wait time exceeds a threshold.
-        type:
-          type: string
-          description: Template kind. One of `flow` or `subflow`.
-          enum:
-          - flow
-          - subflow
-          example: flow
-        flow:
-          $ref: '#/components/schemas/FlowV2'
-    FlowV2EventFlow:
-      title: FlowV2EventFlow
-      type: object
-      description: An event-handler subflow bound to a specific event. The subflow runs when its bound event fires.
-      additionalProperties: true
-      properties:
-        event:
-          type: string
-          description: Name of the event this subflow handles. Must reference an event from `listEventSpecifications`.
-          example: AgentDisconnected
-        nodes:
-          type: array
-          description: Activity nodes in the event-handler process.
-          items:
-            $ref: '#/components/schemas/FlowV2Node'
-        edges:
-          type: array
-          description: Edges in the event-handler process.
-          items:
-            $ref: '#/components/schemas/FlowV2Edge'
   securitySchemes:
     oauth2:
       flows:

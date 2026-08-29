@@ -226,41 +226,24 @@ paths:
           content: {}
 components:
   schemas:
-    FlowV2ValidationError:
-      title: FlowV2ValidationError
+    ActivityOutput:
+      title: ActivityOutput
       type: object
-      description: A single validation error against a flow document.
+      description: A single output field produced by an activity.
+      additionalProperties: true
       properties:
-        activityName:
+        name:
           type: string
-          description: Name of the activity the error relates to.
-          example: play-message
-        condition:
+          description: Output field name.
+          example: callerEnteredDigits
+        type:
           type: string
-          description: Edge condition the error relates to, when applicable.
-          example: onTimeout
-        from:
+          description: Output data type.
+          example: STRING
+        description:
           type: string
-          description: Source node label of the offending edge, when applicable.
-          example: WelcomeMessage
-        edge:
-          type: string
-          description: Human-readable description of the offending edge, when applicable.
-          example: WelcomeMessage->DisconnectContact(onTimeout)
-        suggestion:
-          type: string
-          description: Suggested fix.
-          example: 'Use one of: default, error'
-        message:
-          type: string
-          description: Human-readable explanation of the error.
-          example: Condition 'onTimeout' is not valid for activity 'play-message'.
-        severity:
-          type: string
-          description: Severity of the issue.
-          enum:
-          - ERROR
-          example: ERROR
+          description: Human-readable description of the output.
+          example: Digits the caller entered before timeout.
     ActivityInputChoices:
       title: ActivityInputChoices
       type: object
@@ -324,20 +307,41 @@ components:
           type: string
           description: The requested input name.
           example: channelType
-    ActivityChoiceEntry:
-      title: ActivityChoiceEntry
+    FlowV2ValidationError:
+      title: FlowV2ValidationError
       type: object
-      description: A single resolved choice for an activity input.
-      additionalProperties: true
+      description: A single validation error against a flow document.
       properties:
-        name:
+        activityName:
           type: string
-          description: Human-readable label shown in authoring UIs.
-          example: Main Support Queue
-        value:
+          description: Name of the activity the error relates to.
+          example: play-message
+        condition:
           type: string
-          description: The choice value/ID, suitable for use as the activity input value.
-          example: Main_Support_Queue
+          description: Edge condition the error relates to, when applicable.
+          example: onTimeout
+        from:
+          type: string
+          description: Source node label of the offending edge, when applicable.
+          example: WelcomeMessage
+        edge:
+          type: string
+          description: Human-readable description of the offending edge, when applicable.
+          example: WelcomeMessage->DisconnectContact(onTimeout)
+        suggestion:
+          type: string
+          description: Suggested fix.
+          example: 'Use one of: default, error'
+        message:
+          type: string
+          description: Human-readable explanation of the error.
+          example: Condition 'onTimeout' is not valid for activity 'play-message'.
+        severity:
+          type: string
+          description: Severity of the issue.
+          enum:
+          - ERROR
+          example: ERROR
     FlowV2ErrorResponse:
       title: FlowV2ErrorResponse
       type: object
@@ -364,24 +368,76 @@ components:
           description: Per-issue error details. Populated for 400 and 422 responses.
           items:
             $ref: '#/components/schemas/FlowV2ValidationError'
-    ActivityOutput:
-      title: ActivityOutput
+    ActivityChoiceEntry:
+      title: ActivityChoiceEntry
       type: object
-      description: A single output field produced by an activity.
+      description: A single resolved choice for an activity input.
       additionalProperties: true
       properties:
         name:
           type: string
-          description: Output field name.
-          example: callerEnteredDigits
+          description: Human-readable label shown in authoring UIs.
+          example: Main Support Queue
+        value:
+          type: string
+          description: The choice value/ID, suitable for use as the activity input value.
+          example: Main_Support_Queue
+    ActivityInput:
+      title: ActivityInput
+      type: object
+      description: A single input field on an activity definition.
+      additionalProperties: true
+      properties:
+        name:
+          type: string
+          description: Input field name.
+          example: channelType
         type:
           type: string
-          description: Output data type.
-          example: STRING
+          description: Input data type (for example, `string`, `boolean`, `int`, `object[]`).
+          example: string
+        required:
+          type: boolean
+          description: True if the input must be supplied.
+          example: true
+        defaultValue:
+          description: Default value applied when the input is not supplied. May be null. Type matches `type`.
+          example: null
+        showOnCondition:
+          type:
+          - string
+          - 'null'
+          description: Expression controlling when this input is shown in authoring UIs, evaluated against sibling input values. Null when the input is always shown.
+          example: toggle == false
+        isSecure:
+          type: boolean
+          description: True if the input holds sensitive data that should be masked.
+          example: false
+        allowedValues:
+          type:
+          - array
+          - 'null'
+          description: Enumerated allowed values for a static-choice input. Null when the input is unconstrained or resolves its choices dynamically via `choicesEndpoint`.
+          items:
+            type: string
+          example:
+          - TELEPHONY
+          - WORK_ITEM
+        choicesEndpoint:
+          type:
+          - string
+          - 'null'
+          description: Relative endpoint used to resolve choices dynamically for this input. Null when the input has no dynamic choices.
+          example: GET /v2/activities/play-message/inputs/audioFile/choices
+        children:
+          type: array
+          description: Nested inputs for composite/object inputs. Empty when the input has no children.
+          items:
+            $ref: '#/components/schemas/ActivityInput'
         description:
           type: string
-          description: Human-readable description of the output.
-          example: Digits the caller entered before timeout.
+          description: Human-readable description of the input.
+          example: Channel type the contact arrived on.
     ActivityOutputPort:
       title: ActivityOutputPort
       type: object
@@ -456,62 +512,6 @@ components:
           description: Output ports the activity may exit through. An edge's `condition` must match one of these ports' `condition` values.
           items:
             $ref: '#/components/schemas/ActivityOutputPort'
-    ActivityInput:
-      title: ActivityInput
-      type: object
-      description: A single input field on an activity definition.
-      additionalProperties: true
-      properties:
-        name:
-          type: string
-          description: Input field name.
-          example: channelType
-        type:
-          type: string
-          description: Input data type (for example, `string`, `boolean`, `int`, `object[]`).
-          example: string
-        required:
-          type: boolean
-          description: True if the input must be supplied.
-          example: true
-        defaultValue:
-          description: Default value applied when the input is not supplied. May be null. Type matches `type`.
-          example: null
-        showOnCondition:
-          type:
-          - string
-          - 'null'
-          description: Expression controlling when this input is shown in authoring UIs, evaluated against sibling input values. Null when the input is always shown.
-          example: toggle == false
-        isSecure:
-          type: boolean
-          description: True if the input holds sensitive data that should be masked.
-          example: false
-        allowedValues:
-          type:
-          - array
-          - 'null'
-          description: Enumerated allowed values for a static-choice input. Null when the input is unconstrained or resolves its choices dynamically via `choicesEndpoint`.
-          items:
-            type: string
-          example:
-          - TELEPHONY
-          - WORK_ITEM
-        choicesEndpoint:
-          type:
-          - string
-          - 'null'
-          description: Relative endpoint used to resolve choices dynamically for this input. Null when the input has no dynamic choices.
-          example: GET /v2/activities/play-message/inputs/audioFile/choices
-        children:
-          type: array
-          description: Nested inputs for composite/object inputs. Empty when the input has no children.
-          items:
-            $ref: '#/components/schemas/ActivityInput'
-        description:
-          type: string
-          description: Human-readable description of the input.
-          example: Channel type the contact arrived on.
   securitySchemes:
     oauth2:
       flows:

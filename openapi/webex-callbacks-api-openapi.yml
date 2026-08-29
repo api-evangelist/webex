@@ -2,8 +2,7 @@ openapi: 3.2.0
 info:
   title: Webex Callbacks API
   version: 1.0.0
-  description: 'Operations tagged Callbacks across 2 of this provider''s published API definitions: webex-callbacks-api-openapi.yml,
-    webex-contact-center-openapi.json. Each path carries the servers of the definition it was published in.'
+  description: 'Operations tagged Callbacks across 2 of this provider''s published API definitions: webex-callbacks-api-openapi.yml, webex-contact-center-openapi.json. Each path carries the servers of the definition it was published in.'
   x-provenance:
     method: harvested
     authored_by: Cisco Webex
@@ -12,8 +11,7 @@ info:
     first_party: true
     note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
     provider_published: true
-    derived_view: Per-tag view of webex-contact-center-openapi.json, the provider's source document. Operations and schemas
-      are the provider's, unmodified; only the partition is ours.
+    derived_view: Per-tag view of webex-contact-center-openapi.json, the provider's source document. Operations and schemas are the provider's, unmodified; only the partition is ours.
     derived_from: webex-contact-center-openapi.json
     operation_coverage: 5/5
   x-evidence:
@@ -30,8 +28,7 @@ paths:
       tags:
       - Callbacks
       summary: Schedule a Callback
-      description: Creates a new callback request for a customer. Authorization requires the cjp:user scope. The callback
-        default endpoint (EP) and default ANI must be configured as mandatory settings to successfully make API calls.
+      description: Creates a new callback request for a customer. Authorization requires the cjp:user scope. The callback default endpoint (EP) and default ANI must be configured as mandatory settings to successfully make API calls.
       operationId: ScheduleCallback
       parameters:
       - name: orgId
@@ -70,8 +67,7 @@ paths:
       tags:
       - Callbacks
       summary: Get scheduled callbacks
-      description: Allows the user to list scheduled callbacks for a given customer number or assignee agent, excluding those
-        whose scheduled trigger time has already passed. Requires 'cjp:user' scope for authorization.
+      description: Allows the user to list scheduled callbacks for a given customer number or assignee agent, excluding those whose scheduled trigger time has already passed. Requires 'cjp:user' scope for authorization.
       operationId: GetScheduledCallbacks
       parameters:
       - name: orgId
@@ -83,17 +79,14 @@ paths:
         example: 123e4567-e89b-12d3-a456-426614174000
       - name: callbackNumber
         in: query
-        description: 'The callback customer number to filter the scheduled callbacks. Only an exact match will yield the result.
-          Allows an optional country code followed by digits (0-9) and the special characters: space, hyphen -, parentheses
-          ( and ), and period ., ensuring the total length is between 7 and 15 characters.'
+        description: 'The callback customer number to filter the scheduled callbacks. Only an exact match will yield the result. Allows an optional country code followed by digits (0-9) and the special characters: space, hyphen -, parentheses ( and ), and period ., ensuring the total length is between 7 and 15 characters.'
         required: false
         schema:
           type: string
         example: '+1234567890'
       - name: assigneeAgent
         in: query
-        description: The unique identifier of the agent assigned to handle the callback. Must be in UUID format. This parameter
-          is optional, but at least one of assigneeAgent or callbackNumber must be provided.
+        description: The unique identifier of the agent assigned to handle the callback. Must be in UUID format. This parameter is optional, but at least one of assigneeAgent or callbackNumber must be provided.
         required: false
         schema:
           type: string
@@ -120,8 +113,7 @@ paths:
         example: 10
       - name: sortBy
         in: query
-        description: The field to sort the results by. If `sortBy` is set to `assignedTime`, the `assigneeAgent` parameter
-          must also be provided.
+        description: The field to sort the results by. If `sortBy` is set to `assignedTime`, the `assigneeAgent` parameter must also be provided.
         required: false
         schema:
           type: string
@@ -172,8 +164,7 @@ paths:
       tags:
       - Callbacks
       summary: Get scheduled callback by Id
-      description: Retrieve an existing scheduled callback by Id, excluding those whose scheduled trigger time has already
-        passed. Requires 'cjp:user' scope for authorization.
+      description: Retrieve an existing scheduled callback by Id, excluding those whose scheduled trigger time has already passed. Requires 'cjp:user' scope for authorization.
       operationId: GetScheduledCallbackById
       parameters:
       - name: orgId
@@ -214,8 +205,7 @@ paths:
       tags:
       - Callbacks
       summary: Update scheduled callback by Id
-      description: Update an existing scheduled callback by Id,those whose scheduled trigger time has already passed cannot
-        be updated. Requires 'cjp:user' scope for authorization.
+      description: Update an existing scheduled callback by Id,those whose scheduled trigger time has already passed cannot be updated. Requires 'cjp:user' scope for authorization.
       operationId: UpdateScheduledCallbackById
       parameters:
       - name: orgId
@@ -264,8 +254,7 @@ paths:
       tags:
       - Callbacks
       summary: Delete scheduled callback by Id
-      description: Delete an existing scheduled callback by Id, those whose scheduled trigger time has already passed cannot
-        be deleted. Requires 'cjp:user' scope for authorization.
+      description: Delete an existing scheduled callback by Id, those whose scheduled trigger time has already passed cannot be deleted. Requires 'cjp:user' scope for authorization.
       operationId: DeleteScheduledCallbackById
       parameters:
       - name: orgId
@@ -300,15 +289,6 @@ paths:
           description: Service Unavailable
 components:
   schemas:
-    CallbackSchedulesResponse:
-      type: object
-      properties:
-        meta:
-          $ref: '#/components/schemas/CallbackScheduleMetadata'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/CallbackSchedule'
     CallbackScheduleUpdateRequest:
       allOf:
       - type: object
@@ -321,64 +301,15 @@ components:
         required:
         - id
       - $ref: '#/components/schemas/ScheduleCallbackRequest'
-    PaginationLinks:
+    CallbackSchedulesResponse:
       type: object
       properties:
-        self:
-          type: string
-          description: Link to the current page.
-          example: /v1/callbacks/organization/${orgId}/scheduled-callback?page=1&pageSize=10
-        first:
-          type: string
-          description: Link to the first page.
-          example: /v1/callbacks/organization/${orgId}/scheduled-callback?page=0&pageSize=10
-        last:
-          type: string
-          description: Link to the last page.
-          example: /v1/callbacks/organization/${orgId}/scheduled-callback?page=4&pageSize=10
-        next:
-          type: string
-          description: Link to the next page.
-          example: /v1/callbacks/organization/${orgId}/scheduled-callback?page=2&pageSize=10
-        prev:
-          type: string
-          description: Link to the previous page.
-          example: /v1/callbacks/organization/${orgId}/scheduled-callback?page=0&pageSize=10
-      required:
-      - self
-    CallbackScheduleMetadata:
-      type: object
-      properties:
-        orgId:
-          type: string
-          format: uuid
-          description: Unique identifier for the organization.
-          example: 123e4567-e89b-12d3-a456-426614174000
-        page:
-          type: integer
-          description: Current page number.
-          example: 1
-        pageSize:
-          type: integer
-          description: Number of items per page.
-          example: 10
-        totalPages:
-          type: integer
-          description: Total number of pages.
-          example: 5
-        totalRecords:
-          type: integer
-          description: Total number of items.
-          example: 50
-        links:
-          $ref: '#/components/schemas/PaginationLinks'
-      required:
-      - orgId
-      - page
-      - pageSize
-      - totalPages
-      - totalRecords
-      - links
+        meta:
+          $ref: '#/components/schemas/CallbackScheduleMetadata'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/CallbackSchedule'
     CallbackSchedule:
       type: object
       properties:
@@ -469,9 +400,67 @@ components:
       - createdTimestamp
       - lastUpdatedTimestamp
       - orgId
+    CallbackScheduleMetadata:
+      type: object
+      properties:
+        orgId:
+          type: string
+          format: uuid
+          description: Unique identifier for the organization.
+          example: 123e4567-e89b-12d3-a456-426614174000
+        page:
+          type: integer
+          description: Current page number.
+          example: 1
+        pageSize:
+          type: integer
+          description: Number of items per page.
+          example: 10
+        totalPages:
+          type: integer
+          description: Total number of pages.
+          example: 5
+        totalRecords:
+          type: integer
+          description: Total number of items.
+          example: 50
+        links:
+          $ref: '#/components/schemas/PaginationLinks'
+      required:
+      - orgId
+      - page
+      - pageSize
+      - totalPages
+      - totalRecords
+      - links
     ScheduleCallbackResponse:
       type: object
       $ref: '#/components/schemas/CallbackSchedule'
+    PaginationLinks:
+      type: object
+      properties:
+        self:
+          type: string
+          description: Link to the current page.
+          example: /v1/callbacks/organization/${orgId}/scheduled-callback?page=1&pageSize=10
+        first:
+          type: string
+          description: Link to the first page.
+          example: /v1/callbacks/organization/${orgId}/scheduled-callback?page=0&pageSize=10
+        last:
+          type: string
+          description: Link to the last page.
+          example: /v1/callbacks/organization/${orgId}/scheduled-callback?page=4&pageSize=10
+        next:
+          type: string
+          description: Link to the next page.
+          example: /v1/callbacks/organization/${orgId}/scheduled-callback?page=2&pageSize=10
+        prev:
+          type: string
+          description: Link to the previous page.
+          example: /v1/callbacks/organization/${orgId}/scheduled-callback?page=0&pageSize=10
+      required:
+      - self
     ScheduleCallbackRequest:
       required:
       - customerName
@@ -485,14 +474,11 @@ components:
       properties:
         customerName:
           type: string
-          description: Name of the Customer for which callback has to be scheduled. Max customer name length should be 250
-            character
+          description: Name of the Customer for which callback has to be scheduled. Max customer name length should be 250 character
           example: John Doe
         callbackNumber:
           type: string
-          description: 'Customer''s phone number for the callback. Allows an optional country code followed by digits (0-9)
-            and the special characters: space, hyphen -, parentheses ( and ), and period ., ensuring the total length is between
-            7 and 15 characters.'
+          description: 'Customer''s phone number for the callback. Allows an optional country code followed by digits (0-9) and the special characters: space, hyphen -, parentheses ( and ), and period ., ensuring the total length is between 7 and 15 characters.'
           example: +12(345)67-890
         timezone:
           type: string
@@ -501,20 +487,17 @@ components:
         scheduleDate:
           type: string
           format: date
-          description: Scheduled date in ISO-8601 (YYYY-MM-DD) format. This must be a valid date in local time zone and within
-            31 days from current date
+          description: Scheduled date in ISO-8601 (YYYY-MM-DD) format. This must be a valid date in local time zone and within 31 days from current date
           example: '2025-03-28'
         startTime:
           type: string
           format: time
-          description: Scheduled start time in ISO-8601 (HH:mm:ss) format. Start time must be at least 30 minutes in the future
-            from current time.
+          description: Scheduled start time in ISO-8601 (HH:mm:ss) format. Start time must be at least 30 minutes in the future from current time.
           example: '17:45:15'
         endTime:
           type: string
           format: time
-          description: Scheduled end time in ISO-8601 (HH:mm:ss) format. End time must be at least 30 minutes after the startTime
-            and must not exceed 8 hours after startTime.
+          description: Scheduled end time in ISO-8601 (HH:mm:ss) format. End time must be at least 30 minutes after the startTime and must not exceed 8 hours after startTime.
           example: '16:50:55'
         queueId:
           type: string
@@ -527,14 +510,12 @@ components:
         sourceInteraction:
           type: string
           format: uuid
-          description: Source interaction ID for the callback. This is optional and can be used to link the callback to a
-            specific interaction. This should be a valid UUID.
+          description: Source interaction ID for the callback. This is optional and can be used to link the callback to a specific interaction. This should be a valid UUID.
           example: 123e4567-e89b-12d3-a456-426614174000
         assigneeAgent:
           type: string
           format: uuid
-          description: The unique identifier of the specific agent (CI userId), who should be assigned to handle the callback.
-            This field is optional and is primarily used for personal callbacks.
+          description: The unique identifier of the specific agent (CI userId), who should be assigned to handle the callback. This field is optional and is primarily used for personal callbacks.
           example: 123e4567-e89b-12d3-a456-426614174000
   securitySchemes:
     oauth2:

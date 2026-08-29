@@ -1033,28 +1033,6 @@ paths:
           content: {}
 components:
   schemas:
-    ActivityRes:
-      title: ActivityRes
-      type: object
-      properties:
-        group:
-          type: string
-          description: Group of the activity. It is one of 'start', 'action', 'event', and 'end'.
-          example: start
-        id:
-          type: string
-          description: Activity ID
-          example: 9813529a-b01a-4eee-a79c-5016f7b0c772
-        name:
-          type: string
-          description: Activity label
-          example: NewPhoneContact
-        properties:
-          type: object
-          properties: {}
-          description: Additional properties are stored here
-          example:
-            displayName: NewPhoneContact
     FlowSearchResponse:
       title: FlowSearchResponse
       type: object
@@ -1215,94 +1193,41 @@ components:
           description: Version Number
           format: int32
           example: 1
-    FlowV2ValidationResult:
-      title: FlowV2ValidationResult
+    FlowV2ValidationError:
+      title: FlowV2ValidationError
       type: object
-      description: Result of validating a flow document.
-      example:
-        valid: false
-        errors:
-        - activityName: start
-          condition: onTimeoutBOGUS
-          from: NewContact
-          suggestion: 'Use one of: out'
-          message: Condition 'onTimeoutBOGUS' is not valid for activity 'start'.
-          severity: ERROR
-          edge: NewContact->WelcomeMessage(onTimeoutBOGUS)
-        warnings:
-        - severity: RECOMMENDATION
-          code: FC1007
-          message: Add descriptions for activities
-        summary: 1 error(s), 1 warning(s).
+      description: A single validation error against a flow document.
       properties:
-        valid:
-          type: boolean
-          description: True if the document passed validation.
-        errors:
-          type: array
-          description: Blocking errors. Empty when `valid` is true.
-          items:
-            $ref: '#/components/schemas/FlowV2ValidationError'
-        warnings:
-          type: array
-          description: Non-blocking warnings and recommendations.
-          items:
-            $ref: '#/components/schemas/FlowV2ValidationWarning'
-        summary:
+        activityName:
           type: string
-          description: Human-readable summary of the validation outcome.
-          example: FlowV2 looks valid for import/save.
-    DiagramRes:
-      title: DiagramRes
-      type: object
-      description: Represents the visual graph metadata for a flow, including widgets and additional diagram properties.
-      example:
-        properties:
-          activityId: http-request-v2
-        widgets:
-          493751c9-7b87-4e93-9999-084f89f9e17b:
-            id: 6a59e2f5-3d3d-475a-91f7-d24ac25a614b
-            type: start
-            widgetType: activity
-            label: New Activity Widget in Diagram
-      properties:
-        properties:
-          type: object
-          description: Additional properties are listed here
-          properties: {}
-          example:
-            activityId: http-request-v2
-        widgets:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/Widget'
-          description: Holds the activities and links
-          example:
-            493751c9-7b87-4e93-9999-084f89f9e17b:
-              id: 6a59e2f5-3d3d-475a-91f7-d24ac25a614b
-              type: start
-              widgetType: activity
-              label: New Activity Widget in Diagram
-    FlowV2EventFlow:
-      title: FlowV2EventFlow
-      type: object
-      description: An event-handler subflow bound to a specific event. The subflow runs when its bound event fires.
-      additionalProperties: true
-      properties:
-        event:
+          description: Name of the activity the error relates to.
+          example: play-message
+        condition:
           type: string
-          description: Name of the event this subflow handles. Must reference an event from `listEventSpecifications`.
-          example: AgentDisconnected
-        nodes:
-          type: array
-          description: Activity nodes in the event-handler process.
-          items:
-            $ref: '#/components/schemas/FlowV2Node'
-        edges:
-          type: array
-          description: Edges in the event-handler process.
-          items:
-            $ref: '#/components/schemas/FlowV2Edge'
+          description: Edge condition the error relates to, when applicable.
+          example: onTimeout
+        from:
+          type: string
+          description: Source node label of the offending edge, when applicable.
+          example: WelcomeMessage
+        edge:
+          type: string
+          description: Human-readable description of the offending edge, when applicable.
+          example: WelcomeMessage->DisconnectContact(onTimeout)
+        suggestion:
+          type: string
+          description: Suggested fix.
+          example: 'Use one of: default, error'
+        message:
+          type: string
+          description: Human-readable explanation of the error.
+          example: Condition 'onTimeout' is not valid for activity 'play-message'.
+        severity:
+          type: string
+          description: Severity of the issue.
+          enum:
+          - ERROR
+          example: ERROR
     FlowV2Summary:
       title: FlowV2Summary
       type: object
@@ -1374,61 +1299,445 @@ components:
         createdDate: '2026-01-15T09:12:00.000Z'
         lastModifiedBy: user@example.com
         lastModifiedDate: '2026-05-20T14:30:00.000Z'
-    EventDiagramRes:
-      title: EventDiagramRes
+    VariableOrderRes:
+      title: VariableOrderRes
       type: object
-      description: Represents event-specific flow diagrams and global event mappings for a flow version.
-      example:
-        eventsMap:
-          GLOBAL_EVENTS:
-            id: GLOBAL_EVENTS
-            name: name
-            description: description
-        properties:
-          offsetX: '0'
       properties:
-        eventsMap:
+        name:
+          type: string
+          description: Name of the variable in the flow version object
+          example: var1
+        variableSeq:
+          type: string
+          description: Sequence number of the variable
+          example: '1'
+    FlowProgressionRes:
+      title: FlowProgressionRes
+      type: object
+      properties:
+        forkFrom:
+          type: string
+          description: Previous Flow Version holding the tag
+          example: 65c28d9db2a2375974066579
+        fvId:
+          type: string
+          description: Flow Version object ID
+          example: 65c28d9db2a2375974066579
+        fvName:
+          type: string
+          description: Name of the Flow Version object
+          example: TestFlow
+    EventFlowRes:
+      title: EventFlowRes
+      type: object
+      properties:
+        description:
+          type: string
+          description: Description of the event pane
+          example: description
+        diagram:
+          $ref: '#/components/schemas/DiagramRes'
+        id:
+          type: string
+          description: Identifier of the event pane
+          example: GLOBAL_EVENTS
+        name:
+          type: string
+          description: Name of the event pane
+          example: name
+        onEvents:
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/EventFlowRes'
-          description: Holds global events
+            type: string
+            description: Holds event IDs
+            example: 13ae6d9e-e607-4e43-aab7-a1af579953a7
+          description: List of events to which the flow version subscribes
           example:
-            GLOBAL_EVENTS:
-              id: GLOBAL_EVENTS
-              name: name
-              description: description
-              process:
-                activities:
-                  13ae6d9e-e607-4e43-aab7-a1af579953a7:
-                    id: 13ae6d9e-e607-4e43-aab7-a1af579953a7
-                    name: GlobalErrorHandling
-                    group: event
-                    properties:
-                      displayName: OnGlobalError
-                      name: GlobalErrorHandling
-                      event: OnGlobalError
-                links:
-                - id: db8170a0-ab4f-4415-8a3b-4561807a5287
-                  sourceActivityId: 493751c9-7b87-4e93-9999-084f89f9e17b
-                  targetActivityId: e1e7266d-699b-4420-8ba1-109d5d97f144
-                  conditionExpr: out
-                  properties:
-                    value: out
-              onEvents:
-                GlobalErrorHandling: 13ae6d9e-e607-4e43-aab7-a1af579953a7
-              diagram:
-                widgets:
-                  13ae6d9e-e607-4e43-aab7-a1af579953a7:
-                    id: 14fd05ea-62f8-4003-8ad4-9599b8434dd7
-                    type: event
-                    widgetType: activity
-                    label: New Activity Widget in Diagram
+            GlobalErrorHandling: 13ae6d9e-e607-4e43-aab7-a1af579953a7
+        process:
+          $ref: '#/components/schemas/ProcRes'
+    ProcRes:
+      title: ProcRes
+      type: object
+      description: Represents the executable process graph for a flow version, including activities and links.
+      example:
+        activities:
+          493751c9-7b87-4e93-9999-084f89f9e17b:
+            id: 493751c9-7b87-4e93-9999-084f89f9e17b
+            name: NewPhoneContact
+            group: start
+        links:
+        - id: dea7d650-9734-4fa3-bfc9-2c669415c9e3
+          sourceActivityId: 1330315f-7012-479a-8126-c767258004e6
+          targetActivityId: 22a8930c-0770-4ab9-8e29-3a5ff1000e81
+          conditionExpr: out
+      properties:
+        activities:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ActivityRes'
+          description: Stores list of activities/events
+          example:
+            493751c9-7b87-4e93-9999-084f89f9e17b:
+              id: 493751c9-7b87-4e93-9999-084f89f9e17b
+              name: NewPhoneContact
+              group: start
+              properties:
+                name: NewPhoneContact
+                event: NewPhoneContact
+                activityId: start
+        links:
+          type: array
+          description: Stores list of links
+          items:
+            $ref: '#/components/schemas/LinkRes'
+    FlowV2EventFlow:
+      title: FlowV2EventFlow
+      type: object
+      description: An event-handler subflow bound to a specific event. The subflow runs when its bound event fires.
+      additionalProperties: true
+      properties:
+        event:
+          type: string
+          description: Name of the event this subflow handles. Must reference an event from `listEventSpecifications`.
+          example: AgentDisconnected
+        nodes:
+          type: array
+          description: Activity nodes in the event-handler process.
+          items:
+            $ref: '#/components/schemas/FlowV2Node'
+        edges:
+          type: array
+          description: Edges in the event-handler process.
+          items:
+            $ref: '#/components/schemas/FlowV2Edge'
+    FlowV2Variable:
+      title: FlowV2Variable
+      type: object
+      description: A flow variable.
+      additionalProperties: true
+      properties:
+        name:
+          type: string
+          description: Variable name.
+          example: FlowVar1
+        type:
+          type: string
+          description: Variable data type (for example, `STRING`, `INTEGER`, `BOOLEAN`).
+          example: STRING
+        value:
+          type: string
+          description: Default value as a string.
+          example: var1
+        description:
+          type: string
+          description: Human-readable description of the variable.
+          example: ''
+        isCAD:
+          type: boolean
+          description: True if this variable is exposed as Call-Associated Data.
+          example: true
+        isAgentEditable:
+          type: boolean
+          description: True if agents can edit the variable value at runtime.
+          example: true
+        isReportable:
+          type: boolean
+          description: True if the variable is included in reporting.
+          example: false
+        isSecure:
+          type: boolean
+          description: True if the variable holds sensitive data and must be masked in logs and reports.
+          example: false
+    FlowV2Metadata:
+      title: FlowV2Metadata
+      type: object
+      description: Result envelope returned for a flow on import, save draft, and patch draft. The persisted flow document is returned under `flow` (the server-assigned flow ID is `flow.id`), alongside any preflight warnings raised during the operation.
+      additionalProperties: true
+      properties:
+        flow:
+          description: The persisted flow document, including the server-assigned `id`.
+          allOf:
+          - $ref: '#/components/schemas/FlowV2Summary'
+        preflightWarnings:
+          type: array
+          description: Non-blocking warnings raised while persisting the flow (for example, references that resolve but are flagged for review). Empty when there are none.
+          items:
+            type: object
+            additionalProperties: true
+          example: []
+        preflightWarningsCount:
+          type: integer
+          format: int32
+          description: Number of entries in `preflightWarnings`.
+          example: 0
+      example:
+        flow:
+          id: 661c7bc712eaf357de7e4aeb
+          orgId: 8eb7da9a-c81c-4d13-b08b-38fdeb7330d8
+          version: 0
+          flowType: FLOW
+          name: SamplePlayMessageFlow
+          description: 'Minimal sample flow: greet the caller, then disconnect'
+          status: Draft
+          createdBy: user@example.com
+          createdDate: '2026-01-15T09:12:00.000Z'
+          lastModifiedBy: user@example.com
+          lastModifiedDate: '2026-05-20T14:30:00.000Z'
+        preflightWarnings: []
+        preflightWarningsCount: 0
+    BasicFlow:
+      title: BasicFlow
+      type: object
+      example:
+        id: 65c28d9db2a2375974066579
+        name: TestFlow
+        flowType: FLOW
+        status: Draft
+        orgId: 8eb7da9a-c81c-4d13-b08b-38fdeb7330d8
+        version: 1
+      properties:
+        associatedChannels:
+          type: array
+          description: Channels associated with the flow.
+          items:
+            $ref: '#/components/schemas/AssociatedChannelRes'
+          example:
+          - channelType: customMessaging
+            id: f47ac10b-58cc-4372-a567-0e02b2c3d479
+            name: Task Queue 1
+        assignedRS:
+          uniqueItems: true
+          type: array
+          description: Assigned Routing Strategy
+          example:
+          - rs-id1
+          items:
+            type: string
+        createdBy:
+          type: string
+          description: Email of the account which created the flow
+          example: user@company.com
+        createdDate:
+          type: string
+          description: Date of creation of the flow
+          example: '2024-02-07T14:10:50.663Z'
+          format: date-time
+        description:
+          type: string
+          description: Description of the flow
+          example: This flow is updated with the 'Live' tag
+        flowType:
+          type: string
+          description: Flow Type (FLOW/SUBFLOW). Default value is FLOW
+          example: FLOW
+        id:
+          type: string
+          description: Flow/Subflow ID
+          example: 65c28d9db2a2375974066579
+        lastModifiedBy:
+          type: string
+          description: Email of the account which modified the flow last
+          example: user@company.com
+        lastModifiedDate:
+          type: string
+          description: Date the flow object is last modified
+          example: '2024-02-07T14:10:50.663Z'
+          format: date-time
+        lockedAt:
+          type: string
+          description: Moment at which a user began editing the flow and locked the flow for everyone else
+          example: '2024-02-07T14:10:50.663Z'
+          format: date-time
+        lockedBy:
+          type: string
+          description: Email of the account which is currently editing the flow
+          example: user@company.com
+        name:
+          type: string
+          description: Name of the Flow
+          example: TestFlow
+        orgId:
+          type: string
+          description: Organization ID
+          example: 8eb7da9a-c81c-4d13-b08b-38fdeb7330d8
+        status:
+          type: string
+          description: Indicates if this flow has ever been published - is one of 'Draft' or 'Published'
+          example: Draft
+        tagHistories:
+          type: object
+          description: Histories of the tags. Tracks how the tags have been assigned to versions chronologically
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/FlowProgressionRes'
+          example:
+            Latest:
+            - fvId: 63e3fcb0b57f601a2ad62db4
+              fvName: HttpTraceTest
+              forkFrom: 63e3fcb0b57f601a2ad62db4
+        tags:
+          type: array
+          description: Tags used by the flow
+          items:
+            $ref: '#/components/schemas/FlowTagRes'
+        version:
+          type: integer
+          description: Version Number
+          format: int32
+          example: 1
+    AssociatedChannelRes:
+      title: AssociatedChannelRes
+      type: object
+      description: Represents a channel associated with a flow version.
+      properties:
+        channelType:
+          type: string
+          description: Channel type associated with the flow version.
+          example: customMessaging
+        id:
+          type: string
+          description: Identifier of the associated channel.
+          example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+        name:
+          type: string
+          description: Display name of the associated channel.
+          example: Task Queue 1
+    FlowV2DraftValidationEntry:
+      title: FlowV2DraftValidationEntry
+      type: object
+      description: A single result entry returned when validating a stored flow draft.
+      properties:
+        code:
+          type: string
+          description: Stable result code.
+          example: FC1007
+        docLink:
+          type: string
+          description: Link to documentation about this result. May be empty.
+          example: ''
+        hint:
+          type: string
+          description: Additional hint about the result, when available.
+          example: Flow has isolated activities. Ensure all nodes are reachable from the start node.
+        message:
+          type: string
+          description: Human-readable explanation of the result.
+          example: Add descriptions for activities
+        severity:
+          type: string
+          description: Severity of the result.
+          enum:
+          - ERROR
+          - WARNING
+          - RECOMMENDATION
+          example: RECOMMENDATION
+        activityLabel:
+          type: string
+          description: Label of the activity the result relates to. May be empty.
+          example: ''
+    DiagramRes:
+      title: DiagramRes
+      type: object
+      description: Represents the visual graph metadata for a flow, including widgets and additional diagram properties.
+      example:
+        properties:
+          activityId: http-request-v2
+        widgets:
+          493751c9-7b87-4e93-9999-084f89f9e17b:
+            id: 6a59e2f5-3d3d-475a-91f7-d24ac25a614b
+            type: start
+            widgetType: activity
+            label: New Activity Widget in Diagram
+      properties:
         properties:
           type: object
+          description: Additional properties are listed here
           properties: {}
-          description: Holds information on additional properties
           example:
-            offsetX: '0'
+            activityId: http-request-v2
+        widgets:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Widget'
+          description: Holds the activities and links
+          example:
+            493751c9-7b87-4e93-9999-084f89f9e17b:
+              id: 6a59e2f5-3d3d-475a-91f7-d24ac25a614b
+              type: start
+              widgetType: activity
+              label: New Activity Widget in Diagram
+    FlowV2Preference:
+      title: FlowV2Preference
+      type: object
+      description: A flow-level preference.
+      additionalProperties: true
+      properties:
+        name:
+          type: string
+          description: Preference name.
+          example: hideSecureCADWarning
+        type:
+          type: string
+          description: Preference value type.
+          example: Boolean
+        value:
+          type: string
+          description: Preference value, encoded as a string.
+          example: 'true'
+    FlowPreferenceRes:
+      title: FlowPreferenceRes
+      type: object
+      properties:
+        name:
+          type: string
+          description: The flow preference name.
+          example: hideSecureCADWarning
+        type:
+          type: string
+          description: The preference type.
+          example: Boolean
+        value:
+          type: string
+          description: The preference value.
+          example: 'true'
+    FlowV2ValidationWarning:
+      title: FlowV2ValidationWarning
+      type: object
+      description: A single non-blocking validation warning or recommendation against a flow document.
+      properties:
+        severity:
+          type: string
+          description: Severity of the issue.
+          enum:
+          - WARNING
+          - RECOMMENDATION
+          example: RECOMMENDATION
+        code:
+          type: string
+          description: Stable warning code.
+          example: FC1007
+        message:
+          type: string
+          description: Human-readable explanation of the warning.
+          example: Add descriptions for activities
+    PublishParameters:
+      title: PublishParameters
+      type: object
+      description: Metadata for the published version.
+      properties:
+        comment:
+          type: string
+          description: A comment to provide context on publishing the flow.
+          example: Publishing the latest version
+        tagIds:
+          type: array
+          description: Tag IDs appropriate to this version. It must be one of 'Live', 'Test', 'Dev', 'Latest.
+          example:
+          - Live
+          items:
+            type: string
     FlowRes:
       title: FlowRes
       type: object
@@ -1550,6 +1859,149 @@ components:
           description: Version Number.
           format: int32
           example: 1
+    FlowV2Node:
+      title: FlowV2Node
+      type: object
+      description: A node in a flow process graph. Each node represents one activity instance.
+      additionalProperties: true
+      properties:
+        name:
+          type: string
+          description: Stable, unique node name within the flow. Used as the patch-merge key for `upsert_nodes` and `remove_node_names`.
+          example: PlayMessage_1
+        activityName:
+          type: string
+          description: Activity type this node instantiates. Must match an `activityName` returned by `listActivityDefinitions`.
+          example: PlayMessage
+        inputs:
+          type: object
+          description: Input values for the activity, keyed by input name. Shape depends on the activity definition.
+          additionalProperties: true
+          example:
+            audioFile: welcome.wav
+        outputs:
+          type: object
+          description: Declared output bindings for the activity, keyed by output name. Used to map activity outputs to flow variables.
+          additionalProperties: true
+          example: {}
+        position:
+          type: object
+          description: Node position on the flow canvas.
+          properties:
+            x:
+              type: number
+              description: Horizontal coordinate in pixels.
+              example: 300
+            y:
+              type: number
+              description: Vertical coordinate in pixels.
+              example: 200
+    EventDiagramRes:
+      title: EventDiagramRes
+      type: object
+      description: Represents event-specific flow diagrams and global event mappings for a flow version.
+      example:
+        eventsMap:
+          GLOBAL_EVENTS:
+            id: GLOBAL_EVENTS
+            name: name
+            description: description
+        properties:
+          offsetX: '0'
+      properties:
+        eventsMap:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/EventFlowRes'
+          description: Holds global events
+          example:
+            GLOBAL_EVENTS:
+              id: GLOBAL_EVENTS
+              name: name
+              description: description
+              process:
+                activities:
+                  13ae6d9e-e607-4e43-aab7-a1af579953a7:
+                    id: 13ae6d9e-e607-4e43-aab7-a1af579953a7
+                    name: GlobalErrorHandling
+                    group: event
+                    properties:
+                      displayName: OnGlobalError
+                      name: GlobalErrorHandling
+                      event: OnGlobalError
+                links:
+                - id: db8170a0-ab4f-4415-8a3b-4561807a5287
+                  sourceActivityId: 493751c9-7b87-4e93-9999-084f89f9e17b
+                  targetActivityId: e1e7266d-699b-4420-8ba1-109d5d97f144
+                  conditionExpr: out
+                  properties:
+                    value: out
+              onEvents:
+                GlobalErrorHandling: 13ae6d9e-e607-4e43-aab7-a1af579953a7
+              diagram:
+                widgets:
+                  13ae6d9e-e607-4e43-aab7-a1af579953a7:
+                    id: 14fd05ea-62f8-4003-8ad4-9599b8434dd7
+                    type: event
+                    widgetType: activity
+                    label: New Activity Widget in Diagram
+        properties:
+          type: object
+          properties: {}
+          description: Holds information on additional properties
+          example:
+            offsetX: '0'
+    FlowLockResponse:
+      title: FlowLockResponse
+      type: string
+      description: Lock/unlock acknowledgement. Returns the literal JSON string "OK" on success. Locks auto-expire after 15 minutes of inactivity.
+      example: OK
+    FlowSearchResult:
+      title: FlowSearchResult
+      type: object
+      description: Summary information for a flow returned by the search API.
+      properties:
+        orgId:
+          type: string
+          description: Organization ID.
+          example: 8eb7da9a-c81c-4d13-b08b-38fdeb7330d8
+        id:
+          type: string
+          description: Flow ID.
+          example: 6501eae8d7974a1c1d4c25d3
+        name:
+          type: string
+          description: Name of the flow.
+          example: Test_Flow
+        flowType:
+          type: string
+          description: Either of 'FLOW' or 'SUBFLOW'.
+          example: FLOW
+        lastModifiedDate:
+          type: string
+          description: Date the flow was last modified.
+          format: date-time
+          example: '2026-02-10T01:59:02.213Z'
+    Widget:
+      title: Widget
+      type: object
+      properties:
+        id:
+          type: string
+          description: Widget ID of the entity
+          example: 6a59e2f5-3d3d-475a-91f7-d24ac25a614b
+        type:
+          type: string
+          description: Type of the widget. One of 'start', 'action', and 'end'
+          example: start
+        label:
+          type: string
+          description: Label of the widget
+          example: New Activity Widget in Diagram
+        widgetType:
+          type: string
+          description: Either 'activity' or 'link'
+          example: activity
     LinkRes:
       title: LinkRes
       type: object
@@ -1576,149 +2028,54 @@ components:
           type: string
           description: Activity to which the link connects
           example: 22a8930c-0770-4ab9-8e29-3a5ff1000e81
-    AssociatedChannelRes:
-      title: AssociatedChannelRes
+    FlowTagRes:
+      title: FlowTagRes
       type: object
-      description: Represents a channel associated with a flow version.
+      description: Represents a tag
       properties:
-        channelType:
+        default:
+          type: boolean
+          description: Determines whether the tag is a default tag
+          example: false
+        displayName:
           type: string
-          description: Channel type associated with the flow version.
-          example: customMessaging
+          description: Display name of the tag. It is one of 'Live', 'Test', 'Dev', 'Latest'
+          example: Live
+        flowVersionId:
+          type: string
+          description: Flow Version object ID to with which the tag is currently associated.
+          example: 65c28d9db2a2375974066579
         id:
           type: string
-          description: Identifier of the associated channel.
-          example: f47ac10b-58cc-4372-a567-0e02b2c3d479
-        name:
+          description: Identifier of the tag. It is one of 'Live', 'Test', 'Dev', 'Latest
+          example: Live
+        versionNumber:
+          type: integer
+          description: Associated Flow Version object's version number
+          format: int32
+          example: 1
+    ActivityRes:
+      title: ActivityRes
+      type: object
+      properties:
+        group:
           type: string
-          description: Display name of the associated channel.
-          example: Task Queue 1
-    FlowV2Metadata:
-      title: FlowV2Metadata
-      type: object
-      description: Result envelope returned for a flow on import, save draft, and patch draft. The persisted flow document is returned under `flow` (the server-assigned flow ID is `flow.id`), alongside any preflight warnings raised during the operation.
-      additionalProperties: true
-      properties:
-        flow:
-          description: The persisted flow document, including the server-assigned `id`.
-          allOf:
-          - $ref: '#/components/schemas/FlowV2Summary'
-        preflightWarnings:
-          type: array
-          description: Non-blocking warnings raised while persisting the flow (for example, references that resolve but are flagged for review). Empty when there are none.
-          items:
-            type: object
-            additionalProperties: true
-          example: []
-        preflightWarningsCount:
-          type: integer
-          format: int32
-          description: Number of entries in `preflightWarnings`.
-          example: 0
-      example:
-        flow:
-          id: 661c7bc712eaf357de7e4aeb
-          orgId: 8eb7da9a-c81c-4d13-b08b-38fdeb7330d8
-          version: 0
-          flowType: FLOW
-          name: SamplePlayMessageFlow
-          description: 'Minimal sample flow: greet the caller, then disconnect'
-          status: Draft
-          createdBy: user@example.com
-          createdDate: '2026-01-15T09:12:00.000Z'
-          lastModifiedBy: user@example.com
-          lastModifiedDate: '2026-05-20T14:30:00.000Z'
-        preflightWarnings: []
-        preflightWarningsCount: 0
-    FlowSearchPageInfo:
-      title: FlowSearchPageInfo
-      type: object
-      description: Pagination metadata for a flow search response.
-      properties:
-        currentPage:
-          type: integer
-          description: Zero-based index of the current page.
-          format: int32
-          example: 0
-        totalRecords:
-          type: integer
-          description: Total number of flows matching the search criteria across all pages.
-          format: int32
-          example: 8
-        pageSize:
-          type: integer
-          description: Number of items on the current page.
-          format: int32
-          example: 3
-        totalPages:
-          type: integer
-          description: Total number of pages available for the search criteria.
-          format: int32
-          example: 3
-    EventFlowRes:
-      title: EventFlowRes
-      type: object
-      properties:
-        description:
-          type: string
-          description: Description of the event pane
-          example: description
-        diagram:
-          $ref: '#/components/schemas/DiagramRes'
+          description: Group of the activity. It is one of 'start', 'action', 'event', and 'end'.
+          example: start
         id:
           type: string
-          description: Identifier of the event pane
-          example: GLOBAL_EVENTS
+          description: Activity ID
+          example: 9813529a-b01a-4eee-a79c-5016f7b0c772
         name:
           type: string
-          description: Name of the event pane
-          example: name
-        onEvents:
+          description: Activity label
+          example: NewPhoneContact
+        properties:
           type: object
-          additionalProperties:
-            type: string
-            description: Holds event IDs
-            example: 13ae6d9e-e607-4e43-aab7-a1af579953a7
-          description: List of events to which the flow version subscribes
+          properties: {}
+          description: Additional properties are stored here
           example:
-            GlobalErrorHandling: 13ae6d9e-e607-4e43-aab7-a1af579953a7
-        process:
-          $ref: '#/components/schemas/ProcRes'
-    ProcRes:
-      title: ProcRes
-      type: object
-      description: Represents the executable process graph for a flow version, including activities and links.
-      example:
-        activities:
-          493751c9-7b87-4e93-9999-084f89f9e17b:
-            id: 493751c9-7b87-4e93-9999-084f89f9e17b
-            name: NewPhoneContact
-            group: start
-        links:
-        - id: dea7d650-9734-4fa3-bfc9-2c669415c9e3
-          sourceActivityId: 1330315f-7012-479a-8126-c767258004e6
-          targetActivityId: 22a8930c-0770-4ab9-8e29-3a5ff1000e81
-          conditionExpr: out
-      properties:
-        activities:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/ActivityRes'
-          description: Stores list of activities/events
-          example:
-            493751c9-7b87-4e93-9999-084f89f9e17b:
-              id: 493751c9-7b87-4e93-9999-084f89f9e17b
-              name: NewPhoneContact
-              group: start
-              properties:
-                name: NewPhoneContact
-                event: NewPhoneContact
-                activityId: start
-        links:
-          type: array
-          description: Stores list of links
-          items:
-            $ref: '#/components/schemas/LinkRes'
+            displayName: NewPhoneContact
     UiRuntimeVariableRes:
       title: UiRuntimeVariableRes
       type: object
@@ -1759,198 +2116,95 @@ components:
           type: boolean
           description: Determines whether the variable needs to be visible on the UI
           example: false
-    FlowLockResponse:
-      title: FlowLockResponse
-      type: string
-      description: Lock/unlock acknowledgement. Returns the literal JSON string "OK" on success. Locks auto-expire after 15 minutes of inactivity.
-      example: OK
-    Widget:
-      title: Widget
+    FlowV2ValidationResult:
+      title: FlowV2ValidationResult
       type: object
-      properties:
-        id:
-          type: string
-          description: Widget ID of the entity
-          example: 6a59e2f5-3d3d-475a-91f7-d24ac25a614b
-        type:
-          type: string
-          description: Type of the widget. One of 'start', 'action', and 'end'
-          example: start
-        label:
-          type: string
-          description: Label of the widget
-          example: New Activity Widget in Diagram
-        widgetType:
-          type: string
-          description: Either 'activity' or 'link'
-          example: activity
-    BasicFlow:
-      title: BasicFlow
-      type: object
+      description: Result of validating a flow document.
       example:
-        id: 65c28d9db2a2375974066579
-        name: TestFlow
-        flowType: FLOW
-        status: Draft
-        orgId: 8eb7da9a-c81c-4d13-b08b-38fdeb7330d8
-        version: 1
+        valid: false
+        errors:
+        - activityName: start
+          condition: onTimeoutBOGUS
+          from: NewContact
+          suggestion: 'Use one of: out'
+          message: Condition 'onTimeoutBOGUS' is not valid for activity 'start'.
+          severity: ERROR
+          edge: NewContact->WelcomeMessage(onTimeoutBOGUS)
+        warnings:
+        - severity: RECOMMENDATION
+          code: FC1007
+          message: Add descriptions for activities
+        summary: 1 error(s), 1 warning(s).
       properties:
-        associatedChannels:
+        valid:
+          type: boolean
+          description: True if the document passed validation.
+        errors:
           type: array
-          description: Channels associated with the flow.
+          description: Blocking errors. Empty when `valid` is true.
           items:
-            $ref: '#/components/schemas/AssociatedChannelRes'
-          example:
-          - channelType: customMessaging
-            id: f47ac10b-58cc-4372-a567-0e02b2c3d479
-            name: Task Queue 1
-        assignedRS:
-          uniqueItems: true
+            $ref: '#/components/schemas/FlowV2ValidationError'
+        warnings:
           type: array
-          description: Assigned Routing Strategy
-          example:
-          - rs-id1
+          description: Non-blocking warnings and recommendations.
           items:
-            type: string
-        createdBy:
+            $ref: '#/components/schemas/FlowV2ValidationWarning'
+        summary:
           type: string
-          description: Email of the account which created the flow
-          example: user@company.com
-        createdDate:
-          type: string
-          description: Date of creation of the flow
-          example: '2024-02-07T14:10:50.663Z'
-          format: date-time
+          description: Human-readable summary of the validation outcome.
+          example: FlowV2 looks valid for import/save.
+    FlowVariablesRes:
+      title: FlowVariablesRes
+      type: object
+      properties:
         description:
           type: string
-          description: Description of the flow
-          example: This flow is updated with the 'Live' tag
-        flowType:
+          description: Description for the variable
+          example: var1 is meant for loop counter
+        desktopLabel:
           type: string
-          description: Flow Type (FLOW/SUBFLOW). Default value is FLOW
-          example: FLOW
+          description: Variable name shown on Agent Desktop
+          example: var1
         id:
           type: string
-          description: Flow/Subflow ID
-          example: 65c28d9db2a2375974066579
-        lastModifiedBy:
-          type: string
-          description: Email of the account which modified the flow last
-          example: user@company.com
-        lastModifiedDate:
-          type: string
-          description: Date the flow object is last modified
-          example: '2024-02-07T14:10:50.663Z'
-          format: date-time
-        lockedAt:
-          type: string
-          description: Moment at which a user began editing the flow and locked the flow for everyone else
-          example: '2024-02-07T14:10:50.663Z'
-          format: date-time
-        lockedBy:
-          type: string
-          description: Email of the account which is currently editing the flow
-          example: user@company.com
-        name:
-          type: string
-          description: Name of the Flow
-          example: TestFlow
-        orgId:
-          type: string
-          description: Organization ID
-          example: 8eb7da9a-c81c-4d13-b08b-38fdeb7330d8
-        status:
-          type: string
-          description: Indicates if this flow has ever been published - is one of 'Draft' or 'Published'
-          example: Draft
-        tagHistories:
-          type: object
-          description: Histories of the tags. Tracks how the tags have been assigned to versions chronologically
-          additionalProperties:
-            type: array
-            items:
-              $ref: '#/components/schemas/FlowProgressionRes'
-          example:
-            Latest:
-            - fvId: 63e3fcb0b57f601a2ad62db4
-              fvName: HttpTraceTest
-              forkFrom: 63e3fcb0b57f601a2ad62db4
-        tags:
-          type: array
-          description: Tags used by the flow
-          items:
-            $ref: '#/components/schemas/FlowTagRes'
-        version:
-          type: integer
-          description: Version Number
-          format: int32
-          example: 1
-    VariableOrderRes:
-      title: VariableOrderRes
-      type: object
-      properties:
-        name:
-          type: string
-          description: Name of the variable in the flow version object
-          example: var1
-        variableSeq:
-          type: string
-          description: Sequence number of the variable
-          example: '1'
-    FlowV2Variable:
-      title: FlowV2Variable
-      type: object
-      description: A flow variable.
-      additionalProperties: true
-      properties:
-        name:
-          type: string
-          description: Variable name.
-          example: FlowVar1
-        type:
-          type: string
-          description: Variable data type (for example, `STRING`, `INTEGER`, `BOOLEAN`).
-          example: STRING
-        value:
-          type: string
-          description: Default value as a string.
-          example: var1
-        description:
-          type: string
-          description: Human-readable description of the variable.
-          example: ''
-        isCAD:
-          type: boolean
-          description: True if this variable is exposed as Call-Associated Data.
-          example: true
+          description: Identifier for the variable
+          example: 04b302a9-6d92-4365-8902-9b04bc3bf5f9
         isAgentEditable:
           type: boolean
-          description: True if agents can edit the variable value at runtime.
-          example: true
+          description: Determines whether is eligible for desktop agent to edit
+          example: false
+        isCAD:
+          type: boolean
+          description: Determines whether variable is agent viewable
+          example: false
         isReportable:
           type: boolean
-          description: True if the variable is included in reporting.
+          description: Determines whether a variable is reportable
           example: false
         isSecure:
           type: boolean
-          description: True if the variable holds sensitive data and must be masked in logs and reports.
+          description: Determines whether a variable is marked sensitive
           example: false
-    FlowPreferenceRes:
-      title: FlowPreferenceRes
-      type: object
-      properties:
         name:
           type: string
-          description: The flow preference name.
-          example: hideSecureCADWarning
+          description: Name of the variable
+          example: var1
+        overwrite:
+          type: boolean
+          description: Determines whether a global variable has been overwritten
+          example: false
+        source:
+          type: string
+          description: Source of the variable (GLOBAL, SUBFLOW_INPUT, SUBFLOW_OUTPUT, an empty string ). It's left empty for subflow local or flow variables
+          example: GLOBAL
         type:
           type: string
-          description: The preference type.
-          example: Boolean
+          description: Data type of the variable (STRING, INTEGER, DATETIME, DECIMAL, JSON, BOOLEAN)
+          example: STRING
         value:
           type: string
-          description: The preference value.
-          example: 'true'
+          description: Value of the variable
+          example: hello world!
     FlowV2Edge:
       title: FlowV2Edge
       type: object
@@ -1977,6 +2231,106 @@ components:
           type: string
           description: 'Branch condition this edge fires on. Aliases: `done` -> `out`, `NewPhoneContact` -> `out`, `defaultBranch` -> `default`.'
           example: out
+    FlowV2DraftValidationResult:
+      title: FlowV2DraftValidationResult
+      type: object
+      description: Result of validating a stored flow draft. Issues are returned under `results`.
+      example:
+        valid: true
+        results:
+        - code: FC1007
+          docLink: ''
+          message: Add descriptions for activities
+          severity: RECOMMENDATION
+          activityLabel: ''
+      properties:
+        valid:
+          type: boolean
+          description: True if the draft passed validation.
+        results:
+          type: array
+          description: Per-issue results.
+          items:
+            $ref: '#/components/schemas/FlowV2DraftValidationEntry'
+    ValidationResultRes:
+      title: ValidationResultRes
+      type: object
+      properties:
+        activityId:
+          type: string
+          description: Activity identifier
+          example: e0d7128e-0f80-46c8-9554-9a9ae4dd9e7b
+        activityLabel:
+          type: string
+          description: Activity label
+          example: PlayMessage_ysg
+        code:
+          type: string
+          description: Error code
+          example: FC1015
+        docLink:
+          type: string
+          description: Document link
+          example: https://help.webex.com/en-us/article/n5595zd/Webex-Contact-Center-Setup-and-Administration-Guide
+        message:
+          type: string
+          description: Error message to be displayed on the UI
+          example: Add descriptions for activities
+        severity:
+          type: string
+          description: Severity of the error. Either ERROR or RECOMMENDATION
+          example: ERROR
+    FlowSearchPageInfo:
+      title: FlowSearchPageInfo
+      type: object
+      description: Pagination metadata for a flow search response.
+      properties:
+        currentPage:
+          type: integer
+          description: Zero-based index of the current page.
+          format: int32
+          example: 0
+        totalRecords:
+          type: integer
+          description: Total number of flows matching the search criteria across all pages.
+          format: int32
+          example: 8
+        pageSize:
+          type: integer
+          description: Number of items on the current page.
+          format: int32
+          example: 3
+        totalPages:
+          type: integer
+          description: Total number of pages available for the search criteria.
+          format: int32
+          example: 3
+    FlowV2ErrorResponse:
+      title: FlowV2ErrorResponse
+      type: object
+      description: Standard error envelope returned by flow endpoints. For 400 (bad request) and 422 (validation failure), `details[]` carries field-level error information.
+      additionalProperties: true
+      example:
+        code: INVALID_FLOW
+        message: Flow document failed validation.
+        details:
+        - path: /nodes/2/inputs/queue
+          code: UNKNOWN_QUEUE
+          message: Queue 'Main_Support_Quueue' was not found in the project.
+      properties:
+        code:
+          type: string
+          description: Stable, machine-readable error code.
+          example: INVALID_FLOW
+        message:
+          type: string
+          description: Human-readable error message.
+          example: Flow document failed validation.
+        details:
+          type: array
+          description: Per-issue error details. Populated for 400 and 422 responses.
+          items:
+            $ref: '#/components/schemas/FlowV2ValidationError'
     FlowV2:
       title: FlowV2
       type: object
@@ -2082,323 +2436,26 @@ components:
         - name: hideSecureCADWarning
           type: Boolean
           value: 'true'
-    FlowProgressionRes:
-      title: FlowProgressionRes
+    FlowVersionSettingRes:
+      title: FlowVersionSettingRes
       type: object
       properties:
-        forkFrom:
+        group:
           type: string
-          description: Previous Flow Version holding the tag
-          example: 65c28d9db2a2375974066579
-        fvId:
-          type: string
-          description: Flow Version object ID
-          example: 65c28d9db2a2375974066579
-        fvName:
-          type: string
-          description: Name of the Flow Version object
-          example: TestFlow
-    FlowV2Preference:
-      title: FlowV2Preference
-      type: object
-      description: A flow-level preference.
-      additionalProperties: true
-      properties:
+          description: The group the setting belongs to.
+          example: activityWait
         name:
           type: string
-          description: Preference name.
-          example: hideSecureCADWarning
+          description: The name of the flow version setting
+          example: delayTime
         type:
           type: string
-          description: Preference value type.
-          example: Boolean
+          description: The setting type.
+          example: INTEGER
         value:
           type: string
-          description: Preference value, encoded as a string.
-          example: 'true'
-    FlowV2ErrorResponse:
-      title: FlowV2ErrorResponse
-      type: object
-      description: Standard error envelope returned by flow endpoints. For 400 (bad request) and 422 (validation failure), `details[]` carries field-level error information.
-      additionalProperties: true
-      example:
-        code: INVALID_FLOW
-        message: Flow document failed validation.
-        details:
-        - path: /nodes/2/inputs/queue
-          code: UNKNOWN_QUEUE
-          message: Queue 'Main_Support_Quueue' was not found in the project.
-      properties:
-        code:
-          type: string
-          description: Stable, machine-readable error code.
-          example: INVALID_FLOW
-        message:
-          type: string
-          description: Human-readable error message.
-          example: Flow document failed validation.
-        details:
-          type: array
-          description: Per-issue error details. Populated for 400 and 422 responses.
-          items:
-            $ref: '#/components/schemas/FlowV2ValidationError'
-    FlowVariablesRes:
-      title: FlowVariablesRes
-      type: object
-      properties:
-        description:
-          type: string
-          description: Description for the variable
-          example: var1 is meant for loop counter
-        desktopLabel:
-          type: string
-          description: Variable name shown on Agent Desktop
-          example: var1
-        id:
-          type: string
-          description: Identifier for the variable
-          example: 04b302a9-6d92-4365-8902-9b04bc3bf5f9
-        isAgentEditable:
-          type: boolean
-          description: Determines whether is eligible for desktop agent to edit
-          example: false
-        isCAD:
-          type: boolean
-          description: Determines whether variable is agent viewable
-          example: false
-        isReportable:
-          type: boolean
-          description: Determines whether a variable is reportable
-          example: false
-        isSecure:
-          type: boolean
-          description: Determines whether a variable is marked sensitive
-          example: false
-        name:
-          type: string
-          description: Name of the variable
-          example: var1
-        overwrite:
-          type: boolean
-          description: Determines whether a global variable has been overwritten
-          example: false
-        source:
-          type: string
-          description: Source of the variable (GLOBAL, SUBFLOW_INPUT, SUBFLOW_OUTPUT, an empty string ). It's left empty for subflow local or flow variables
-          example: GLOBAL
-        type:
-          type: string
-          description: Data type of the variable (STRING, INTEGER, DATETIME, DECIMAL, JSON, BOOLEAN)
-          example: STRING
-        value:
-          type: string
-          description: Value of the variable
-          example: hello world!
-    FlowSearchResult:
-      title: FlowSearchResult
-      type: object
-      description: Summary information for a flow returned by the search API.
-      properties:
-        orgId:
-          type: string
-          description: Organization ID.
-          example: 8eb7da9a-c81c-4d13-b08b-38fdeb7330d8
-        id:
-          type: string
-          description: Flow ID.
-          example: 6501eae8d7974a1c1d4c25d3
-        name:
-          type: string
-          description: Name of the flow.
-          example: Test_Flow
-        flowType:
-          type: string
-          description: Either of 'FLOW' or 'SUBFLOW'.
-          example: FLOW
-        lastModifiedDate:
-          type: string
-          description: Date the flow was last modified.
-          format: date-time
-          example: '2026-02-10T01:59:02.213Z'
-    FlowTagRes:
-      title: FlowTagRes
-      type: object
-      description: Represents a tag
-      properties:
-        default:
-          type: boolean
-          description: Determines whether the tag is a default tag
-          example: false
-        displayName:
-          type: string
-          description: Display name of the tag. It is one of 'Live', 'Test', 'Dev', 'Latest'
-          example: Live
-        flowVersionId:
-          type: string
-          description: Flow Version object ID to with which the tag is currently associated.
-          example: 65c28d9db2a2375974066579
-        id:
-          type: string
-          description: Identifier of the tag. It is one of 'Live', 'Test', 'Dev', 'Latest
-          example: Live
-        versionNumber:
-          type: integer
-          description: Associated Flow Version object's version number
-          format: int32
-          example: 1
-    FlowV2ValidationError:
-      title: FlowV2ValidationError
-      type: object
-      description: A single validation error against a flow document.
-      properties:
-        activityName:
-          type: string
-          description: Name of the activity the error relates to.
-          example: play-message
-        condition:
-          type: string
-          description: Edge condition the error relates to, when applicable.
-          example: onTimeout
-        from:
-          type: string
-          description: Source node label of the offending edge, when applicable.
-          example: WelcomeMessage
-        edge:
-          type: string
-          description: Human-readable description of the offending edge, when applicable.
-          example: WelcomeMessage->DisconnectContact(onTimeout)
-        suggestion:
-          type: string
-          description: Suggested fix.
-          example: 'Use one of: default, error'
-        message:
-          type: string
-          description: Human-readable explanation of the error.
-          example: Condition 'onTimeout' is not valid for activity 'play-message'.
-        severity:
-          type: string
-          description: Severity of the issue.
-          enum:
-          - ERROR
-          example: ERROR
-    FlowV2DraftValidationEntry:
-      title: FlowV2DraftValidationEntry
-      type: object
-      description: A single result entry returned when validating a stored flow draft.
-      properties:
-        code:
-          type: string
-          description: Stable result code.
-          example: FC1007
-        docLink:
-          type: string
-          description: Link to documentation about this result. May be empty.
-          example: ''
-        hint:
-          type: string
-          description: Additional hint about the result, when available.
-          example: Flow has isolated activities. Ensure all nodes are reachable from the start node.
-        message:
-          type: string
-          description: Human-readable explanation of the result.
-          example: Add descriptions for activities
-        severity:
-          type: string
-          description: Severity of the result.
-          enum:
-          - ERROR
-          - WARNING
-          - RECOMMENDATION
-          example: RECOMMENDATION
-        activityLabel:
-          type: string
-          description: Label of the activity the result relates to. May be empty.
-          example: ''
-    ValidationResultRes:
-      title: ValidationResultRes
-      type: object
-      properties:
-        activityId:
-          type: string
-          description: Activity identifier
-          example: e0d7128e-0f80-46c8-9554-9a9ae4dd9e7b
-        activityLabel:
-          type: string
-          description: Activity label
-          example: PlayMessage_ysg
-        code:
-          type: string
-          description: Error code
-          example: FC1015
-        docLink:
-          type: string
-          description: Document link
-          example: https://help.webex.com/en-us/article/n5595zd/Webex-Contact-Center-Setup-and-Administration-Guide
-        message:
-          type: string
-          description: Error message to be displayed on the UI
-          example: Add descriptions for activities
-        severity:
-          type: string
-          description: Severity of the error. Either ERROR or RECOMMENDATION
-          example: ERROR
-    FlowV2ValidationWarning:
-      title: FlowV2ValidationWarning
-      type: object
-      description: A single non-blocking validation warning or recommendation against a flow document.
-      properties:
-        severity:
-          type: string
-          description: Severity of the issue.
-          enum:
-          - WARNING
-          - RECOMMENDATION
-          example: RECOMMENDATION
-        code:
-          type: string
-          description: Stable warning code.
-          example: FC1007
-        message:
-          type: string
-          description: Human-readable explanation of the warning.
-          example: Add descriptions for activities
-    FlowV2Node:
-      title: FlowV2Node
-      type: object
-      description: A node in a flow process graph. Each node represents one activity instance.
-      additionalProperties: true
-      properties:
-        name:
-          type: string
-          description: Stable, unique node name within the flow. Used as the patch-merge key for `upsert_nodes` and `remove_node_names`.
-          example: PlayMessage_1
-        activityName:
-          type: string
-          description: Activity type this node instantiates. Must match an `activityName` returned by `listActivityDefinitions`.
-          example: PlayMessage
-        inputs:
-          type: object
-          description: Input values for the activity, keyed by input name. Shape depends on the activity definition.
-          additionalProperties: true
-          example:
-            audioFile: welcome.wav
-        outputs:
-          type: object
-          description: Declared output bindings for the activity, keyed by output name. Used to map activity outputs to flow variables.
-          additionalProperties: true
-          example: {}
-        position:
-          type: object
-          description: Node position on the flow canvas.
-          properties:
-            x:
-              type: number
-              description: Horizontal coordinate in pixels.
-              example: 300
-            y:
-              type: number
-              description: Vertical coordinate in pixels.
-              example: 200
+          description: The setting value.
+          example: '2000'
     PatchDraftContract:
       title: PatchDraftContract
       type: object
@@ -2445,63 +2502,6 @@ components:
           properties: {}
         remove_node_names: []
         remove_edge_keys: []
-    FlowV2DraftValidationResult:
-      title: FlowV2DraftValidationResult
-      type: object
-      description: Result of validating a stored flow draft. Issues are returned under `results`.
-      example:
-        valid: true
-        results:
-        - code: FC1007
-          docLink: ''
-          message: Add descriptions for activities
-          severity: RECOMMENDATION
-          activityLabel: ''
-      properties:
-        valid:
-          type: boolean
-          description: True if the draft passed validation.
-        results:
-          type: array
-          description: Per-issue results.
-          items:
-            $ref: '#/components/schemas/FlowV2DraftValidationEntry'
-    PublishParameters:
-      title: PublishParameters
-      type: object
-      description: Metadata for the published version.
-      properties:
-        comment:
-          type: string
-          description: A comment to provide context on publishing the flow.
-          example: Publishing the latest version
-        tagIds:
-          type: array
-          description: Tag IDs appropriate to this version. It must be one of 'Live', 'Test', 'Dev', 'Latest.
-          example:
-          - Live
-          items:
-            type: string
-    FlowVersionSettingRes:
-      title: FlowVersionSettingRes
-      type: object
-      properties:
-        group:
-          type: string
-          description: The group the setting belongs to.
-          example: activityWait
-        name:
-          type: string
-          description: The name of the flow version setting
-          example: delayTime
-        type:
-          type: string
-          description: The setting type.
-          example: INTEGER
-        value:
-          type: string
-          description: The setting value.
-          example: '2000'
   securitySchemes:
     oauth2:
       flows:

@@ -282,189 +282,38 @@ paths:
         description: Webex Calling API Documentation
         url: https://developer.webex.com/docs/api/v1/webex-calling
 components:
-  parameters:
-    locationId:
-      name: locationId
-      in: query
-      description: Return only available members in this location.
-      required: false
-      example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzJiNDkyZmZkLTRjNGItNGVmNS04YzAzLWE1MDYyYzM4NDA5Mw
-      schema:
-        type: string
-        minLength: 1
-        maxLength: 1024
-    start:
-      name: start
-      in: query
-      description: Offset from the first result to fetch.
-      required: false
-      example: 0
-      schema:
-        type: integer
-        default: 0
-        minimum: 0
-        maximum: 100000
-    memberName:
-      name: memberName
-      in: query
-      description: Search for available members by name.
-      required: false
-      example: John
-      schema:
-        type: string
-        minLength: 1
-        maxLength: 128
-    orgId:
-      name: orgId
-      in: query
-      description: ID of the organization in which the person resides. Only admin users of another organization, such as partners, may use this parameter. If not specified, the organization from the OAuth token is used.
-      required: false
-      example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE
-      schema:
-        type: string
-        minLength: 1
-        maxLength: 1024
-    phoneNumber:
-      name: phoneNumber
-      in: query
-      description: Search for available members by phone number.
-      required: false
-      example: '+12055552221'
-      schema:
-        type: string
-        minLength: 1
-        maxLength: 50
-    order:
-      name: order
-      in: query
-      description: Sort order for the available member list. Multiple order values may be provided.
-      required: false
-      style: form
-      explode: true
-      example:
-      - lastName-asc
-      schema:
-        type: array
-        items:
-          type: string
-          minLength: 1
-          maxLength: 64
-          example: lastName-asc
-    max:
-      name: max
-      in: query
-      description: Maximum number of records to return.
-      required: false
-      example: 100
-      schema:
-        type: integer
-        default: 2000
-        minimum: 1
-        maximum: 2000
-    extension:
-      name: extension
-      in: query
-      description: Search for available members by extension.
-      required: false
-      example: '2221'
-      schema:
-        type: string
-        minLength: 1
-        maxLength: 30
-    personId:
-      name: personId
-      in: path
-      description: Unique identifier for the person.
-      required: true
-      example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8wZTQ5NjAzNC1lNTQ1LTRmMmEtODI4ZC03MjhjYjJlNjNlMWQ
-      schema:
-        type: string
-        minLength: 1
-        maxLength: 1024
+  responses:
+    Gone:
+      description: 'Gone: The requested resource is no longer available.'
+    Unauthorized:
+      description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+    BadGateway:
+      description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+    UnsupportedMediaType:
+      description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+    MethodNotAllowed:
+      description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+    TooManyRequests:
+      description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+    Locked:
+      description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+    ServiceUnavailable:
+      description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+    Forbidden:
+      description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+    GatewayTimeout:
+      description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+    BadRequest:
+      description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+    InternalServerError:
+      description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+    Conflict:
+      description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+    NotFound:
+      description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+    PreconditionRequired:
+      description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
   schemas:
-    HotDeskingAvailableMembers:
-      type: object
-      description: Response containing members that can be assigned to a person's hot desking guest profile.
-      required:
-      - members
-      properties:
-        members:
-          type: array
-          description: List of members that can be assigned to the person's hot desking guest profile.
-          items:
-            $ref: '#/components/schemas/HotDeskingAvailableMember'
-          example:
-          - id: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9jODhiZGIwNC1jZjU5LTRjMjMtODQ4OC00NTNhOTE3ZDFlMjk
-            firstName: John
-            lastName: Smith
-            phoneNumber: '+12055552221'
-            extension: '2221'
-            routingPrefix: '1234'
-            esn: '12342221'
-            lineType: SHARED_CALL_APPEARANCE
-            memberType: PEOPLE
-            location:
-              id: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzJiNDkyZmZkLTRjNGItNGVmNS04YzAzLWE1MDYyYzM4NDA5Mw
-              name: Main Office
-      example:
-        members:
-        - id: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9jODhiZGIwNC1jZjU5LTRjMjMtODQ4OC00NTNhOTE3ZDFlMjk
-          firstName: John
-          lastName: Smith
-          phoneNumber: '+12055552221'
-          extension: '2221'
-          routingPrefix: '1234'
-          esn: '12342221'
-          lineType: SHARED_CALL_APPEARANCE
-          memberType: PEOPLE
-          location:
-            id: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzJiNDkyZmZkLTRjNGItNGVmNS04YzAzLWE1MDYyYzM4NDA5Mw
-            name: Main Office
-    HotDeskingPutMember:
-      type: object
-      required:
-      - id
-      - port
-      - primaryOwner
-      - lineType
-      - lineWeight
-      properties:
-        id:
-          type: string
-          description: Unique identifier for the member.
-          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8wZTQ5NjAzNC1lNTQ1LTRmMmEtODI4ZC03MjhjYjJlNjNlMWQ
-        port:
-          type: integer
-          description: Port to assign to the member.
-          example: 1
-        primaryOwner:
-          type: boolean
-          description: Indicates whether this member is the hot desking guest profile owner.
-          example: true
-        lineType:
-          $ref: '#/components/schemas/HotDeskingLineType'
-        lineWeight:
-          type: integer
-          description: Number of lines to configure for the member on the hot desking guest profile endpoint.
-          example: 1
-        t38FaxCompressionEnabled:
-          type: boolean
-          description: T.38 fax compression setting for the member line.
-          example: false
-        hotlineEnabled:
-          type: boolean
-          description: Whether this line automatically calls a predefined number when taken off-hook.
-          example: false
-        hotlineDestination:
-          type: string
-          description: Preconfigured number for the hotline. Required when `hotlineEnabled` is `true`.
-          example: '2222'
-        allowCallDeclineEnabled:
-          type: boolean
-          description: When enabled, a call decline request is extended to all endpoints on the line. When disabled, the call is declined only at the current endpoint.
-          example: true
-        memberType:
-          $ref: '#/components/schemas/HotDeskingPutMemberType'
     HotDeskingMembers:
       type: object
       description: Response containing the primary and shared-line members assigned to a person's hot desking guest profile.
@@ -511,24 +360,6 @@ components:
           allowCallDeclineEnabled: true
           memberType: PEOPLE
         maxLineCount: 10
-    Location:
-      type: object
-      description: Location associated with the hot desking member.
-      required:
-      - id
-      - name
-      properties:
-        id:
-          type: string
-          description: Unique identifier for the location.
-          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzJiNDkyZmZkLTRjNGItNGVmNS04YzAzLWE1MDYyYzM4NDA5Mw
-        name:
-          type: string
-          description: Name of the location.
-          example: Main Office
-      example:
-        id: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzJiNDkyZmZkLTRjNGItNGVmNS04YzAzLWE1MDYyYzM4NDA5Mw
-        name: Main Office
     HotDeskingPutMemberType:
       type: string
       description: "Type of member in the update request. Include this field when the member ID needs an explicit resource type for decoding.\n * `USER` - The member is a person.\n * `PLACE` - The member is a workspace.\n * `VIRTUAL_PROFILE` - The member is a virtual line."
@@ -537,36 +368,51 @@ components:
       - PLACE
       - VIRTUAL_PROFILE
       example: USER
-    HotDeskingMembersPut:
+    HotDeskingPutMember:
       type: object
-      description: Request body used to update the members assigned to a person's hot desking guest profile.
       required:
-      - members
+      - id
+      - port
+      - primaryOwner
+      - lineType
+      - lineWeight
       properties:
-        members:
-          type: array
-          description: Members to assign to the person's hot desking guest profile.
-          items:
-            $ref: '#/components/schemas/HotDeskingPutMember'
-          example:
-          - id: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8wZTQ5NjAzNC1lNTQ1LTRmMmEtODI4ZC03MjhjYjJlNjNlMWQ
-            port: 1
-            primaryOwner: true
-            lineType: HOTDESKING_GUEST
-            lineWeight: 1
-            hotlineEnabled: false
-            allowCallDeclineEnabled: true
-            memberType: USER
-      example:
-        members:
-        - id: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8wZTQ5NjAzNC1lNTQ1LTRmMmEtODI4ZC03MjhjYjJlNjNlMWQ
-          port: 1
-          primaryOwner: true
-          lineType: HOTDESKING_GUEST
-          lineWeight: 1
-          hotlineEnabled: false
-          allowCallDeclineEnabled: true
-          memberType: USER
+        id:
+          type: string
+          description: Unique identifier for the member.
+          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8wZTQ5NjAzNC1lNTQ1LTRmMmEtODI4ZC03MjhjYjJlNjNlMWQ
+        port:
+          type: integer
+          description: Port to assign to the member.
+          example: 1
+        primaryOwner:
+          type: boolean
+          description: Indicates whether this member is the hot desking guest profile owner.
+          example: true
+        lineType:
+          $ref: '#/components/schemas/HotDeskingLineType'
+        lineWeight:
+          type: integer
+          description: Number of lines to configure for the member on the hot desking guest profile endpoint.
+          example: 1
+        t38FaxCompressionEnabled:
+          type: boolean
+          description: T.38 fax compression setting for the member line.
+          example: false
+        hotlineEnabled:
+          type: boolean
+          description: Whether this line automatically calls a predefined number when taken off-hook.
+          example: false
+        hotlineDestination:
+          type: string
+          description: Preconfigured number for the hotline. Required when `hotlineEnabled` is `true`.
+          example: '2222'
+        allowCallDeclineEnabled:
+          type: boolean
+          description: When enabled, a call decline request is extended to all endpoints on the line. When disabled, the call is declined only at the current endpoint.
+          example: true
+        memberType:
+          $ref: '#/components/schemas/HotDeskingPutMemberType'
     HotDeskingResponseMemberType:
       type: string
       description: "Type of assigned or available member.\n * `PEOPLE` - The member is a person.\n * `PLACE` - The member is a workspace.\n * `VIRTUAL_LINE` - The member is a virtual line."
@@ -616,15 +462,6 @@ components:
           $ref: '#/components/schemas/HotDeskingResponseMemberType'
         location:
           $ref: '#/components/schemas/Location'
-    HotDeskingLineType:
-      type: string
-      description: "Line type for the hot desking guest profile member.\n * `HOTDESKING_GUEST` - Primary hot desking guest profile line.\n * `SHARED_CALL_APPEARANCE` - Shared line assigned to the hot desking guest profile.\n * `PRIMARY` - Primary line.\n * `MOBILITY` - Mobility line."
-      enum:
-      - HOTDESKING_GUEST
-      - SHARED_CALL_APPEARANCE
-      - PRIMARY
-      - MOBILITY
-      example: HOTDESKING_GUEST
     HotDeskingMember:
       type: object
       required:
@@ -705,37 +542,200 @@ components:
           $ref: '#/components/schemas/HotDeskingResponseMemberType'
         location:
           $ref: '#/components/schemas/Location'
-  responses:
-    BadRequest:
-      description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
-    Unauthorized:
-      description: 'Unauthorized: Authentication credentials were missing or incorrect.'
-    GatewayTimeout:
-      description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
-    Gone:
-      description: 'Gone: The requested resource is no longer available.'
-    Forbidden:
-      description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
-    BadGateway:
-      description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
-    TooManyRequests:
-      description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
-    MethodNotAllowed:
-      description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
-    UnsupportedMediaType:
-      description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
-    ServiceUnavailable:
-      description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
-    Conflict:
-      description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
-    Locked:
-      description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
-    NotFound:
-      description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
-    InternalServerError:
-      description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
-    PreconditionRequired:
-      description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+    HotDeskingAvailableMembers:
+      type: object
+      description: Response containing members that can be assigned to a person's hot desking guest profile.
+      required:
+      - members
+      properties:
+        members:
+          type: array
+          description: List of members that can be assigned to the person's hot desking guest profile.
+          items:
+            $ref: '#/components/schemas/HotDeskingAvailableMember'
+          example:
+          - id: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9jODhiZGIwNC1jZjU5LTRjMjMtODQ4OC00NTNhOTE3ZDFlMjk
+            firstName: John
+            lastName: Smith
+            phoneNumber: '+12055552221'
+            extension: '2221'
+            routingPrefix: '1234'
+            esn: '12342221'
+            lineType: SHARED_CALL_APPEARANCE
+            memberType: PEOPLE
+            location:
+              id: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzJiNDkyZmZkLTRjNGItNGVmNS04YzAzLWE1MDYyYzM4NDA5Mw
+              name: Main Office
+      example:
+        members:
+        - id: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9jODhiZGIwNC1jZjU5LTRjMjMtODQ4OC00NTNhOTE3ZDFlMjk
+          firstName: John
+          lastName: Smith
+          phoneNumber: '+12055552221'
+          extension: '2221'
+          routingPrefix: '1234'
+          esn: '12342221'
+          lineType: SHARED_CALL_APPEARANCE
+          memberType: PEOPLE
+          location:
+            id: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzJiNDkyZmZkLTRjNGItNGVmNS04YzAzLWE1MDYyYzM4NDA5Mw
+            name: Main Office
+    HotDeskingLineType:
+      type: string
+      description: "Line type for the hot desking guest profile member.\n * `HOTDESKING_GUEST` - Primary hot desking guest profile line.\n * `SHARED_CALL_APPEARANCE` - Shared line assigned to the hot desking guest profile.\n * `PRIMARY` - Primary line.\n * `MOBILITY` - Mobility line."
+      enum:
+      - HOTDESKING_GUEST
+      - SHARED_CALL_APPEARANCE
+      - PRIMARY
+      - MOBILITY
+      example: HOTDESKING_GUEST
+    Location:
+      type: object
+      description: Location associated with the hot desking member.
+      required:
+      - id
+      - name
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the location.
+          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzJiNDkyZmZkLTRjNGItNGVmNS04YzAzLWE1MDYyYzM4NDA5Mw
+        name:
+          type: string
+          description: Name of the location.
+          example: Main Office
+      example:
+        id: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzJiNDkyZmZkLTRjNGItNGVmNS04YzAzLWE1MDYyYzM4NDA5Mw
+        name: Main Office
+    HotDeskingMembersPut:
+      type: object
+      description: Request body used to update the members assigned to a person's hot desking guest profile.
+      required:
+      - members
+      properties:
+        members:
+          type: array
+          description: Members to assign to the person's hot desking guest profile.
+          items:
+            $ref: '#/components/schemas/HotDeskingPutMember'
+          example:
+          - id: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8wZTQ5NjAzNC1lNTQ1LTRmMmEtODI4ZC03MjhjYjJlNjNlMWQ
+            port: 1
+            primaryOwner: true
+            lineType: HOTDESKING_GUEST
+            lineWeight: 1
+            hotlineEnabled: false
+            allowCallDeclineEnabled: true
+            memberType: USER
+      example:
+        members:
+        - id: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8wZTQ5NjAzNC1lNTQ1LTRmMmEtODI4ZC03MjhjYjJlNjNlMWQ
+          port: 1
+          primaryOwner: true
+          lineType: HOTDESKING_GUEST
+          lineWeight: 1
+          hotlineEnabled: false
+          allowCallDeclineEnabled: true
+          memberType: USER
+  parameters:
+    phoneNumber:
+      name: phoneNumber
+      in: query
+      description: Search for available members by phone number.
+      required: false
+      example: '+12055552221'
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 50
+    personId:
+      name: personId
+      in: path
+      description: Unique identifier for the person.
+      required: true
+      example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8wZTQ5NjAzNC1lNTQ1LTRmMmEtODI4ZC03MjhjYjJlNjNlMWQ
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 1024
+    order:
+      name: order
+      in: query
+      description: Sort order for the available member list. Multiple order values may be provided.
+      required: false
+      style: form
+      explode: true
+      example:
+      - lastName-asc
+      schema:
+        type: array
+        items:
+          type: string
+          minLength: 1
+          maxLength: 64
+          example: lastName-asc
+    orgId:
+      name: orgId
+      in: query
+      description: ID of the organization in which the person resides. Only admin users of another organization, such as partners, may use this parameter. If not specified, the organization from the OAuth token is used.
+      required: false
+      example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 1024
+    memberName:
+      name: memberName
+      in: query
+      description: Search for available members by name.
+      required: false
+      example: John
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 128
+    locationId:
+      name: locationId
+      in: query
+      description: Return only available members in this location.
+      required: false
+      example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzJiNDkyZmZkLTRjNGItNGVmNS04YzAzLWE1MDYyYzM4NDA5Mw
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 1024
+    start:
+      name: start
+      in: query
+      description: Offset from the first result to fetch.
+      required: false
+      example: 0
+      schema:
+        type: integer
+        default: 0
+        minimum: 0
+        maximum: 100000
+    max:
+      name: max
+      in: query
+      description: Maximum number of records to return.
+      required: false
+      example: 100
+      schema:
+        type: integer
+        default: 2000
+        minimum: 1
+        maximum: 2000
+    extension:
+      name: extension
+      in: query
+      description: Search for available members by extension.
+      required: false
+      example: '2221'
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 30
   securitySchemes:
     oauth2:
       flows:
