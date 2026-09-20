@@ -11,7 +11,7 @@ capability_model:
   attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
     CC BY 4.0
   notice: NOTICE
-edge_count: 21
+edge_count: 29
 edges:
 - tag: Agents
   spec_file: webex-agents-api-openapi.yml
@@ -123,6 +123,29 @@ edges:
     numbers, call notification and regulatory compliance status. This directly realises emergency-call
     routing and location delivery mandated by regulators, even though it is exercised by an enterprise
     Webex Calling admin.'
+- tag: Multimedia Profile
+  spec_file: webex-multimedia-profile-api-openapi.yml
+  capability_id: BC-430.30
+  capability_id_l1: BC-430
+  capability_name: Contact Centre Operations Management
+  confidence: 0.72
+  evidence: published in webex-contact-center-openapi.json; POST /organization/{orgid}/multimedia-profile  Create
+    a new Multimedia Profile; schema MultimediaProfileChannelDTO
+  reason: Contact-centre configuration entity defining per-channel media handling profiles assigned to
+    agents/teams, hosted in the contact center API. That is contact-centre operational setup, hence Contact
+    Centre Operations Management; confidence tempered because the operations are generic config CRUD.
+  recovered_from: capability-edges-sweep.json
+- tag: User Profiles
+  spec_file: webex-user-profiles-api-openapi.yml
+  capability_id: BC-620.20
+  capability_id_l1: BC-620
+  capability_name: Identity & Access Management
+  confidence: 0.72
+  evidence: GET /organization/{orgid}/v3/user-profile/{id}/acl  Get specific User Profile ACL by ID; schemas
+    UserProfilePermissionsDTO, AccessControlListDTO
+  reason: Contact-centre 'user profiles' here are granular-access permission bundles with ACLs — access-rights
+    administration, which is Identity & Access Management rather than HR profiles.
+  recovered_from: capability-edges-sweep.json
 - tag: Agent Personal Greeting Files
   spec_file: webex-agent-personal-greeting-files-api-openapi.yml
   capability_id: BC-430.30
@@ -134,6 +157,18 @@ edges:
   reason: Configuration of contact-centre agent greeting/prompt media assets within an organisation —
     part of running contact centre operations. Sub-capability choice is somewhat coarse, hence moderate
     confidence.
+- tag: Authorizations
+  spec_file: webex-authorizations-api-openapi.yml
+  capability_id: BC-620.20
+  capability_id_l1: BC-620
+  capability_name: Identity & Access Management
+  confidence: 0.7
+  evidence: GET /authorizations 'List authorizations for a user'; DELETE /authorizations 'Delete authorization
+    of org and client ID'; GET /authorizations/tokenExpiry 'Get expiration status for a token'
+  reason: Administration of OAuth authorisations/tokens granted by users to client applications, including
+    revocation — access management. Partly technical auth plumbing, so confidence is moderate rather than
+    high.
+  recovered_from: capability-edges-gap.json
 - tag: Auxiliary Code
   spec_file: webex-auxiliary-code-api-openapi.yml
   capability_id: BC-430.30
@@ -154,6 +189,17 @@ edges:
   reason: Generation and retrieval of billing reports for BroadWorks service-provider partners consuming
     Webex calling — i.e. telecom billing/revenue data production. Sub-capability is ambiguous between
     billing operations and wholesale settlement reporting, so only the L1 is asserted.
+- tag: BroadWorks Subscribers
+  spec_file: webex-broadworks-subscribers-api-openapi.yml
+  capability_id: BC-4240.30
+  capability_id_l1: BC-4240
+  capability_name: Subscription Provisioning
+  confidence: 0.7
+  evidence: Provision a BroadWorks Subscriber; Precheck a Broadworks Subscriber Provisioning; Remove a
+    BroadWorks Subscriber
+  reason: Provisioning, updating and removing subscriber service entitlements for a partner-sold service
+    = subscription provisioning/lifecycle. Some ambiguity vs tenant user provisioning.
+  recovered_from: capability-edges-sweep.json
 - tag: Bulk Manage SCIM 2 Users and Groups
   spec_file: webex-bulk-manage-scim-2-users-and-groups-api-openapi.yml
   capability_id: BC-620.20
@@ -194,6 +240,17 @@ edges:
   reason: Scheduling and managing customer callbacks in a contact centre is customer contact handling.
     Mapped at L1 (Customer Service Management) because the evidence does not clearly separate inbound
     inquiry handling from contact-centre operations tooling.
+- tag: Campaign Manager
+  spec_file: webex-campaign-manager-api-openapi.yml
+  capability_id: BC-430.30
+  capability_id_l1: BC-430
+  capability_name: Contact Centre Operations Management
+  confidence: 0.7
+  evidence: POST /v1/dialer/campaign "Start Campaign Request", DELETE /v1/dialer/campaign/{campaignId}
+    "Stop Campaign Request", schema CallProgressAnalysisParamsRequest
+  reason: Starting/stopping dialer campaigns with call-progress analysis is outbound contact-centre dialing
+    operation, i.e. contact centre operations management for this collaboration/CC vendor.
+  recovered_from: capability-edges-sweep.json
 - tag: Contact Service Queue
   spec_file: webex-contact-service-queue-api-openapi.yml
   capability_id: BC-430.30
@@ -206,6 +263,41 @@ edges:
     groups and agent groups — the core routing configuration of a contact centre. Contact Centre Operations
     Management is the best fit; some ambiguity versus Customer Inquiry Management (inbound routing) keeps
     confidence moderate.
+- tag: Entry Point
+  spec_file: webex-entry-point-api-openapi.yml
+  capability_id: BC-430.30
+  capability_id_l1: BC-430
+  capability_name: Contact Centre Operations Management
+  confidence: 0.7
+  evidence: Operations tagged Entry Point across ... webex-contact-center-openapi.json; "Create a new
+    Entry Point", schema EntryPointDTO with FlowOverrideSettingDTO
+  reason: Entry Points are the contact-centre inbound contact entry/routing configuration objects in Webex
+    Contact Center, managed per organisation. That is contact centre operations configuration. Confidence
+    moderate because the surface is generic CRUD-over-config (bulk save, purge inactive) and the business
+    meaning rests on the contact-center spec provenance.
+  recovered_from: capability-edges-sweep.json
+- tag: Estimated Wait Time
+  spec_file: webex-estimated-wait-time-api-openapi.yml
+  capability_id: BC-430.30
+  capability_id_l1: BC-430
+  capability_name: Contact Centre Operations Management
+  confidence: 0.7
+  evidence: GET /v1/ewt  getEwt  Get Estimated Wait Time (webex-contact-center-openapi.json), schema EWTApiResponse
+  reason: Estimated wait time for queued contacts is a contact-centre queue-management metric, so it realises
+    contact centre operations. Single thin operation, hence moderate confidence.
+  recovered_from: capability-edges-sweep.json
+- tag: Journey - Profile Creation & Insights API
+  spec_file: webex-journey-profile-creation-insights-api-api-openapi.yml
+  capability_id: BC-420.10
+  capability_id_l1: BC-420
+  capability_name: Customer Data Management
+  confidence: 0.7
+  evidence: '"Historic Progressive Profile View by Template Name", "createTemplate  Create Template" for
+    /profile-view-template, schemas "ProgressiveProfileViewModel", "ProfileResponse"'
+  reason: Builds and reads unified customer profile views (progressive profiles) per person/identity from
+    journey data — customer data/profile management within CRM. Templates are configuration of those profile
+    views rather than a separate capability.
+  recovered_from: capability-edges-sweep.json
 - tag: Numbers
   spec_file: webex-numbers-api-openapi.yml
   capability_id: BC-2640.30
