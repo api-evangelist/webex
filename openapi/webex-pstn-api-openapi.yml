@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: Webex PSTN API
+  title: Webex Cloud Calling PSTN API
   version: 1.0.0
-  description: 'Operations tagged PSTN across 2 of this provider''s published API definitions: webex-cloud-calling-openapi.json, webex-pstn-api-openapi.yml. Each path carries the servers of the definition it was published in.'
+  description: The Webex Cloud Calling APIs enable comprehensive management of cloud-based calling services, including user provisioning, device assignment, call routing, feature configuration, and number management.
   x-provenance:
     method: harvested
     authored_by: Cisco Webex
@@ -11,9 +11,6 @@ info:
     first_party: true
     note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
     provider_published: true
-    derived_view: Per-tag view of webex-cloud-calling-openapi.json, the provider's source document. Operations and schemas are the provider's, unmodified; only the partition is ours.
-    derived_from: webex-cloud-calling-openapi.json
-    operation_coverage: 7/7
   x-evidence:
   - type: source
     url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-cloud-calling.json
@@ -639,14 +636,6 @@ paths:
               $ref: '#/components/schemas/EmergencyAddressObject'
 components:
   schemas:
-    PSTNType:
-      type: string
-      enum:
-      - LOCAL_GATEWAY
-      - NON_INTEGRATED_CCP
-      - INTEGRATED_CCP
-      - CISCO_PSTN
-      description: " * `LOCAL_GATEWAY` - PSTN connection type for a premises-based connection.\n * `NON_INTEGRATED_CCP` - PSTN connection type for a Non-Integrated Cloud Connected PSTN connection.\n * `INTEGRATED_CCP` - PSTN connection type for an Integrated Cloud Connected PSTN connection. Updating the location with this connection type is currently not supported using the API.\n * `CISCO_PSTN` - PSTN connection type for a Cisco PSTN connection. Updating the location with this connection type is currently not supported using the API.\n"
     SetUpPSTNLocationConnectionObject:
       type: object
       properties:
@@ -662,6 +651,36 @@ components:
           type: string
           example: Y2lzY29zcGFyazovL3VzL1RSVU5LLzUxZGU0ODljLWFhNjAtNGMyNS05YWY2LWNjNGNiMTcxNzMxZg
           description: Premise route ID. This refers to either a Trunk ID or a Route Group ID and is required for the local gateway.
+    AddressLookupErrorObject:
+      type: object
+      description: Object containing details about an error encountered during address lookup.
+      properties:
+        code:
+          type: string
+          description: Error code.
+          example: PMP4004
+        title:
+          type: string
+          description: Error title.
+          example: INVALID_STREET_ADDRESS
+        detail:
+          type: string
+          description: Detailed error message.
+          example: The street address provided is invalid.
+    PremiseRouteType:
+      type: string
+      enum:
+      - ROUTE_GROUP
+      - TRUNK
+      description: " * `ROUTE_GROUP` - A route group has been selected for premises-based PSTN.\n * `TRUNK` - A trunk group has been selected for premises-based PSTN.\n"
+    PSTNType:
+      type: string
+      enum:
+      - LOCAL_GATEWAY
+      - NON_INTEGRATED_CCP
+      - INTEGRATED_CCP
+      - CISCO_PSTN
+      description: " * `LOCAL_GATEWAY` - PSTN connection type for a premises-based connection.\n * `NON_INTEGRATED_CCP` - PSTN connection type for a Non-Integrated Cloud Connected PSTN connection.\n * `INTEGRATED_CCP` - PSTN connection type for an Integrated Cloud Connected PSTN connection. Updating the location with this connection type is currently not supported using the API.\n * `CISCO_PSTN` - PSTN connection type for a Cisco PSTN connection. Updating the location with this connection type is currently not supported using the API.\n"
     SuggestedEmergencyAddressObject:
       type: object
       description: Object containing suggested address details.
@@ -713,6 +732,13 @@ components:
           - code: PMP4004
             title: INVALID_STREET_ADDRESS
             detail: The street address provided is invalid.
+    AllowedServiceTypesFromHydra:
+      type: string
+      enum:
+      - MOBILE_NUMBERS
+      description: ' * `MOBILE_NUMBERS` - PSTN service type for mobile numbers.
+
+        '
     ConnectionOptionsListResponse:
       type: object
       properties:
@@ -721,22 +747,17 @@ components:
           items:
             $ref: '#/components/schemas/ConnectionOptionsResponse'
           description: The list of PSTN connection options available for this location.
-    AddressLookupErrorObject:
-      type: object
-      description: Object containing details about an error encountered during address lookup.
-      properties:
-        code:
-          type: string
-          description: Error code.
-          example: PMP4004
-        title:
-          type: string
-          description: Error title.
-          example: INVALID_STREET_ADDRESS
-        detail:
-          type: string
-          description: Detailed error message.
-          example: The street address provided is invalid.
+    PSTNServiceType:
+      type: string
+      enum:
+      - GEOGRAPHIC_NUMBERS
+      - TOLLFREE_NUMBERS
+      - BUSINESS_TEXTING
+      - CONTACT_CENTER
+      - SERVICE_NUMBERS
+      - NON_GEOGRAPHIC_NUMBERS
+      - MOBILE_NUMBERS
+      description: " * `GEOGRAPHIC_NUMBERS` - PSTN service type for geographic numbers.\n * `TOLLFREE_NUMBERS` - PSTN service type for toll-free numbers.\n * `BUSINESS_TEXTING` - PSTN service type for business texting.\n * `CONTACT_CENTER` - PSTN service type for contact center services.\n * `SERVICE_NUMBERS` - PSTN service type for service numbers.\n * `NON_GEOGRAPHIC_NUMBERS` - PSTN service type for non-geographic numbers.\n * `MOBILE_NUMBERS` - PSTN service type for mobile numbers.\n"
     ConnectionOptionsResponse:
       type: object
       required:
@@ -755,6 +776,34 @@ components:
           items:
             $ref: '#/components/schemas/PSTNServiceType'
           description: The PSTN services available for this connection.
+    EmergencyAddressObject:
+      type: object
+      description: Object containing emergency address details.
+      properties:
+        address1:
+          type: string
+          example: 3487 Chase Ave
+          description: Primary street information for the emergency address.
+        address2:
+          type: string
+          example: Apt 112
+          description: Apartment number or any other secondary information for the emergency address.
+        city:
+          type: string
+          example: Miami Beach
+          description: City for the emergency address.
+        state:
+          type: string
+          example: FL
+          description: State or Province or Region for the emergency address.
+        postalCode:
+          type: string
+          example: '33140'
+          description: Postal code for the emergency address.
+        country:
+          type: string
+          example: US
+          description: Country for the emergency address.
     ConnectionResponse:
       type: object
       required:
@@ -784,58 +833,6 @@ components:
           type: string
           example: Y2lzY29zcGFyazovL3VzL1RSVU5LL2Y1YTU4MzAwLTVmZTYtNGNjMS1hODA3LTRlN2E5OTMzN2Q0ZA
           description: Premise route ID. This refers to either a Trunk ID or a Route Group ID. This field is optional but required if the connection type is LOCAL_GATEWAY.
-    PSTNServiceType:
-      type: string
-      enum:
-      - GEOGRAPHIC_NUMBERS
-      - TOLLFREE_NUMBERS
-      - BUSINESS_TEXTING
-      - CONTACT_CENTER
-      - SERVICE_NUMBERS
-      - NON_GEOGRAPHIC_NUMBERS
-      - MOBILE_NUMBERS
-      description: " * `GEOGRAPHIC_NUMBERS` - PSTN service type for geographic numbers.\n * `TOLLFREE_NUMBERS` - PSTN service type for toll-free numbers.\n * `BUSINESS_TEXTING` - PSTN service type for business texting.\n * `CONTACT_CENTER` - PSTN service type for contact center services.\n * `SERVICE_NUMBERS` - PSTN service type for service numbers.\n * `NON_GEOGRAPHIC_NUMBERS` - PSTN service type for non-geographic numbers.\n * `MOBILE_NUMBERS` - PSTN service type for mobile numbers.\n"
-    AllowedServiceTypesFromHydra:
-      type: string
-      enum:
-      - MOBILE_NUMBERS
-      description: ' * `MOBILE_NUMBERS` - PSTN service type for mobile numbers.
-
-        '
-    PremiseRouteType:
-      type: string
-      enum:
-      - ROUTE_GROUP
-      - TRUNK
-      description: " * `ROUTE_GROUP` - A route group has been selected for premises-based PSTN.\n * `TRUNK` - A trunk group has been selected for premises-based PSTN.\n"
-    EmergencyAddressObject:
-      type: object
-      description: Object containing emergency address details.
-      properties:
-        address1:
-          type: string
-          example: 3487 Chase Ave
-          description: Primary street information for the emergency address.
-        address2:
-          type: string
-          example: Apt 112
-          description: Apartment number or any other secondary information for the emergency address.
-        city:
-          type: string
-          example: Miami Beach
-          description: City for the emergency address.
-        state:
-          type: string
-          example: FL
-          description: State or Province or Region for the emergency address.
-        postalCode:
-          type: string
-          example: '33140'
-          description: Postal code for the emergency address.
-        country:
-          type: string
-          example: US
-          description: Country for the emergency address.
   securitySchemes:
     oauth2:
       flows:
@@ -854,6 +851,3 @@ components:
       description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
       scheme: bearer
       bearerFormat: JWT
-x-refined-from:
-- webex-cloud-calling-openapi.json
-- webex-pstn-api-openapi.yml

@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: Webex Beta Call Settings For Me With Userhub Phase1 API
+  title: Webex Cloud Calling Beta Call Settings For Me With Userhub…
   version: 1.0.0
-  description: 'Operations tagged Beta Call Settings For Me With Userhub Phase1 across 2 of this provider''s published API definitions: webex-beta-call-settings-for-me-with-userhub-phase1-api-openapi.yml, webex-cloud-calling-openapi.json. Each path carries the servers of the definition it was published in.'
+  description: The Webex Cloud Calling APIs enable comprehensive management of cloud-based calling services, including user provisioning, device assignment, call routing, feature configuration, and number management.
   x-provenance:
     method: harvested
     authored_by: Cisco Webex
@@ -11,9 +11,6 @@ info:
     first_party: true
     note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
     provider_published: true
-    derived_view: Per-tag view of webex-cloud-calling-openapi.json, the provider's source document. Operations and schemas are the provider's, unmodified; only the partition is ours.
-    derived_from: webex-cloud-calling-openapi.json
-    operation_coverage: 16/16
   x-evidence:
   - type: source
     url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-cloud-calling.json
@@ -955,76 +952,6 @@ paths:
           description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
 components:
   schemas:
-    ExecutiveAlertGet:
-      type: object
-      required:
-      - alertingMode
-      - rolloverWaitTimeInSecs
-      - clidNameMode
-      - clidPhoneNumberMode
-      properties:
-        alertingMode:
-          type: string
-          enum:
-          - SEQUENTIAL
-          - SIMULTANEOUS
-          description: " * `SEQUENTIAL` - Alerts assistants one at a time in the defined order.\n * `SIMULTANEOUS` - Alerts all assistants at the same time.\n"
-        nextAssistantNumberOfRings:
-          type: integer
-          description: Number of rings before alerting the next assistant when `alertingMode` is `SEQUENTIAL`.
-        rolloverEnabled:
-          type: boolean
-          description: Controls whether the rollover timer (`rolloverWaitTimeInSecs`) is enabled. When set to `true`, rollover will trigger after the timer expires, even if assistants are still available. When `false`, rollover only occurs when no assistants remain.
-        rolloverAction:
-          type: string
-          enum:
-          - VOICE_MESSAGING
-          - NO_ANSWER_PROCESSING
-          - FORWARD
-          description: "Specifies what happens when rollover is triggered.\n * `VOICE_MESSAGING` - The call is sent to the executive's voicemail.\n * `FORWARD` - The call is forwarded to the specified destination (`rolloverForwardToPhoneNumber`).\n * `NO_ANSWER_PROCESSING` - The call is sent to no answer processing which may trigger executive services such as call forwarding or voicemail.\nRollover is always triggered when no assistants remain for a filtered call. If the rollover timer is enabled, rollover can also be triggered when the timer expires, even if assistants are still available."
-        rolloverForwardToPhoneNumber:
-          type: string
-          description: Phone number to forward calls to when rollover action is set to `FORWARD`.
-        rolloverWaitTimeInSecs:
-          type: integer
-          description: Time in seconds to wait before applying the rollover action when `rolloverEnabled` is `true`.
-        clidNameMode:
-          type: string
-          enum:
-          - EXECUTIVE_ORIGINATOR
-          - ORIGINATOR_EXECUTIVE
-          - EXECUTIVE
-          - ORIGINATOR
-          - CUSTOM
-          description: "Controls how Caller ID name is displayed on assistant's phone.\n * `EXECUTIVE_ORIGINATOR` - Display executive name followed by caller name.\n * `ORIGINATOR_EXECUTIVE` - Display caller name followed by executive name.\n * `EXECUTIVE` - Display only executive name.\n * `ORIGINATOR` - Display only caller name.\n * `CUSTOM` - Display a custom name.\n"
-        customCLIDName:
-          type: string
-          description: Custom caller ID name to display when `clidNameMode` is set to `CUSTOM` (deprecated).
-        customCLIDNameInUnicode:
-          type: string
-          description: Unicode Custom caller ID name to display when `clidNameMode` is set to `CUSTOM`.
-        clidPhoneNumberMode:
-          type: string
-          enum:
-          - EXECUTIVE
-          - ORIGINATOR
-          - CUSTOM
-          description: "Controls which Caller ID phone number is displayed on assistant's phone.\n * `EXECUTIVE` - Display executive's phone number.\n * `ORIGINATOR` - Display caller's phone number.\n * `CUSTOM` - Display a custom phone number.\n"
-        customCLIDPhoneNumber:
-          type: string
-          description: Custom caller ID phone number to display on assistant's phone when `clidPhoneNumberMode` is set to `CUSTOM`.
-      example:
-        alertingMode: SEQUENTIAL
-        nextAssistantNumberOfRings: 3
-        rolloverEnabled: true
-        rolloverAction: VOICE_MESSAGING
-        rolloverForwardToPhoneNumber: '+14085267209'
-        rolloverWaitTimeInSecs: 60
-        clidNameMode: EXECUTIVE_ORIGINATOR
-        customCLIDName: John Anderson
-        customCLIDNameInUnicode: ''
-        clidPhoneNumberMode: EXECUTIVE
-        customCLIDPhoneNumber: '+14085267208'
     ExecutiveScreeningGet:
       type: object
       description: Executive screening settings response object containing configuration for call screening and alert preferences.
@@ -1059,127 +986,64 @@ components:
         alertAnywhereLocationEnabled: false
         alertMobilityLocationEnabled: false
         alertSharedCallAppearanceLocationEnabled: false
-    UserCallPoliciesGet:
+    ExecutiveCallFilteringCriteriaPatch:
       type: object
-      required:
-      - connectedLineIdPrivacyOnRedirectedCalls
+      description: Executive call filtering criteria settings request object for updating detailed filter rules and routing configuration.
       properties:
-        connectedLineIdPrivacyOnRedirectedCalls:
+        scheduleName:
+          type: string
+          description: Name of the schedule associated with this criteria.
+        scheduleType:
           type: string
           enum:
-          - NO_PRIVACY
-          - PRIVACY_FOR_EXTERNAL_CALLS
-          - PRIVACY_FOR_ALL_CALLS
-          description: "Specifies the connection type to be used.\n * `NO_PRIVACY` - Connected line identification is not blocked on redirected calls.\n * `PRIVACY_FOR_EXTERNAL_CALLS` - Connected line identification is blocked on redirected calls to external numbers.\n * `PRIVACY_FOR_ALL_CALLS` - Connected line identification is blocked on all redirected calls.\n"
-    DoNotDisturbGet:
-      type: object
-      description: Do Not Disturb settings response object containing DND configuration for the user.
-      properties:
-        enabled:
-          type: boolean
-          description: Indicates if Do Not Disturb is enabled.
-        ringSplashEnabled:
-          type: boolean
-          description: Indicates if ring splash is enabled while DND is active.
-        webexGoOverrideEnabled:
-          type: boolean
-          description: Indicates if Webex Go override is enabled while DND is active.
-      example:
-        enabled: true
-        ringSplashEnabled: false
-        webexGoOverrideEnabled: false
-    UserCallPoliciesPut:
-      type: object
-      description: User call policies settings request object for updating privacy configuration for redirected calls.
-      properties:
-        connectedLineIdPrivacyOnRedirectedCalls:
+          - holidays
+          - businessHours
+          description: " * `businessHours` - The schedule type that specifies the business or working hours during the day.\n * `holidays` - The schedule type that specifies the day when your organization is not open.\n"
+        scheduleLevel:
           type: string
           enum:
-          - NO_PRIVACY
-          - PRIVACY_FOR_EXTERNAL_CALLS
-          - PRIVACY_FOR_ALL_CALLS
-          description: " * `NO_PRIVACY` - Caller sees the final destination's identity when call is redirected.\n * `PRIVACY_FOR_EXTERNAL_CALLS` - Internal callers see the final destination's identity; external callers see the original recipient's identity.\n * `PRIVACY_FOR_ALL_CALLS` - All callers see the original recipient's identity when call is redirected.\n"
-    ExecutiveScreeningPut:
-      type: object
-      description: Executive screening settings request object for updating call screening and alert preferences.
-      properties:
-        enabled:
-          type: boolean
-          description: Set to enable or disable executive screening.
-        alertType:
+          - PEOPLE
+          - GROUP
+          description: " * `PEOPLE` - The schedule level that specifies that criteria is of People level.\n * `GROUP` - The schedule level that specifies that criteria is of Group (Location) level.\n"
+        callsFrom:
           type: string
           enum:
-          - SILENT
-          - RING_SPLASH
-          description: " * `SILENT` - No audible alert is provided for executive screening.\n * `RING_SPLASH` - A short ring (splash) is used as an alert for executive screening.\n"
-        alertAnywhereLocationEnabled:
+          - ANY_PHONE_NUMBER
+          - SELECT_PHONE_NUMBERS
+          - ANY_INTERNAL
+          - ANY_EXTERNAL
+          description: " * `ANY_PHONE_NUMBER` - The criteria applies to any phone number.\n * `SELECT_PHONE_NUMBERS` - The criteria applies to selected phone numbers.\n * `ANY_INTERNAL` - The criteria applies to any internal number.\n * `ANY_EXTERNAL` - The criteria applies to any external number.\n"
+        anonymousCallersEnabled:
           type: boolean
-          description: Indicates if alerts are enabled for Single Number Reach locations.
-        alertMobilityLocationEnabled:
+          description: Set to enable or disable the criteria for anonymous callers.
+        unavailableCallersEnabled:
           type: boolean
-          description: Indicates if alerts are enabled for Webex Go locations.
-        alertSharedCallAppearanceLocationEnabled:
+          description: Set to enable or disable the criteria for unavailable callers.
+        phoneNumbers:
+          type: array
+          description: The list of phone numbers that this filtering criteria applies to, when `callsFrom` is set to `SELECT_PHONE_NUMBERS`.
+          items:
+            type: string
+            description: Phone number that the criteria applies to based on `callsFrom` selection.
+        filterEnabled:
           type: boolean
-          description: Indicates if alerts are enabled for Shared Call Appearance locations.
-      example:
-        enabled: true
-        alertType: SILENT
-        alertAnywhereLocationEnabled: false
-        alertMobilityLocationEnabled: false
-        alertSharedCallAppearanceLocationEnabled: false
-    ExecutiveAlertPut:
-      type: object
-      properties:
-        alertingMode:
-          type: string
-          enum:
-          - SEQUENTIAL
-          - SIMULTANEOUS
-          description: " * `SEQUENTIAL` - Alerts assistants one at a time in the defined order.\n * `SIMULTANEOUS` - Alerts all assistants at the same time.\n"
-        nextAssistantNumberOfRings:
-          type: integer
-          description: Number of rings before alerting the next assistant when `alertingMode` is `SEQUENTIAL`.
-        rolloverEnabled:
-          type: boolean
-          description: Controls whether the rollover timer (`rolloverWaitTimeInSecs`) is enabled. When set to `true`, rollover will trigger after the timer expires, even if assistants are still available. When `false`, rollover only occurs when no assistants remain.
-        rolloverAction:
-          type: string
-          enum:
-          - VOICE_MESSAGING
-          - NO_ANSWER_PROCESSING
-          - FORWARD
-          description: "Specifies what happens when rollover is triggered.\n * `VOICE_MESSAGING` - The call is sent to the executive's voicemail.\n * `FORWARD` - The call is forwarded to the specified destination (`rolloverForwardToPhoneNumber`).\n * `NO_ANSWER_PROCESSING` - The call is sent to no answer processing which may trigger executive services such as call forwarding or voicemail.\nRollover is always triggered when no assistants remain for a filtered call. If the rollover timer is enabled, rollover can also be triggered when the timer expires, even if assistants are still available."
-        rolloverForwardToPhoneNumber:
-          type: string
-          description: Phone number to forward calls to when rollover action is set to `FORWARD`.
-        rolloverWaitTimeInSecs:
-          type: integer
-          description: Time in seconds to wait before applying the rollover action when `rolloverEnabled` is `true`.
-        clidNameMode:
-          type: string
-          enum:
-          - EXECUTIVE_ORIGINATOR
-          - ORIGINATOR_EXECUTIVE
-          - EXECUTIVE
-          - ORIGINATOR
-          - CUSTOM
-          description: "Controls how Caller ID name is displayed on assistant's phone.\n * `EXECUTIVE_ORIGINATOR` - Display executive name followed by caller name.\n * `ORIGINATOR_EXECUTIVE` - Display caller name followed by executive name.\n * `EXECUTIVE` - Display only executive name.\n * `ORIGINATOR` - Display only caller name.\n * `CUSTOM` - Display a custom name.\n"
-        customCLIDName:
-          type: string
-          description: Custom caller ID name to display when `clidNameMode` is set to `CUSTOM` (deprecated).
-        customCLIDNameInUnicode:
-          type: string
-          description: Unicode Custom caller ID name to display when `clidNameMode` is set to `CUSTOM`.
-        clidPhoneNumberMode:
-          type: string
-          enum:
-          - EXECUTIVE
-          - ORIGINATOR
-          - CUSTOM
-          description: "Controls which Caller ID phone number is displayed on assistant's phone.\n * `EXECUTIVE` - Display executive's phone number.\n * `ORIGINATOR` - Display caller's phone number.\n * `CUSTOM` - Display a custom phone number.\n"
-        customCLIDPhoneNumber:
-          type: string
-          description: Custom caller ID phone number to display on assistant's phone when `clidPhoneNumberMode` is set to `CUSTOM`.
+          description: Controls the action when this criteria matches a call. When `true`, matching calls are filtered and will alert the executive's assistants. When `false`, matching calls are not filtered and will not alert the executive's assistants. Criteria with `filterEnabled` as `false` take precedence over other filtering criteria with `filterEnabled` as `true`, allowing exceptions where certain calls are not filtered to the executive's assistants.
+        callsToNumbers:
+          type: array
+          description: List of numbers for the executive that will match the criteria when called. This may include the executive’s primary number and/or extension, as well as secondary (alternate) numbers (and associated extensions). If the list is empty, any number or extension for the executive matches the criteria when called. If the list is not empty, only the specified numbers and their extensions match the criteria.
+          items:
+            type: object
+            description: Executive phone number that will match the criteria when called.
+            properties:
+              type:
+                type: string
+                enum:
+                - PRIMARY
+                - ALTERNATE
+                description: " * `PRIMARY` - Number is assigned as primary to executive.\n * `ALTERNATE` - Number is assigned as alternate (secondary) to the executive.\n"
+              phoneNumber:
+                type: string
+                description: The phone number assigned to the executive that will be used to match criteria.
     ExecutiveCallFilteringCriteriaGet:
       type: object
       description: Executive call filtering criteria detailed settings response object that contains the schedule, phone numbers, and routing configuration.
@@ -1265,110 +1129,6 @@ components:
         callsToNumbers:
         - type: PRIMARY
           phoneNumber: '+14085556789'
-    ExecutiveCallFilteringCriteriaPatch:
-      type: object
-      description: Executive call filtering criteria settings request object for updating detailed filter rules and routing configuration.
-      properties:
-        scheduleName:
-          type: string
-          description: Name of the schedule associated with this criteria.
-        scheduleType:
-          type: string
-          enum:
-          - holidays
-          - businessHours
-          description: " * `businessHours` - The schedule type that specifies the business or working hours during the day.\n * `holidays` - The schedule type that specifies the day when your organization is not open.\n"
-        scheduleLevel:
-          type: string
-          enum:
-          - PEOPLE
-          - GROUP
-          description: " * `PEOPLE` - The schedule level that specifies that criteria is of People level.\n * `GROUP` - The schedule level that specifies that criteria is of Group (Location) level.\n"
-        callsFrom:
-          type: string
-          enum:
-          - ANY_PHONE_NUMBER
-          - SELECT_PHONE_NUMBERS
-          - ANY_INTERNAL
-          - ANY_EXTERNAL
-          description: " * `ANY_PHONE_NUMBER` - The criteria applies to any phone number.\n * `SELECT_PHONE_NUMBERS` - The criteria applies to selected phone numbers.\n * `ANY_INTERNAL` - The criteria applies to any internal number.\n * `ANY_EXTERNAL` - The criteria applies to any external number.\n"
-        anonymousCallersEnabled:
-          type: boolean
-          description: Set to enable or disable the criteria for anonymous callers.
-        unavailableCallersEnabled:
-          type: boolean
-          description: Set to enable or disable the criteria for unavailable callers.
-        phoneNumbers:
-          type: array
-          description: The list of phone numbers that this filtering criteria applies to, when `callsFrom` is set to `SELECT_PHONE_NUMBERS`.
-          items:
-            type: string
-            description: Phone number that the criteria applies to based on `callsFrom` selection.
-        filterEnabled:
-          type: boolean
-          description: Controls the action when this criteria matches a call. When `true`, matching calls are filtered and will alert the executive's assistants. When `false`, matching calls are not filtered and will not alert the executive's assistants. Criteria with `filterEnabled` as `false` take precedence over other filtering criteria with `filterEnabled` as `true`, allowing exceptions where certain calls are not filtered to the executive's assistants.
-        callsToNumbers:
-          type: array
-          description: List of numbers for the executive that will match the criteria when called. This may include the executive’s primary number and/or extension, as well as secondary (alternate) numbers (and associated extensions). If the list is empty, any number or extension for the executive matches the criteria when called. If the list is not empty, only the specified numbers and their extensions match the criteria.
-          items:
-            type: object
-            description: Executive phone number that will match the criteria when called.
-            properties:
-              type:
-                type: string
-                enum:
-                - PRIMARY
-                - ALTERNATE
-                description: " * `PRIMARY` - Number is assigned as primary to executive.\n * `ALTERNATE` - Number is assigned as alternate (secondary) to the executive.\n"
-              phoneNumber:
-                type: string
-                description: The phone number assigned to the executive that will be used to match criteria.
-    ExecutiveCallFilteringPatch:
-      type: object
-      description: Executive call filtering settings request object for updating the filter configuration and criteria activation.
-      properties:
-        enabled:
-          type: boolean
-          description: Set to `true` to enable executive call filtering or `false` to disable it.
-        filterType:
-          type: string
-          enum:
-          - CUSTOM_CALL_FILTERS
-          - ALL_CALLS
-          - ALL_INTERNAL_CALLS
-          - ALL_EXTERNAL_CALLS
-          description: " * `CUSTOM_CALL_FILTERS` - Choose this option to ensure that only specific calls are sent to the executive assistant.\n * `ALL_CALLS` - Choose this option to send both internal and external calls to the executive assistant.\n * `ALL_INTERNAL_CALLS` - Choose this option to send all internal calls to the executive assistant.\n * `ALL_EXTERNAL_CALLS` - Choose this option to send all external calls to the executive assistant.\n"
-        criteriaActivation:
-          type: array
-          description: The list of criteria activation settings to update for executive call filtering.
-          items:
-            type: object
-            required:
-            - id
-            - activationEnabled
-            description: The activation configuration for an individual filter criterion.
-            properties:
-              id:
-                type: string
-                description: Unique identifier for the filter criteria.
-              activationEnabled:
-                type: boolean
-                description: Controls whether this filter criteria is active. When `true`, the criteria is evaluated for incoming calls. When `false`, the criteria is completely ignored and has no effect on call filtering.
-    DoNotDisturbPut:
-      type: object
-      required:
-      - webexGoOverrideEnabled
-      properties:
-        enabled:
-          type: boolean
-          example: true
-          description: '`true` if the Do Not Disturb feature is enabled.'
-        ringSplashEnabled:
-          type: boolean
-          description: Enables a Ring Reminder to play a brief tone on your desktop phone when you receive incoming calls.
-        webexGoOverrideEnabled:
-          type: boolean
-          description: '`true` if a mobile device will still ring even if Do Not Disturb is enabled.'
     ResponseId:
       type: object
       description: Response object that contains the unique identifier for the created or updated criteria.
@@ -1378,6 +1138,23 @@ components:
           description: The unique identifier for the criteria.
       example:
         id: Y2lzY29zcGFyazovL3VzL0NSSVRFUklBL2RHVnpkRjltYVd4MFpYST0
+    DoNotDisturbGet:
+      type: object
+      description: Do Not Disturb settings response object containing DND configuration for the user.
+      properties:
+        enabled:
+          type: boolean
+          description: Indicates if Do Not Disturb is enabled.
+        ringSplashEnabled:
+          type: boolean
+          description: Indicates if ring splash is enabled while DND is active.
+        webexGoOverrideEnabled:
+          type: boolean
+          description: Indicates if Webex Go override is enabled while DND is active.
+      example:
+        enabled: true
+        ringSplashEnabled: false
+        webexGoOverrideEnabled: false
     ExecutiveCallFilteringGet:
       type: object
       description: Executive call filtering settings response object that contains the filter configuration and criteria.
@@ -1438,6 +1215,227 @@ components:
           source: SELECT_PHONE_NUMBERS
           activationEnabled: true
           filterEnabled: true
+    ExecutiveAlertPut:
+      type: object
+      properties:
+        alertingMode:
+          type: string
+          enum:
+          - SEQUENTIAL
+          - SIMULTANEOUS
+          description: " * `SEQUENTIAL` - Alerts assistants one at a time in the defined order.\n * `SIMULTANEOUS` - Alerts all assistants at the same time.\n"
+        nextAssistantNumberOfRings:
+          type: integer
+          description: Number of rings before alerting the next assistant when `alertingMode` is `SEQUENTIAL`.
+        rolloverEnabled:
+          type: boolean
+          description: Controls whether the rollover timer (`rolloverWaitTimeInSecs`) is enabled. When set to `true`, rollover will trigger after the timer expires, even if assistants are still available. When `false`, rollover only occurs when no assistants remain.
+        rolloverAction:
+          type: string
+          enum:
+          - VOICE_MESSAGING
+          - NO_ANSWER_PROCESSING
+          - FORWARD
+          description: "Specifies what happens when rollover is triggered.\n * `VOICE_MESSAGING` - The call is sent to the executive's voicemail.\n * `FORWARD` - The call is forwarded to the specified destination (`rolloverForwardToPhoneNumber`).\n * `NO_ANSWER_PROCESSING` - The call is sent to no answer processing which may trigger executive services such as call forwarding or voicemail.\nRollover is always triggered when no assistants remain for a filtered call. If the rollover timer is enabled, rollover can also be triggered when the timer expires, even if assistants are still available."
+        rolloverForwardToPhoneNumber:
+          type: string
+          description: Phone number to forward calls to when rollover action is set to `FORWARD`.
+        rolloverWaitTimeInSecs:
+          type: integer
+          description: Time in seconds to wait before applying the rollover action when `rolloverEnabled` is `true`.
+        clidNameMode:
+          type: string
+          enum:
+          - EXECUTIVE_ORIGINATOR
+          - ORIGINATOR_EXECUTIVE
+          - EXECUTIVE
+          - ORIGINATOR
+          - CUSTOM
+          description: "Controls how Caller ID name is displayed on assistant's phone.\n * `EXECUTIVE_ORIGINATOR` - Display executive name followed by caller name.\n * `ORIGINATOR_EXECUTIVE` - Display caller name followed by executive name.\n * `EXECUTIVE` - Display only executive name.\n * `ORIGINATOR` - Display only caller name.\n * `CUSTOM` - Display a custom name.\n"
+        customCLIDName:
+          type: string
+          description: Custom caller ID name to display when `clidNameMode` is set to `CUSTOM` (deprecated).
+        customCLIDNameInUnicode:
+          type: string
+          description: Unicode Custom caller ID name to display when `clidNameMode` is set to `CUSTOM`.
+        clidPhoneNumberMode:
+          type: string
+          enum:
+          - EXECUTIVE
+          - ORIGINATOR
+          - CUSTOM
+          description: "Controls which Caller ID phone number is displayed on assistant's phone.\n * `EXECUTIVE` - Display executive's phone number.\n * `ORIGINATOR` - Display caller's phone number.\n * `CUSTOM` - Display a custom phone number.\n"
+        customCLIDPhoneNumber:
+          type: string
+          description: Custom caller ID phone number to display on assistant's phone when `clidPhoneNumberMode` is set to `CUSTOM`.
+    DoNotDisturbPut:
+      type: object
+      description: Request body for configuring Do Not Disturb settings for a person.
+      required:
+      - webexGoOverrideEnabled
+      properties:
+        enabled:
+          type: boolean
+          example: true
+          description: '`true` if the Do Not Disturb feature is enabled.'
+        ringSplashEnabled:
+          type: boolean
+          description: Enables a Ring Reminder to play a brief tone on your desktop phone when you receive incoming calls.
+        webexGoOverrideEnabled:
+          type: boolean
+          description: '`true` if a mobile device will still ring even if Do Not Disturb is enabled.'
+    ExecutiveCallFilteringPatch:
+      type: object
+      description: Executive call filtering settings request object for updating the filter configuration and criteria activation.
+      properties:
+        enabled:
+          type: boolean
+          description: Set to `true` to enable executive call filtering or `false` to disable it.
+        filterType:
+          type: string
+          enum:
+          - CUSTOM_CALL_FILTERS
+          - ALL_CALLS
+          - ALL_INTERNAL_CALLS
+          - ALL_EXTERNAL_CALLS
+          description: " * `CUSTOM_CALL_FILTERS` - Choose this option to ensure that only specific calls are sent to the executive assistant.\n * `ALL_CALLS` - Choose this option to send both internal and external calls to the executive assistant.\n * `ALL_INTERNAL_CALLS` - Choose this option to send all internal calls to the executive assistant.\n * `ALL_EXTERNAL_CALLS` - Choose this option to send all external calls to the executive assistant.\n"
+        criteriaActivation:
+          type: array
+          description: The list of criteria activation settings to update for executive call filtering.
+          items:
+            type: object
+            required:
+            - id
+            - activationEnabled
+            description: The activation configuration for an individual filter criterion.
+            properties:
+              id:
+                type: string
+                description: Unique identifier for the filter criteria.
+              activationEnabled:
+                type: boolean
+                description: Controls whether this filter criteria is active. When `true`, the criteria is evaluated for incoming calls. When `false`, the criteria is completely ignored and has no effect on call filtering.
+    UserCallPoliciesGet:
+      type: object
+      required:
+      - connectedLineIdPrivacyOnRedirectedCalls
+      properties:
+        connectedLineIdPrivacyOnRedirectedCalls:
+          type: string
+          enum:
+          - NO_PRIVACY
+          - PRIVACY_FOR_EXTERNAL_CALLS
+          - PRIVACY_FOR_ALL_CALLS
+          description: "Specifies the connection type to be used.\n * `NO_PRIVACY` - Connected line identification is not blocked on redirected calls.\n * `PRIVACY_FOR_EXTERNAL_CALLS` - Connected line identification is blocked on redirected calls to external numbers.\n * `PRIVACY_FOR_ALL_CALLS` - Connected line identification is blocked on all redirected calls.\n"
+    UserCallPoliciesPut:
+      type: object
+      description: User call policies settings request object for updating privacy configuration for redirected calls.
+      properties:
+        connectedLineIdPrivacyOnRedirectedCalls:
+          type: string
+          enum:
+          - NO_PRIVACY
+          - PRIVACY_FOR_EXTERNAL_CALLS
+          - PRIVACY_FOR_ALL_CALLS
+          description: " * `NO_PRIVACY` - Caller sees the final destination's identity when call is redirected.\n * `PRIVACY_FOR_EXTERNAL_CALLS` - Internal callers see the final destination's identity; external callers see the original recipient's identity.\n * `PRIVACY_FOR_ALL_CALLS` - All callers see the original recipient's identity when call is redirected.\n"
+    ExecutiveAlertGet:
+      type: object
+      required:
+      - alertingMode
+      - rolloverWaitTimeInSecs
+      - clidNameMode
+      - clidPhoneNumberMode
+      properties:
+        alertingMode:
+          type: string
+          enum:
+          - SEQUENTIAL
+          - SIMULTANEOUS
+          description: " * `SEQUENTIAL` - Alerts assistants one at a time in the defined order.\n * `SIMULTANEOUS` - Alerts all assistants at the same time.\n"
+        nextAssistantNumberOfRings:
+          type: integer
+          description: Number of rings before alerting the next assistant when `alertingMode` is `SEQUENTIAL`.
+        rolloverEnabled:
+          type: boolean
+          description: Controls whether the rollover timer (`rolloverWaitTimeInSecs`) is enabled. When set to `true`, rollover will trigger after the timer expires, even if assistants are still available. When `false`, rollover only occurs when no assistants remain.
+        rolloverAction:
+          type: string
+          enum:
+          - VOICE_MESSAGING
+          - NO_ANSWER_PROCESSING
+          - FORWARD
+          description: "Specifies what happens when rollover is triggered.\n * `VOICE_MESSAGING` - The call is sent to the executive's voicemail.\n * `FORWARD` - The call is forwarded to the specified destination (`rolloverForwardToPhoneNumber`).\n * `NO_ANSWER_PROCESSING` - The call is sent to no answer processing which may trigger executive services such as call forwarding or voicemail.\nRollover is always triggered when no assistants remain for a filtered call. If the rollover timer is enabled, rollover can also be triggered when the timer expires, even if assistants are still available."
+        rolloverForwardToPhoneNumber:
+          type: string
+          description: Phone number to forward calls to when rollover action is set to `FORWARD`.
+        rolloverWaitTimeInSecs:
+          type: integer
+          description: Time in seconds to wait before applying the rollover action when `rolloverEnabled` is `true`.
+        clidNameMode:
+          type: string
+          enum:
+          - EXECUTIVE_ORIGINATOR
+          - ORIGINATOR_EXECUTIVE
+          - EXECUTIVE
+          - ORIGINATOR
+          - CUSTOM
+          description: "Controls how Caller ID name is displayed on assistant's phone.\n * `EXECUTIVE_ORIGINATOR` - Display executive name followed by caller name.\n * `ORIGINATOR_EXECUTIVE` - Display caller name followed by executive name.\n * `EXECUTIVE` - Display only executive name.\n * `ORIGINATOR` - Display only caller name.\n * `CUSTOM` - Display a custom name.\n"
+        customCLIDName:
+          type: string
+          description: Custom caller ID name to display when `clidNameMode` is set to `CUSTOM` (deprecated).
+        customCLIDNameInUnicode:
+          type: string
+          description: Unicode Custom caller ID name to display when `clidNameMode` is set to `CUSTOM`.
+        clidPhoneNumberMode:
+          type: string
+          enum:
+          - EXECUTIVE
+          - ORIGINATOR
+          - CUSTOM
+          description: "Controls which Caller ID phone number is displayed on assistant's phone.\n * `EXECUTIVE` - Display executive's phone number.\n * `ORIGINATOR` - Display caller's phone number.\n * `CUSTOM` - Display a custom phone number.\n"
+        customCLIDPhoneNumber:
+          type: string
+          description: Custom caller ID phone number to display on assistant's phone when `clidPhoneNumberMode` is set to `CUSTOM`.
+      example:
+        alertingMode: SEQUENTIAL
+        nextAssistantNumberOfRings: 3
+        rolloverEnabled: true
+        rolloverAction: VOICE_MESSAGING
+        rolloverForwardToPhoneNumber: '+14085267209'
+        rolloverWaitTimeInSecs: 60
+        clidNameMode: EXECUTIVE_ORIGINATOR
+        customCLIDName: John Anderson
+        customCLIDNameInUnicode: ''
+        clidPhoneNumberMode: EXECUTIVE
+        customCLIDPhoneNumber: '+14085267208'
+    ExecutiveScreeningPut:
+      type: object
+      description: Executive screening settings request object for updating call screening and alert preferences.
+      properties:
+        enabled:
+          type: boolean
+          description: Set to enable or disable executive screening.
+        alertType:
+          type: string
+          enum:
+          - SILENT
+          - RING_SPLASH
+          description: " * `SILENT` - No audible alert is provided for executive screening.\n * `RING_SPLASH` - A short ring (splash) is used as an alert for executive screening.\n"
+        alertAnywhereLocationEnabled:
+          type: boolean
+          description: Indicates if alerts are enabled for Single Number Reach locations.
+        alertMobilityLocationEnabled:
+          type: boolean
+          description: Indicates if alerts are enabled for Webex Go locations.
+        alertSharedCallAppearanceLocationEnabled:
+          type: boolean
+          description: Indicates if alerts are enabled for Shared Call Appearance locations.
+      example:
+        enabled: true
+        alertType: SILENT
+        alertAnywhereLocationEnabled: false
+        alertMobilityLocationEnabled: false
+        alertSharedCallAppearanceLocationEnabled: false
   securitySchemes:
     oauth2:
       flows:
@@ -1452,14 +1450,7 @@ components:
       scheme: bearer
       bearerFormat: JWT
     bearerAuth:
-      type: oauth2
-      description: OAuth 2.0 Bearer token authentication
-      flows:
-        authorizationCode:
-          authorizationUrl: https://webexapis.com/v1/authorize
-          tokenUrl: https://webexapis.com/v1/access_token
-          scopes:
-            spark:applications_token: Create access tokens for Service Apps
-x-refined-from:
-- webex-beta-call-settings-for-me-with-userhub-phase1-api-openapi.yml
-- webex-cloud-calling-openapi.json
+      type: http
+      description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
+      scheme: bearer
+      bearerFormat: JWT

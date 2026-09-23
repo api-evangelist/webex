@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: Webex Partner Tags API
+  title: Webex Admin Partner Tags API
   version: 1.0.0
-  description: 'Operations tagged Partner Tags across 2 of this provider''s published API definitions: webex-admin-openapi.json, webex-partner-tags-api-openapi.yml. Each path carries the servers of the definition it was published in.'
+  description: The Webex Admin APIs provide comprehensive programmatic access to administrative functions for managing Webex organizations, users, licenses, and settings.
   x-provenance:
     method: harvested
     authored_by: Cisco Webex
@@ -11,9 +11,6 @@ info:
     first_party: true
     note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
     provider_published: true
-    derived_view: Per-tag view of webex-admin-openapi.json, the provider's source document. Operations and schemas are the provider's, unmodified; only the partition is ours.
-    derived_from: webex-admin-openapi.json
-    operation_coverage: 7/7
   x-evidence:
   - type: source
     url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-admin.json
@@ -69,7 +66,11 @@ paths:
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Retrieve all customer tags
       operationId: Retrieve all customer tags
-      description: "Retrieves all tags which are being used by any customer organizations. Once a tag is unassigned from the last customer, it is automatically removed and is not returned by this API.\nThis API can be used by a partner full admin, a read-only partner, or an partner admin. \nThe `type` can have the value ORGANIZATION or SUBSCRIPTION. If not provided, the value is ORGANIZATION"
+      description: 'Retrieves all tags which are being used by any customer organizations. Once a tag is unassigned from the last customer, it is automatically removed and is not returned by this API.
+
+        This API can be used by a partner full admin, a read-only partner, or an partner admin.
+
+        The `type` can have the value ORGANIZATION or SUBSCRIPTION. If not provided, the value is ORGANIZATION'
       tags:
       - Partner Tags
       parameters:
@@ -127,7 +128,13 @@ paths:
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Create or Replace existing customer tags with the provided ones
       operationId: Create or Replace existing customer tags with the provided ones
-      description: "Assign or replace tag(s) which for a customer organization. If the tag doesn't already exist, a new one is created and assigned to the customer automatically.\nThis API can be used by partner full admins and partner admins. \nEach tag has a character limit of 25. Currently, there is a limit of 5 tags per organization when creating tags. To remove all the tags, pass an empty array.\nSpecify the customer organization ID in the `orgId` parameter in the URI."
+      description: 'Assign or replace tag(s) which for a customer organization. If the tag doesn''t already exist, a new one is created and assigned to the customer automatically.
+
+        This API can be used by partner full admins and partner admins.
+
+        Each tag has a character limit of 25. Currently, there is a limit of 5 tags per organization when creating tags. To remove all the tags, pass an empty array.
+
+        Specify the customer organization ID in the `orgId` parameter in the URI.'
       tags:
       - Partner Tags
       parameters:
@@ -191,7 +198,11 @@ paths:
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Get customer organization's tags
       operationId: Get customer organization's tags
-      description: "Retrieve tags associated with a customer organization based on the `orgId` provided.\nThis API can be used by a partner full admin, a read-only partner, or an partner admin. \nSpecify the customer orgId in the `orgId` parameter in the URI."
+      description: 'Retrieve tags associated with a customer organization based on the `orgId` provided.
+
+        This API can be used by a partner full admin, a read-only partner, or an partner admin.
+
+        Specify the customer orgId in the `orgId` parameter in the URI.'
       tags:
       - Partner Tags
       parameters:
@@ -318,7 +329,13 @@ paths:
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Create or Replace existing subscription tags with the provided ones
       operationId: Create or Replace existing subscription tags with the provided ones
-      description: "Assign or replace tags specific to each subscription for an organization. Each organization may have one or more subscriptions.\nThis API can be used by partner full admins and partner admins. \nCurrently there is a limit of 5 tags per subscription when creating tags. To remove all the tags, pass an empty array.\nSpecify the customer organization ID in the `orgId` parameter in the URI and subscription ID in `subscriptionId` parameter"
+      description: 'Assign or replace tags specific to each subscription for an organization. Each organization may have one or more subscriptions.
+
+        This API can be used by partner full admins and partner admins.
+
+        Currently there is a limit of 5 tags per subscription when creating tags. To remove all the tags, pass an empty array.
+
+        Specify the customer organization ID in the `orgId` parameter in the URI and subscription ID in `subscriptionId` parameter'
       tags:
       - Partner Tags
       parameters:
@@ -482,6 +499,23 @@ paths:
           type: string
 components:
   schemas:
+    CustomerTagsResponse:
+      type: object
+      properties:
+        orgName:
+          type: string
+          example: Customer Name
+          description: Name of the customer organization.
+        orgId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9mNWIzNjE4Ny1jOGRkLTQ3MjctOGIyZi1mOWM0NDdmMjkwNDY
+          description: The unique identifier for the customer organization.
+        tags:
+          type: array
+          items:
+            type: string
+            example: Tags1,Tags2
+          description: An array of tags.
     TagsObj:
       type: object
       required:
@@ -495,14 +529,6 @@ components:
           type: string
           example: Tag description
           description: Description of the tag
-    TagsRequest:
-      type: object
-      properties:
-        tags:
-          type: array
-          items:
-            $ref: '#/components/schemas/TagsObj'
-          description: An array of tags.
     SubscriptionTagsResponse:
       type: object
       properties:
@@ -528,22 +554,13 @@ components:
           type: string
           example: 'false'
           description: boolean flag for trial or not.
-    CustomerTagsResponse:
+    TagsRequest:
       type: object
       properties:
-        orgName:
-          type: string
-          example: Customer Name
-          description: Name of the customer organization.
-        orgId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9mNWIzNjE4Ny1jOGRkLTQ3MjctOGIyZi1mOWM0NDdmMjkwNDY
-          description: The unique identifier for the customer organization.
         tags:
           type: array
           items:
-            type: string
-            example: Tags1,Tags2
+            $ref: '#/components/schemas/TagsObj'
           description: An array of tags.
   securitySchemes:
     oauth2:
@@ -567,6 +584,3 @@ components:
           tokenUrl: https://webexapis.com/v1/access_token
           scopes:
             spark:applications_token: Create access tokens for Service Apps
-x-refined-from:
-- webex-admin-openapi.json
-- webex-partner-tags-api-openapi.yml

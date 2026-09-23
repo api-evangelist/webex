@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: Webex Contact Number API
+  title: Webex Contact Center Contact Number API
   version: 1.0.0
-  description: 'Operations tagged Contact Number across 2 of this provider''s published API definitions: webex-contact-center-openapi.json, webex-contact-number-api-openapi.yml. Each path carries the servers of the definition it was published in.'
+  description: The Webex Contact Center APIs allow developers to deeply integrate, configure, and manage cloud-based contact center solutions.
   x-provenance:
     method: harvested
     authored_by: Cisco Webex
@@ -11,9 +11,6 @@ info:
     first_party: true
     note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
     provider_published: true
-    derived_view: Per-tag view of webex-contact-center-openapi.json, the provider's source document. Operations and schemas are the provider's, unmodified; only the partition is ours.
-    derived_from: webex-contact-center-openapi.json
-    operation_coverage: 8/8
   x-evidence:
   - type: source
     url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-contact-center.json
@@ -92,7 +89,7 @@ paths:
       tags:
       - Contact Number
       summary: List all contact numbers(property - number)
-      description: Retrieve a list of  only contact numbers(property - number) from Contact Number(s) without pagination in a given organization.
+      description: Retrieve a list of only contact numbers(property - number) from Contact Number(s) without pagination in a given organization.
       operationId: getAllContactNumbers
       parameters:
       - name: orgid
@@ -563,96 +560,11 @@ paths:
       deprecated: false
 components:
   schemas:
-    BulkRequestItemDTOContactNumberDTO:
+    ContactNumberBulkExportDTO:
       type: object
       properties:
-        itemIdentifier:
-          type: integer
-          description: Unique item identifier for a bulk operation.
-          format: int32
-          example: 10
-        item:
-          $ref: '#/components/schemas/ContactNumberDTO'
-        requestAction:
-          type: string
-          description: Identifier for action type. Possible values can be SAVE and DELETE.
-          example: SAVE
-    ContactNumberDTO:
-      required:
-      - number
-      type: object
-      properties:
-        organizationId:
-          maxLength: 36
-          minLength: 32
-          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
-          type: string
-          description: ID of the contact center organization. It is required to define for the following operations - All bulk save operations
-          format: uuid
-          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
-        id:
-          type: string
-          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
-          example: 93912f11-6017-404b-bf14-5331890b1797
-        version:
-          type: integer
-          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
-          format: int32
-          example: 1
         number:
-          pattern: ^[0-9]*$
           type: string
-          description: The customized ani number.
-          example: '14033212'
-        createdTime:
-          type: integer
-          description: Creation time(in epoch millis) of this resource.
-          format: int64
-          readOnly: true
-          example: 1617536244000
-        lastUpdatedTime:
-          type: integer
-          description: Time(in epoch millis) when this resource was last updated.
-          format: int64
-          readOnly: true
-          example: 1617536244000
-    ResponseEnvelopeContactNumberDTO:
-      type: object
-      properties:
-        meta:
-          type: object
-          additionalProperties:
-            type: object
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/ContactNumberDTO'
-    BulkExportDTOContactNumberBulkExportDTO:
-      type: object
-      properties:
-        totalResources:
-          type: integer
-          description: Total number of items
-          format: int32
-          example: 100
-        pageNumber:
-          type: integer
-          description: Current page number
-          format: int32
-          example: 0
-        pageSize:
-          type: integer
-          description: Page size for current data set
-          format: int32
-          example: 50
-        rel:
-          type: string
-          description: Indicates whether more pages exist. When 'next' there are more pages available, otherwise 'last'.
-          example: last
-        resources:
-          type: array
-          items:
-            $ref: '#/components/schemas/ContactNumberBulkExportDTO'
     BulkRequestDTOContactNumberDTO:
       type: object
       properties:
@@ -660,17 +572,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/BulkRequestItemDTOContactNumberDTO'
-    ApiErrorResponse:
-      description: Response body for an API error.
-      type: object
-      properties:
-        trackingId:
-          type: string
-          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
-          example: c1a4fcef-aee2-4dea-8977-29f594760552
-        error:
-          description: An object containing details about the error.
-          $ref: '#/components/schemas/ErrorDetails'
     BulkResponseItemDTO:
       type: object
       properties:
@@ -715,6 +616,57 @@ components:
         itemIdentifier: 10
         operationType: CREATE
         status: 400
+    BulkRequestItemDTOContactNumberDTO:
+      type: object
+      properties:
+        itemIdentifier:
+          type: integer
+          description: Unique item identifier for a bulk operation.
+          format: int32
+          example: 10
+        item:
+          $ref: '#/components/schemas/ContactNumberDTO'
+        requestAction:
+          type: string
+          description: Identifier for action type. Possible values can be SAVE and DELETE.
+          example: SAVE
+    OperationError:
+      description: An error message providing details about the operation failure.
+      type: object
+      properties:
+        description:
+          type: string
+          description: A human readable explanation for the occurrence of an error.
+          example: Incorrect Credentials.
+    ApiErrorResponse:
+      description: Response body for an API error.
+      type: object
+      properties:
+        trackingId:
+          type: string
+          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
+          example: c1a4fcef-aee2-4dea-8977-29f594760552
+        error:
+          description: An object containing details about the error.
+          $ref: '#/components/schemas/ErrorDetails'
+    BulkResponseDTO:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BulkResponseItemDTO'
+    ResponseEnvelopeContactNumberDTO:
+      type: object
+      properties:
+        meta:
+          type: object
+          additionalProperties:
+            type: object
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContactNumberDTO'
     ErrorDetails:
       description: Details of an error.
       type: object
@@ -728,26 +680,71 @@ components:
           description: A message providing details about the error.
           items:
             $ref: '#/components/schemas/OperationError'
-    ContactNumberBulkExportDTO:
+    ContactNumberDTO:
+      required:
+      - number
       type: object
       properties:
-        number:
+        organizationId:
+          maxLength: 36
+          minLength: 32
+          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
           type: string
-    BulkResponseDTO:
+          description: ID of the contact center organization. It is required to define for the following operations - All bulk save operations
+          format: uuid
+          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+        id:
+          type: string
+          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
+          example: 93912f11-6017-404b-bf14-5331890b1797
+        version:
+          type: integer
+          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
+          format: int32
+          example: 1
+        number:
+          pattern: ^[0-9]*$
+          type: string
+          description: The customized ani number.
+          example: '14033212'
+        createdTime:
+          type: integer
+          description: Creation time(in epoch millis) of this resource.
+          format: int64
+          readOnly: true
+          example: 1617536244000
+        lastUpdatedTime:
+          type: integer
+          description: Time(in epoch millis) when this resource was last updated.
+          format: int64
+          readOnly: true
+          example: 1617536244000
+    BulkExportDTOContactNumberBulkExportDTO:
       type: object
       properties:
-        items:
+        totalResources:
+          type: integer
+          description: Total number of items
+          format: int32
+          example: 100
+        pageNumber:
+          type: integer
+          description: Current page number
+          format: int32
+          example: 0
+        pageSize:
+          type: integer
+          description: Page size for current data set
+          format: int32
+          example: 50
+        rel:
+          type: string
+          description: Indicates whether more pages exist. When 'next' there are more pages available, otherwise 'last'.
+          example: last
+        resources:
           type: array
           items:
-            $ref: '#/components/schemas/BulkResponseItemDTO'
-    OperationError:
-      description: An error message providing details about the operation failure.
-      type: object
-      properties:
-        description:
-          type: string
-          description: A human readable explanation for the occurrence of an error.
-          example: Incorrect Credentials.
+            $ref: '#/components/schemas/ContactNumberBulkExportDTO'
   securitySchemes:
     oauth2:
       flows:
@@ -775,6 +772,3 @@ components:
       scheme: bearer
       bearerFormat: JWT
       description: JWT bearer token authentication. Obtain your token from the Webex Developer Portal.
-x-refined-from:
-- webex-contact-center-openapi.json
-- webex-contact-number-api-openapi.yml

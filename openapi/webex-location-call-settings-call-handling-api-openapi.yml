@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: 'Webex Location Call Settings: Call Handling API'
+  title: 'Webex Cloud Calling Location Call Settings: Call Handling…'
   version: 1.0.0
-  description: 'Operations tagged Location Call Settings: Call Handling across 2 of this provider''s published API definitions: webex-cloud-calling-openapi.json, webex-location-call-settings-call-handling-api-openapi.yml. Each path carries the servers of the definition it was published in.'
+  description: The Webex Cloud Calling APIs enable comprehensive management of cloud-based calling services, including user provisioning, device assignment, call routing, feature configuration, and number management.
   x-provenance:
     method: harvested
     authored_by: Cisco Webex
@@ -11,9 +11,6 @@ info:
     first_party: true
     note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
     provider_published: true
-    derived_view: Per-tag view of webex-cloud-calling-openapi.json, the provider's source document. Operations and schemas are the provider's, unmodified; only the partition is ours.
-    derived_from: webex-cloud-calling-openapi.json
-    operation_coverage: 19/19
   x-evidence:
   - type: source
     url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-cloud-calling.json
@@ -1457,13 +1454,55 @@ paths:
           type: string
 components:
   schemas:
-    CallingPermissionObject:
+    LocationOutgoingPermissionDigitPatternPatchObject:
+      type: object
+      properties:
+        name:
+          type: string
+          example: DigitPattern1
+          description: A unique name for the digit pattern.
+        pattern:
+          type: string
+          example: 1XXX
+          description: The digit pattern to be matched with the input number.
+        action:
+          type: string
+          enum:
+          - ALLOW
+          - BLOCK
+          - AUTH_CODE
+          - TRANSFER_NUMBER_1
+          - TRANSFER_NUMBER_2
+          - TRANSFER_NUMBER_3
+          description: "Action to be performed on the input number that matches the digit pattern.\n * `ALLOW` - Allow the designated call type.\n * `BLOCK` - Block the designated call type.\n * `AUTH_CODE` - Allow only via Authorization Code.\n * `TRANSFER_NUMBER_1` - Transfer to Auto Transfer Number 1. The answering person can then approve the call and send it through or reject the call.\n * `TRANSFER_NUMBER_2` - Transfer to Auto Transfer Number 2. The answering person can then approve the call and send it through or reject the call.\n * `TRANSFER_NUMBER_3` - Transfer to Auto Transfer Number 3. The answering person can then approve the call and send it through or reject the call.\n"
+        transferEnabled:
+          type: boolean
+          example: true
+          description: If `true`, allows transfer and forwarding for the call type.
+    GetLocationAccessCodeObject:
+      type: object
+      properties:
+        accessCodes:
+          type: object
+          required:
+          - code
+          - description
+          properties:
+            code:
+              type: string
+              example: '123'
+              description: Access code number.
+            description:
+              type: string
+              example: Main Access Code
+              description: Access code description.
+          description: Access code details
+    CallingPermissionPatchObject:
       type: object
       required:
       - callType
       - action
       - transferEnabled
-      - isCallTypeRestrictionEnabled
       properties:
         callType:
           type: string
@@ -1493,74 +1532,16 @@ components:
           type: boolean
           example: true
           description: If `true`, allows transfer and forwarding for the call type.
-        isCallTypeRestrictionEnabled:
+    InternalDialingGet:
+      type: object
+      properties:
+        enableUnknownExtensionRoutePolicy:
           type: boolean
           example: true
-          description: Indicates if the restriction is enforced by the system for the corresponding call type and cannot be changed. For example, certain call types (such as `INTERNATIONAL`) may be permanently blocked and this field will be `true` to reflect that the restriction is system-controlled and not editable.
-    LocationOutgoingPermissionDigitPatternPatchObject:
-      type: object
-      properties:
-        name:
-          type: string
-          example: DigitPattern1
-          description: A unique name for the digit pattern.
-        pattern:
-          type: string
-          example: 1XXX
-          description: The digit pattern to be matched with the input number.
-        action:
-          type: string
-          enum:
-          - ALLOW
-          - BLOCK
-          - AUTH_CODE
-          - TRANSFER_NUMBER_1
-          - TRANSFER_NUMBER_2
-          - TRANSFER_NUMBER_3
-          description: "Action to be performed on the input number that matches the digit pattern.\n * `ALLOW` - Allow the designated call type.\n * `BLOCK` - Block the designated call type.\n * `AUTH_CODE` - Allow only via Authorization Code.\n * `TRANSFER_NUMBER_1` - Transfer to Auto Transfer Number 1. The answering person can then approve the call and send it through or reject the call.\n * `TRANSFER_NUMBER_2` - Transfer to Auto Transfer Number 2. The answering person can then approve the call and send it through or reject the call.\n * `TRANSFER_NUMBER_3` - Transfer to Auto Transfer Number 3. The answering person can then approve the call and send it through or reject the call.\n"
-        transferEnabled:
-          type: boolean
-          example: true
-          description: If `true`, allows transfer and forwarding for the call type.
-    PostLocationAccessCodeObject:
-      type: object
-      properties:
-        accessCodes:
-          type: object
-          required:
-          - code
-          - description
-          properties:
-            code:
-              type: string
-              example: '123'
-              description: Create new access code number.
-            description:
-              type: string
-              example: Main Access Code
-              description: Set access code description.
-          description: Access code details
-    RouteType:
-      type: string
-      enum:
-      - ROUTE_GROUP
-      - TRUNK
-      description: " * `ROUTE_GROUP` - Route group must include at least one trunk with a maximum of 10 trunks per route group.\n * `TRUNK` - Connection between Webex Calling and the premises.\n"
-    GetAutoTransferNumberObject:
-      type: object
-      properties:
-        autoTransferNumber1:
-          type: string
-          example: '1234456789'
-          description: Calls placed meeting the criteria in an outbound rule whose `action` is `TRANSFER_NUMBER_1` will be transferred to this number.
-        autoTransferNumber2:
-          type: string
-          example: '2234567891'
-          description: Calls placed meeting the criteria in an outbound rule whose `action` is `TRANSFER_NUMBER_2` will be transferred to this number.
-        autoTransferNumber3:
-          type: string
-          example: '3234567891'
-          description: Calls placed meeting the criteria in an outbound rule whose `action` is `TRANSFER_NUMBER_3` will be transferred to this number.
+          description: When enabled, calls made by users at the location to an unknown extension (between 2-6 digits) are routed to the selected route group/trunk as premises calls.
+        unknownExtensionRouteIdentity:
+          $ref: '#/components/schemas/RouteIdentity'
+          description: The selected route group/trunk as premises calls.
     GetLocationInterceptObject:
       type: object
       required:
@@ -1640,36 +1621,82 @@ components:
               example: '2147691007'
               description: If enabled, set outgoing destination phone number.
           description: Outbound Call details
-    LocationOutgoingPermissionDigitPatternPostObject:
+    RouteType:
+      type: string
+      enum:
+      - ROUTE_GROUP
+      - TRUNK
+      description: " * `ROUTE_GROUP` - Route group must include at least one trunk with a maximum of 10 trunks per route group.\n * `TRUNK` - Connection between Webex Calling and the premises.\n"
+    PasswordGenerate:
+      type: string
+      enum:
+      - sip
+      description: ' * `sip` - SIP password setting
+
+        '
+    PutAutoTransferNumberObject:
+      type: object
+      properties:
+        autoTransferNumber1:
+          type: string
+          example: '1234456789'
+          description: Calls placed meeting the criteria in an outbound rule whose `action` is `TRANSFER_NUMBER_1` will be transferred to this number.
+        autoTransferNumber2:
+          type: string
+          example: '2234567891'
+          description: Calls placed meeting the criteria in an outbound rule whose `action` is `TRANSFER_NUMBER_2` will be transferred to this number.
+        autoTransferNumber3:
+          type: string
+          example: '3234567891'
+          description: Calls placed meeting the criteria in an outbound rule whose `action` is `TRANSFER_NUMBER_3` will be transferred to this number.
+    UnknownExtensionRouteIdentity:
       type: object
       required:
-      - name
-      - pattern
-      - action
-      - transferEnabled
+      - id
+      - type
       properties:
-        name:
+        id:
           type: string
-          example: DigitPattern1
-          description: A unique name for the digit pattern.
-        pattern:
+          example: Y2lzY29zcGFyazovL3VzL1JPVVRFX0dST1VQLzA1OWEyNzNlLWJiYjAtMTFlYy04NDIyLTAyNDJhYzEyMDAwMg
+          description: ID of the route type.
+        type:
+          $ref: '#/components/schemas/RouteType'
+          description: Type associated with the identity.
+    PostLocationAccessCodeObject:
+      type: object
+      properties:
+        accessCodes:
+          type: object
+          required:
+          - code
+          - description
+          properties:
+            code:
+              type: string
+              example: '123'
+              description: Create new access code number.
+            description:
+              type: string
+              example: Main Access Code
+              description: Set access code description.
+          description: Access code details
+    GeneratePasswordPostResponse:
+      type: object
+      properties:
+        exampleSipPassword:
           type: string
-          example: 1XXX
-          description: The digit pattern to be matched with the input number.
-        action:
-          type: string
-          enum:
-          - ALLOW
-          - BLOCK
-          - AUTH_CODE
-          - TRANSFER_NUMBER_1
-          - TRANSFER_NUMBER_2
-          - TRANSFER_NUMBER_3
-          description: "Action to be performed on the input number that matches the digit pattern.\n * `ALLOW` - Allow the designated call type.\n * `BLOCK` - Block the designated call type.\n * `AUTH_CODE` - Allow only via Authorization Code.\n * `TRANSFER_NUMBER_1` - Transfer to Auto Transfer Number 1. The answering person can then approve the call and send it through or reject the call.\n * `TRANSFER_NUMBER_2` - Transfer to Auto Transfer Number 2. The answering person can then approve the call and send it through or reject the call.\n * `TRANSFER_NUMBER_3` - Transfer to Auto Transfer Number 3. The answering person can then approve the call and send it through or reject the call.\n"
-        transferEnabled:
-          type: boolean
-          example: true
-          description: If `true`, allows transfer and forwarding for the call type.
+          example: xyz123!
+          description: Example password.
+    LocationOutgoingPermissionDigitPatternGetListObject:
+      type: object
+      required:
+      - digitPatterns
+      properties:
+        digitPatterns:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocationDigitPatternObject'
+          description: List of digit pattern information.
     RouteIdentity:
       type: object
       required:
@@ -1688,26 +1715,6 @@ components:
         type:
           $ref: '#/components/schemas/RouteType'
           description: Type associated with the identity.
-    InternalDialingPut:
-      type: object
-      properties:
-        enableUnknownExtensionRoutePolicy:
-          type: boolean
-          example: true
-          description: When enabled, calls made by users at the location to an unknown extension (between 2-6 digits) are routed to the selected route group/trunk as premises calls.
-        unknownExtensionRouteIdentity:
-          $ref: '#/components/schemas/UnknownExtensionRouteIdentity'
-          description: Type associated with the identity.
-    InternalDialingGet:
-      type: object
-      properties:
-        enableUnknownExtensionRoutePolicy:
-          type: boolean
-          example: true
-          description: When enabled, calls made by users at the location to an unknown extension (between 2-6 digits) are routed to the selected route group/trunk as premises calls.
-        unknownExtensionRouteIdentity:
-          $ref: '#/components/schemas/RouteIdentity'
-          description: The selected route group/trunk as premises calls.
     PutLocationInterceptObject:
       type: object
       required:
@@ -1787,12 +1794,58 @@ components:
               example: '2147691007'
               description: If enabled, set valid outgoing destination phone number.
           description: Outbound Call details
-    CallingPermissionPatchObject:
+    LocationOutgoingPermissionDigitPatternPostObject:
+      type: object
+      required:
+      - name
+      - pattern
+      - action
+      - transferEnabled
+      properties:
+        name:
+          type: string
+          example: DigitPattern1
+          description: A unique name for the digit pattern.
+        pattern:
+          type: string
+          example: 1XXX
+          description: The digit pattern to be matched with the input number.
+        action:
+          type: string
+          enum:
+          - ALLOW
+          - BLOCK
+          - AUTH_CODE
+          - TRANSFER_NUMBER_1
+          - TRANSFER_NUMBER_2
+          - TRANSFER_NUMBER_3
+          description: "Action to be performed on the input number that matches the digit pattern.\n * `ALLOW` - Allow the designated call type.\n * `BLOCK` - Block the designated call type.\n * `AUTH_CODE` - Allow only via Authorization Code.\n * `TRANSFER_NUMBER_1` - Transfer to Auto Transfer Number 1. The answering person can then approve the call and send it through or reject the call.\n * `TRANSFER_NUMBER_2` - Transfer to Auto Transfer Number 2. The answering person can then approve the call and send it through or reject the call.\n * `TRANSFER_NUMBER_3` - Transfer to Auto Transfer Number 3. The answering person can then approve the call and send it through or reject the call.\n"
+        transferEnabled:
+          type: boolean
+          example: true
+          description: If `true`, allows transfer and forwarding for the call type.
+    GetAutoTransferNumberObject:
+      type: object
+      properties:
+        autoTransferNumber1:
+          type: string
+          example: '1234456789'
+          description: Calls placed meeting the criteria in an outbound rule whose `action` is `TRANSFER_NUMBER_1` will be transferred to this number.
+        autoTransferNumber2:
+          type: string
+          example: '2234567891'
+          description: Calls placed meeting the criteria in an outbound rule whose `action` is `TRANSFER_NUMBER_2` will be transferred to this number.
+        autoTransferNumber3:
+          type: string
+          example: '3234567891'
+          description: Calls placed meeting the criteria in an outbound rule whose `action` is `TRANSFER_NUMBER_3` will be transferred to this number.
+    CallingPermissionObject:
       type: object
       required:
       - callType
       - action
       - transferEnabled
+      - isCallTypeRestrictionEnabled
       properties:
         callType:
           type: string
@@ -1822,69 +1875,10 @@ components:
           type: boolean
           example: true
           description: If `true`, allows transfer and forwarding for the call type.
-    LocationOutgoingPermissionDigitPatternGetListObject:
-      type: object
-      required:
-      - digitPatterns
-      properties:
-        digitPatterns:
-          type: array
-          items:
-            $ref: '#/components/schemas/LocationDigitPatternObject'
-          description: List of digit pattern information.
-    PutAutoTransferNumberObject:
-      type: object
-      properties:
-        autoTransferNumber1:
-          type: string
-          example: '1234456789'
-          description: Calls placed meeting the criteria in an outbound rule whose `action` is `TRANSFER_NUMBER_1` will be transferred to this number.
-        autoTransferNumber2:
-          type: string
-          example: '2234567891'
-          description: Calls placed meeting the criteria in an outbound rule whose `action` is `TRANSFER_NUMBER_2` will be transferred to this number.
-        autoTransferNumber3:
-          type: string
-          example: '3234567891'
-          description: Calls placed meeting the criteria in an outbound rule whose `action` is `TRANSFER_NUMBER_3` will be transferred to this number.
-    UnknownExtensionRouteIdentity:
-      type: object
-      required:
-      - id
-      - type
-      properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1JPVVRFX0dST1VQLzA1OWEyNzNlLWJiYjAtMTFlYy04NDIyLTAyNDJhYzEyMDAwMg
-          description: ID of the route type.
-        type:
-          $ref: '#/components/schemas/RouteType'
-          description: Type associated with the identity.
-    GetLocationAccessCodeObject:
-      type: object
-      properties:
-        accessCodes:
-          type: object
-          required:
-          - code
-          - description
-          properties:
-            code:
-              type: string
-              example: '123'
-              description: Access code number.
-            description:
-              type: string
-              example: Main Access Code
-              description: Access code description.
-          description: Access code details
-    GeneratePasswordPostResponse:
-      type: object
-      properties:
-        exampleSipPassword:
-          type: string
-          example: xyz123!
-          description: Example password.
+        isCallTypeRestrictionEnabled:
+          type: boolean
+          example: true
+          description: Indicates if the restriction is enforced by the system for the corresponding call type and cannot be changed. For example, certain call types (such as `INTERNATIONAL`) may be permanently blocked and this field will be `true` to reflect that the restriction is system-controlled and not editable.
     PutAccessCodeLocationObject:
       type: object
       required:
@@ -1895,6 +1889,16 @@ components:
           items:
             type: string
           description: Array of string to delete access codes. For example, ["1234","2345"]
+    InternalDialingPut:
+      type: object
+      properties:
+        enableUnknownExtensionRoutePolicy:
+          type: boolean
+          example: true
+          description: When enabled, calls made by users at the location to an unknown extension (between 2-6 digits) are routed to the selected route group/trunk as premises calls.
+        unknownExtensionRouteIdentity:
+          $ref: '#/components/schemas/UnknownExtensionRouteIdentity'
+          description: Type associated with the identity.
     LocationDigitPatternObject:
       type: object
       required:
@@ -1930,13 +1934,6 @@ components:
           type: boolean
           example: true
           description: If `true`, allows transfer and forwarding for the call type.
-    PasswordGenerate:
-      type: string
-      enum:
-      - sip
-      description: ' * `sip` - SIP password setting
-
-        '
   securitySchemes:
     oauth2:
       flows:
@@ -1955,6 +1952,3 @@ components:
       description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
       scheme: bearer
       bearerFormat: JWT
-x-refined-from:
-- webex-cloud-calling-openapi.json
-- webex-location-call-settings-call-handling-api-openapi.yml

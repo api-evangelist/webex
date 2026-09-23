@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: Webex Call Controls API
+  title: Webex Cloud Calling Call Controls API
   version: 1.0.0
-  description: 'Operations tagged Call Controls across 2 of this provider''s published API definitions: webex-call-controls-api-openapi.yml, webex-cloud-calling-openapi.json. Each path carries the servers of the definition it was published in.'
+  description: The Webex Cloud Calling APIs enable comprehensive management of cloud-based calling services, including user provisioning, device assignment, call routing, feature configuration, and number management.
   x-provenance:
     method: harvested
     authored_by: Cisco Webex
@@ -11,9 +11,6 @@ info:
     first_party: true
     note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
     provider_published: true
-    derived_view: Per-tag view of webex-cloud-calling-openapi.json, the provider's source document. Operations and schemas are the provider's, unmodified; only the partition is ours.
-    derived_from: webex-cloud-calling-openapi.json
-    operation_coverage: 34/34
   x-evidence:
   - type: source
     url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-cloud-calling.json
@@ -2813,35 +2810,6 @@ paths:
           type: string
 components:
   schemas:
-    RecallInformation:
-      type: object
-      required:
-      - type
-      properties:
-        type:
-          allOf:
-          - $ref: '#/components/schemas/RecallTypeEnum'
-          description: The type of recall the incoming call is for. Park is the only type of recall currently supported but additional values may be added in the future.
-        party:
-          allOf:
-          - $ref: '#/components/schemas/PartyInformation'
-          description: If the type is park, contains the details of where the call was parked. For example, if user A parks a call against user B and A is recalled for the park, then this field contains B's information in A's incoming call details. Only present when the type is park.
-    RejectActionEnum:
-      type: string
-      enum:
-      - busy
-      - temporarilyUnavailable
-      - ignore
-      description: " * `busy` - Send the call to busy.\n * `temporarilyUnavailable` - Send the call to temporarily unavailable.\n * `ignore` - Ignore the call by continuing ringback to the caller while no longer alerting the called user's devices.\n"
-    RecordingStateEnum:
-      type: string
-      enum:
-      - pending
-      - started
-      - paused
-      - stopped
-      - failed
-      description: " * `pending` - Recording has been requested for the call but has not yet started.\n * `started` - Recording is active for the call.\n * `paused` - Recording has been paused for the call.\n * `stopped` - Recording has been stopped for the call.\n * `failed` - Recording failed for the call.\n"
     PartyInformation:
       type: object
       required:
@@ -2871,6 +2839,34 @@ components:
           allOf:
           - $ref: '#/components/schemas/CallTypeEnum'
           description: The call type for the party.
+    RedirectionInformation:
+      type: object
+      required:
+      - reason
+      - redirectingParty
+      properties:
+        reason:
+          allOf:
+          - $ref: '#/components/schemas/RedirectionReasonEnum'
+          description: The reason the incoming call was redirected.
+        redirectingParty:
+          allOf:
+          - $ref: '#/components/schemas/PartyInformation'
+          description: The details of a party who redirected the incoming call.
+    RedirectionReasonEnum:
+      type: string
+      enum:
+      - busy
+      - noAnswer
+      - unavailable
+      - unconditional
+      - timeOfDay
+      - divert
+      - followMe
+      - huntGroup
+      - callQueue
+      - unknown
+      description: " * `busy` - The call was redirected on a busy condition. For example, the call was forwarded by Call Forwarding Busy.\n * `noAnswer` - The call was redirected on a no answer condition. For example, the call was forwarded by Call Forwarding No Answer.\n * `unavailable` - The call was redirected on an unavailable condition. For example, the call was forwarded by Business Continuity.\n * `unconditional` - The call was redirected unconditionally. For example, the call was forwarded by Call Forwarding Always.\n * `timeOfDay` - The call was redirected by a service schedule. For example, the call was forwarded by Selective Call Forwarding.\n * `divert` - The call was redirected by divert action.\n * `followMe` - The call was redirected by a follow me service. For example, the call was redirected by Simultaneous Ring.\n * `huntGroup` - The call was redirected by Hunt Group routing.\n * `callQueue` - The call was redirected by Call Queue routing.\n * `unknown` - The call was redirected on an unknown condition.\n"
     Call:
       type: object
       required:
@@ -2964,6 +2960,53 @@ components:
         recordingState: pending
         muteCapable: true
         muted: true
+    CallTypeEnum:
+      type: string
+      enum:
+      - location
+      - organization
+      - external
+      - emergency
+      - repair
+      - other
+      description: " * `location` - The party is within the same location.\n * `organization` - The party is within the same organization but not within the same location.\n * `external` - The party is outside the organization.\n * `emergency` - The party is an emergency call destination.\n * `repair` - The party is a repair call destination.\n * `other` - The party does not belong to one of the defined call types. For example, a call to a Call Forwarding Always feature activation code.\n"
+    RecallInformation:
+      type: object
+      required:
+      - type
+      properties:
+        type:
+          allOf:
+          - $ref: '#/components/schemas/RecallTypeEnum'
+          description: The type of recall the incoming call is for. Park is the only type of recall currently supported but additional values may be added in the future.
+        party:
+          allOf:
+          - $ref: '#/components/schemas/PartyInformation'
+          description: If the type is park, contains the details of where the call was parked. For example, if user A parks a call against user B and A is recalled for the park, then this field contains B's information in A's incoming call details. Only present when the type is park.
+    CallHistoryRecordTypeEnum:
+      type: string
+      enum:
+      - placed
+      - missed
+      - received
+      description: " * `placed` - A call history record for an outgoing call placed by the user.\n * `missed` - A call history record for an incoming call to the user that was not answered.\n * `received` - A call history record for an incoming call to the user that was answered.\n"
+    RejectActionEnum:
+      type: string
+      enum:
+      - busy
+      - temporarilyUnavailable
+      - ignore
+      description: " * `busy` - Send the call to busy.\n * `temporarilyUnavailable` - Send the call to temporarily unavailable.\n * `ignore` - Ignore the call by continuing ringback to the caller while no longer alerting the called user's devices.\n"
+    CallStateEnum:
+      type: string
+      enum:
+      - connecting
+      - alerting
+      - connected
+      - held
+      - remoteHeld
+      - disconnected
+      description: " * `connecting` - The remote party is being alerted.\n * `alerting` - The user's devices are alerting for the incoming or Click to Dial call.\n * `connected` - The call is connected.\n * `held` - The user has placed the call on hold.\n * `remoteHeld` - The remote party within the same organization has placed the call on hold.\n * `disconnected` - The call has been disconnected.\n"
     CallPersonalityEnum:
       type: string
       enum:
@@ -2971,20 +3014,6 @@ components:
       - terminator
       - clickToDial
       description: " * `originator` - An outgoing call originated by the user.\n * `terminator` - An incoming call received by the user.\n * `clickToDial` - A call that is alerting the user's devices for a Click to Dial action. When the user answers on one of these alerting devices, the call's personality is updated to originator.\n"
-    RedirectionReasonEnum:
-      type: string
-      enum:
-      - busy
-      - noAnswer
-      - unavailable
-      - unconditional
-      - timeOfDay
-      - divert
-      - followMe
-      - huntGroup
-      - callQueue
-      - unknown
-      description: " * `busy` - The call was redirected on a busy condition. For example, the call was forwarded by Call Forwarding Busy.\n * `noAnswer` - The call was redirected on a no answer condition. For example, the call was forwarded by Call Forwarding No Answer.\n * `unavailable` - The call was redirected on an unavailable condition. For example, the call was forwarded by Business Continuity.\n * `unconditional` - The call was redirected unconditionally. For example, the call was forwarded by Call Forwarding Always.\n * `timeOfDay` - The call was redirected by a service schedule. For example, the call was forwarded by Selective Call Forwarding.\n * `divert` - The call was redirected by divert action.\n * `followMe` - The call was redirected by a follow me service. For example, the call was redirected by Simultaneous Ring.\n * `huntGroup` - The call was redirected by Hunt Group routing.\n * `callQueue` - The call was redirected by Call Queue routing.\n * `unknown` - The call was redirected on an unknown condition.\n"
     RecallTypeEnum:
       type: string
       enum:
@@ -2992,6 +3021,15 @@ components:
       description: ' * `park` - The user is being recalled for a call park they initiated.
 
         '
+    RecordingStateEnum:
+      type: string
+      enum:
+      - pending
+      - started
+      - paused
+      - stopped
+      - failed
+      description: " * `pending` - Recording has been requested for the call but has not yet started.\n * `started` - Recording is active for the call.\n * `paused` - Recording has been paused for the call.\n * `stopped` - Recording has been stopped for the call.\n * `failed` - Recording failed for the call.\n"
     CallHistoryRecord:
       type: object
       required:
@@ -3018,47 +3056,6 @@ components:
           type: string
           example: '2016-04-21T17:00:00.000Z'
           description: The date and time the call history record was created. For a placed call history record, this is when the call was placed. For a missed call history record, this is when the call was disconnected. For a received call history record, this is when the call was answered.
-    CallTypeEnum:
-      type: string
-      enum:
-      - location
-      - organization
-      - external
-      - emergency
-      - repair
-      - other
-      description: " * `location` - The party is within the same location.\n * `organization` - The party is within the same organization but not within the same location.\n * `external` - The party is outside the organization.\n * `emergency` - The party is an emergency call destination.\n * `repair` - The party is a repair call destination.\n * `other` - The party does not belong to one of the defined call types. For example, a call to a Call Forwarding Always feature activation code.\n"
-    CallStateEnum:
-      type: string
-      enum:
-      - connecting
-      - alerting
-      - connected
-      - held
-      - remoteHeld
-      - disconnected
-      description: " * `connecting` - The remote party is being alerted.\n * `alerting` - The user's devices are alerting for the incoming or Click to Dial call.\n * `connected` - The call is connected.\n * `held` - The user has placed the call on hold.\n * `remoteHeld` - The remote party within the same organization has placed the call on hold.\n * `disconnected` - The call has been disconnected.\n"
-    RedirectionInformation:
-      type: object
-      required:
-      - reason
-      - redirectingParty
-      properties:
-        reason:
-          allOf:
-          - $ref: '#/components/schemas/RedirectionReasonEnum'
-          description: The reason the incoming call was redirected.
-        redirectingParty:
-          allOf:
-          - $ref: '#/components/schemas/PartyInformation'
-          description: The details of a party who redirected the incoming call.
-    CallHistoryRecordTypeEnum:
-      type: string
-      enum:
-      - placed
-      - missed
-      - received
-      description: " * `placed` - A call history record for an outgoing call placed by the user.\n * `missed` - A call history record for an incoming call to the user that was not answered.\n * `received` - A call history record for an incoming call to the user that was answered.\n"
   securitySchemes:
     oauth2:
       flows:
@@ -3073,14 +3070,7 @@ components:
       scheme: bearer
       bearerFormat: JWT
     bearerAuth:
-      type: oauth2
-      description: OAuth 2.0 Bearer token authentication
-      flows:
-        authorizationCode:
-          authorizationUrl: https://webexapis.com/v1/authorize
-          tokenUrl: https://webexapis.com/v1/access_token
-          scopes:
-            spark:applications_token: Create access tokens for Service Apps
-x-refined-from:
-- webex-call-controls-api-openapi.yml
-- webex-cloud-calling-openapi.json
+      type: http
+      description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
+      scheme: bearer
+      bearerFormat: JWT

@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: Webex Journey - Workspace management API
+  title: Webex Contact Center Journey - Workspace management API
   version: 1.0.0
-  description: 'Operations tagged Journey - Workspace management API across 2 of this provider''s published API definitions: webex-contact-center-openapi.json, webex-journey-workspace-management-api-api-openapi.yml. Each path carries the servers of the definition it was published in.'
+  description: The Webex Contact Center APIs allow developers to deeply integrate, configure, and manage cloud-based contact center solutions.
   x-provenance:
     method: harvested
     authored_by: Cisco Webex
@@ -11,9 +11,6 @@ info:
     first_party: true
     note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
     provider_published: true
-    derived_view: Per-tag view of webex-contact-center-openapi.json, the provider's source document. Operations and schemas are the provider's, unmodified; only the partition is ours.
-    derived_from: webex-contact-center-openapi.json
-    operation_coverage: 5/5
   x-evidence:
   - type: source
     url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-contact-center.json
@@ -296,52 +293,22 @@ paths:
       - bearerAuth: []
 components:
   schemas:
-    OrganizationResponseModel:
+    OrganizationResponse:
       type: object
       properties:
-        createdAt:
-          type: string
-          description: Created Timestamp
-          example: '2022-10-18T04:21:34.124Z'
-        createdBy:
-          type: string
-          description: Created By
-          example: 1eb65fdf-9643-417f-9974-ad72cae0e10f
-        updatedAt:
-          type: string
-          description: Updated Timestamp
-          example: '2022-10-18T04:21:34.124Z'
-        updatedBy:
-          type: string
-          description: Updated By
-          example: 1eb65fdf-9643-417f-9974-ad72cae0e10f
-        organizationId:
-          type: string
-          description: Organization ID
-          example: 1eb65fdf-9643-417f-9974-ad72cae0e10f
-        name:
-          type: string
-          description: Organization Name
-          example: Demo Assure
-        isActive:
-          type: boolean
-          description: Is An Organization Active
-          example: true
-        workspaces:
-          type: array
-          description: Workspaces
-          items:
-            $ref: '#/components/schemas/WorkspaceResponseModel'
-        enabledFeatureIds:
-          type: array
-          description: Enabled Feature Ids
-          example:
-          - 63d2d13e9544747f22f391cf5
-          items:
-            type: string
-        settings:
-          $ref: '#/components/schemas/OrganizationSettingsModel'
-      description: Organization Response Model
+        meta:
+          $ref: '#/components/schemas/BaseMetaResponseEnvelope'
+        data:
+          $ref: '#/components/schemas/OrganizationResponseModel'
+    GeneralSettingsModel:
+      type: object
+      properties:
+        dataRetentionDays:
+          type: integer
+          description: Data Retention Days
+          format: int32
+          example: 365
+      description: Create Or Update Organization General Settings
     BaseMetaResponseEnvelope:
       type: object
       properties:
@@ -352,54 +319,7 @@ components:
       description: Meta information of the response
       example:
         organizationId: 1eb65fdf-9643-417f-9974-ad72cae0e10f
-    OrganizationSettingsModel:
-      type: object
-      properties:
-        general:
-          $ref: '#/components/schemas/GeneralSettingsModel'
-        webex:
-          $ref: '#/components/schemas/WebexSettingsModel'
-      description: Create Or Update Organization Settings
-    WorkspaceResponseModel:
-      type: object
-      properties:
-        id:
-          type: string
-          description: Workspace ID
-          example: 99ab6909-f982-410d-9e2f-16971d18ae24
-        name:
-          type: string
-          description: Workspace Name
-          example: Customer-Journey-Widget
-        description:
-          type: string
-          description: Workspace Description
-          example: This is for sandbox1 environment
-        wxccSubscriptionIds:
-          type: array
-          description: List of Wxcc Subscription Ids
-          example:
-          - task:new
-          - agent:login
-          items:
-            type: string
-      description: Workspace under an organization
-    WorkspaceRequestModel:
-      required:
-      - description
-      - name
-      type: object
-      properties:
-        name:
-          type: string
-          description: Workspace Name
-          example: Customer-Journey-Widget
-        description:
-          type: string
-          description: Workspace Description
-          example: This is for sandbox environment
-      description: Create or Update Workspace of an organization
-    ApiError404:
+    ApiError409:
       required:
       - trackingId
       type: object
@@ -407,7 +327,7 @@ components:
         status:
           type: string
           description: Http Status Description
-          example: 404 NOT_FOUND
+          example: 409 CONFLICT
           enum:
           - 100 CONTINUE
           - 101 SWITCHING_PROTOCOLS
@@ -481,12 +401,12 @@ components:
         message:
           type: string
           description: Error Message
-          example: Resource not found
+          example: Resource Already Exists
         errors:
           type: array
-          description: Resource Already Found
+          description: Resource Already Exists
           example:
-          - Id 3249892348-sdfjsdhf-345hdsf-345345 Not Found
+          - Id 3249892348-sdfjsdhf-345hdsf-345345 already exists
           items:
             type: string
         timestamp:
@@ -597,112 +517,55 @@ components:
           type: string
           description: Unique ID by which a request can be debugged. Please provide if opening a support case.
           example: 76cd71d0e678a8bb
-    OrganizationResponse:
+    WebexSettingsModel:
+      type: object
+      properties:
+        env:
+          type: string
+          description: Webex Environment Name
+          example: qaus1
+      description: Create Or Update Organization Webex Settings
+    WorkspaceResponseModel:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Workspace ID
+          example: 99ab6909-f982-410d-9e2f-16971d18ae24
+        name:
+          type: string
+          description: Workspace Name
+          example: Customer-Journey-Widget
+        description:
+          type: string
+          description: Workspace Description
+          example: This is for sandbox1 environment
+        wxccSubscriptionIds:
+          type: array
+          description: List of Wxcc Subscription Ids
+          example:
+          - task:new
+          - agent:login
+          items:
+            type: string
+      description: Workspace under an organization
+    WorkspaceResponse:
       type: object
       properties:
         meta:
           $ref: '#/components/schemas/BaseMetaResponseEnvelope'
         data:
-          $ref: '#/components/schemas/OrganizationResponseModel'
-    ApiError409:
-      required:
-      - trackingId
+          $ref: '#/components/schemas/WorkspaceResponseModel'
+    WorkspaceResponseList:
       type: object
       properties:
-        status:
-          type: string
-          description: Http Status Description
-          example: 409 CONFLICT
-          enum:
-          - 100 CONTINUE
-          - 101 SWITCHING_PROTOCOLS
-          - 102 PROCESSING
-          - 103 EARLY_HINTS
-          - 103 CHECKPOINT
-          - 200 OK
-          - 201 CREATED
-          - 202 ACCEPTED
-          - 203 NON_AUTHORITATIVE_INFORMATION
-          - 204 NO_CONTENT
-          - 205 RESET_CONTENT
-          - 206 PARTIAL_CONTENT
-          - 207 MULTI_STATUS
-          - 208 ALREADY_REPORTED
-          - 226 IM_USED
-          - 300 MULTIPLE_CHOICES
-          - 301 MOVED_PERMANENTLY
-          - 302 FOUND
-          - 302 MOVED_TEMPORARILY
-          - 303 SEE_OTHER
-          - 304 NOT_MODIFIED
-          - 305 USE_PROXY
-          - 307 TEMPORARY_REDIRECT
-          - 308 PERMANENT_REDIRECT
-          - 400 BAD_REQUEST
-          - 401 UNAUTHORIZED
-          - 402 PAYMENT_REQUIRED
-          - 403 FORBIDDEN
-          - 404 NOT_FOUND
-          - 405 METHOD_NOT_ALLOWED
-          - 406 NOT_ACCEPTABLE
-          - 407 PROXY_AUTHENTICATION_REQUIRED
-          - 408 REQUEST_TIMEOUT
-          - 409 CONFLICT
-          - 410 GONE
-          - 411 LENGTH_REQUIRED
-          - 412 PRECONDITION_FAILED
-          - 413 PAYLOAD_TOO_LARGE
-          - 413 REQUEST_ENTITY_TOO_LARGE
-          - 414 URI_TOO_LONG
-          - 414 REQUEST_URI_TOO_LONG
-          - 415 UNSUPPORTED_MEDIA_TYPE
-          - 416 REQUESTED_RANGE_NOT_SATISFIABLE
-          - 417 EXPECTATION_FAILED
-          - 418 I_AM_A_TEAPOT
-          - 419 INSUFFICIENT_SPACE_ON_RESOURCE
-          - 420 METHOD_FAILURE
-          - 421 DESTINATION_LOCKED
-          - 422 UNPROCESSABLE_ENTITY
-          - 423 LOCKED
-          - 424 FAILED_DEPENDENCY
-          - 425 TOO_EARLY
-          - 426 UPGRADE_REQUIRED
-          - 428 PRECONDITION_REQUIRED
-          - 429 TOO_MANY_REQUESTS
-          - 431 REQUEST_HEADER_FIELDS_TOO_LARGE
-          - 451 UNAVAILABLE_FOR_LEGAL_REASONS
-          - 500 INTERNAL_SERVER_ERROR
-          - 501 NOT_IMPLEMENTED
-          - 502 BAD_GATEWAY
-          - 503 SERVICE_UNAVAILABLE
-          - 504 GATEWAY_TIMEOUT
-          - 505 HTTP_VERSION_NOT_SUPPORTED
-          - 506 VARIANT_ALSO_NEGOTIATES
-          - 507 INSUFFICIENT_STORAGE
-          - 508 LOOP_DETECTED
-          - 509 BANDWIDTH_LIMIT_EXCEEDED
-          - 510 NOT_EXTENDED
-          - 511 NETWORK_AUTHENTICATION_REQUIRED
-        message:
-          type: string
-          description: Error Message
-          example: Resource Already Exists
-        errors:
+        meta:
+          $ref: '#/components/schemas/BaseMetaResponseEnvelope'
+        data:
           type: array
-          description: Resource Already Exists
-          example:
-          - Id 3249892348-sdfjsdhf-345hdsf-345345 already exists
+          description: Data part of the response
           items:
-            type: string
-        timestamp:
-          type: string
-          description: Occurred timestamp
-          format: date-time
-          example: '2023-03-27T20:59:32.376Z'
-        trackingId:
-          type: string
-          description: Unique ID by which a request can be debugged. Please provide if opening a support case.
-          example: 76cd71d0e678a8bb
+            $ref: '#/components/schemas/WorkspaceResponseModel'
     ApiError500:
       required:
       - trackingId
@@ -802,40 +665,174 @@ components:
           type: string
           description: Unique ID by which a request can be debugged. Please provide if opening a support case.
           example: 76cd71d0e678a8bb
-    WorkspaceResponseList:
+    WorkspaceRequestModel:
+      required:
+      - description
+      - name
       type: object
       properties:
-        meta:
-          $ref: '#/components/schemas/BaseMetaResponseEnvelope'
-        data:
+        name:
+          type: string
+          description: Workspace Name
+          example: Customer-Journey-Widget
+        description:
+          type: string
+          description: Workspace Description
+          example: This is for sandbox environment
+      description: Create or Update Workspace of an organization
+    OrganizationResponseModel:
+      type: object
+      properties:
+        createdAt:
+          type: string
+          description: Created Timestamp
+          example: '2022-10-18T04:21:34.124Z'
+        createdBy:
+          type: string
+          description: Created By
+          example: 1eb65fdf-9643-417f-9974-ad72cae0e10f
+        updatedAt:
+          type: string
+          description: Updated Timestamp
+          example: '2022-10-18T04:21:34.124Z'
+        updatedBy:
+          type: string
+          description: Updated By
+          example: 1eb65fdf-9643-417f-9974-ad72cae0e10f
+        organizationId:
+          type: string
+          description: Organization ID
+          example: 1eb65fdf-9643-417f-9974-ad72cae0e10f
+        name:
+          type: string
+          description: Organization Name
+          example: Demo Assure
+        isActive:
+          type: boolean
+          description: Is An Organization Active
+          example: true
+        workspaces:
           type: array
-          description: Data part of the response
+          description: Workspaces
           items:
             $ref: '#/components/schemas/WorkspaceResponseModel'
-    GeneralSettingsModel:
+        enabledFeatureIds:
+          type: array
+          description: Enabled Feature Ids
+          example:
+          - 63d2d13e9544747f22f391cf5
+          items:
+            type: string
+        settings:
+          $ref: '#/components/schemas/OrganizationSettingsModel'
+      description: Organization Response Model
+    ApiError404:
+      required:
+      - trackingId
       type: object
       properties:
-        dataRetentionDays:
-          type: integer
-          description: Data Retention Days
-          format: int32
-          example: 365
-      description: Create Or Update Organization General Settings
-    WebexSettingsModel:
-      type: object
-      properties:
-        env:
+        status:
           type: string
-          description: Webex Environment Name
-          example: qaus1
-      description: Create Or Update Organization Webex Settings
-    WorkspaceResponse:
+          description: Http Status Description
+          example: 404 NOT_FOUND
+          enum:
+          - 100 CONTINUE
+          - 101 SWITCHING_PROTOCOLS
+          - 102 PROCESSING
+          - 103 EARLY_HINTS
+          - 103 CHECKPOINT
+          - 200 OK
+          - 201 CREATED
+          - 202 ACCEPTED
+          - 203 NON_AUTHORITATIVE_INFORMATION
+          - 204 NO_CONTENT
+          - 205 RESET_CONTENT
+          - 206 PARTIAL_CONTENT
+          - 207 MULTI_STATUS
+          - 208 ALREADY_REPORTED
+          - 226 IM_USED
+          - 300 MULTIPLE_CHOICES
+          - 301 MOVED_PERMANENTLY
+          - 302 FOUND
+          - 302 MOVED_TEMPORARILY
+          - 303 SEE_OTHER
+          - 304 NOT_MODIFIED
+          - 305 USE_PROXY
+          - 307 TEMPORARY_REDIRECT
+          - 308 PERMANENT_REDIRECT
+          - 400 BAD_REQUEST
+          - 401 UNAUTHORIZED
+          - 402 PAYMENT_REQUIRED
+          - 403 FORBIDDEN
+          - 404 NOT_FOUND
+          - 405 METHOD_NOT_ALLOWED
+          - 406 NOT_ACCEPTABLE
+          - 407 PROXY_AUTHENTICATION_REQUIRED
+          - 408 REQUEST_TIMEOUT
+          - 409 CONFLICT
+          - 410 GONE
+          - 411 LENGTH_REQUIRED
+          - 412 PRECONDITION_FAILED
+          - 413 PAYLOAD_TOO_LARGE
+          - 413 REQUEST_ENTITY_TOO_LARGE
+          - 414 URI_TOO_LONG
+          - 414 REQUEST_URI_TOO_LONG
+          - 415 UNSUPPORTED_MEDIA_TYPE
+          - 416 REQUESTED_RANGE_NOT_SATISFIABLE
+          - 417 EXPECTATION_FAILED
+          - 418 I_AM_A_TEAPOT
+          - 419 INSUFFICIENT_SPACE_ON_RESOURCE
+          - 420 METHOD_FAILURE
+          - 421 DESTINATION_LOCKED
+          - 422 UNPROCESSABLE_ENTITY
+          - 423 LOCKED
+          - 424 FAILED_DEPENDENCY
+          - 425 TOO_EARLY
+          - 426 UPGRADE_REQUIRED
+          - 428 PRECONDITION_REQUIRED
+          - 429 TOO_MANY_REQUESTS
+          - 431 REQUEST_HEADER_FIELDS_TOO_LARGE
+          - 451 UNAVAILABLE_FOR_LEGAL_REASONS
+          - 500 INTERNAL_SERVER_ERROR
+          - 501 NOT_IMPLEMENTED
+          - 502 BAD_GATEWAY
+          - 503 SERVICE_UNAVAILABLE
+          - 504 GATEWAY_TIMEOUT
+          - 505 HTTP_VERSION_NOT_SUPPORTED
+          - 506 VARIANT_ALSO_NEGOTIATES
+          - 507 INSUFFICIENT_STORAGE
+          - 508 LOOP_DETECTED
+          - 509 BANDWIDTH_LIMIT_EXCEEDED
+          - 510 NOT_EXTENDED
+          - 511 NETWORK_AUTHENTICATION_REQUIRED
+        message:
+          type: string
+          description: Error Message
+          example: Resource not found
+        errors:
+          type: array
+          description: Resource Already Found
+          example:
+          - Id 3249892348-sdfjsdhf-345hdsf-345345 Not Found
+          items:
+            type: string
+        timestamp:
+          type: string
+          description: Occurred timestamp
+          format: date-time
+          example: '2023-03-27T20:59:32.376Z'
+        trackingId:
+          type: string
+          description: Unique ID by which a request can be debugged. Please provide if opening a support case.
+          example: 76cd71d0e678a8bb
+    OrganizationSettingsModel:
       type: object
       properties:
-        meta:
-          $ref: '#/components/schemas/BaseMetaResponseEnvelope'
-        data:
-          $ref: '#/components/schemas/WorkspaceResponseModel'
+        general:
+          $ref: '#/components/schemas/GeneralSettingsModel'
+        webex:
+          $ref: '#/components/schemas/WebexSettingsModel'
+      description: Create Or Update Organization Settings
   securitySchemes:
     oauth2:
       flows:
@@ -863,6 +860,3 @@ components:
       scheme: bearer
       bearerFormat: JWT
       description: JWT bearer token authentication. Obtain your token from the Webex Developer Portal.
-x-refined-from:
-- webex-contact-center-openapi.json
-- webex-journey-workspace-management-api-api-openapi.yml

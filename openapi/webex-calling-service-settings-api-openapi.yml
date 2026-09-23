@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: Webex Calling Service Settings API
+  title: Webex Cloud Calling Calling Service Settings API
   version: 1.0.0
-  description: 'Operations tagged Calling Service Settings across 2 of this provider''s published API definitions: webex-calling-service-settings-api-openapi.yml, webex-cloud-calling-openapi.json. Each path carries the servers of the definition it was published in.'
+  description: The Webex Cloud Calling APIs enable comprehensive management of cloud-based calling services, including user provisioning, device assignment, call routing, feature configuration, and number management.
   x-provenance:
     method: harvested
     authored_by: Cisco Webex
@@ -11,9 +11,6 @@ info:
     first_party: true
     note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
     provider_published: true
-    derived_view: Per-tag view of webex-cloud-calling-openapi.json, the provider's source document. Operations and schemas are the provider's, unmodified; only the partition is ours.
-    derived_from: webex-cloud-calling-openapi.json
-    operation_coverage: 10/10
   x-evidence:
   - type: source
     url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-cloud-calling.json
@@ -666,100 +663,20 @@ paths:
               $ref: '#/components/schemas/UpdateCallCaptionsObject'
 components:
   schemas:
-    UpdateCallCaptionsObject:
-      type: object
-      properties:
-        orgClosedCaptionsEnabled:
-          type: boolean
-          example: true
-          description: Enable or disable organization-level closed captions.
-        orgTranscriptsEnabled:
-          type: boolean
-          example: true
-          description: Enable or disable organization-level transcripts.
-    OrganizationStatusGetObject:
+    Language:
       type: object
       required:
-      - isLargeOrg
-      - largeOrgThresholdPercentage
+      - name
+      - code
       properties:
-        isLargeOrg:
-          type: boolean
-          example: true
-          description: '`true` if the organization is categorized as large organization.'
-        largeOrgThresholdPercentage:
-          type: integer
-          example: 90
-          description: The threshold percentage represents the percentage of the threshold reached to categorize an organization as a large organization.
-    GetVoicemailSettingsObject:
-      type: object
-      required:
-      - messageExpiryEnabled
-      - numberOfDaysForMessageExpiry
-      - strictDeletionEnabled
-      - voiceMessageForwardingEnabled
-      properties:
-        messageExpiryEnabled:
-          type: boolean
-          description: When enabled, you can set the deletion conditions for expired messages.
-        numberOfDaysForMessageExpiry:
-          type: number
-          example: 10
-          description: Number of days after which messages expire.
-        strictDeletionEnabled:
-          type: boolean
-          description: When enabled, all read and unread voicemail messages will be deleted based on the time frame you set. When disabled, all unread voicemail messages will be kept.
-        voiceMessageForwardingEnabled:
-          type: boolean
-          example: true
-          description: When enabled, people in the organization can configure the email forwarding of voicemails.
-    PutVoicemailSettingsObject:
-      type: object
-      required:
-      - messageExpiryEnabled
-      - numberOfDaysForMessageExpiry
-      properties:
-        messageExpiryEnabled:
-          type: boolean
-          description: Set to `true` to enable voicemail deletion and set the deletion conditions for expired messages.
-        numberOfDaysForMessageExpiry:
-          type: number
-          example: 10
-          description: Number of days after which messages expire.
-        strictDeletionEnabled:
-          type: boolean
-          description: Set to `true` to delete all read and unread voicemail messages based on the time frame you set. Set to `false` to keep all the unread voicemail messages.
-        voiceMessageForwardingEnabled:
-          type: boolean
-          example: true
-          description: Set to `true` to allow people to configure the email forwarding of voicemails.
-    AudioAnnouncementFileGetObject:
-      type: object
-      required:
-      - id
-      - fileName
-      - mediaFileType
-      - level
-      properties:
-        id:
+        name:
           type: string
-          example: Y2lzY29zcGFyazovL3VzL0FVVE9fQVRURU5EQU5UL2QzVjBPWFIxWjJkM2FFQm1iR1Y0TWk1amFYTmpieTVqYjIw
-          description: A unique identifier for the announcement.
-        fileName:
+          example: English
+          description: Language name.
+        code:
           type: string
-          example: AUDIO_FILE.wav
-          description: Audio announcement file name.
-        mediaFileType:
-          type: string
-          enum:
-          - WAV
-          description: "Audio announcement file type.\n * `WAV` - WAV File Extension.\n"
-        level:
-          type: string
-          enum:
-          - ORGANIZATION
-          - LOCATION
-          description: "Audio announcement file type location.\n * `ORGANIZATION` - Specifies this audio file is configured across the organization.\n * `LOCATION` - Specifies this audio file is configured across the location.\n"
+          example: en_us
+          description: Language code.
     GetMusicOnHoldObject:
       type: object
       required:
@@ -784,13 +701,62 @@ components:
         audioAnnouncementFile:
           $ref: '#/components/schemas/AudioAnnouncementFileGetObject'
           description: Announcement Audio File details when greeting is selected to be `CUSTOM`.
-    UpdateMusicOnHoldObject:
+    OrganizationStatusGetObject:
       type: object
+      required:
+      - isLargeOrg
+      - largeOrgThresholdPercentage
       properties:
-        defaultOrgMoh:
-          type: string
-          example: '''OPUS'' or ''LEGACY'''
-          description: 'Default org level Music on Hold option, can be one of two options: Choose between Opus Number 1 (Music On Hold used in other Cisco products like UCM) and existing legacy Music On Hold.'
+        isLargeOrg:
+          type: boolean
+          example: true
+          description: '`true` if the organization is categorized as large organization.'
+        largeOrgThresholdPercentage:
+          type: integer
+          example: 90
+          description: The threshold percentage represents the percentage of the threshold reached to categorize an organization as a large organization.
+    PutVoicemailSettingsObject:
+      type: object
+      required:
+      - messageExpiryEnabled
+      - numberOfDaysForMessageExpiry
+      properties:
+        messageExpiryEnabled:
+          type: boolean
+          description: Set to `true` to enable voicemail deletion and set the deletion conditions for expired messages.
+        numberOfDaysForMessageExpiry:
+          type: number
+          example: 10
+          description: Number of days after which messages expire.
+        strictDeletionEnabled:
+          type: boolean
+          description: Set to `true` to delete all read and unread voicemail messages based on the time frame you set. Set to `false` to keep all the unread voicemail messages.
+        voiceMessageForwardingEnabled:
+          type: boolean
+          example: true
+          description: Set to `true` to allow people to configure the email forwarding of voicemails.
+    GetVoicemailSettingsObject:
+      type: object
+      required:
+      - messageExpiryEnabled
+      - numberOfDaysForMessageExpiry
+      - strictDeletionEnabled
+      - voiceMessageForwardingEnabled
+      properties:
+        messageExpiryEnabled:
+          type: boolean
+          description: When enabled, you can set the deletion conditions for expired messages.
+        numberOfDaysForMessageExpiry:
+          type: number
+          example: 10
+          description: Number of days after which messages expire.
+        strictDeletionEnabled:
+          type: boolean
+          description: When enabled, all read and unread voicemail messages will be deleted based on the time frame you set. When disabled, all unread voicemail messages will be kept.
+        voiceMessageForwardingEnabled:
+          type: boolean
+          example: true
+          description: When enabled, people in the organization can configure the email forwarding of voicemails.
     PutVoicemailRulesObject:
       type: object
       properties:
@@ -837,20 +803,54 @@ components:
               example: 10
               description: Number of previous passcodes. The minimum value is 1. The maximum value is 10.
           description: Settings for previous passcode usage.
-    Language:
+    GetCallCaptionsObject:
       type: object
       required:
-      - name
-      - code
+      - orgClosedCaptionsEnabled
+      - orgTranscriptsEnabled
       properties:
-        name:
+        orgClosedCaptionsEnabled:
+          type: boolean
+          example: true
+          description: Organization-level closed captions are enabled or disabled.
+        orgTranscriptsEnabled:
+          type: boolean
+          example: true
+          description: Organization-level transcripts are enabled or disabled.
+    UpdateMusicOnHoldObject:
+      type: object
+      properties:
+        defaultOrgMoh:
           type: string
-          example: English
-          description: Language name.
-        code:
+          example: '''OPUS'' or ''LEGACY'''
+          description: 'Default org level Music on Hold option, can be one of two options: Choose between Opus Number 1 (Music On Hold used in other Cisco products like UCM) and existing legacy Music On Hold.'
+    AudioAnnouncementFileGetObject:
+      type: object
+      required:
+      - id
+      - fileName
+      - mediaFileType
+      - level
+      properties:
+        id:
           type: string
-          example: en_us
-          description: Language code.
+          example: Y2lzY29zcGFyazovL3VzL0FVVE9fQVRURU5EQU5UL2QzVjBPWFIxWjJkM2FFQm1iR1Y0TWk1amFYTmpieTVqYjIw
+          description: A unique identifier for the announcement.
+        fileName:
+          type: string
+          example: AUDIO_FILE.wav
+          description: Audio announcement file name.
+        mediaFileType:
+          type: string
+          enum:
+          - WAV
+          description: "Audio announcement file type.\n * `WAV` - WAV File Extension.\n"
+        level:
+          type: string
+          enum:
+          - ORGANIZATION
+          - LOCATION
+          description: "Audio announcement file type location.\n * `ORGANIZATION` - Specifies this audio file is configured across the organization.\n * `LOCATION` - Specifies this audio file is configured across the location.\n"
     GetVoicemailRulesObject:
       type: object
       properties:
@@ -942,20 +942,17 @@ components:
               example: 10
               description: Number of previous passcodes. The minimum value is 1. The maximum value is 10.
           description: Settings for previous passcode usage.
-    GetCallCaptionsObject:
+    UpdateCallCaptionsObject:
       type: object
-      required:
-      - orgClosedCaptionsEnabled
-      - orgTranscriptsEnabled
       properties:
         orgClosedCaptionsEnabled:
           type: boolean
           example: true
-          description: Organization-level closed captions are enabled or disabled.
+          description: Enable or disable organization-level closed captions.
         orgTranscriptsEnabled:
           type: boolean
           example: true
-          description: Organization-level transcripts are enabled or disabled.
+          description: Enable or disable organization-level transcripts.
   securitySchemes:
     oauth2:
       flows:
@@ -970,14 +967,7 @@ components:
       scheme: bearer
       bearerFormat: JWT
     bearerAuth:
-      type: oauth2
-      description: OAuth 2.0 Bearer token authentication
-      flows:
-        authorizationCode:
-          authorizationUrl: https://webexapis.com/v1/authorize
-          tokenUrl: https://webexapis.com/v1/access_token
-          scopes:
-            spark:applications_token: Create access tokens for Service Apps
-x-refined-from:
-- webex-calling-service-settings-api-openapi.yml
-- webex-cloud-calling-openapi.json
+      type: http
+      description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
+      scheme: bearer
+      bearerFormat: JWT

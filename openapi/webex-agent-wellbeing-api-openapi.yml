@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: Webex Agent Wellbeing API
+  title: Webex Contact Center Agent Wellbeing API
   version: 1.0.0
-  description: 'Operations tagged Agent Wellbeing across 2 of this provider''s published API definitions: webex-agent-wellbeing-api-openapi.yml, webex-contact-center-openapi.json. Each path carries the servers of the definition it was published in.'
+  description: The Webex Contact Center APIs allow developers to deeply integrate, configure, and manage cloud-based contact center solutions.
   x-provenance:
     method: harvested
     authored_by: Cisco Webex
@@ -11,9 +11,6 @@ info:
     first_party: true
     note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
     provider_published: true
-    derived_view: Per-tag view of webex-contact-center-openapi.json, the provider's source document. Operations and schemas are the provider's, unmodified; only the partition is ours.
-    derived_from: webex-contact-center-openapi.json
-    operation_coverage: 5/5
   x-evidence:
   - type: source
     url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-contact-center.json
@@ -500,6 +497,157 @@ paths:
       deprecated: true
 components:
   schemas:
+    AgentBurnoutDTO:
+      type: object
+      properties:
+        organizationId:
+          type: string
+          format: uuid
+          description: ID of the contact center organization. This field is required for all bulk save operations.
+          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+          maxLength: 36
+          minLength: 32
+          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
+        id:
+          type: string
+          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
+          example: 93912f11-6017-404b-bf14-5331890b1797
+        version:
+          type: integer
+          format: int32
+          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
+          example: 1
+        enabled:
+          type: boolean
+          description: Used to toggle the state of the agent burnout  configuration from active to inactive and vice-versa. Mandatory for create/update operation.
+          example: true
+        agentInclusionType:
+          type: string
+          description: Provides information whether all or specific agents are selected for Agent Wellbeing. If the value is missing in response, the consumer should assume a value as ALL.
+          enum:
+          - ALL
+          - SPECIFIC
+          example: ALL
+        wellnessBreakReminders:
+          type: string
+          description: Provides information whether Wellness break reminders are enabled or disabled. If the value is missing in response, the consumer should assume a value as DISABLED.
+          enum:
+          - DISABLED
+          - ENABLED
+          example: DISABLED
+        createdTime:
+          type: integer
+          format: int64
+          description: This is the created time of the entity.
+          example: 123456789
+        lastUpdatedTime:
+          type: integer
+          format: int64
+          description: This is the updated time of the entity.
+          example: 123456789
+      required:
+      - agentInclusionType
+      - enabled
+    ActionResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          description: The data object contains the details of the action taken.
+          properties:
+            id:
+              type: string
+              description: A unique identifier for the action taken.
+              example: fb53f6d1-5535-4ac8-b081-53834e17d6f5
+            interactionId:
+              type: string
+              description: A unique identifier for each interaction or contact within the contact center.
+              example: fb53f6d1-5535-4ac8-b081-53834e17d6f5
+            orgId:
+              type: string
+              description: The organization ID to which the agent belongs.
+              example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+            agentId:
+              type: string
+              description: The identifier for the agent whose burnout index has been calculated.
+              example: fb53f6d1-5535-4ac8-b081-53834e17d6f5
+            clientId:
+              type: string
+              description: The name of the client initiating the action related to the agent burnout index. The name is limited to a maximum of 20 characters.
+              example: Acme
+            actionType:
+              type: string
+              description: Specifies the type of action initiated based on the agent burnout index
+              example: Break Played, Supervisor Notified, etc.
+            actionDateTime:
+              type: integer
+              description: The Epoch timestamp indicating the precise time at which the action was executed.
+              format: int64
+              example: 1617536244000
+            createdDateTime:
+              type: integer
+              description: The Epoch timestamp indicating the time when the action was created.
+              format: int64
+              example: 1617536244000
+        trackingId:
+          type: string
+          description: The unique tracking ID for this request.
+          example: fb53f6d1-5535-4ac8-b081-53834e17d6f5
+    OperationError:
+      description: An error message providing details about the operation failure.
+      type: object
+      properties:
+        description:
+          type: string
+          description: A human readable explanation for the occurrence of an error.
+          example: Incorrect Credentials.
+    ActionRequest:
+      type: object
+      properties:
+        interactionId:
+          type: string
+          description: A unique identifier for each interaction or contact within the contact center.
+          example: fb53f6d1-5535-4ac8-b081-53834e17d6f5
+        agentId:
+          type: string
+          description: The identifier for the agent whose burnout index has been calculated.
+          example: fb53f6d1-5535-4ac8-b081-53834e17d6f5
+        clientId:
+          type: string
+          description: The name of the client initiating the action related to the agent burnout index. The name is limited to a maximum of 20 characters.
+          example: Acme
+        actionType:
+          type: string
+          description: Specifies the type of action initiated based on the agent burnout index
+          example: Break Played, Supervisor Notified, etc.
+        actionDateType:
+          type: object
+          description: The Epoch timestamp indicating the precise time at which the action was executed.
+          example: 1617536244000
+    ApiErrorResponse:
+      description: Response body for an API error.
+      type: object
+      properties:
+        trackingId:
+          type: string
+          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
+          example: c1a4fcef-aee2-4dea-8977-29f594760552
+        error:
+          description: An object containing details about the error.
+          $ref: '#/components/schemas/ErrorDetails'
+    ErrorDetails:
+      description: Details of an error.
+      type: object
+      properties:
+        key:
+          type: string
+          description: An application defined error code.
+          example: '401'
+        message:
+          type: array
+          description: A message providing details about the error.
+          items:
+            $ref: '#/components/schemas/OperationError'
     SubscriptionRequest:
       required:
       - destinationUrl
@@ -546,71 +694,6 @@ components:
           description: Organization ID to be used for this operation. If unspecified, the Organization ID is inferred from the token. The token must have permission to interact with the organization.
           format: uuid
           example: 97cdbf45-ebe2-4687-8341-44d5c7abf101
-    MetaDataWithPagingInfo:
-      type: object
-      description: Metadata of response with paging information
-      properties:
-        orgid:
-          type: string
-          format: uuid
-          description: Organization ID.
-          example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
-          maxLength: 36
-          minLength: 32
-          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
-        page:
-          type: integer
-          format: int32
-          description: Current page number.
-          example: 1
-        pageSize:
-          type: integer
-          format: int32
-          description: Page size for current data set.
-          example: 100
-        totalPages:
-          type: integer
-          format: int32
-          description: Number of pages.
-          example: 1
-        totalRecords:
-          type: integer
-          format: int32
-          description: Total number of items.
-          example: 1000
-        links:
-          type: object
-          description: Map of pagination links with `self`, `next`, `prev`, `last`, and `first`.
-          example:
-            next: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=2&pageSize=10
-            last: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=3&pageSize=10
-            prev: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=0&pageSize=10
-            self: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=1&pageSize=10
-            first: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=0&pageSize=10
-      title: MetaDataWithPagingInfo
-    ActionRequest:
-      type: object
-      properties:
-        interactionId:
-          type: string
-          description: A unique identifier for each interaction or contact within the contact center.
-          example: fb53f6d1-5535-4ac8-b081-53834e17d6f5
-        agentId:
-          type: string
-          description: The identifier for the agent whose burnout index has been calculated.
-          example: fb53f6d1-5535-4ac8-b081-53834e17d6f5
-        clientId:
-          type: string
-          description: The name of the client initiating the action related to the agent burnout index. The name is limited to a maximum of 20 characters.
-          example: Acme
-        actionType:
-          type: string
-          description: Specifies the type of action initiated based on the agent burnout index
-          example: Break Played, Supervisor Notified, etc.
-        actionDateType:
-          type: object
-          description: The Epoch timestamp indicating the precise time at which the action was executed.
-          example: 1617536244000
     SubscriptionResponse:
       required:
       - createdBy
@@ -682,134 +765,48 @@ components:
           description: Email address of the user who updated the subscription most recently.
           format: email
           example: example@example.com
-    ApiErrorResponse:
-      description: Response body for an API error.
+    MetaDataWithPagingInfo:
       type: object
+      description: Metadata of response with paging information
       properties:
-        trackingId:
-          type: string
-          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
-          example: c1a4fcef-aee2-4dea-8977-29f594760552
-        error:
-          description: An object containing details about the error.
-          $ref: '#/components/schemas/ErrorDetails'
-    ActionResponse:
-      type: object
-      properties:
-        data:
-          type: object
-          description: The data object contains the details of the action taken.
-          properties:
-            id:
-              type: string
-              description: A unique identifier for the action taken.
-              example: fb53f6d1-5535-4ac8-b081-53834e17d6f5
-            interactionId:
-              type: string
-              description: A unique identifier for each interaction or contact within the contact center.
-              example: fb53f6d1-5535-4ac8-b081-53834e17d6f5
-            orgId:
-              type: string
-              description: The organization ID to which the agent belongs.
-              example: f53c8b54-46ca-43f6-ba05-08426a46e23d
-            agentId:
-              type: string
-              description: The identifier for the agent whose burnout index has been calculated.
-              example: fb53f6d1-5535-4ac8-b081-53834e17d6f5
-            clientId:
-              type: string
-              description: The name of the client initiating the action related to the agent burnout index. The name is limited to a maximum of 20 characters.
-              example: Acme
-            actionType:
-              type: string
-              description: Specifies the type of action initiated based on the agent burnout index
-              example: Break Played, Supervisor Notified, etc.
-            actionDateTime:
-              type: integer
-              description: The Epoch timestamp indicating the precise time at which the action was executed.
-              format: int64
-              example: 1617536244000
-            createdDateTime:
-              type: integer
-              description: The Epoch timestamp indicating the time when the action was created.
-              format: int64
-              example: 1617536244000
-        trackingId:
-          type: string
-          description: The unique tracking ID for this request.
-          example: fb53f6d1-5535-4ac8-b081-53834e17d6f5
-    ErrorDetails:
-      description: Details of an error.
-      type: object
-      properties:
-        key:
-          type: string
-          description: An application defined error code.
-          example: '401'
-        message:
-          type: array
-          description: A message providing details about the error.
-          items:
-            $ref: '#/components/schemas/OperationError'
-    OperationError:
-      description: An error message providing details about the operation failure.
-      type: object
-      properties:
-        description:
-          type: string
-          description: A human readable explanation for the occurrence of an error.
-          example: Incorrect Credentials.
-    AgentBurnoutDTO:
-      type: object
-      properties:
-        organizationId:
+        orgid:
           type: string
           format: uuid
-          description: ID of the contact center organization. This field is required for all bulk save operations.
-          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+          description: Organization ID.
+          example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
           maxLength: 36
           minLength: 32
           pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
-        id:
-          type: string
-          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
-          example: 93912f11-6017-404b-bf14-5331890b1797
-        version:
+        page:
           type: integer
           format: int32
-          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
+          description: Current page number.
           example: 1
-        enabled:
-          type: boolean
-          description: Used to toggle the state of the agent burnout  configuration from active to inactive and vice-versa. Mandatory for create/update operation.
-          example: true
-        agentInclusionType:
-          type: string
-          description: Provides information whether all or specific agents are selected for Agent Wellbeing. If the value is missing in response, the consumer should assume a value as ALL.
-          enum:
-          - ALL
-          - SPECIFIC
-          example: ALL
-        wellnessBreakReminders:
-          type: string
-          description: Provides information whether Wellness break reminders are enabled or disabled. If the value is missing in response, the consumer should assume a value as DISABLED.
-          enum:
-          - DISABLED
-          - ENABLED
-          example: DISABLED
-        createdTime:
+        pageSize:
           type: integer
-          format: int64
-          description: This is the created time of the entity.
-          example: 123456789
-        lastUpdatedTime:
+          format: int32
+          description: Page size for current data set.
+          example: 100
+        totalPages:
           type: integer
-          format: int64
-          description: This is the updated time of the entity.
-          example: 123456789
-      required:
-      - agentInclusionType
-      - enabled
+          format: int32
+          description: Number of pages.
+          example: 1
+        totalRecords:
+          type: integer
+          format: int32
+          description: Total number of items.
+          example: 1000
+        links:
+          type: object
+          description: Map of pagination links with `self`, `next`, `prev`, `last`, and `first`.
+          example:
+            next: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=2&pageSize=10
+            last: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=3&pageSize=10
+            prev: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=0&pageSize=10
+            self: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=1&pageSize=10
+            first: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=0&pageSize=10
+      title: MetaDataWithPagingInfo
   securitySchemes:
     oauth2:
       flows:
@@ -823,15 +820,6 @@ components:
       description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
       scheme: bearer
       bearerFormat: JWT
-    bearerAuth:
-      type: oauth2
-      description: OAuth 2.0 Bearer token authentication
-      flows:
-        authorizationCode:
-          authorizationUrl: https://webexapis.com/v1/authorize
-          tokenUrl: https://webexapis.com/v1/access_token
-          scopes:
-            spark:applications_token: Create access tokens for Service Apps
     BEARER_TOKEN_FROM_CI:
       type: http
       in: header
@@ -841,6 +829,8 @@ components:
       description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
       scheme: bearer
       bearerFormat: JWT
-x-refined-from:
-- webex-agent-wellbeing-api-openapi.yml
-- webex-contact-center-openapi.json
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT bearer token authentication. Obtain your token from the Webex Developer Portal.

@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: Webex Report Templates API
+  title: Webex Admin Report Templates API
   version: 1.0.0
-  description: 'Operations tagged Report Templates across 2 of this provider''s published API definitions: webex-admin-openapi.json, webex-report-templates-api-openapi.yml. Each path carries the servers of the definition it was published in.'
+  description: The Webex Admin APIs provide comprehensive programmatic access to administrative functions for managing Webex organizations, users, licenses, and settings.
   x-provenance:
     method: harvested
     authored_by: Cisco Webex
@@ -11,9 +11,6 @@ info:
     first_party: true
     note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
     provider_published: true
-    derived_view: Per-tag view of webex-admin-openapi.json, the provider's source document. Operations and schemas are the provider's, unmodified; only the partition is ours.
-    derived_from: webex-admin-openapi.json
-    operation_coverage: 1/1
   x-evidence:
   - type: source
     url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-admin.json
@@ -86,7 +83,7 @@ paths:
         #### Validation Fields
 
 
-        Each template includes validation rules that specify which fields are required when generating a report using the [Reports API](/docs/api/v1/reports). The possible validation field values are:
+        Each template includes validation rules that specify which fields are required when generating a report using the Reports API. The possible validation field values are:
 
 
         - **templateId**: The unique identifier of the report template to use. This is always required when creating a report.
@@ -106,6 +103,25 @@ paths:
       parameters: []
 components:
   schemas:
+    ValidationRulesCollection:
+      type: object
+      properties:
+        validations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationRules'
+          description: An array of validation rules
+    ValidationRules:
+      type: object
+      properties:
+        field:
+          type: string
+          example: templateId
+          description: Field on which validation rule is applied
+        required:
+          type: string
+          example: 'yes'
+          description: Whether the above field is required
     Template:
       type: object
       properties:
@@ -131,25 +147,6 @@ components:
           description: Generated reports belong to which field.
         validations:
           $ref: '#/components/schemas/ValidationRulesCollection'
-    ValidationRules:
-      type: object
-      properties:
-        field:
-          type: string
-          example: templateId
-          description: Field on which validation rule is applied
-        required:
-          type: string
-          example: 'yes'
-          description: Whether the above field is required
-    ValidationRulesCollection:
-      type: object
-      properties:
-        validations:
-          type: array
-          items:
-            $ref: '#/components/schemas/ValidationRules'
-          description: An array of validation rules
   securitySchemes:
     oauth2:
       flows:
@@ -172,6 +169,3 @@ components:
           tokenUrl: https://webexapis.com/v1/access_token
           scopes:
             spark:applications_token: Create access tokens for Service Apps
-x-refined-from:
-- webex-admin-openapi.json
-- webex-report-templates-api-openapi.yml

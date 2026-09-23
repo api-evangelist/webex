@@ -2,23 +2,15 @@ openapi: 3.2.0
 info:
   title: Webex Business Hour API
   version: 1.0.0
-  description: 'Operations tagged Business Hour across 2 of this provider''s published API definitions: webex-business-hour-api-openapi.yml, webex-contact-center-openapi.json. Each path carries the servers of the definition it was published in.'
-  x-provenance:
-    method: harvested
-    authored_by: Cisco Webex
-    harvested_by: API Evangelist
-    harvested_on: '2026-08-19'
-    first_party: true
-    note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
-    provider_published: true
-    derived_view: Per-tag view of webex-contact-center-openapi.json, the provider's source document. Operations and schemas are the provider's, unmodified; only the partition is ours.
-    derived_from: webex-contact-center-openapi.json
-    operation_coverage: 8/9
   x-evidence:
   - type: source
     url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-contact-center.json
   - type: raw
     url: https://raw.githubusercontent.com/webex/webex-openapi-specs/main/public-spec/webex-contact-center.json
+  x-refined-note:
+  - x-provenance differs across the merged source definitions and was not carried
+  - x-refined-note differs across the merged source definitions and was not carried
+  description: 'Operations tagged Business Hour across 2 of this provider''s published API definitions: webex-contact-center-openapi.json, webex-business-hour-api-openapi.yml. Each path carries the servers of the definition it was published in.'
 tags:
 - name: Business Hour
 paths:
@@ -26,9 +18,11 @@ paths:
     get:
       tags:
       - Business Hour
-      summary: List Business Hours resource(s)
-      description: "Retrieve a list of Business Hours resource(s) in a given organization.\n Note: Array fields are removed from List API. If all fields are required please fetch Id's and use get-by-id API."
-      operationId: getAllConfig_11
+      summary: List Business Hours resources
+      description: 'Retrieve a list of Business Hours resources in a given organization.
+
+        Note: Returning array fields in the List (Get All) API response is deprecated. To retrieve the complete resource with all fields, please use the Get-by-ID API instead.'
+      operationId: getAllConfigBusinessHours
       parameters:
       - name: orgid
         in: path
@@ -69,7 +63,7 @@ paths:
           example: 100
       - name: singleObjectResponse
         in: query
-        description: Specifiy whether to include array fields in the response, This query param should use only if the response contain single record, if we are using for multiple objects response query param not supported and throws an exception.
+        description: Specify whether to include array fields in the response. This query parameter should be used only when the response contains a single record. It is not supported for responses with multiple objects and throws an exception.
         schema:
           type: boolean
           default: false
@@ -87,10 +81,10 @@ paths:
               - organizationId: f53c8b54-46ca-43f6-ba05-08426a46e23d
                 holidaysId: string
                 timezone: America/New_York
-                name: Agent-Profile Auto WrapUp
+                name: New Business Hour
                 description: This business hour can be set for happy hours
-                createdTime: string
-                lastUpdatedTime: string
+                createdTime: 123456789
+                lastUpdatedTime: 123456789
                 id: 93912f11-6017-404b-bf14-5331890b1797
                 workingHoursCount: string
                 version: 1
@@ -175,13 +169,12 @@ paths:
                     code: '500'
                     entity: cc_user
                     references: []
-      deprecated: false
     post:
       tags:
       - Business Hour
       summary: Create a new Business Hours resource
       description: Create a new Business Hours resource in a given organization.
-      operationId: createConfig_20
+      operationId: createConfigBusinessHours
       parameters:
       - name: orgid
         in: path
@@ -299,14 +292,13 @@ paths:
                     code: '500'
                     entity: cc_user
                     references: []
-      deprecated: false
   /organization/{orgid}/business-hours/bulk:
     post:
       tags:
       - Business Hour
-      summary: Bulk save Business Hours resource(s)
-      description: Create, Update or delete Business Hours resource(s) in bulk in a given organization.
-      operationId: saveAllConfig_19
+      summary: Bulk save Business Hours resources
+      description: Create, Update or delete Business Hours resources in bulk in a given organization.
+      operationId: saveAllConfigBusinessHours
       parameters:
       - name: orgid
         in: path
@@ -424,81 +416,13 @@ paths:
                     code: '500'
                     entity: cc_user
                     references: []
-      deprecated: false
-  /organization/{orgid}/business-hours/bulk-export:
-    get:
-      tags:
-      - Business Hour
-      summary: Bulk export Business Hours resource(s)
-      description: Export all Business Hours resource(s) in a given organization.
-      operationId: bulkExport_19
-      parameters:
-      - name: orgid
-        in: path
-        description: Organization ID to be used for this operation. The specified security token must have permission to interact with the organization.
-        required: true
-        schema:
-          type: string
-        example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
-      - name: page
-        in: query
-        description: Defines the number of displayed page. The page number starts from 0.
-        schema:
-          type: integer
-          example: 0
-          default: 0
-      - name: pageSize
-        in: query
-        description: Defines the number of items to be displayed on a page. If the number specified is more than allowed max page size, the API will automatically adjust the page size to the max page size.
-        schema:
-          type: integer
-          example: 100
-          default: 10
-      responses:
-        '200':
-          description: OK
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/BulkExportDTOBusinessHoursBulkExportDTO'
-        '401':
-          description: Unauthorized Operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiErrorResponse'
-        '403':
-          description: Operation is forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiErrorResponse'
-        '404':
-          description: Resource not found or URI is invalid
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiErrorResponse'
-        '429':
-          description: Too many requests have been sent in a given amount of time and the request has been rate limited
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiErrorResponse'
-        '500':
-          description: An Unexpected Error Occurred
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiErrorResponse'
-      deprecated: true
   /organization/{orgid}/business-hours/{id}:
     get:
       tags:
       - Business Hour
       summary: Get specific Business Hours resource by ID
       description: Retrieve an existing Business Hours resource by ID in a given organization.
-      operationId: getConfig_22
+      operationId: getConfigBusinessHours
       parameters:
       - name: orgid
         in: path
@@ -509,7 +433,7 @@ paths:
         example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
       - name: id
         in: path
-        description: Resource ID of the Business Hours resource.
+        description: Resource ID of the Business Hour.
         required: true
         schema:
           type: string
@@ -601,13 +525,12 @@ paths:
                     code: '500'
                     entity: cc_user
                     references: []
-      deprecated: false
     put:
       tags:
       - Business Hour
       summary: Update specific Business Hours resource by ID
       description: Update an existing Business Hours resource by ID in a given organization.
-      operationId: updateConfig_22
+      operationId: updateConfigBusinessHours
       parameters:
       - name: orgid
         in: path
@@ -618,7 +541,7 @@ paths:
         example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
       - name: id
         in: path
-        description: Resource ID of the Business Hours resource.
+        description: Resource ID of the Business Hour.
         required: true
         schema:
           type: string
@@ -748,13 +671,12 @@ paths:
                     code: '500'
                     entity: cc_user
                     references: []
-      deprecated: false
     delete:
       tags:
       - Business Hour
       summary: Delete specific Business Hours resource by ID
       description: Delete an existing Business Hours resource by ID in a given organization.
-      operationId: deleteConfig_19
+      operationId: deleteConfigBusinessHours
       parameters:
       - name: orgid
         in: path
@@ -765,7 +687,7 @@ paths:
         example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
       - name: id
         in: path
-        description: Resource ID of the Business Hours resource.
+        description: Resource ID of the Business Hour.
         required: true
         schema:
           type: string
@@ -869,14 +791,13 @@ paths:
                     code: '500'
                     entity: cc_user
                     references: []
-      deprecated: false
   /organization/{orgid}/business-hours/{id}/incoming-references:
     get:
       tags:
       - Business Hour
       summary: List references for a specific Business Hours resource
       description: Retrieve a list of all entities that have reference to an existing Business Hours resource by ID in a given organization.
-      operationId: getIncomingReferences_16
+      operationId: getIncomingReferencesBusinessHours
       parameters:
       - name: orgid
         in: path
@@ -1001,14 +922,15 @@ paths:
                     code: '500'
                     entity: cc_user
                     references: []
-      deprecated: false
   /organization/{orgid}/v2/business-hours:
     get:
       tags:
       - Business Hour
-      summary: List Business Hours resource(s)
-      description: "Retrieve a list of Business Hours resource(s) in a given organization.\n Note: Array fields are removed from List API. If all fields are required please fetch Id's and use get-by-id API."
-      operationId: getAllConfigWithMetaData_18
+      summary: List Business Hours resources
+      description: 'Retrieve a list of Business Hours resources in a given organization.
+
+        Note: Returning array fields in the List (Get All) API response is deprecated. To retrieve the complete resource with all fields, please use the Get-by-ID API instead.'
+      operationId: getAllConfigWithMetaDataBusinessHours
       parameters:
       - name: orgid
         in: path
@@ -1074,14 +996,14 @@ paths:
           example: timeZone
       - name: includeCount
         in: query
-        description: Enable the flag to get the count of workingHours
+        description: Enable this flag to get the count of working hours.
         schema:
           type: boolean
           default: false
           example: false
       - name: singleObjectResponse
         in: query
-        description: Specifiy whether to include array fields in the response, This query param should use only if the response contain single record, if we are using for multiple objects response query param not supported and throws an exception.
+        description: Specify whether to include array fields in the response. This query parameter should be used only when the response contains a single record. It is not supported for responses with multiple objects and throws an exception.
         schema:
           type: boolean
           default: false
@@ -1098,18 +1020,18 @@ paths:
                 - organizationId: f53c8b54-46ca-43f6-ba05-08426a46e23d
                   holidaysId: string
                   timezone: America/New_York
-                  name: Agent-Profile(Auto WrapUp)
+                  name: New Business Hour
                   description: This business hour can be set for happy hours
-                  createdTime: string
-                  lastUpdatedTime: string
+                  createdTime: 123456789
+                  lastUpdatedTime: 123456789
                   id: 93912f11-6017-404b-bf14-5331890b1797
                   workingHoursCount: string
                   version: 1
                   overridesId: string
                 meta:
-                  additionalProp1: string
-                  additionalProp2: string
                   additionalProp3: string
+                  additionalProp2: string
+                  additionalProp1: string
         '401':
           description: Unauthorized Operation
           content:
@@ -1190,164 +1112,75 @@ paths:
                     code: '500'
                     entity: cc_user
                     references: []
-      deprecated: false
+  /organization/{orgid}/business-hours/bulk-export:
+    get:
+      tags:
+      - Business Hour
+      summary: Bulk export Business Hours resource(s)
+      description: Export all Business Hours resource(s) in a given organization.
+      operationId: bulkExport_19
+      parameters:
+      - name: orgid
+        in: path
+        description: Organization ID to be used for this operation. The specified security token must have permission to interact with the organization.
+        required: true
+        schema:
+          type: string
+        example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+      - name: page
+        in: query
+        description: Defines the number of displayed page. The page number starts from 0.
+        schema:
+          type: integer
+          example: 0
+          default: 0
+      - name: pageSize
+        in: query
+        description: Defines the number of items to be displayed on a page. If the number specified is more than allowed max page size, the API will automatically adjust the page size to the max page size.
+        schema:
+          type: integer
+          example: 100
+          default: 10
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/BulkExportDTOBusinessHoursBulkExportDTO'
+        '401':
+          description: Unauthorized Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '403':
+          description: Operation is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Resource not found or URI is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '429':
+          description: Too many requests have been sent in a given amount of time and the request has been rate limited
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: An Unexpected Error Occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+      deprecated: true
 components:
   schemas:
-    BulkRequestItemDTOBusinessHoursDTO:
-      type: object
-      description: List of items in the bulk request.
-      properties:
-        itemIdentifier:
-          type: integer
-          format: int32
-          description: Unique item identifier for a bulk operation.
-          example: 10
-        item:
-          $ref: '#/components/schemas/BusinessHoursDTO'
-          description: The Business Hours resource for this bulk operation item.
-        requestAction:
-          type: string
-          description: Identifier for action type. Possible values are `SAVE` and `DELETE`.
-          example: SAVE
-    BulkExportDTOBusinessHoursBulkExportDTO:
-      type: object
-      properties:
-        totalResources:
-          type: integer
-          description: Total number of items
-          format: int32
-          example: 100
-        pageNumber:
-          type: integer
-          description: Current page number
-          format: int32
-          example: 0
-        pageSize:
-          type: integer
-          description: Page size for current data set
-          format: int32
-          example: 50
-        rel:
-          type: string
-          description: Indicates whether more pages exist. When 'next' there are more pages available, otherwise 'last'.
-          example: last
-        resources:
-          type: array
-          items:
-            $ref: '#/components/schemas/BusinessHoursBulkExportDTO'
-    EntityInfo:
-      type: object
-      properties:
-        id:
-          type: string
-          description: id
-          example: id.
-        name:
-          type: string
-          description: name
-          example: name.
-        additionalAttributes:
-          type: object
-          additionalProperties:
-            type: string
-            description: A map containing additional attributes of entity where both the key and value are Strings.
-            example: '{"key1":"value1","key2":"value2"}'
-          description: A map containing additional attributes of entity where both the key and value are Strings.
-          example:
-            key1: value1
-            key2: value2
-        createdDate:
-          type: string
-        lastModifiedDate:
-          type: string
-        version:
-          type: integer
-          format: int32
-    BusinessHoursDTO:
-      type: object
-      properties:
-        organizationId:
-          type: string
-          format: uuid
-          description: ID of the contact center organization. This field is required for all bulk save operations.
-          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
-          maxLength: 36
-          minLength: 32
-          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
-        id:
-          type: string
-          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
-          example: 93912f11-6017-404b-bf14-5331890b1797
-        version:
-          type: integer
-          format: int32
-          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
-          example: 1
-        name:
-          type: string
-          description: Enter a name for the agent profile.
-          example: Agent-Profile(Auto WrapUp)
-          maxLength: 80
-          minLength: 1
-          pattern: ^[a-zA-Z0-9_-]+(\s?[a-zA-Z0-9_-]+)*$
-        description:
-          type: string
-          description: (Optional) Enter a description of the profile.
-          example: This business hour can be set for happy hours
-          maxLength: 255
-          minLength: 0
-        timezone:
-          type: string
-          description: The time zone that you provision for your business hour.
-          example: America/New_York
-          minLength: 1
-        workingHours:
-          type: array
-          description: Working hours
-          example:
-          - name: Happy Hours
-            days:
-            - MON
-            - TUE
-            - WED
-            - THU
-            - FRI
-            startTime: '17:00'
-            endTime: '18:59'
-          - name: Open Hours
-            days:
-            - MON
-            - TUE
-            - WED
-            - THU
-            - FRI
-            - SAT
-            - SUN
-            startTime: '19:00'
-            endTime: '23:59'
-          items:
-            $ref: '#/components/schemas/WorkingHoursDTO'
-          minItems: 1
-          uniqueItems: true
-        holidaysId:
-          type: string
-        overridesId:
-          type: string
-        workingHoursCount:
-          type: integer
-          format: int64
-        createdTime:
-          type: integer
-          format: int64
-          description: This is the created time of the entity.
-        lastUpdatedTime:
-          type: integer
-          format: int64
-          description: This is the updated time of the entity.
-      required:
-      - name
-      - timezone
-      - workingHours
     WorkingHoursDTO:
       type: object
       description: Working hours
@@ -1375,13 +1208,16 @@ components:
       properties:
         name:
           type: string
+          description: Name.
           maxLength: 80
           minLength: 1
           pattern: ^[a-zA-Z0-9_-]+(\s?[a-zA-Z0-9_-]+)*$
         days:
           type: array
+          description: List of Days.
           items:
             type: string
+            description: Day.
             enum:
             - SUN
             - MON
@@ -1393,8 +1229,10 @@ components:
           minItems: 1
         startTime:
           type: string
+          description: Start Time.
         endTime:
           type: string
+          description: End Time.
       required:
       - days
       - name
@@ -1452,37 +1290,141 @@ components:
           description: Name of current entity
           example: entity_name
       description: Metadata of response for references with paging information
-    BusinessHoursBulkExportDTO:
+    ResponseEnvelopeBusinessHoursDTO:
       type: object
+      description: Response Envelope Business Hours schema.
       properties:
-        name:
-          type: string
-        description:
-          type: string
-        timezone:
-          type: string
-        holidayName:
-          type: string
-        overrideName:
-          type: string
-        workingHours:
-          uniqueItems: true
-          type: array
-          items:
-            $ref: '#/components/schemas/WorkingHoursBulkExportDTO'
-    EntityReferenceInfoDTO:
-      type: object
-      properties:
-        description:
-          type: string
-          description: Description about reference info.
-          example: list of referenced entities
         meta:
-          $ref: '#/components/schemas/MetaDataReferencesPagingInfo'
+          type: object
+          additionalProperties:
+            description: Meta additional property.
+          description: Additional properties for Meta.
         data:
           type: array
+          description: List of Data.
           items:
-            $ref: '#/components/schemas/EntityInfo'
+            $ref: '#/components/schemas/BusinessHoursDTO'
+            description: Data item.
+    BusinessHoursDTO:
+      type: object
+      description: Business Hours schema.
+      properties:
+        organizationId:
+          type: string
+          format: uuid
+          description: ID of the contact center organization. This field is required for all bulk save operations.
+          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+          maxLength: 36
+          minLength: 32
+          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
+        id:
+          type: string
+          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
+          example: 93912f11-6017-404b-bf14-5331890b1797
+        version:
+          type: integer
+          format: int32
+          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
+          example: 1
+        name:
+          type: string
+          description: Enter a name for the agent profile.
+          example: New Business Hour
+          maxLength: 80
+          minLength: 1
+          pattern: ^[a-zA-Z0-9_-]+(\s?[a-zA-Z0-9_-]+)*$
+        description:
+          type: string
+          description: (Optional) Enter a description of the profile.
+          example: This business hour can be set for happy hours
+          maxLength: 255
+          minLength: 0
+        timezone:
+          type: string
+          description: The time zone that you provision for your business hour.
+          example: America/New_York
+          minLength: 1
+        workingHours:
+          type: array
+          description: Working hours
+          example:
+          - name: Happy Hours
+            days:
+            - MON
+            - TUE
+            - WED
+            - THU
+            - FRI
+            startTime: '17:00'
+            endTime: '18:59'
+          - name: Open Hours
+            days:
+            - MON
+            - TUE
+            - WED
+            - THU
+            - FRI
+            - SAT
+            - SUN
+            startTime: '19:00'
+            endTime: '23:59'
+          items:
+            $ref: '#/components/schemas/WorkingHoursDTO'
+            description: Working Hour.
+          minItems: 1
+          uniqueItems: true
+        holidaysId:
+          type: string
+          description: Holidays Id.
+        overridesId:
+          type: string
+          description: Overrides Id.
+        workingHoursCount:
+          type: integer
+          format: int64
+          description: Working Hours Count.
+        createdTime:
+          type: integer
+          format: int64
+          description: This is the created time of the entity.
+          example: 123456789
+        lastUpdatedTime:
+          type: integer
+          format: int64
+          description: This is the updated time of the entity.
+          example: 123456789
+      required:
+      - name
+      - timezone
+      - workingHours
+    EntityInfo:
+      type: object
+      properties:
+        id:
+          type: string
+          description: id
+          example: id.
+        name:
+          type: string
+          description: name
+          example: name.
+        additionalAttributes:
+          type: object
+          additionalProperties:
+            type: string
+            description: A map containing additional attributes of entity where both the key and value are Strings.
+            example: '{"key1":"value1","key2":"value2"}'
+          description: A map containing additional attributes of entity where both the key and value are Strings.
+          example:
+            key1: value1
+            key2: value2
+        createdDate:
+          type: string
+        lastModifiedDate:
+          type: string
+        version:
+          type: integer
+          format: int32
     BulkResponseItemDTO:
       type: object
       properties:
@@ -1527,6 +1469,40 @@ components:
         itemIdentifier: 10
         operationType: CREATE
         status: 400
+    BulkRequestDTOBusinessHoursDTO:
+      type: object
+      description: Bulk Request Business Hours schema.
+      properties:
+        items:
+          type: array
+          description: List of items in the bulk request.
+          items:
+            $ref: '#/components/schemas/BulkRequestItemDTOBusinessHoursDTO'
+            description: Item.
+    OperationError:
+      description: An error message providing details about the operation failure.
+      type: object
+      properties:
+        description:
+          type: string
+          description: A human readable explanation for the occurrence of an error.
+          example: Incorrect Credentials.
+    BulkRequestItemDTOBusinessHoursDTO:
+      type: object
+      description: List of items in the bulk request.
+      properties:
+        itemIdentifier:
+          type: integer
+          format: int32
+          description: Unique item identifier for a bulk operation.
+          example: 10
+        item:
+          $ref: '#/components/schemas/BusinessHoursDTO'
+          description: Item.
+        requestAction:
+          type: string
+          description: Identifier for action type. Possible values are `SAVE` and `DELETE`.
+          example: SAVE
     ApiErrorResponse:
       description: Response body for an API error.
       type: object
@@ -1538,6 +1514,13 @@ components:
         error:
           description: An object containing details about the error.
           $ref: '#/components/schemas/ErrorDetails'
+    BulkResponseDTO:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BulkResponseItemDTO'
     ErrorDetails:
       description: Details of an error.
       type: object
@@ -1551,51 +1534,9 @@ components:
           description: A message providing details about the error.
           items:
             $ref: '#/components/schemas/OperationError'
-    ResponseEnvelopeBusinessHoursDTO:
-      type: object
-      properties:
-        meta:
-          type: object
-          additionalProperties: {}
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/BusinessHoursDTO'
-    WorkingHoursBulkExportDTO:
-      type: object
-      properties:
-        workingHourName:
-          type: string
-          description: Name of the working hour shift.
-        startTime:
-          type: string
-          description: Start time of the working hour shift.
-        endTime:
-          type: string
-          description: End time of the working hour shift.
-        days:
-          type: array
-          description: List of days for which this working hour shift is applicable.
-          items:
-            type: string
-            description: Day of the week.
-    BulkResponseDTO:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/BulkResponseItemDTO'
-    BulkRequestDTOBusinessHoursDTO:
-      type: object
-      properties:
-        items:
-          type: array
-          description: List of items in the bulk request.
-          items:
-            $ref: '#/components/schemas/BulkRequestItemDTOBusinessHoursDTO'
     BusinessHoursDTOList:
       type: object
+      description: Business Hours schema.
       properties:
         organizationId:
           type: string
@@ -1617,7 +1558,7 @@ components:
         name:
           type: string
           description: Enter a name for the agent profile.
-          example: Agent-Profile Auto WrapUp
+          example: New Business Hour
           maxLength: 80
           minLength: 1
           pattern: ^[a-zA-Z0-9_-]+(\s?[a-zA-Z0-9_-]+)*$
@@ -1634,30 +1575,99 @@ components:
           minLength: 1
         holidaysId:
           type: string
-          description: ID of the holiday list associated with this business hour.
+          description: Holidays Id.
         overridesId:
           type: string
-          description: ID of the override associated with this business hour.
+          description: Overrides Id.
         workingHoursCount:
           type: integer
           format: int64
-          description: The number of working hour shifts configured for this business hour.
+          description: Working Hours Count.
         createdTime:
           type: integer
           format: int64
           description: This is the created time of the entity.
+          example: 123456789
         lastUpdatedTime:
           type: integer
           format: int64
           description: This is the updated time of the entity.
-    OperationError:
-      description: An error message providing details about the operation failure.
+          example: 123456789
+    EntityReferenceInfoDTO:
       type: object
       properties:
         description:
           type: string
-          description: A human readable explanation for the occurrence of an error.
-          example: Incorrect Credentials.
+          description: Description about reference info.
+          example: list of referenced entities
+        meta:
+          $ref: '#/components/schemas/MetaDataReferencesPagingInfo'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityInfo'
+    WorkingHoursBulkExportDTO:
+      type: object
+      properties:
+        workingHourName:
+          type: string
+          description: Name of the working hour shift.
+        startTime:
+          type: string
+          description: Start time of the working hour shift.
+        endTime:
+          type: string
+          description: End time of the working hour shift.
+        days:
+          type: array
+          description: List of days for which this working hour shift is applicable.
+          items:
+            type: string
+            description: Day of the week.
+    BusinessHoursBulkExportDTO:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        timezone:
+          type: string
+        holidayName:
+          type: string
+        overrideName:
+          type: string
+        workingHours:
+          uniqueItems: true
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkingHoursBulkExportDTO'
+    BulkExportDTOBusinessHoursBulkExportDTO:
+      type: object
+      properties:
+        totalResources:
+          type: integer
+          description: Total number of items
+          format: int32
+          example: 100
+        pageNumber:
+          type: integer
+          description: Current page number
+          format: int32
+          example: 0
+        pageSize:
+          type: integer
+          description: Page size for current data set
+          format: int32
+          example: 50
+        rel:
+          type: string
+          description: Indicates whether more pages exist. When 'next' there are more pages available, otherwise 'last'.
+          example: last
+        resources:
+          type: array
+          items:
+            $ref: '#/components/schemas/BusinessHoursBulkExportDTO'
   securitySchemes:
     oauth2:
       flows:
@@ -1671,15 +1681,6 @@ components:
       description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
       scheme: bearer
       bearerFormat: JWT
-    bearerAuth:
-      type: oauth2
-      description: OAuth 2.0 Bearer token authentication
-      flows:
-        authorizationCode:
-          authorizationUrl: https://webexapis.com/v1/authorize
-          tokenUrl: https://webexapis.com/v1/access_token
-          scopes:
-            spark:applications_token: Create access tokens for Service Apps
     BEARER_TOKEN_FROM_CI:
       type: http
       in: header
@@ -1689,6 +1690,11 @@ components:
       description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
       scheme: bearer
       bearerFormat: JWT
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT bearer token authentication. Obtain your token from the Webex Developer Portal.
 x-refined-from:
-- webex-business-hour-api-openapi.yml
 - webex-contact-center-openapi.json
+- webex-business-hour-api-openapi.yml

@@ -2,7 +2,8 @@ openapi: 3.2.0
 info:
   title: Webex Partner Reports/Templates API
   version: 1.0.0
-  description: 'Operations tagged Partner Reports/Templates across 3 of this provider''s published API definitions: webex-admin-openapi.json, webex-cloud-calling-openapi.json, webex-partner-reports-templates-api-openapi.yml. Each path carries the servers of the definition it was published in.'
+  x-refined-note:
+  - x-evidence differs across the merged source definitions and was not carried
   x-provenance:
     method: harvested
     authored_by: Cisco Webex
@@ -11,14 +12,7 @@ info:
     first_party: true
     note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
     provider_published: true
-    derived_view: Per-tag view of webex-admin-openapi.json, the provider's source document. Operations and schemas are the provider's, unmodified; only the partition is ours.
-    derived_from: webex-admin-openapi.json
-    operation_coverage: 5/5
-  x-evidence:
-  - type: source
-    url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-admin.json
-  - type: raw
-    url: https://raw.githubusercontent.com/webex/webex-openapi-specs/main/public-spec/webex-admin.json
+  description: 'Operations tagged Partner Reports/Templates across 2 of this provider''s published API definitions: webex-admin-openapi.json, webex-cloud-calling-openapi.json. Each path carries the servers of the definition it was published in.'
 tags:
 - name: Partner Reports/Templates
 paths:
@@ -70,13 +64,13 @@ paths:
         To access this endpoint, you must use an administrator token with `spark-admin:reports_read` and `identity:people_read` scopes.
 
 
-        <div><Callout type="info">CSV reports for Webex suite services are only supported for organizations based in one region per API request. Organizations based in a different region will require a separate request with region specified.</Callout></div>
+        CSV reports for Webex suite services are only supported for organizations based in one region per API request. Organizations based in a different region will require a separate request with region specified.
 
 
-        <div><Callout type="info">When no region is specified, the request defaults to Partner organization''s home region.</Callout></div>
+        When no region is specified, the request defaults to Partner organization''s home region.
 
 
-        <div><Callout type="info">Reports are usually provided in zip format. A content-header application/zip or application/octet-stream does indicate the zip format. There is usually no .zip file extension.</Callout></div>'
+        Reports are usually provided in zip format. A content-header application/zip or application/octet-stream does indicate the zip format. There is usually no .zip file extension.'
       tags:
       - Partner Reports/Templates
       parameters:
@@ -181,10 +175,10 @@ paths:
         **Notes**:
 
 
-        <div><Callout type="info">CSV reports for Webex suite services are only created for organizations in the specified region. Organizations based in a different region will require a separate request with region specified.</Callout></div>
+        CSV reports for Webex suite services are only created for organizations in the specified region. Organizations based in a different region will require a separate request with region specified.
 
 
-        <div><Callout type="info">When no region is specified, the request defaults to Partner organization''s home region. A request against a region where there are no organizations will return blank CSV files.</Callout></div>'
+        When no region is specified, the request defaults to Partner organization''s home region. A request against a region where there are no organizations will return blank CSV files.'
       tags:
       - Partner Reports/Templates
       parameters:
@@ -294,7 +288,7 @@ paths:
         **Notes**:
 
 
-        <div><Callout type="info">Reports are usually provided in zip format. A content-header application/zip or application/octet-stream does indicate the zip format. There is usually no .zip file extension.</Callout></div>'
+        Reports are usually provided in zip format. A content-header application/zip or application/octet-stream does indicate the zip format. There is usually no .zip file extension.'
       tags:
       - Partner Reports/Templates
       parameters:
@@ -425,7 +419,7 @@ paths:
       description: 'List report templates. Report templates are available for use with the Partner Reports API.
 
 
-        To access this endpoint, you must use an administrator token with `spark-admin:reports_read` and `identity:people_read` [scopes](/docs/integrations#scopes). The authenticated user must be a Partner full administrator or Partner read-only administrator of the organization.'
+        To access this endpoint, you must use an administrator token with `spark-admin:reports_read` and `identity:people_read` scopes. The authenticated user must be a Partner full administrator or Partner read-only administrator of the organization.'
       tags:
       - Partner Reports/Templates
       parameters:
@@ -437,14 +431,6 @@ paths:
           type: string
 components:
   schemas:
-    ReportCollectionResponse:
-      type: object
-      properties:
-        Report Attributes:
-          type: array
-          items:
-            $ref: '#/components/schemas/Report'
-          description: An array of report objects.
     TemplateCollectionResponse:
       type: object
       properties:
@@ -464,39 +450,14 @@ components:
           type: string
           example: 'yes'
           description: Whether the above field is required
-    Template:
+    ReportCollectionResponse:
       type: object
       properties:
-        id:
-          type: string
-          example: '130'
-          description: Unique identifier representing a report.
-        title:
-          type: string
-          example: Client Version
-          description: Name of the template.
-        service:
-          type: string
-          example: Teams
-          description: The service to which the report belongs.
-        maxDays:
-          type: number
-          example: 31
-          description: Maximum date range for reports belonging to this template.
-        identifier:
-          type: string
-          example: orgWithoutDate
-          description: Generated reports belong to which field.
-        validations:
-          $ref: '#/components/schemas/ValidationRulesCollection'
-    ValidationRulesCollection:
-      type: object
-      properties:
-        validations:
+        Report Attributes:
           type: array
           items:
-            $ref: '#/components/schemas/ValidationRules'
-          description: An array of validation rules
+            $ref: '#/components/schemas/Report'
+          description: An array of report objects.
     Report:
       type: object
       properties:
@@ -548,6 +509,70 @@ components:
           type: string
           example: https://downloadservicebts.webex.com/api?reportId=Y2lzY29zcGFyazovL3VzL1JFUE9SVC9hZDBkMjA1NzVkYTA0NWE0OGZhZDQ3ZDk3NGFiNDFmMg
           description: The link from which the report can be downloaded.
+    ValidationRulesCollection:
+      type: object
+      properties:
+        validations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationRules'
+          description: An array of validation rules
+    Template:
+      type: object
+      properties:
+        id:
+          type: string
+          example: '130'
+          description: Unique identifier representing a report.
+        title:
+          type: string
+          example: Client Version
+          description: Name of the template.
+        service:
+          type: string
+          example: Teams
+          description: The service to which the report belongs.
+        maxDays:
+          type: number
+          example: 31
+          description: Maximum date range for reports belonging to this template.
+        identifier:
+          type: string
+          example: orgWithoutDate
+          description: Generated reports belong to which field.
+        validations:
+          $ref: '#/components/schemas/ValidationRulesCollection'
+    Template_2:
+      type: object
+      properties:
+        templateId:
+          type: string
+          example: '130'
+          description: Unique identifier representing a report.
+        title:
+          type: string
+          example: Calling Usage
+          description: Name of the template.
+        service:
+          type: string
+          example: Teams
+          description: The service to which the report belongs.
+        category:
+          type: string
+          example: Partner
+          description: Generated reports belong to which category.
+        maxDays:
+          type: number
+          example: 31
+          description: Maximum date range for reports belonging to this template.
+        dataStartDate:
+          type: string
+          example: '2024-01-01'
+          description: Start date of the data in the reports belonging to this template.
+        dataEndDate:
+          type: string
+          example: '2024-01-31'
+          description: End date of the data in the reports belonging to this template.
   securitySchemes:
     oauth2:
       flows:
@@ -573,4 +598,3 @@ components:
 x-refined-from:
 - webex-admin-openapi.json
 - webex-cloud-calling-openapi.json
-- webex-partner-reports-templates-api-openapi.yml

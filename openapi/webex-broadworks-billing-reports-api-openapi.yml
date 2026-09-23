@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: Webex BroadWorks Billing Reports API
+  title: Webex Broadworks Calling BroadWorks Billing Reports API
   version: 1.0.0
-  description: 'Operations tagged BroadWorks Billing Reports across 2 of this provider''s published API definitions: webex-broadworks-billing-reports-api-openapi.yml, webex-broadworks-openapi.json. Each path carries the servers of the definition it was published in.'
+  description: The Webex BroadWorks Calling APIs provide access to advanced calling features and user management for BroadWorks-powered Webex Calling deployments.
   x-provenance:
     method: harvested
     authored_by: Cisco Webex
@@ -11,7 +11,6 @@ info:
     first_party: true
     note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
     provider_published: true
-    derived_view: Per-tag view of the provider's source document. Operations and schemas are the provider's, unmodified; only the partition is ours.
   x-evidence:
   - type: source
     url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-broadworks.json
@@ -142,15 +141,7 @@ paths:
       description: 'Generate a monthly reconciliation report.
 
 
-        <div>
-
-        <Callout type=''info''>
-
-        Partners who have moved to extended wholesale subscription model should generate reports via [Wholesale Billing Reports](/docs/api/v1/wholesale-billing).
-
-        </Callout>
-
-        </div>'
+        Partners who have moved to extended wholesale subscription model should generate reports via Wholesale Billing Reports.'
       tags:
       - BroadWorks Billing Reports
       parameters: []
@@ -279,24 +270,6 @@ paths:
           type: string
 components:
   schemas:
-    ReportError:
-      type: object
-      properties:
-        code:
-          type: number
-          example: 2024
-          description: The error code itself.
-        description:
-          type: string
-          example: Billing Report not found.
-          description: A textual representation of the error code.
-    ReportId:
-      type: object
-      properties:
-        id:
-          type: string
-          example: '''Y2lzY29zcGFyazovL3VzL0JJTExJTkdfUkVQT1JULzViOGQ1MThhLThmMDAtNDUxYi1hNDA2LWVhZjQ5YjRhN2ZhOA'''
-          description: A unique report ID that corresponds to a billing report.
     BillingReportsListResponse:
       type: object
       properties:
@@ -305,24 +278,6 @@ components:
           items:
             $ref: '#/components/schemas/ListReport'
           description: An array of reports objects.
-    ListReport:
-      type: object
-      properties:
-        id:
-          type: string
-          example: '''Y2lzY29zcGFyazovL3VzL0JJTExJTkdfUkVQT1JULzViOGQ1MThhLThmMDAtNDUxYi1hNDA2LWVhZjQ5YjRhN2ZhOA'''
-          description: A unique report ID that corresponds to a billing report.
-        billingPeriod:
-          type: string
-          example: 2021-05
-          description: The year and month (`YYYY-MM`) for which the billing report was generated.
-        status:
-          type: string
-          enum:
-          - IN_PROGRESS
-          - COMPLETED
-          - FAILED
-          description: "The status of the billing report.\n * `IN_PROGRESS` - Report generation is in progress.\n * `COMPLETED` - Report generation is complete.\n * `FAILED` - Report generation failed.\n"
     Report:
       type: object
       properties:
@@ -364,6 +319,42 @@ components:
 
 
             * Captures errors that occurred during asynchronous or background report generation, after the request has been accepted and a `202 OK` response is returned.'
+    ReportError:
+      type: object
+      properties:
+        code:
+          type: number
+          example: 2024
+          description: The error code itself.
+        description:
+          type: string
+          example: Billing Report not found.
+          description: A textual representation of the error code.
+    ListReport:
+      type: object
+      properties:
+        id:
+          type: string
+          example: '''Y2lzY29zcGFyazovL3VzL0JJTExJTkdfUkVQT1JULzViOGQ1MThhLThmMDAtNDUxYi1hNDA2LWVhZjQ5YjRhN2ZhOA'''
+          description: A unique report ID that corresponds to a billing report.
+        billingPeriod:
+          type: string
+          example: 2021-05
+          description: The year and month (`YYYY-MM`) for which the billing report was generated.
+        status:
+          type: string
+          enum:
+          - IN_PROGRESS
+          - COMPLETED
+          - FAILED
+          description: "The status of the billing report.\n * `IN_PROGRESS` - Report generation is in progress.\n * `COMPLETED` - Report generation is complete.\n * `FAILED` - Report generation failed.\n"
+    ReportId:
+      type: object
+      properties:
+        id:
+          type: string
+          example: '''Y2lzY29zcGFyazovL3VzL0JJTExJTkdfUkVQT1JULzViOGQ1MThhLThmMDAtNDUxYi1hNDA2LWVhZjQ5YjRhN2ZhOA'''
+          description: A unique report ID that corresponds to a billing report.
   securitySchemes:
     oauth2:
       flows:
@@ -378,14 +369,7 @@ components:
       scheme: bearer
       bearerFormat: JWT
     bearerAuth:
-      type: oauth2
-      description: OAuth 2.0 Bearer token authentication
-      flows:
-        authorizationCode:
-          authorizationUrl: https://webexapis.com/v1/authorize
-          tokenUrl: https://webexapis.com/v1/access_token
-          scopes:
-            spark:applications_token: Create access tokens for Service Apps
-x-refined-from:
-- webex-broadworks-billing-reports-api-openapi.yml
-- webex-broadworks-openapi.json
+      type: http
+      description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
+      scheme: bearer
+      bearerFormat: JWT

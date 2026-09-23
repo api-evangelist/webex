@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: Webex User Profiles API
+  title: Webex Contact Center User Profiles API
   version: 1.0.0
-  description: 'Operations tagged User Profiles across 2 of this provider''s published API definitions: webex-contact-center-openapi.json, webex-user-profiles-api-openapi.yml. Each path carries the servers of the definition it was published in.'
+  description: The Webex Contact Center APIs allow developers to deeply integrate, configure, and manage cloud-based contact center solutions.
   x-provenance:
     method: harvested
     authored_by: Cisco Webex
@@ -11,9 +11,6 @@ info:
     first_party: true
     note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
     provider_published: true
-    derived_view: Per-tag view of webex-contact-center-openapi.json, the provider's source document. Operations and schemas are the provider's, unmodified; only the partition is ours.
-    derived_from: webex-contact-center-openapi.json
-    operation_coverage: 8/8
   x-evidence:
   - type: source
     url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-contact-center.json
@@ -159,7 +156,9 @@ paths:
       tags:
       - User Profiles
       summary: List user profiles
-      description: "Retrieve a list of user profiles in a given organization.\n Note: Returning array fields in the List (Get All) API response is deprecated. To retrieve the complete resource with all fields, please use the Get-by-ID API instead."
+      description: 'Retrieve a list of user profiles in a given organization.
+
+        Note: Returning array fields in the List (Get All) API response is deprecated. To retrieve the complete resource with all fields, please use the Get-by-ID API instead.'
       operationId: getAllConfigWithPagedMetaDataUserProfileGranularAccess
       parameters:
       - name: orgid
@@ -1136,6 +1135,345 @@ paths:
                     references: []
 components:
   schemas:
+    MetaDataReferencesPagingInfo:
+      title: MetaDataReferencesPagingInfo
+      type: object
+      properties:
+        orgid:
+          maxLength: 36
+          minLength: 32
+          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
+          type: string
+          description: Org ID
+          format: uuid
+          example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+        page:
+          type: integer
+          description: Current page number
+          format: int32
+          example: 1
+        pageSize:
+          type: integer
+          description: Page size for current data set
+          format: int32
+          example: 100
+        totalPages:
+          type: integer
+          description: Number of pages
+          format: int32
+          example: 1
+        totalRecords:
+          type: integer
+          description: Total number of items
+          format: int32
+          example: 1000
+        links:
+          type: object
+          description: Map of pagination links with self, next, prev, last and first
+          example:
+            next: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=2&pageSize=10
+            last: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=3&pageSize=10
+            prev: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=0&pageSize=10
+            self: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=1&pageSize=10
+            first: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=0&pageSize=10
+        referencedEntities:
+          type: array
+          description: List of referenced entities
+          example:
+          - agent-profile
+          - entrypoint
+          items:
+            type: string
+        currentEntity:
+          type: string
+          description: Name of current entity
+          example: entity_name
+      description: Metadata of response for references with paging information
+    AccessControlListDTO:
+      type: object
+      description: Access Control List is higher order DTO of user profile and resource collection.
+      example:
+        organizationId: f53c8b54-46ca-43f6-ba05-08426a46e23d
+        id: 93912f11-6017-404b-bf14-5331890b1797
+        version: 1
+        name: Administrator
+        profileType: ADMINISTRATOR
+        description: User Profile Description
+        active: true
+        permissionAccessLevel: ALL
+        resourceAccessLevel: ALL
+        editableFolderIds:
+        - 1
+        - 2
+        - 3
+        viewableFolderIds:
+        - 4
+        - 5
+        - 6
+        nonViewableFolderIds:
+        - 7
+        - 8
+        - 9
+        defaultResourceCollectionId: 123e4567-e89b-12d3-a456-426614174000
+        resourceCollections:
+        - id: 80f49a6e-11d7-4651-b730-99ed2f726f61
+          name: Department1
+          description: Department1 description.
+          resources:
+          - name: team
+            accessLevel: SPECIFIC
+            ids:
+            - 00734874-4732-43bb-bfff-d1e75d309eb1
+            - 00734874-4732-43bb-bfff-d1e75d309eb2
+          - name: desktop-profile
+            accessLevel: ALL
+          - name: desktop-layout
+            accessLevel: NONE
+          resourceCount: 2
+        permissions:
+        - id: 00734874-4732-43bb-bfff-d1e75d309eb1
+          name: sites
+          access: NONE
+        resources:
+        - name: site
+          accessLevel: ALL
+          ids:
+          - 00734874-4732-43bb-bfff-d1e75d309eb1
+          - 00734874-4732-43bb-bfff-d1e75d309eb2
+        createdTime: 0
+        lastUpdatedTime: 0
+      properties:
+        organizationId:
+          type: string
+          format: uuid
+          description: ID of the contact center organization. This field is required for all bulk save operations.
+          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+          maxLength: 36
+          minLength: 32
+          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
+        id:
+          type: string
+          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
+          example: 93912f11-6017-404b-bf14-5331890b1797
+        version:
+          type: integer
+          format: int32
+          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
+          example: 1
+        name:
+          type: string
+          description: name of the user profile as ACL.
+          example: Administrator
+        profileType:
+          type: string
+          description: User Profile Type.
+          enum:
+          - ADMINISTRATOR
+          - ADMINISTRATOR_ONLY
+          - SUPERVISOR
+          - PREMIUM_AGENT
+          - STANDARD_AGENT
+          - ANALYZER_ADMINISTRATOR
+          - ANALYZER_SUPERVISOR
+          - ANALYZER_USER
+          example: ADMINISTRATOR
+        description:
+          type: string
+          description: User Profile Description.
+          example: User Profile Description
+        active:
+          type: boolean
+          description: Indicates whether the user profile is active.
+          example: true
+        permissionAccessLevel:
+          type: string
+          description: Permissions Access Level for user profile level.
+          enum:
+          - SPECIFIC
+          - ALL
+          - PROVISIONED_VALUE
+          - NONE
+          example: ALL
+        resourceAccessLevel:
+          type: string
+          description: Resource Access Level for resource collection level.
+          enum:
+          - SPECIFIC
+          - ALL
+          - PROVISIONED_VALUE
+          - NONE
+          example: ALL
+        editableFolderIds:
+          type: array
+          description: Set of editable folder IDs that are part of user profile.
+          example:
+          - 1
+          - 2
+          - 3
+          items:
+            type: integer
+            format: int32
+          uniqueItems: true
+        viewableFolderIds:
+          type: array
+          description: Set of viewable folder IDs that the part of user profile.
+          example:
+          - 4
+          - 5
+          - 6
+          items:
+            type: integer
+            format: int32
+          uniqueItems: true
+        nonViewableFolderIds:
+          type: array
+          description: Set of non-viewable folder IDs that are part of user profile.
+          example:
+          - 7
+          - 8
+          - 9
+          items:
+            type: integer
+            format: int32
+          uniqueItems: true
+        defaultResourceCollectionId:
+          type: string
+          description: Default Resource Collection ID.
+          example: 123e4567-e89b-12d3-a456-426614174000
+        resourceCollections:
+          type: array
+          description: Set of resource collections associated with the User Profile.
+          items:
+            $ref: '#/components/schemas/ResourceCollectionDTO'
+          uniqueItems: true
+        permissions:
+          type: array
+          description: Set of permissions associated with the User Profile.
+          items:
+            $ref: '#/components/schemas/UserProfilePermissionsDTO'
+          uniqueItems: true
+        resources:
+          type: array
+          description: Set of resources associated with the Resource Collection.
+          items:
+            $ref: '#/components/schemas/ResourceTypesDTO'
+          uniqueItems: true
+        createdTime:
+          type: integer
+          format: int64
+          description: This is the created time of the entity.
+          example: 123456789
+        lastUpdatedTime:
+          type: integer
+          format: int64
+          description: This is the updated time of the entity.
+          example: 123456789
+    EntityInfo:
+      type: object
+      properties:
+        id:
+          type: string
+          description: id
+          example: id.
+        name:
+          type: string
+          description: name
+          example: name.
+        additionalAttributes:
+          type: object
+          additionalProperties:
+            type: string
+            description: A map containing additional attributes of entity where both the key and value are Strings.
+            example: '{"key1":"value1","key2":"value2"}'
+          description: A map containing additional attributes of entity where both the key and value are Strings.
+          example:
+            key1: value1
+            key2: value2
+        createdDate:
+          type: string
+        lastModifiedDate:
+          type: string
+        version:
+          type: integer
+          format: int32
+    BulkResponseItemDTO:
+      type: object
+      properties:
+        itemIdentifier:
+          type: integer
+          description: Unique item identifier for a bulk operation.
+          format: int32
+          example: 10
+        status:
+          type: integer
+          description: Indicates the error status code.
+          format: int32
+          example: 400
+        operationType:
+          type: string
+          description: The kind of operation desired of an entity.
+          example: CREATE
+          enum:
+          - CREATE
+          - UPDATE
+          - DELETE
+          - GET
+        href:
+          type: string
+          description: The resource URI of an entity.
+          example: /api/organization/6705c69d-4585-42ad-bfc3-79cc485dfb15/team/7b26d174-0016-4682-9858-65918e05f85
+        apiError:
+          $ref: '#/components/schemas/ApiErrorResponse'
+      example:
+        apiError:
+          error:
+            key: '400'
+            message:
+            - description: 'siteId: not found for given orgId.'
+              entity: string
+              references:
+              - id: string
+                name: string
+            reason: dependency exists
+          trackingId: ccconfig_c1a4fcef-aee2-4dea-8977-29f594760552
+        href: /api/organization/6705c69d-4585-42ad-bfc3-79cc485dfb15/team/7b26d174-0016-4682-9858-65918e05f85
+        itemIdentifier: 10
+        operationType: CREATE
+        status: 400
+    OperationError:
+      description: An error message providing details about the operation failure.
+      type: object
+      properties:
+        description:
+          type: string
+          description: A human readable explanation for the occurrence of an error.
+          example: Incorrect Credentials.
+    BulkRequestItemDTOUserProfileGranularAccessDTO:
+      type: object
+      description: List of items in the bulk request.
+      properties:
+        itemIdentifier:
+          type: integer
+          format: int32
+          description: Unique item identifier for a bulk operation.
+          example: 10
+        item:
+          $ref: '#/components/schemas/UserProfileGranularAccessDTO'
+        requestAction:
+          type: string
+          description: Identifier for action type. Possible values are `SAVE` and `DELETE`.
+          example: SAVE
+    ApiErrorResponse:
+      description: Response body for an API error.
+      type: object
+      properties:
+        trackingId:
+          type: string
+          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
+          example: c1a4fcef-aee2-4dea-8977-29f594760552
+        error:
+          description: An object containing details about the error.
+          $ref: '#/components/schemas/ErrorDetails'
     UserProfilePermissionsDTO:
       type: object
       description: User Profile Permissions DTO
@@ -1401,6 +1739,13 @@ components:
           example: NONE
       required:
       - name
+    BulkResponseDTO:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BulkResponseItemDTO'
     ResourceCollectionDTO:
       type: object
       description: A collection of resources with their types and access levels.
@@ -1474,34 +1819,6 @@ components:
           example: 123456789
       required:
       - name
-    EntityInfo:
-      type: object
-      properties:
-        id:
-          type: string
-          description: id
-          example: id.
-        name:
-          type: string
-          description: name
-          example: name.
-        additionalAttributes:
-          type: object
-          additionalProperties:
-            type: string
-            description: A map containing additional attributes of entity where both the key and value are Strings.
-            example: '{"key1":"value1","key2":"value2"}'
-          description: A map containing additional attributes of entity where both the key and value are Strings.
-          example:
-            key1: value1
-            key2: value2
-        createdDate:
-          type: string
-        lastModifiedDate:
-          type: string
-        version:
-          type: integer
-          format: int32
     ResourceTypesDTO:
       type: object
       description: A resource type with its access level and associated IDs.
@@ -1593,357 +1910,6 @@ components:
       required:
       - accessLevel
       - name
-    MetaDataWithPagingInfo:
-      type: object
-      description: Metadata of response with paging information
-      properties:
-        orgid:
-          type: string
-          format: uuid
-          description: Organization ID.
-          example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
-          maxLength: 36
-          minLength: 32
-          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
-        page:
-          type: integer
-          format: int32
-          description: Current page number.
-          example: 1
-        pageSize:
-          type: integer
-          format: int32
-          description: Page size for current data set.
-          example: 100
-        totalPages:
-          type: integer
-          format: int32
-          description: Number of pages.
-          example: 1
-        totalRecords:
-          type: integer
-          format: int32
-          description: Total number of items.
-          example: 1000
-        links:
-          type: object
-          description: Map of pagination links with `self`, `next`, `prev`, `last`, and `first`.
-          example:
-            next: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=2&pageSize=10
-            last: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=3&pageSize=10
-            prev: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=0&pageSize=10
-            self: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=1&pageSize=10
-            first: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=0&pageSize=10
-      title: MetaDataWithPagingInfo
-    MetaDataReferencesPagingInfo:
-      title: MetaDataReferencesPagingInfo
-      type: object
-      properties:
-        orgid:
-          maxLength: 36
-          minLength: 32
-          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
-          type: string
-          description: Org ID
-          format: uuid
-          example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
-        page:
-          type: integer
-          description: Current page number
-          format: int32
-          example: 1
-        pageSize:
-          type: integer
-          description: Page size for current data set
-          format: int32
-          example: 100
-        totalPages:
-          type: integer
-          description: Number of pages
-          format: int32
-          example: 1
-        totalRecords:
-          type: integer
-          description: Total number of items
-          format: int32
-          example: 1000
-        links:
-          type: object
-          description: Map of pagination links with self, next, prev, last and first
-          example:
-            next: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=2&pageSize=10
-            last: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=3&pageSize=10
-            prev: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=0&pageSize=10
-            self: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=1&pageSize=10
-            first: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=0&pageSize=10
-        referencedEntities:
-          type: array
-          description: List of referenced entities
-          example:
-          - agent-profile
-          - entrypoint
-          items:
-            type: string
-        currentEntity:
-          type: string
-          description: Name of current entity
-          example: entity_name
-      description: Metadata of response for references with paging information
-    BulkRequestDTOUserProfileGranularAccessDTO:
-      type: object
-      properties:
-        items:
-          type: array
-          description: List of items in the bulk request.
-          items:
-            $ref: '#/components/schemas/BulkRequestItemDTOUserProfileGranularAccessDTO'
-    EntityReferenceInfoDTO:
-      type: object
-      properties:
-        description:
-          type: string
-          description: Description about reference info.
-          example: list of referenced entities
-        meta:
-          $ref: '#/components/schemas/MetaDataReferencesPagingInfo'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/EntityInfo'
-    AccessControlListDTO:
-      type: object
-      description: Access Control List is higher order DTO of user profile and resource collection.
-      example:
-        organizationId: f53c8b54-46ca-43f6-ba05-08426a46e23d
-        id: 93912f11-6017-404b-bf14-5331890b1797
-        version: 1
-        name: Administrator
-        profileType: ADMINISTRATOR
-        description: User Profile Description
-        active: true
-        permissionAccessLevel: ALL
-        resourceAccessLevel: ALL
-        editableFolderIds:
-        - 1
-        - 2
-        - 3
-        viewableFolderIds:
-        - 4
-        - 5
-        - 6
-        nonViewableFolderIds:
-        - 7
-        - 8
-        - 9
-        defaultResourceCollectionId: 123e4567-e89b-12d3-a456-426614174000
-        resourceCollections:
-        - id: 80f49a6e-11d7-4651-b730-99ed2f726f61
-          name: Department1
-          description: Department1 description.
-          resources:
-          - name: team
-            accessLevel: SPECIFIC
-            ids:
-            - 00734874-4732-43bb-bfff-d1e75d309eb1
-            - 00734874-4732-43bb-bfff-d1e75d309eb2
-          - name: desktop-profile
-            accessLevel: ALL
-          - name: desktop-layout
-            accessLevel: NONE
-          resourceCount: 2
-        permissions:
-        - id: 00734874-4732-43bb-bfff-d1e75d309eb1
-          name: sites
-          access: NONE
-        resources:
-        - name: site
-          accessLevel: ALL
-          ids:
-          - 00734874-4732-43bb-bfff-d1e75d309eb1
-          - 00734874-4732-43bb-bfff-d1e75d309eb2
-        createdTime: 0
-        lastUpdatedTime: 0
-      properties:
-        organizationId:
-          type: string
-          format: uuid
-          description: ID of the contact center organization. This field is required for all bulk save operations.
-          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
-          maxLength: 36
-          minLength: 32
-          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
-        id:
-          type: string
-          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
-          example: 93912f11-6017-404b-bf14-5331890b1797
-        version:
-          type: integer
-          format: int32
-          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
-          example: 1
-        name:
-          type: string
-          description: name of the user profile as ACL.
-          example: Administrator
-        profileType:
-          type: string
-          description: User Profile Type.
-          enum:
-          - ADMINISTRATOR
-          - ADMINISTRATOR_ONLY
-          - SUPERVISOR
-          - PREMIUM_AGENT
-          - STANDARD_AGENT
-          - ANALYZER_ADMINISTRATOR
-          - ANALYZER_SUPERVISOR
-          - ANALYZER_USER
-          example: ADMINISTRATOR
-        description:
-          type: string
-          description: User Profile Description.
-          example: User Profile Description
-        active:
-          type: boolean
-          description: Indicates whether the user profile is active.
-          example: true
-        permissionAccessLevel:
-          type: string
-          description: Permissions Access Level for user profile level.
-          enum:
-          - SPECIFIC
-          - ALL
-          - PROVISIONED_VALUE
-          - NONE
-          example: ALL
-        resourceAccessLevel:
-          type: string
-          description: Resource Access Level for resource collection level.
-          enum:
-          - SPECIFIC
-          - ALL
-          - PROVISIONED_VALUE
-          - NONE
-          example: ALL
-        editableFolderIds:
-          type: array
-          description: Set of editable folder IDs that are part of user profile.
-          example:
-          - 1
-          - 2
-          - 3
-          items:
-            type: integer
-            format: int32
-          uniqueItems: true
-        viewableFolderIds:
-          type: array
-          description: Set of viewable folder IDs that the part of user profile.
-          example:
-          - 4
-          - 5
-          - 6
-          items:
-            type: integer
-            format: int32
-          uniqueItems: true
-        nonViewableFolderIds:
-          type: array
-          description: Set of non-viewable folder IDs that are part of user profile.
-          example:
-          - 7
-          - 8
-          - 9
-          items:
-            type: integer
-            format: int32
-          uniqueItems: true
-        defaultResourceCollectionId:
-          type: string
-          description: Default Resource Collection ID.
-          example: 123e4567-e89b-12d3-a456-426614174000
-        resourceCollections:
-          type: array
-          description: Set of resource collections associated with the User Profile.
-          items:
-            $ref: '#/components/schemas/ResourceCollectionDTO'
-          uniqueItems: true
-        permissions:
-          type: array
-          description: Set of permissions associated with the User Profile.
-          items:
-            $ref: '#/components/schemas/UserProfilePermissionsDTO'
-          uniqueItems: true
-        resources:
-          type: array
-          description: Set of resources associated with the Resource Collection.
-          items:
-            $ref: '#/components/schemas/ResourceTypesDTO'
-          uniqueItems: true
-        createdTime:
-          type: integer
-          format: int64
-          description: This is the created time of the entity.
-          example: 123456789
-        lastUpdatedTime:
-          type: integer
-          format: int64
-          description: This is the updated time of the entity.
-          example: 123456789
-    ApiErrorResponse:
-      description: Response body for an API error.
-      type: object
-      properties:
-        trackingId:
-          type: string
-          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
-          example: c1a4fcef-aee2-4dea-8977-29f594760552
-        error:
-          description: An object containing details about the error.
-          $ref: '#/components/schemas/ErrorDetails'
-    BulkResponseItemDTO:
-      type: object
-      properties:
-        itemIdentifier:
-          type: integer
-          description: Unique item identifier for a bulk operation.
-          format: int32
-          example: 10
-        status:
-          type: integer
-          description: Indicates the error status code.
-          format: int32
-          example: 400
-        operationType:
-          type: string
-          description: The kind of operation desired of an entity.
-          example: CREATE
-          enum:
-          - CREATE
-          - UPDATE
-          - DELETE
-          - GET
-        href:
-          type: string
-          description: The resource URI of an entity.
-          example: /api/organization/6705c69d-4585-42ad-bfc3-79cc485dfb15/team/7b26d174-0016-4682-9858-65918e05f85
-        apiError:
-          $ref: '#/components/schemas/ApiErrorResponse'
-      example:
-        apiError:
-          error:
-            key: '400'
-            message:
-            - description: 'siteId: not found for given orgId.'
-              entity: string
-              references:
-              - id: string
-                name: string
-            reason: dependency exists
-          trackingId: ccconfig_c1a4fcef-aee2-4dea-8977-29f594760552
-        href: /api/organization/6705c69d-4585-42ad-bfc3-79cc485dfb15/team/7b26d174-0016-4682-9858-65918e05f85
-        itemIdentifier: 10
-        operationType: CREATE
-        status: 400
     ErrorDetails:
       description: Details of an error.
       type: object
@@ -2175,36 +2141,69 @@ components:
       - permissionAccessLevel
       - profileType
       - resourceAccessLevel
-    BulkRequestItemDTOUserProfileGranularAccessDTO:
-      type: object
-      description: List of items in the bulk request.
-      properties:
-        itemIdentifier:
-          type: integer
-          format: int32
-          description: Unique item identifier for a bulk operation.
-          example: 10
-        item:
-          $ref: '#/components/schemas/UserProfileGranularAccessDTO'
-        requestAction:
-          type: string
-          description: Identifier for action type. Possible values are `SAVE` and `DELETE`.
-          example: SAVE
-    BulkResponseDTO:
+    BulkRequestDTOUserProfileGranularAccessDTO:
       type: object
       properties:
         items:
           type: array
+          description: List of items in the bulk request.
           items:
-            $ref: '#/components/schemas/BulkResponseItemDTO'
-    OperationError:
-      description: An error message providing details about the operation failure.
+            $ref: '#/components/schemas/BulkRequestItemDTOUserProfileGranularAccessDTO'
+    MetaDataWithPagingInfo:
+      type: object
+      description: Metadata of response with paging information
+      properties:
+        orgid:
+          type: string
+          format: uuid
+          description: Organization ID.
+          example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+          maxLength: 36
+          minLength: 32
+          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
+        page:
+          type: integer
+          format: int32
+          description: Current page number.
+          example: 1
+        pageSize:
+          type: integer
+          format: int32
+          description: Page size for current data set.
+          example: 100
+        totalPages:
+          type: integer
+          format: int32
+          description: Number of pages.
+          example: 1
+        totalRecords:
+          type: integer
+          format: int32
+          description: Total number of items.
+          example: 1000
+        links:
+          type: object
+          description: Map of pagination links with `self`, `next`, `prev`, `last`, and `first`.
+          example:
+            next: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=2&pageSize=10
+            last: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=3&pageSize=10
+            prev: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=0&pageSize=10
+            self: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=1&pageSize=10
+            first: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=0&pageSize=10
+      title: MetaDataWithPagingInfo
+    EntityReferenceInfoDTO:
       type: object
       properties:
         description:
           type: string
-          description: A human readable explanation for the occurrence of an error.
-          example: Incorrect Credentials.
+          description: Description about reference info.
+          example: list of referenced entities
+        meta:
+          $ref: '#/components/schemas/MetaDataReferencesPagingInfo'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityInfo'
   securitySchemes:
     oauth2:
       flows:
@@ -2232,6 +2231,3 @@ components:
       scheme: bearer
       bearerFormat: JWT
       description: JWT bearer token authentication. Obtain your token from the Webex Developer Portal.
-x-refined-from:
-- webex-contact-center-openapi.json
-- webex-user-profiles-api-openapi.yml

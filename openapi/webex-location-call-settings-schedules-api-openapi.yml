@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: 'Webex Location Call Settings:  Schedules API'
+  title: 'Webex Cloud Calling Location Call Settings: Schedules API'
   version: 1.0.0
-  description: 'Operations tagged Location Call Settings:  Schedules across 2 of this provider''s published API definitions: webex-cloud-calling-openapi.json, webex-location-call-settings-schedules-api-openapi.yml. Each path carries the servers of the definition it was published in.'
+  description: The Webex Cloud Calling APIs enable comprehensive management of cloud-based calling services, including user provisioning, device assignment, call routing, feature configuration, and number management.
   x-provenance:
     method: harvested
     authored_by: Cisco Webex
@@ -11,9 +11,6 @@ info:
     first_party: true
     note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
     provider_published: true
-    derived_view: Per-tag view of webex-cloud-calling-openapi.json, the provider's source document. Operations and schemas are the provider's, unmodified; only the partition is ours.
-    derived_from: webex-cloud-calling-openapi.json
-    operation_coverage: 9/9
   x-evidence:
   - type: source
     url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-cloud-calling.json
@@ -1061,7 +1058,45 @@ paths:
               $ref: '#/components/schemas/PostScheduleEventObject'
 components:
   schemas:
-    ScheduleEventObject:
+    GetScheduleEventObject:
+      type: object
+      required:
+      - id
+      - name
+      - startDate
+      - endDate
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1NDSEVEVUxFX0VWRU5UL1RXOXVaR0Y1VTJOb1pXUjFiR1U
+          description: A unique identifier for the schedule event.
+        name:
+          type: string
+          example: MondaySchedule
+          description: Name for the event.
+        startDate:
+          type: string
+          example: '2021-11-01'
+          description: Start Date of Event.
+        endDate:
+          type: string
+          example: '2021-11-30'
+          description: End Date of Event.
+        startTime:
+          type: string
+          example: '12:20'
+          description: Start time of event.
+        endTime:
+          type: string
+          example: '14:20'
+          description: End time of event.
+        allDayEnabled:
+          type: boolean
+          description: An indication of whether given event is an all-day event or not.
+        recurrence:
+          $ref: '#/components/schemas/RecurrenceObject'
+          description: Recurrence definition.
+    ModifyScheduleEventObject:
       type: object
       required:
       - name
@@ -1080,65 +1115,6 @@ components:
           type: string
           example: '2021-11-30'
           description: End date of event.
-        startTime:
-          type: string
-          example: '12:20'
-          description: Start time of event. Mandatory if the event is not all day.
-        endTime:
-          type: string
-          example: '14:20'
-          description: End time of event. Mandatory if the event is not all day.
-        allDayEnabled:
-          type: boolean
-          description: An indication of whether given event is an all-day event or not. Mandatory if the `startTime` and `endTime` are not defined.
-        recurrence:
-          $ref: '#/components/schemas/RecurrenceObject'
-          description: Recurrence definition.
-    RecurYearlyByDateObject:
-      type: object
-      required:
-      - dayOfMonth
-      - month
-      properties:
-        dayOfMonth:
-          type: number
-          example: 1
-          description: Schedule the event on a specific day of the month.
-        month:
-          type: string
-          enum:
-          - JANUARY
-          - FEBRUARY
-          - MARCH
-          - APRIL
-          - MAY
-          - JUNE
-          - JULY
-          - AUGUST
-          - SEPTEMBER
-          - OCTOBER
-          - NOVEMBER
-          - DECEMBER
-          description: Schedule the event on a specific month of the year.
-    PostScheduleEventObject:
-      type: object
-      required:
-      - name
-      - startDate
-      - endDate
-      properties:
-        name:
-          type: string
-          example: MondaySchedule
-          description: Name for the event.
-        startDate:
-          type: string
-          example: '2021-11-01'
-          description: Start Date of Event.
-        endDate:
-          type: string
-          example: '2021-11-30'
-          description: End Date of Event.
         startTime:
           type: string
           example: '12:20'
@@ -1172,98 +1148,6 @@ components:
         recurYearlyByDay:
           $ref: '#/components/schemas/RecurYearlyByDayObject'
           description: Recurrence definition yearly by day.
-    GetScheduleObject:
-      type: object
-      required:
-      - id
-      - name
-      - type
-      properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1NDSEVEVUxFL1FWVlVUMEZVVkVWT1JFRk9WQzFDVlZOSlRrVlRVeTFJVDFWU1V3
-          description: A unique identifier for the schedule.
-        name:
-          type: string
-          example: AUTOATTENDANT-BUSINESS-HOURS
-          description: Unique name for the schedule.
-        type:
-          type: string
-          enum:
-          - businessHours
-          - holidays
-          description: "Type of the schedule.\n * `businessHours` - Business hours schedule type.\n * `holidays` - Holidays schedule type.\n"
-        events:
-          type: array
-          items:
-            $ref: '#/components/schemas/GetScheduleEventObject'
-          description: List of schedule events.
-    PostScheduleObject:
-      type: object
-      required:
-      - type
-      - name
-      properties:
-        type:
-          type: string
-          enum:
-          - businessHours
-          - holidays
-          description: "Type of the schedule.\n * `businessHours` - Business hours schedule type.\n * `holidays` - Holidays schedule type.\n"
-        name:
-          type: string
-          example: AUTOATTENDANT-BUSINESS-HOURS
-          description: Unique name for the schedule.
-        events:
-          type: array
-          items:
-            $ref: '#/components/schemas/ScheduleEventObject'
-          description: List of schedule events.
-    ModifyScheduleObject:
-      type: object
-      required:
-      - name
-      properties:
-        name:
-          type: string
-          example: AUTOATTENDANT-BUSINESS-HOURS
-          description: Unique name for the schedule.
-        events:
-          type: array
-          items:
-            $ref: '#/components/schemas/ModifyScheduleEventListObject'
-          description: List of schedule events.
-    ListScheduleObject:
-      type: object
-      required:
-      - id
-      - name
-      - type
-      - locationName
-      - locationId
-      properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1NDSEVEVUxFL1FWVlVUMEZVVkVWT1JFRk9WQzFDVlZOSlRrVlRVeTFJVDFWU1V3
-          description: A unique identifier for the schedule.
-        name:
-          type: string
-          example: AUTOATTENDANT-BUSINESS-HOURS
-          description: Unique name for the schedule.
-        type:
-          type: string
-          enum:
-          - businessHours
-          - holidays
-          description: "Type of the schedule.\n * `businessHours` - Business hours schedule type.\n * `holidays` - Holidays schedule type.\n"
-        locationName:
-          type: string
-          example: Alaska
-          description: Name of location for schedule.
-        locationId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzEyMzQ1
-          description: ID of the location for the schedule.
     RecurYearlyByDayObject:
       type: object
       required:
@@ -1345,7 +1229,38 @@ components:
         recurrence:
           $ref: '#/components/schemas/RecurrenceObject'
           description: Recurrence definition.
-    ModifyScheduleEventObject:
+    ListScheduleObject:
+      type: object
+      required:
+      - id
+      - name
+      - type
+      - locationName
+      - locationId
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1NDSEVEVUxFL1FWVlVUMEZVVkVWT1JFRk9WQzFDVlZOSlRrVlRVeTFJVDFWU1V3
+          description: A unique identifier for the schedule.
+        name:
+          type: string
+          example: AUTOATTENDANT-BUSINESS-HOURS
+          description: Unique name for the schedule.
+        type:
+          type: string
+          enum:
+          - businessHours
+          - holidays
+          description: "Type of the schedule.\n * `businessHours` - Business hours schedule type.\n * `holidays` - Holidays schedule type.\n"
+        locationName:
+          type: string
+          example: Alaska
+          description: Name of location for schedule.
+        locationId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzEyMzQ1
+          description: ID of the location for the schedule.
+    PostScheduleEventObject:
       type: object
       required:
       - name
@@ -1359,11 +1274,11 @@ components:
         startDate:
           type: string
           example: '2021-11-01'
-          description: Start date of event.
+          description: Start Date of Event.
         endDate:
           type: string
           example: '2021-11-30'
-          description: End date of event.
+          description: End Date of Event.
         startTime:
           type: string
           example: '12:20'
@@ -1411,18 +1326,13 @@ components:
           type: boolean
           example: true
           description: Frequency of occurrence in weeks and select the day - Saturday.
-    GetScheduleEventObject:
+    ScheduleEventObject:
       type: object
       required:
-      - id
       - name
       - startDate
       - endDate
       properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1NDSEVEVUxFX0VWRU5UL1RXOXVaR0Y1VTJOb1pXUjFiR1U
-          description: A unique identifier for the schedule event.
         name:
           type: string
           example: MondaySchedule
@@ -1430,25 +1340,112 @@ components:
         startDate:
           type: string
           example: '2021-11-01'
-          description: Start Date of Event.
+          description: Start date of event.
         endDate:
           type: string
           example: '2021-11-30'
-          description: End Date of Event.
+          description: End date of event.
         startTime:
           type: string
           example: '12:20'
-          description: Start time of event.
+          description: Start time of event. Mandatory if the event is not all day.
         endTime:
           type: string
           example: '14:20'
-          description: End time of event.
+          description: End time of event. Mandatory if the event is not all day.
         allDayEnabled:
           type: boolean
-          description: An indication of whether given event is an all-day event or not.
+          description: An indication of whether given event is an all-day event or not. Mandatory if the `startTime` and `endTime` are not defined.
         recurrence:
           $ref: '#/components/schemas/RecurrenceObject'
           description: Recurrence definition.
+    PostScheduleObject:
+      type: object
+      required:
+      - type
+      - name
+      properties:
+        type:
+          type: string
+          enum:
+          - businessHours
+          - holidays
+          description: "Type of the schedule.\n * `businessHours` - Business hours schedule type.\n * `holidays` - Holidays schedule type.\n"
+        name:
+          type: string
+          example: AUTOATTENDANT-BUSINESS-HOURS
+          description: Unique name for the schedule.
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScheduleEventObject'
+          description: List of schedule events.
+    RecurYearlyByDateObject:
+      type: object
+      required:
+      - dayOfMonth
+      - month
+      properties:
+        dayOfMonth:
+          type: number
+          example: 1
+          description: Schedule the event on a specific day of the month.
+        month:
+          type: string
+          enum:
+          - JANUARY
+          - FEBRUARY
+          - MARCH
+          - APRIL
+          - MAY
+          - JUNE
+          - JULY
+          - AUGUST
+          - SEPTEMBER
+          - OCTOBER
+          - NOVEMBER
+          - DECEMBER
+          description: Schedule the event on a specific month of the year.
+    GetScheduleObject:
+      type: object
+      required:
+      - id
+      - name
+      - type
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1NDSEVEVUxFL1FWVlVUMEZVVkVWT1JFRk9WQzFDVlZOSlRrVlRVeTFJVDFWU1V3
+          description: A unique identifier for the schedule.
+        name:
+          type: string
+          example: AUTOATTENDANT-BUSINESS-HOURS
+          description: Unique name for the schedule.
+        type:
+          type: string
+          enum:
+          - businessHours
+          - holidays
+          description: "Type of the schedule.\n * `businessHours` - Business hours schedule type.\n * `holidays` - Holidays schedule type.\n"
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/GetScheduleEventObject'
+          description: List of schedule events.
+    ModifyScheduleObject:
+      type: object
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          example: AUTOATTENDANT-BUSINESS-HOURS
+          description: Unique name for the schedule.
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/ModifyScheduleEventListObject'
+          description: List of schedule events.
   securitySchemes:
     oauth2:
       flows:
@@ -1467,6 +1464,3 @@ components:
       description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
       scheme: bearer
       bearerFormat: JWT
-x-refined-from:
-- webex-cloud-calling-openapi.json
-- webex-location-call-settings-schedules-api-openapi.yml

@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: Webex Workspace Personalization API
+  title: Webex Device Workspace Personalization API
   version: 1.0.0
-  description: 'Operations tagged Workspace Personalization across 2 of this provider''s published API definitions: webex-device-openapi.json, webex-workspace-personalization-api-openapi.yml. Each path carries the servers of the definition it was published in.'
+  description: The Webex Device APIs provide endpoints for managing and monitoring Webex devices, including registration, configuration, status retrieval, workspace assignment, and firmware management.
   x-provenance:
     method: harvested
     authored_by: Cisco Webex
@@ -11,9 +11,6 @@ info:
     first_party: true
     note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
     provider_published: true
-    derived_view: Per-tag view of webex-device-openapi.json, the provider's source document. Operations and schemas are the provider's, unmodified; only the partition is ours.
-    derived_from: webex-device-openapi.json
-    operation_coverage: 2/2
   x-evidence:
   - type: source
     url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-device.json
@@ -66,7 +63,7 @@ paths:
 
         The personalization process is asynchronous and thus a background task is created when this endpoint is invoked.
 
-        After successful invocation of this endpoint a personalization task status URL will be returned in the `Location` header, which will point to the [Get Personalization Task](/docs/api/v1/workspace-personalization/get-personalization-task) endpoint for this workspace.
+        After successful invocation of this endpoint a personalization task status URL will be returned in the `Location` header, which will point to the Get Personalization Task endpoint for this workspace.
 
         The task should be completed in approximately 30 seconds.'
       tags:
@@ -148,15 +145,6 @@ paths:
           type: string
 components:
   schemas:
-    WorkspacePersonalizationRequest:
-      type: object
-      required:
-      - email
-      properties:
-        email:
-          type: string
-          example: julie@example.com
-          description: The user that the device will become personalised for.
     WorkspacePersonalizationTaskResponse:
       type: object
       required:
@@ -169,6 +157,15 @@ components:
           type: string
           example: Device is offline
           description: A description of the error will be provided if the personalization was not successful.
+    WorkspacePersonalizationRequest:
+      type: object
+      required:
+      - email
+      properties:
+        email:
+          type: string
+          example: julie@example.com
+          description: The user that the device will become personalised for.
   securitySchemes:
     oauth2:
       flows:
@@ -182,15 +179,3 @@ components:
       description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
       scheme: bearer
       bearerFormat: JWT
-    bearerAuth:
-      type: oauth2
-      description: OAuth 2.0 Bearer token authentication
-      flows:
-        authorizationCode:
-          authorizationUrl: https://webexapis.com/v1/authorize
-          tokenUrl: https://webexapis.com/v1/access_token
-          scopes:
-            spark:applications_token: Create access tokens for Service Apps
-x-refined-from:
-- webex-device-openapi.json
-- webex-workspace-personalization-api-openapi.yml

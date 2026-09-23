@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: 'Webex Features:  Call Park API'
+  title: 'Webex Cloud Calling Features: Call Park API'
   version: 1.0.0
-  description: 'Operations tagged Features:  Call Park across 2 of this provider''s published API definitions: webex-cloud-calling-openapi.json, webex-features-call-park-api-openapi.yml. Each path carries the servers of the definition it was published in.'
+  description: The Webex Cloud Calling APIs enable comprehensive management of cloud-based calling services, including user provisioning, device assignment, call routing, feature configuration, and number management.
   x-provenance:
     method: harvested
     authored_by: Cisco Webex
@@ -11,9 +11,6 @@ info:
     first_party: true
     note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
     provider_published: true
-    derived_view: Per-tag view of webex-cloud-calling-openapi.json, the provider's source document. Operations and schemas are the provider's, unmodified; only the partition is ours.
-    derived_from: webex-cloud-calling-openapi.json
-    operation_coverage: 14/14
   x-evidence:
   - type: source
     url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-cloud-calling.json
@@ -1323,6 +1320,217 @@ paths:
               $ref: '#/components/schemas/PostCallParkExtensionObject'
 components:
   schemas:
+    ModifyCallParkSettingsObject:
+      type: object
+      properties:
+        callParkRecall:
+          $ref: '#/components/schemas/PutRecallHuntGroupObject'
+          description: Recall options that are added to call park.
+        callParkSettings:
+          $ref: '#/components/schemas/CallParkSettingsObject'
+          description: Setting controlling call park behavior.
+    ModifyCallExtensionParkObject:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Illinois, Call Park Extension
+          description: Name for the call park extension. The maximum length is 30.
+        extension:
+          type: string
+          example: '407721'
+          description: Unique extension which will be assigned to call park extension. The minimum length is 2, maximum length is 10.
+    ListCPCallParkExtensionObject:
+      type: object
+      required:
+      - id
+      - extension
+      - name
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0NBTExfUEFSS19FWFRFTlNJT04vMGYzZTkwNGItYzliNC00ODNmLWI4MWItZmI0ZjkyMWcxNDUzCg
+          description: Unique identifier for the call park extension.
+        extension:
+          type: string
+          example: '1415'
+          description: The extension for the call park.
+        name:
+          type: string
+          example: '14159265'
+          description: A unique name for the call park extension.
+    GetCallParkExtensionObject:
+      type: object
+      required:
+      - extension
+      - name
+      properties:
+        extension:
+          type: string
+          example: '1415'
+          description: The extension for the call park extension.
+        routingPrefix:
+          type: string
+          example: '1234'
+          description: Routing prefix of location.
+        esn:
+          type: string
+          example: '12341415'
+          description: Routing prefix + extension of a person or workspace.
+        name:
+          type: string
+          example: '14159265'
+          description: Unique name for the call park extension.
+    GetCallParkSettingsObject:
+      type: object
+      required:
+      - callParkRecall
+      - callParkSettings
+      properties:
+        callParkRecall:
+          $ref: '#/components/schemas/GetRecallHuntGroupObject'
+          description: Recall options that are added to call park.
+        callParkSettings:
+          $ref: '#/components/schemas/CallParkSettingsObject'
+          description: Setting controlling call park behavior.
+    CallParkSettingsObject:
+      type: object
+      required:
+      - ringPattern
+      properties:
+        ringPattern:
+          type: string
+          enum:
+          - NORMAL
+          - LONG_LONG
+          - SHORT_SHORT_LONG
+          - SHORT_LONG_SHORT
+          description: "Ring pattern for when this callpark is called.\n * `NORMAL` - Normal incoming ring pattern.\n * `LONG_LONG` - Incoming ring pattern of two long rings.\n * `SHORT_SHORT_LONG` - Incoming ring pattern of two short rings, followed by a short ring.\n * `SHORT_LONG_SHORT` - Incoming ring pattern of a short ring, followed by a long ring, followed by a short ring.\n"
+        recallTime:
+          type: number
+          example: 60
+          description: Amount of time within 30 and 600 seconds the Call Park will be parked. If the call isn't picked up within the set time, then the call will be recalled based on the Call Park Recall setting.
+        huntWaitTime:
+          type: number
+          example: 60
+          description: Amount of time within 30 and 600 seconds the Call Park will be parked. If the call isn't picked up, the call will revert back to the hunt group (after the person who parked the call is alerted).
+    ListCallParkObject:
+      type: object
+      required:
+      - name
+      - id
+      - locationName
+      - locationId
+      properties:
+        name:
+          type: string
+          example: technical support - insurance - customer 1
+          description: Unique name for the call park. The maximum length is 80.
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0NBTExfUEFSSy9kR1ZqYUc1cFkyRnNJSE4xY0hCdmNuUWdMU0JwYm5OMWNtRnVZMlVnTFNCamRYTjBiMjFsY2lBeA==
+          description: A unique identifier for the call park.
+        locationName:
+          type: string
+          example: Alaska
+          description: Name of the location for the call park.
+        locationId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzEyMzQ1
+          description: ID of the location for the call park.
+    GetRecallHuntGroupObject:
+      type: object
+      required:
+      - option
+      properties:
+        huntGroupId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0hVTlRfR1JPVVAvZEdWamFHNXBZMkZzTFhOMWNIQnZjblF0TlRVMU9EWTNOVE13T1VCbmJXRnBiQzVqYjIwPQ
+          description: Alternate user which is a hunt group ID for call park recall alternate destination.
+        huntGroupName:
+          type: string
+          example: Technical Support Group - 5558675309
+          description: Unique name for the hunt group.
+        option:
+          type: string
+          enum:
+          - ALERT_PARKING_USER_ONLY
+          - ALERT_PARKING_USER_FIRST_THEN_HUNT_GROUP
+          - ALERT_HUNT_GROUP_ONLY
+          description: "Call park recall options.\n * `ALERT_PARKING_USER_ONLY` - Alert parking user only.\n * `ALERT_PARKING_USER_FIRST_THEN_HUNT_GROUP` - Alert parking user first, then hunt group.\n * `ALERT_HUNT_GROUP_ONLY` - Alert hunt group only.\n"
+    GetAvailableRecallHuntGroupsObject:
+      type: object
+      required:
+      - id
+      - name
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0hVTlRfR1JPVVAvZEdWamFHNXBZMkZzTFhOMWNIQnZjblF0TlRVMU9EWTNOVE13T1VCbmJXRnBiQzVqYjIwPQ
+          description: A unique identifier for the hunt group.
+        name:
+          type: string
+          example: Technical Support Group - 5558675309
+          description: Unique name for the hunt group.
+    GetUserNumberItemObject:
+      type: object
+      properties:
+        external:
+          type: string
+          example: '+19075552859'
+          description: Phone number of a person, workspace or virtual line.
+        extension:
+          type: string
+          example: '8080'
+          description: Extension of a person, workspace or virtual line.
+    GetCallParkObject:
+      type: object
+      required:
+      - id
+      - name
+      - recall
+      - parkOnAgentsEnabled
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0NBTExfUEFSSy9kR1ZqYUc1cFkyRnNJSE4xY0hCdmNuUWdMU0JwYm5OMWNtRnVZMlVnTFNCamRYTjBiMjFsY2lBeA==
+          description: A unique identifier for the call park.
+        name:
+          type: string
+          example: technical support - insurance - customer 1
+          description: Unique name for the call park. The maximum length is 80.
+        recall:
+          $ref: '#/components/schemas/GetRecallHuntGroupObject'
+          description: Recall options that are added to call park.
+        agents:
+          type: array
+          items:
+            $ref: '#/components/schemas/GetPersonPlaceVirtualLineCallParksObject'
+          description: People, workspaces and virtual lines that are eligible to receive calls.
+        parkOnAgentsEnabled:
+          type: boolean
+          description: Whether or not the calls will be parked on agents as a destination.
+        callParkExtensions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ListCPCallParkExtensionObject'
+          description: Array of call park extensions assigned to a call park.
+    PutRecallHuntGroupObject:
+      type: object
+      required:
+      - option
+      properties:
+        huntGroupId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0hVTlRfR1JPVVAvZEdWamFHNXBZMkZzTFhOMWNIQnZjblF0TlRVMU9EWTNOVE13T1VCbmJXRnBiQzVqYjIwPQ
+          description: Alternate user which is a hunt group ID for call park recall alternate destination.
+        option:
+          type: string
+          enum:
+          - ALERT_PARKING_USER_ONLY
+          - ALERT_PARKING_USER_FIRST_THEN_HUNT_GROUP
+          - ALERT_HUNT_GROUP_ONLY
+          description: "Call park recall options.\n * `ALERT_PARKING_USER_ONLY` - Alert parking user only.\n * `ALERT_PARKING_USER_FIRST_THEN_HUNT_GROUP` - Alert parking user first, then hunt group.\n * `ALERT_HUNT_GROUP_ONLY` - Alert hunt group only.\n"
     PostCallParkObject:
       type: object
       required:
@@ -1349,44 +1557,29 @@ components:
           items:
             type: string
           description: Array of ID strings of call park extensions assigned to a call park.
-    ListCallParkObject:
+    ModifyCallParkObject:
       type: object
-      required:
-      - name
-      - id
-      - locationName
-      - locationId
       properties:
         name:
           type: string
           example: technical support - insurance - customer 1
           description: Unique name for the call park. The maximum length is 80.
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0NBTExfUEFSSy9kR1ZqYUc1cFkyRnNJSE4xY0hCdmNuUWdMU0JwYm5OMWNtRnVZMlVnTFNCamRYTjBiMjFsY2lBeA==
-          description: A unique identifier for the call park.
-        locationName:
-          type: string
-          example: Alaska
-          description: Name of the location for the call park.
-        locationId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzEyMzQ1
-          description: ID of the location for the call park.
-    GetAvailableRecallHuntGroupsObject:
-      type: object
-      required:
-      - id
-      - name
-      properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0hVTlRfR1JPVVAvZEdWamFHNXBZMkZzTFhOMWNIQnZjblF0TlRVMU9EWTNOVE13T1VCbmJXRnBiQzVqYjIwPQ
-          description: A unique identifier for the hunt group.
-        name:
-          type: string
-          example: Technical Support Group - 5558675309
-          description: Unique name for the hunt group.
+        recall:
+          $ref: '#/components/schemas/PutRecallHuntGroupObject'
+          description: Recall options that are added to call park.
+        agents:
+          type: array
+          items:
+            type: string
+          description: Array of ID strings of people, workspaces and virtual lines that are added to call park. The new list of `agents` will replace any existing call park agents list.
+        parkOnAgentsEnabled:
+          type: boolean
+          description: Whether or not the calls will be parked on agents as a destination.
+        callParkExtensions:
+          type: array
+          items:
+            type: string
+          description: Array of ID strings of call park extensions assigned to a call park.
     GetPersonPlaceVirtualLineCallParksObject:
       type: object
       required:
@@ -1426,197 +1619,6 @@ components:
           items:
             $ref: '#/components/schemas/GetUserNumberItemObject'
           description: List of phone numbers of a person, workspace or virtual line.
-    GetRecallHuntGroupObject:
-      type: object
-      required:
-      - option
-      properties:
-        huntGroupId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0hVTlRfR1JPVVAvZEdWamFHNXBZMkZzTFhOMWNIQnZjblF0TlRVMU9EWTNOVE13T1VCbmJXRnBiQzVqYjIwPQ
-          description: Alternate user which is a hunt group ID for call park recall alternate destination.
-        huntGroupName:
-          type: string
-          example: Technical Support Group - 5558675309
-          description: Unique name for the hunt group.
-        option:
-          type: string
-          enum:
-          - ALERT_PARKING_USER_ONLY
-          - ALERT_PARKING_USER_FIRST_THEN_HUNT_GROUP
-          - ALERT_HUNT_GROUP_ONLY
-          description: "Call park recall options.\n * `ALERT_PARKING_USER_ONLY` - Alert parking user only.\n * `ALERT_PARKING_USER_FIRST_THEN_HUNT_GROUP` - Alert parking user first, then hunt group.\n * `ALERT_HUNT_GROUP_ONLY` - Alert hunt group only.\n"
-    PutRecallHuntGroupObject:
-      type: object
-      required:
-      - option
-      properties:
-        huntGroupId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0hVTlRfR1JPVVAvZEdWamFHNXBZMkZzTFhOMWNIQnZjblF0TlRVMU9EWTNOVE13T1VCbmJXRnBiQzVqYjIwPQ
-          description: Alternate user which is a hunt group ID for call park recall alternate destination.
-        option:
-          type: string
-          enum:
-          - ALERT_PARKING_USER_ONLY
-          - ALERT_PARKING_USER_FIRST_THEN_HUNT_GROUP
-          - ALERT_HUNT_GROUP_ONLY
-          description: "Call park recall options.\n * `ALERT_PARKING_USER_ONLY` - Alert parking user only.\n * `ALERT_PARKING_USER_FIRST_THEN_HUNT_GROUP` - Alert parking user first, then hunt group.\n * `ALERT_HUNT_GROUP_ONLY` - Alert hunt group only.\n"
-    GetCallParkExtensionObject:
-      type: object
-      required:
-      - extension
-      - name
-      properties:
-        extension:
-          type: string
-          example: '1415'
-          description: The extension for the call park extension.
-        routingPrefix:
-          type: string
-          example: '1234'
-          description: Routing prefix of location.
-        esn:
-          type: string
-          example: '12341415'
-          description: Routing prefix + extension of a person or workspace.
-        name:
-          type: string
-          example: '14159265'
-          description: Unique name for the call park extension.
-    ModifyCallParkSettingsObject:
-      type: object
-      properties:
-        callParkRecall:
-          $ref: '#/components/schemas/PutRecallHuntGroupObject'
-          description: Recall options that are added to call park.
-        callParkSettings:
-          $ref: '#/components/schemas/CallParkSettingsObject'
-          description: Setting controlling call park behavior.
-    ModifyCallParkObject:
-      type: object
-      properties:
-        name:
-          type: string
-          example: technical support - insurance - customer 1
-          description: Unique name for the call park. The maximum length is 80.
-        recall:
-          $ref: '#/components/schemas/PutRecallHuntGroupObject'
-          description: Recall options that are added to call park.
-        agents:
-          type: array
-          items:
-            type: string
-          description: Array of ID strings of people, workspaces and virtual lines that are added to call park. The new list of `agents` will replace any existing call park agents list.
-        parkOnAgentsEnabled:
-          type: boolean
-          description: Whether or not the calls will be parked on agents as a destination.
-        callParkExtensions:
-          type: array
-          items:
-            type: string
-          description: Array of ID strings of call park extensions assigned to a call park.
-    CallParkSettingsObject:
-      type: object
-      required:
-      - ringPattern
-      properties:
-        ringPattern:
-          type: string
-          enum:
-          - NORMAL
-          - LONG_LONG
-          - SHORT_SHORT_LONG
-          - SHORT_LONG_SHORT
-          description: "Ring pattern for when this callpark is called.\n * `NORMAL` - Normal incoming ring pattern.\n * `LONG_LONG` - Incoming ring pattern of two long rings.\n * `SHORT_SHORT_LONG` - Incoming ring pattern of two short rings, followed by a short ring.\n * `SHORT_LONG_SHORT` - Incoming ring pattern of a short ring, followed by a long ring, followed by a short ring.\n"
-        recallTime:
-          type: number
-          example: 60
-          description: Amount of time within 30 and 600 seconds the Call Park will be parked. If the call isn't picked up within the set time, then the call will be recalled based on the Call Park Recall setting.
-        huntWaitTime:
-          type: number
-          example: 60
-          description: Amount of time within 30 and 600 seconds the Call Park will be parked. If the call isn't picked up, the call will revert back to the hunt group (after the person who parked the call is alerted).
-    PostCallParkExtensionObject:
-      type: object
-      required:
-      - name
-      - extension
-      properties:
-        name:
-          type: string
-          example: Illinois, Call Park Extension
-          description: Name for the call park extension. The maximum length is 30.
-        extension:
-          type: string
-          example: '407721'
-          description: Unique extension which will be assigned to call park extension. The minimum length is 2, maximum length is 10.
-    GetCallParkSettingsObject:
-      type: object
-      required:
-      - callParkRecall
-      - callParkSettings
-      properties:
-        callParkRecall:
-          $ref: '#/components/schemas/GetRecallHuntGroupObject'
-          description: Recall options that are added to call park.
-        callParkSettings:
-          $ref: '#/components/schemas/CallParkSettingsObject'
-          description: Setting controlling call park behavior.
-    GetUserNumberItemObject:
-      type: object
-      properties:
-        external:
-          type: string
-          example: '+19075552859'
-          description: Phone number of a person, workspace or virtual line.
-        extension:
-          type: string
-          example: '8080'
-          description: Extension of a person, workspace or virtual line.
-    ModifyCallExtensionParkObject:
-      type: object
-      properties:
-        name:
-          type: string
-          example: Illinois, Call Park Extension
-          description: Name for the call park extension. The maximum length is 30.
-        extension:
-          type: string
-          example: '407721'
-          description: Unique extension which will be assigned to call park extension. The minimum length is 2, maximum length is 10.
-    GetCallParkObject:
-      type: object
-      required:
-      - id
-      - name
-      - recall
-      - parkOnAgentsEnabled
-      properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0NBTExfUEFSSy9kR1ZqYUc1cFkyRnNJSE4xY0hCdmNuUWdMU0JwYm5OMWNtRnVZMlVnTFNCamRYTjBiMjFsY2lBeA==
-          description: A unique identifier for the call park.
-        name:
-          type: string
-          example: technical support - insurance - customer 1
-          description: Unique name for the call park. The maximum length is 80.
-        recall:
-          $ref: '#/components/schemas/GetRecallHuntGroupObject'
-          description: Recall options that are added to call park.
-        agents:
-          type: array
-          items:
-            $ref: '#/components/schemas/GetPersonPlaceVirtualLineCallParksObject'
-          description: People, workspaces and virtual lines that are eligible to receive calls.
-        parkOnAgentsEnabled:
-          type: boolean
-          description: Whether or not the calls will be parked on agents as a destination.
-        callParkExtensions:
-          type: array
-          items:
-            $ref: '#/components/schemas/ListCPCallParkExtensionObject'
-          description: Array of call park extensions assigned to a call park.
     ListCallParkExtensionObject:
       type: object
       required:
@@ -1654,25 +1656,20 @@ components:
           type: string
           example: WXCSIVDKCPAPIC4S1
           description: Name of location for call park extension.
-    ListCPCallParkExtensionObject:
+    PostCallParkExtensionObject:
       type: object
       required:
-      - id
-      - extension
       - name
+      - extension
       properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0NBTExfUEFSS19FWFRFTlNJT04vMGYzZTkwNGItYzliNC00ODNmLWI4MWItZmI0ZjkyMWcxNDUzCg
-          description: Unique identifier for the call park extension.
-        extension:
-          type: string
-          example: '1415'
-          description: The extension for the call park.
         name:
           type: string
-          example: '14159265'
-          description: A unique name for the call park extension.
+          example: Illinois, Call Park Extension
+          description: Name for the call park extension. The maximum length is 30.
+        extension:
+          type: string
+          example: '407721'
+          description: Unique extension which will be assigned to call park extension. The minimum length is 2, maximum length is 10.
   securitySchemes:
     oauth2:
       flows:
@@ -1691,6 +1688,3 @@ components:
       description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
       scheme: bearer
       bearerFormat: JWT
-x-refined-from:
-- webex-cloud-calling-openapi.json
-- webex-features-call-park-api-openapi.yml

@@ -2,23 +2,15 @@ openapi: 3.2.0
 info:
   title: Webex Archive Users API
   version: 1.0.0
-  description: 'Operations tagged Archive Users across 2 of this provider''s published API definitions: webex-admin-openapi.json, webex-archive-users-api-openapi.yml. Each path carries the servers of the definition it was published in.'
-  x-provenance:
-    method: harvested
-    authored_by: Cisco Webex
-    harvested_by: API Evangelist
-    harvested_on: '2026-08-19'
-    first_party: true
-    note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
-    provider_published: true
-    derived_view: Per-tag view of webex-admin-openapi.json, the provider's source document. Operations and schemas are the provider's, unmodified; only the partition is ours.
-    derived_from: webex-admin-openapi.json
-    operation_coverage: 1/2
   x-evidence:
   - type: source
     url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-admin.json
   - type: raw
     url: https://raw.githubusercontent.com/webex/webex-openapi-specs/main/public-spec/webex-admin.json
+  x-refined-note:
+  - x-provenance differs across the merged source definitions and was not carried
+  - x-refined-note differs across the merged source definitions and was not carried
+  description: 'Operations tagged Archive Users across 2 of this provider''s published API definitions: webex-admin-openapi.json, webex-archive-users-api-openapi.yml. Each path carries the servers of the definition it was published in.'
 tags:
 - name: Archive Users
 paths:
@@ -86,7 +78,7 @@ paths:
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Query Archive User
       operationId: queryArchiveUser
-      description: 'Retrieves archived user information for the specified organization. Supported attributes are `id`, which is the unique identifier of a user in the system, and `username`. It is assigned when the user is created and can be retrieved through **GET Users** API.<br/>
+      description: 'Retrieves archived user information for the specified organization. Supported attributes are `id`, which is the unique identifier of a user in the system, and `username`. It is assigned when the user is created and can be retrieved through **GET Users** API.
 
 
         **Authorization**
@@ -108,10 +100,7 @@ paths:
 
         - `Account in the specified organization with one of the following roles: id_full_admin, id_user_admin, id_readonly_admin`.
 
-        - `Proxy account managing the specified organization with one of the following roles: id_full_admin, id_user_admin, id_readonly_admin`.
-
-
-        <br/>'
+        - `Proxy account managing the specified organization with one of the following roles: id_full_admin, id_user_admin, id_readonly_admin`.'
       tags:
       - Archive Users
       parameters:
@@ -199,7 +188,7 @@ paths:
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Get Archive User
       operationId: getArchiveUser
-      description: 'The `useruuid` is the unique identifier of a user in the system. It is assigned when the user is created and can be retrieved through **GET Users** API.<br/>
+      description: 'The `useruuid` is the unique identifier of a user in the system. It is assigned when the user is created and can be retrieved through **GET Users** API.
 
 
         **Authorization**
@@ -221,10 +210,7 @@ paths:
 
         - `Account in the specified organization with one of the following roles: id_full_admin, id_user_admin, id_readonly_admin`.
 
-        - `Proxy account managing the specified organization with one of the following roles: id_full_admin, id_user_admin, id_readonly_admin`.
-
-
-        <br/>'
+        - `Proxy account managing the specified organization with one of the following roles: id_full_admin, id_user_admin, id_readonly_admin`.'
       tags:
       - Archive Users
       parameters:
@@ -311,6 +297,70 @@ components:
           description: The display name of the user in Webex.
         meta:
           $ref: '#/components/schemas/MetaObject'
+    ArchiveUserQueryResponse:
+      type: object
+      properties:
+        totalResults:
+          type: integer
+          description: Total number of archived user that match the query.
+          example: 1
+        schemas:
+          type: array
+          items:
+            type: string
+            example: urn:scim:schemas:core:1.0,urn:scim:schemas:extension:cisco:commonidentity:1.0
+          description: An array of schema URNs that define the structure of the SCIM resource.
+        Resources:
+          type: array
+          description: A list of archived users matching the filter.
+          items:
+            $ref: '#/components/schemas/ArchiveUser'
+    EmailObject:
+      type: object
+      properties:
+        value:
+          type: string
+          example: user1@example.home.com
+          description: The email address.
+        type:
+          type: string
+          enum:
+          - work
+          - home
+          - room
+          - other
+          description: The type of the email.
+        display:
+          type: string
+          example: home email description
+          description: A human-readable description, primarily used for display purposes.
+        primary:
+          type: boolean
+          description: Email status boolean value. If the type is work and primary is true, the value must equal `userName`.
+    NameObject:
+      type: object
+      description: The components of the user's real name.
+      properties:
+        givenName:
+          type: string
+          example: Sarah
+          description: The given name of the user, or first name in most Western languages (e.g., "Sarah" given the full name "Ms. Sarah J Henderson, III").
+        familyName:
+          type: string
+          example: Henderson
+          description: The family name of the user, or last name in most Western languages (e.g., "Henderson" given the full name "Ms. Sarah J Henderson, III").
+        middleName:
+          type: string
+          example: Jane
+          description: The middle name(s) of the user (e.g., "Jane" given the full name "Ms. Sarah J Henderson, III").
+        honorificPrefix:
+          type: string
+          example: Mr.
+          description: The honorific prefix(es) of the user, or title in most Western languages (e.g., "Ms." given the full name "Ms. Sarah J Henderson, III").
+        honorificSuffix:
+          type: string
+          example: III
+          description: The honorific suffix(es) of the user, or suffix in most Western languages (e.g., "III" given the full name "Ms. Sarah J Henderson, III").
     ArchiveUser_2:
       type: object
       required:
@@ -351,70 +401,6 @@ components:
           description: The display name of the user in Webex.
         meta:
           $ref: '#/components/schemas/MetaObject'
-    EmailObject:
-      type: object
-      properties:
-        value:
-          type: string
-          example: user1@example.home.com
-          description: The email address.
-        type:
-          type: string
-          enum:
-          - work
-          - home
-          - room
-          - other
-          description: The type of the email.
-        display:
-          type: string
-          example: home email description
-          description: A human-readable description, primarily used for display purposes.
-        primary:
-          type: boolean
-          description: Email status boolean value. If the type is work and primary is true, the value must equal `userName`.
-    ArchiveUserQueryResponse:
-      type: object
-      properties:
-        totalResults:
-          type: integer
-          description: Total number of archived user that match the query.
-          example: 1
-        schemas:
-          type: array
-          items:
-            type: string
-            example: urn:scim:schemas:core:1.0,urn:scim:schemas:extension:cisco:commonidentity:1.0
-          description: An array of schema URNs that define the structure of the SCIM resource.
-        Resources:
-          type: array
-          description: A list of archived users matching the filter.
-          items:
-            $ref: '#/components/schemas/ArchiveUser'
-    NameObject:
-      type: object
-      description: The components of the user's real name.
-      properties:
-        givenName:
-          type: string
-          example: Sarah
-          description: The given name of the user, or first name in most Western languages (e.g., "Sarah" given the full name "Ms. Sarah J Henderson, III").
-        familyName:
-          type: string
-          example: Henderson
-          description: The family name of the user, or last name in most Western languages (e.g., "Henderson" given the full name "Ms. Sarah J Henderson, III").
-        middleName:
-          type: string
-          example: Jane
-          description: The middle name(s) of the user (e.g., "Jane" given the full name "Ms. Sarah J Henderson, III").
-        honorificPrefix:
-          type: string
-          example: Mr.
-          description: The honorific prefix(es) of the user, or title in most Western languages (e.g., "Ms." given the full name "Ms. Sarah J Henderson, III").
-        honorificSuffix:
-          type: string
-          example: III
-          description: The honorific suffix(es) of the user, or suffix in most Western languages (e.g., "III" given the full name "Ms. Sarah J Henderson, III").
   securitySchemes:
     oauth2:
       flows:

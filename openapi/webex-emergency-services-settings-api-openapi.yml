@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: Webex Emergency Services Settings API
+  title: Webex Cloud Calling Emergency Services Settings API
   version: 1.0.0
-  description: 'Operations tagged Emergency Services Settings across 2 of this provider''s published API definitions: webex-cloud-calling-openapi.json, webex-emergency-services-settings-api-openapi.yml. Each path carries the servers of the definition it was published in.'
+  description: The Webex Cloud Calling APIs enable comprehensive management of cloud-based calling services, including user provisioning, device assignment, call routing, feature configuration, and number management.
   x-provenance:
     method: harvested
     authored_by: Cisco Webex
@@ -11,9 +11,6 @@ info:
     first_party: true
     note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
     provider_published: true
-    derived_view: Per-tag view of webex-cloud-calling-openapi.json, the provider's source document. Operations and schemas are the provider's, unmodified; only the partition is ours.
-    derived_from: webex-cloud-calling-openapi.json
-    operation_coverage: 26/26
   x-evidence:
   - type: source
     url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-cloud-calling.json
@@ -1923,7 +1920,251 @@ paths:
               $ref: '#/components/schemas/PutECBNObject'
 components:
   schemas:
-    GetLocationComplianceStatusResponse:
+    ECBNSelectionType:
+      type: string
+      enum:
+      - DIRECT_LINE
+      - LOCATION_ECBN
+      - LOCATION_MEMBER_NUMBER
+      - NONE
+      description: " * `DIRECT_LINE` - Returned calls from the Public Safety Answering Point go directly to the member. The Emergency Service Address configured by the PSTN to the member's phone is specific to the member’s location.\n * `LOCATION_ECBN` - Each location can have an ECBN configured that is different from the location’s main number. Location Default ECBN is typically configured for users without dedicated telephone numbers or with only an extension.\n * `LOCATION_MEMBER_NUMBER` - Configure one user with another user’s telephone number as an ECBN. This option is used in place of a location’s main number when the location has multiple floors or buildings. This allows the ECBN assigned to have a more accurate Emergency Service Address associated with it.\n * `NONE` - When no other option is selected.\n"
+    GetPersonCallbackNumberDependenciesObject:
+      type: object
+      required:
+      - isLocationEcbnDefault
+      - isSelfEcbnDefault
+      - dependentMemberCount
+      properties:
+        isLocationEcbnDefault:
+          type: boolean
+          example: true
+          description: The default emergency callback number for the location when `isLocationEcbnDefault` is true.
+        isSelfEcbnDefault:
+          type: boolean
+          description: The default emergency callback number for the person when `isSelfEcbnDefault` is true.
+        dependentMemberCount:
+          type: number
+          description: Number of members using this person as their emergency callback number.
+    CallBackSelectedPatch:
+      type: string
+      enum:
+      - DIRECT_LINE
+      - LOCATION_ECBN
+      - LOCATION_MEMBER_NUMBER
+      description: " * `DIRECT_LINE` - Returned calls from the Public Safety Answering Point go directly to the member. The Emergency Service Address configured by the PSTN to the member's phone is specific to the member’s location.\n * `LOCATION_ECBN` - Each location can have an ECBN configured that is different from the location’s main number. Location Default ECBN is typically configured for users without dedicated telephone numbers or with only an extension.\n * `LOCATION_MEMBER_NUMBER` - Configure one user with another user’s telephone number as an ECBN. This option is used in place of a location’s main number when the location has multiple floors or buildings. This allows the ECBN assigned to have a more accurate Emergency Service Address associated with it.\n"
+    GetComplianceStatusResponseRedSkyClientLocation:
+      type: object
+      required:
+      - id
+      - name
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OL2E4Mjg5NzIyLTFiODAtNDFiNy05Njc4LTBlNzdhZThjMTA5OA
+          description: Unique identifier for the location.
+        name:
+          type: string
+          example: MainOffice
+          description: Name of the location.
+        state:
+          $ref: '#/components/schemas/GetComplianceStatusResponseLocationStateEnum'
+          description: Configuration stage that was last completed for the specified location. The order of precedence is `LOCATION_SETUP`, `ALERTS`, `NETWORK_ELEMENTS`, `ROUTING_ENABLE`. If at least one location is `LOCATION_SETUP`, then `locationState` will be set to `LOCATION_SETUP`. Otherwise, `locationState` will check for the next precedence option and at least one location should have that option.
+    UpdateComplianceStatusResponseLocationStateEnum:
+      type: string
+      enum:
+      - LOCATION_SETUP
+      - ALERTS
+      - NETWORK_ELEMENTS
+      - ROUTING_ENABLE
+      description: " * `LOCATION_SETUP` - RedSky account is pending location setup.\n * `ALERTS` - RedSky account is pending email notification configuration.\n * `NETWORK_ELEMENTS` - RedSky account is pending network element setup.\n * `ROUTING_ENABLE` - RedSky account is pending the routing enable setup stage.\n"
+    PutWorkspaceECBNObject:
+      type: object
+      properties:
+        selected:
+          $ref: '#/components/schemas/CallBackSelectedPatch'
+          description: The source from which the emergency calling line ID (CLID) is selected for an actual emergency call.
+        locationMemberId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1BMQUNFLzExYTNmOTkwLWE2ODktNDc3ZC1iZTZiLTcxMjAwMjVkOGFiYg
+          description: Member ID of person/workspace/virtual line/hunt group within the location. Required when `selected` is `LOCATION_MEMBER_NUMBER`.
+        elinEnabled:
+          type: boolean
+          example: false
+          description: Indicates whether this workspace is allowed to use an Emergency Location Identification Number (ELIN) for emergency calls made from one of its devices.
+    RedSkyServiceSettingsObject:
+      type: object
+      required:
+      - enabled
+      properties:
+        enabled:
+          type: boolean
+          example: true
+          description: '`true` if the service is enabled.'
+        companyId:
+          type: string
+          example: a5e5808f-34ac-4ed0-b8f3-2416bc4cb785
+          description: The RedSky company ID, which can be retrieved from the RedSky portal.
+        secret:
+          type: string
+          example: qwEr4%2d
+          description: The company secret key, which can be found in the RedSky portal.
+        externalTenantEnabled:
+          type: boolean
+          example: true
+          description: '`true` if the RedSky reseller customer is not under a Cisco account.'
+        email:
+          type: string
+          example: test@cisco.com
+          description: The email for the RedSky account. `email` is required if `externalTenantEnabled` is true.
+        password:
+          type: string
+          example: Test@123
+          description: The password for the RedSky account. `password` is required if `externalTenantEnabled` is true.
+    orgPrefixObject:
+      type: string
+      enum:
+      - wxc
+      - wxc-whs
+      description: " * `wxc` - The customer is Webex calling.\n * `wxc-whs` - The customer is a wholesale.\n"
+    ECBNDirectLineEffectiveLevelType:
+      type: string
+      enum:
+      - DIRECT_LINE
+      - LOCATION_ECBN
+      - LOCATION_NUMBER
+      - NONE
+      description: " * `DIRECT_LINE` - Returned calls from the Public Safety Answering Point go directly to the member. The Emergency Service Address configured by the PSTN to the member's phone is specific to the member’s location.\n * `LOCATION_ECBN` - Each location can have an ECBN configured that is different from the location’s main number. Location Default ECBN is typically configured for users without dedicated telephone numbers or with only an extension.\n * `LOCATION_NUMBER` - A location’s main number that is suitable for when the location has a single building with a single floor.\n * `NONE` - There is no effective level type selected.\n"
+    LoginRequest:
+      type: object
+      required:
+      - email
+      - password
+      properties:
+        email:
+          type: string
+          example: test@cisco.com
+          description: Email for the RedSky account.
+        password:
+          type: string
+          example: Test@123
+          description: Password for the RedSky account.
+        redSkyOrgId:
+          type: string
+          example: 2ff43e05-af11-41ff-91b6-87a3b509f4z4
+          description: The RedSky organization ID for the organization which can be found in the RedSky portal.
+    UpdateLocationComplianceStatusResponse:
+      type: object
+      properties:
+        locationsStatus:
+          $ref: '#/components/schemas/ComplianceStatusLocationStatusObject'
+          description: Contains RedSky account configuration status for the locations in the organization.
+    ComplianceStatusRequestEnum:
+      type: string
+      enum:
+      - OPTED_OUT
+      - LOCATION_SETUP
+      - ALERTS
+      - NETWORK_ELEMENTS
+      - ROUTING_ENABLED
+      description: " * `OPTED_OUT` - Customer has opted out of the E911 service.\n * `LOCATION_SETUP` - Building and locations stage of the RedSky account creation has been completed.\n * `ALERTS` - Email notification configuration stage of the RedSky account creation has been completed.\n * `NETWORK_ELEMENTS` - Network wire map configuration stage of the RedSky account creation process has been completed and Webex Calling will begin routing emergency test number calls (933) to RedSky.\n * `ROUTING_ENABLED` - Emergency calls for devices in the specified locations will begin to route to RedSky.\n"
+    OrgCallNotificationObject:
+      type: object
+      properties:
+        emergencyCallNotificationEnabled:
+          type: boolean
+          example: true
+          description: When true sends an email to the specified email address when a call is made to emergency services.
+        allowEmailNotificationAllLocationEnabled:
+          type: boolean
+          example: true
+          description: Send an emergency call notification email for all locations.
+        emailAddress:
+          type: string
+          example: callback@gmail.com
+          description: When `emergencyCallNotificationEnabled` is true, the emergency notification email is sent to the specified email address.
+    RedSkyGetObject:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          example: true
+          description: '`true` if the service is enabled.'
+        companyId:
+          type: string
+          example: a5e5808f-34ac-4ed0-b8f3-2416bc4cb785
+          description: The RedSky company ID, which can be retrieved from the RedSky portal.
+        secret:
+          type: string
+          example: '*****'
+          description: The company secret key, which can be found in the RedSky portal. It will be displayed with data masked.
+        locationsEnabled:
+          type: boolean
+          example: true
+          description: '`true` if RedSky is enabled for any location.'
+    ComplianceStatusResponseEnum:
+      type: string
+      enum:
+      - OPTED_OUT
+      - EXEMPTED
+      - NON_COMPLIANT
+      - COMPLIANT
+      description: " * `OPTED_OUT` - Customer has opted out of the E911 service.\n * `EXEMPTED` - RedSky account compliance status has been exempted.\n * `NON_COMPLIANT` - RedSky account is non-compliant.\n * `COMPLIANT` - RedSky account is compliant.\n"
+    PutECBNObject:
+      type: object
+      required:
+      - selected
+      properties:
+        selected:
+          $ref: '#/components/schemas/CallBackSelectedPatch'
+          description: The source from which the emergency calling line ID (CLID) is selected for an actual emergency call.
+        locationMemberId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1BMQUNFLzExYTNmOTkwLWE2ODktNDc3ZC1iZTZiLTcxMjAwMjVkOGFiYg
+          description: Member ID of person/workspace/virtual line/hunt group within the location. Required when `selected` is `LOCATION_MEMBER_NUMBER`.
+    CreateBuildingRequest:
+      type: object
+      required:
+      - alertingEmail
+      properties:
+        alertingEmail:
+          type: string
+          example: test@cisco.com
+          description: Email that is used to create alerts in RedSky. At least one email is mandatory.
+        address:
+          $ref: '#/components/schemas/AddressObject'
+          description: Contains address information for the building.
+    PutPersonECBNObject:
+      type: object
+      properties:
+        selected:
+          $ref: '#/components/schemas/CallBackSelectedPatch'
+          description: The source from which the emergency calling line ID (CLID) is selected for an actual emergency call.
+        locationMemberId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1BMQUNFLzExYTNmOTkwLWE2ODktNDc3ZC1iZTZiLTcxMjAwMjVkOGFiYg
+          description: Member ID of person/workspace/virtual line/hunt group within the location. Required when `selected` is `LOCATION_MEMBER_NUMBER`.
+        elinEnabled:
+          type: boolean
+          example: false
+          description: Indicates whether this person is allowed to use an Emergency Location Identification Number (ELIN) for emergency calls made from one of their devices.
+        elinForWebexAppEnabled:
+          type: boolean
+          example: false
+          description: Indicates whether this member is allowed to use an Emergency Location Identification Number (ELIN) for emergency calls made using Webex App.
+    UpdateBuildingRequest:
+      type: object
+      properties:
+        address:
+          $ref: '#/components/schemas/AddressObject'
+          description: Contains address information for the building.
+    ECBNQualityType:
+      type: string
+      enum:
+      - RECOMMENDED
+      - NOT_RECOMMENDED
+      - INVALID
+      description: " * `RECOMMENDED` - An activated number, associated with a User or Workspace.\n * `NOT_RECOMMENDED` - An activated number, associated with anything else, like Auto Attendant or Hunt Group.\n * `INVALID` - An inactive or non-existent number.\n"
+    ComplianceStatusResponse:
       type: object
       required:
       - orgStatus
@@ -1948,194 +2189,8 @@ components:
           example: true
           description: '`true` if an Admin has been created in RedSky.'
         locationsStatus:
-          $ref: '#/components/schemas/ComplianceStatusLocationStatusObject'
-          description: Object that contains the `state`, `id`, and `name` for the `locationId` in the request.
-    GetComplianceStatusResponseLocationStateEnum:
-      type: string
-      enum:
-      - OPTED_OUT
-      - EXEMPTED
-      - LOCATION_SETUP
-      - ALERTS
-      - NETWORK_ELEMENTS
-      - ROUTING_ENABLE
-      - COMPLIANT
-      description: " * `OPTED_OUT` - Customer has opted out of the E911 service.\n * `EXEMPTED` - RedSky account compliance status has been exempted.\n * `LOCATION_SETUP` - RedSky account is pending location setup.\n * `ALERTS` - RedSky account is pending email notification configuration.\n * `NETWORK_ELEMENTS` - RedSky account is pending network element setup.\n * `ROUTING_ENABLE` - RedSky account is pending the routing enable setup stage.\n * `COMPLIANT` - RedSky account is compliant.\n"
-    ComplianceStatusResponseEnum:
-      type: string
-      enum:
-      - OPTED_OUT
-      - EXEMPTED
-      - NON_COMPLIANT
-      - COMPLIANT
-      description: " * `OPTED_OUT` - Customer has opted out of the E911 service.\n * `EXEMPTED` - RedSky account compliance status has been exempted.\n * `NON_COMPLIANT` - RedSky account is non-compliant.\n * `COMPLIANT` - RedSky account is compliant.\n"
-    RedSkyGetObject:
-      type: object
-      properties:
-        enabled:
-          type: boolean
-          example: true
-          description: '`true` if the service is enabled.'
-        companyId:
-          type: string
-          example: a5e5808f-34ac-4ed0-b8f3-2416bc4cb785
-          description: The RedSky company ID, which can be retrieved from the RedSky portal.
-        secret:
-          type: string
-          example: '*****'
-          description: The company secret key, which can be found in the RedSky portal. It will be displayed with data masked.
-        locationsEnabled:
-          type: boolean
-          example: true
-          description: '`true` if RedSky is enabled for any location.'
-    GetWorkspaceCallbackNumberDependenciesObject:
-      type: object
-      required:
-      - isLocationEcbnDefault
-      - isSelfEcbnDefault
-      - dependentMemberCount
-      properties:
-        isLocationEcbnDefault:
-          type: boolean
-          example: true
-          description: When `isLocationEcbnDefault` is true, then it is the default emergency callback number for the location.
-        isSelfEcbnDefault:
-          type: boolean
-          description: Default emergency callback number of the place if `true`.
-        dependentMemberCount:
-          type: number
-          description: Number of members using this workspace as their emergency callback number.
-    ECBNSelectionType:
-      type: string
-      enum:
-      - DIRECT_LINE
-      - LOCATION_ECBN
-      - LOCATION_MEMBER_NUMBER
-      - NONE
-      description: " * `DIRECT_LINE` - Returned calls from the Public Safety Answering Point go directly to the member. The Emergency Service Address configured by the PSTN to the member's phone is specific to the member’s location.\n * `LOCATION_ECBN` - Each location can have an ECBN configured that is different from the location’s main number. Location Default ECBN is typically configured for users without dedicated telephone numbers or with only an extension.\n * `LOCATION_MEMBER_NUMBER` - Configure one user with another user’s telephone number as an ECBN. This option is used in place of a location’s main number when the location has multiple floors or buildings. This allows the ECBN assigned to have a more accurate Emergency Service Address associated with it.\n * `NONE` - When no other option is selected.\n"
-    VirtualLinesECBNDependenciesObject:
-      type: object
-      required:
-      - isLocationEcbnDefault
-      - isSelfEcbnDefault
-      - dependentMemberCount
-      properties:
-        isLocationEcbnDefault:
-          type: boolean
-          example: true
-          description: '`true` if it is the default emergency callback number for the location.'
-        isSelfEcbnDefault:
-          type: boolean
-          example: true
-          description: Default emergency callback number for the virtual line if `true`.
-        dependentMemberCount:
-          type: number
-          example: 15
-          description: Number of members using this virtual line as their emergency callback number.
-    PutLocationCallNotificationObject:
-      type: object
-      properties:
-        emergencyCallNotificationEnabled:
-          type: boolean
-          example: true
-          description: When true sends an email to the specified email address when a call is made from this location to emergency services.
-        emailAddress:
-          type: string
-          example: callback@gmail.com
-          description: Sends an email to this email address when a call is made from this location to emergency services and `emergencyCallNotificationEnabled` is true.
-    GetComplianceStatusResponseLocationStatusObject:
-      type: object
-      properties:
-        count:
-          type: number
-          example: 2
-          description: Total count of locations available in the organization.
-        locations:
-          type: array
-          items:
-            $ref: '#/components/schemas/GetComplianceStatusResponseRedSkyClientLocation'
-          description: All the locations available in the organization.
-    LoginRequest:
-      type: object
-      required:
-      - email
-      - password
-      properties:
-        email:
-          type: string
-          example: test@cisco.com
-          description: Email for the RedSky account.
-        password:
-          type: string
-          example: Test@123
-          description: Password for the RedSky account.
-        redSkyOrgId:
-          type: string
-          example: 2ff43e05-af11-41ff-91b6-87a3b509f4z4
-          description: The RedSky organization ID for the organization which can be found in the RedSky portal.
-    PutWorkspaceECBNObject:
-      type: object
-      properties:
-        selected:
-          $ref: '#/components/schemas/CallBackSelectedPatch'
-          description: The source from which the emergency calling line ID (CLID) is selected for an actual emergency call.
-        locationMemberId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1BMQUNFLzExYTNmOTkwLWE2ODktNDc3ZC1iZTZiLTcxMjAwMjVkOGFiYg
-          description: Member ID of person/workspace/virtual line/hunt group within the location. Required when `selected` is `LOCATION_MEMBER_NUMBER`.
-        elinEnabled:
-          type: boolean
-          example: false
-          description: Indicates whether this workspace is allowed to use an Emergency Location Identification Number (ELIN) for emergency calls made from one of its devices.
-    OrgCallNotificationObject:
-      type: object
-      properties:
-        emergencyCallNotificationEnabled:
-          type: boolean
-          example: true
-          description: When true sends an email to the specified email address when a call is made to emergency services.
-        allowEmailNotificationAllLocationEnabled:
-          type: boolean
-          example: true
-          description: Send an emergency call notification email for all locations.
-        emailAddress:
-          type: string
-          example: callback@gmail.com
-          description: When `emergencyCallNotificationEnabled` is true, the emergency notification email is sent to the specified email address.
-    GetLocationCallNotificationObject:
-      type: object
-      properties:
-        emergencyCallNotificationEnabled:
-          type: boolean
-          example: true
-          description: When true sends an email to the specified email address when a call is made from this location to emergency services.
-        emailAddress:
-          type: string
-          example: callback@gmail.com
-          description: When `emergencyCallNotificationEnabled` is true, the emergency notification email is sent to the specified email address.
-        organization:
-          type: object
-          properties:
-            emergencyCallNotificationEnabled:
-              type: boolean
-              example: true
-              description: When true sends an email to the specified email address when a call is made from this location to emergency services.
-            allowEmailNotificationAllLocationEnabled:
-              type: boolean
-              example: true
-              description: Send an emergency call notification email for all locations.
-            emailAddress:
-              type: string
-              example: test@gmail.com
-              description: When `emergencyCallNotificationEnabled` is true, the emergency notification email is sent to the specified email address.
-          description: All locations at organization level
-    CallBackSelectedPatch:
-      type: string
-      enum:
-      - DIRECT_LINE
-      - LOCATION_ECBN
-      - LOCATION_MEMBER_NUMBER
-      description: " * `DIRECT_LINE` - Returned calls from the Public Safety Answering Point go directly to the member. The Emergency Service Address configured by the PSTN to the member's phone is specific to the member’s location.\n * `LOCATION_ECBN` - Each location can have an ECBN configured that is different from the location’s main number. Location Default ECBN is typically configured for users without dedicated telephone numbers or with only an extension.\n * `LOCATION_MEMBER_NUMBER` - Configure one user with another user’s telephone number as an ECBN. This option is used in place of a location’s main number when the location has multiple floors or buildings. This allows the ECBN assigned to have a more accurate Emergency Service Address associated with it.\n"
+          $ref: '#/components/schemas/ComplianceStatusResponseLocationStatusObject'
+          description: Object that contains a list of locations, the `count` for the location list, and the `state` for the location that has completed the least amount of setup. Available if at least one location is exists.
     ComplianceStatusResponseRedSkyClientLocation:
       type: object
       required:
@@ -2169,81 +2224,112 @@ components:
           type: string
           example: ddd1424c-5b48-433d-9bab-061cdfb84c90
           description: The RedSky held token from the secret response.
-    GetLocationCallingParamtersResponse:
-      type: object
-      properties:
-        integrationEnabled:
-          type: boolean
-          example: true
-          description: Enable to allow RedSky to receive network connectivity information and test calls.
-        routingEnabled:
-          type: boolean
-          example: true
-          description: Enable to route emergency calls to RedSky.
-    PutECBNObject:
-      type: object
-      required:
-      - selected
-      properties:
-        selected:
-          $ref: '#/components/schemas/CallBackSelectedPatch'
-          description: The source from which the emergency calling line ID (CLID) is selected for an actual emergency call.
-        locationMemberId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1BMQUNFLzExYTNmOTkwLWE2ODktNDc3ZC1iZTZiLTcxMjAwMjVkOGFiYg
-          description: Member ID of person/workspace/virtual line/hunt group within the location. Required when `selected` is `LOCATION_MEMBER_NUMBER`.
-    MemberType:
-      type: string
-      enum:
-      - PEOPLE
-      - PLACE
-      description: " * `PEOPLE` - Indicates the associated member is a person.\n * `PLACE` - Indicates the associated member is a workspace.\n"
-    CreateBuildingRequest:
-      type: object
-      required:
-      - alertingEmail
-      properties:
-        alertingEmail:
-          type: string
-          example: test@cisco.com
-          description: Email that is used to create alerts in RedSky. At least one email is mandatory.
-        address:
-          $ref: '#/components/schemas/AddressObject'
-          description: Contains address information for the building.
-    ECBNDirectLineEffectiveLevelType:
-      type: string
-      enum:
-      - DIRECT_LINE
-      - LOCATION_ECBN
-      - LOCATION_NUMBER
-      - NONE
-      description: " * `DIRECT_LINE` - Returned calls from the Public Safety Answering Point go directly to the member. The Emergency Service Address configured by the PSTN to the member's phone is specific to the member’s location.\n * `LOCATION_ECBN` - Each location can have an ECBN configured that is different from the location’s main number. Location Default ECBN is typically configured for users without dedicated telephone numbers or with only an extension.\n * `LOCATION_NUMBER` - A location’s main number that is suitable for when the location has a single building with a single floor.\n * `NONE` - There is no effective level type selected.\n"
-    RedSkyComplianceStatusRequestObject:
-      type: object
-      required:
-      - complianceStatus
-      properties:
-        complianceStatus:
-          $ref: '#/components/schemas/ComplianceStatusRequestEnum'
-          description: 'Specifies which stage of the RedSky account creation process has been completed. The stages must be completed in the following order: `LOCATION_SETUP`, `ALERTS`, `NETWORK_ELEMENTS`, `ROUTING_ENABLED`.'
-    PutPersonECBNObject:
+    GetWorkspaceCallbackNumberObject:
       type: object
       properties:
         selected:
-          $ref: '#/components/schemas/CallBackSelectedPatch'
-          description: The source from which the emergency calling line ID (CLID) is selected for an actual emergency call.
-        locationMemberId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1BMQUNFLzExYTNmOTkwLWE2ODktNDc3ZC1iZTZiLTcxMjAwMjVkOGFiYg
-          description: Member ID of person/workspace/virtual line/hunt group within the location. Required when `selected` is `LOCATION_MEMBER_NUMBER`.
+          $ref: '#/components/schemas/ECBNSelectionType'
+          description: Selected number type to configure emergency call back.
+        directLineInfo:
+          type: object
+          properties:
+            phoneNumber:
+              type: string
+              example: '18164196065'
+              description: The callback phone number that is associated with the direct line.
+            firstName:
+              type: string
+              example: backUpworkspace
+              description: The first name of the user.
+            lastName:
+              type: string
+              example: .
+              description: The last name of the user.
+            effectiveLevel:
+              $ref: '#/components/schemas/ECBNDirectLineEffectiveLevelType'
+              description: The source from which the emergency calling line ID (CLID) is selected for an actual emergency call, applying fallback rules as necessary.
+            effectiveValue:
+              type: string
+              example: '18164196065'
+              description: The field contains the valid ECBN number at the location level, or the user's main number if valid, defaulting to the location's main number if both are unavailable.
+            quality:
+              $ref: '#/components/schemas/ECBNQualityType'
+              description: Used to represent whether a number is a recommended ECBN.
+          description: Data relevant to the ECBN for this user/location/virtual line/hunt group.
+        locationECBNInfo:
+          type: object
+          properties:
+            phoneNumber:
+              type: string
+              example: '18164196065'
+              description: The callback phone number that is associated with the location's ECBN configuration.
+            lastName:
+              type: string
+              example: .
+              description: The last name of the user or location member.
+            effectiveLevel:
+              $ref: '#/components/schemas/ECBNDirectLineEffectiveLevelType'
+              description: The source from which the emergency calling line ID (CLID) is selected for an actual emergency call, applying fallback rules as necessary.
+            effectiveValue:
+              type: string
+              example: '18164196065'
+              description: The field contains the valid ECBN number at the location level, or the user's main number if valid, defaulting to the location's main number if both are unavailable.
+            quality:
+              $ref: '#/components/schemas/ECBNQualityType'
+              description: Used to represent whether a number is a recommended ECBN.
+            firstName:
+              type: string
+              example: backUpworkspace
+              description: The first name of the user, location member, or group name.
+          description: Data relevant to the user/place/virtual line/hunt group selected for ECBN for this location.
+        locationMemberInfo:
+          type: object
+          properties:
+            phoneNumber:
+              type: string
+              example: '18164196065'
+              description: The callback phone number that is associated with member configured for the location ECBN.
+            firstName:
+              type: string
+              example: backUpworkspace
+              description: The first name of the user.
+            lastName:
+              type: string
+              example: .
+              description: The last name of the user or location member.
+            memberId:
+              type: string
+              example: Y2lzY29zcGFyazovL3VybjpURUFNOnVzLWVhc3QtMV9pbnQxMy9QTEFDRS8wY2VlYjFmYy04ZmEyLTQ5OGEtYWM3Ni02N2MyZGQ3MGQ2ZGY=
+              description: Member ID of user/place/virtual line/hunt group within the location.
+            effectiveLevel:
+              $ref: '#/components/schemas/LocationMemberInfoEffectiveLevelType'
+              description: The source from which the emergency calling line ID (CLID) is selected for an actual emergency call, applying fallback rules as necessary.
+            effectiveValue:
+              type: string
+              example: '18164196065'
+              description: The field contains the valid ECBN number at the location level, or the user's main number if valid, defaulting to the location's main number if both are unavailable.
+            quality:
+              $ref: '#/components/schemas/ECBNQualityType'
+              description: Used to represent whether a number is a recommended ECBN.
+            memberType:
+              $ref: '#/components/schemas/MemberType'
+              description: Type of the member.
+          description: Data relevant to the user/place/virtual line/hunt group selected for ECBN.
+        defaultInfo:
+          type: object
+          properties:
+            effectiveValue:
+              type: string
+              example: '18164196068'
+              description: The field contains the ECBN number.
+            quality:
+              $ref: '#/components/schemas/ECBNQualityType'
+              description: Used to represent whether a number is a recommended ECBN.
+          description: Gives Emergency Callback Number effective value when none of the above is assigned or some other value is set behind the scene.
         elinEnabled:
           type: boolean
           example: false
-          description: Indicates whether this person is allowed to use an Emergency Location Identification Number (ELIN) for emergency calls made from one of their devices.
-        elinForWebexAppEnabled:
-          type: boolean
-          example: false
-          description: Indicates whether this member is allowed to use an Emergency Location Identification Number (ELIN) for emergency calls made using Webex App.
+          description: Indicates whether this workspace is allowed to use an Emergency Location Identification Number (ELIN) for emergency calls made from one of its devices.
     GetComplianceStatusResponse:
       type: object
       required:
@@ -2271,166 +2357,6 @@ components:
         locationsStatus:
           $ref: '#/components/schemas/GetComplianceStatusResponseLocationStatusObject'
           description: Object that contains a list of locations and the `count` for the location list. Available if at least one location is exists.
-    GetPersonCallbackNumberObject:
-      type: object
-      properties:
-        selected:
-          $ref: '#/components/schemas/ECBNSelectionType'
-          description: Selected number type to configure emergency callback.
-        directLineInfo:
-          type: object
-          properties:
-            phoneNumber:
-              type: string
-              example: '18164196065'
-              description: The callback phone number that is associated with the direct line.
-            firstName:
-              type: string
-              example: User1
-              description: The first name of the user.
-            lastName:
-              type: string
-              example: User1LastName
-              description: The last name of the user.
-            effectiveLevel:
-              $ref: '#/components/schemas/ECBNDirectLineEffectiveLevelType'
-              description: The source from which the emergency calling line ID (CLID) is selected for an actual emergency call, applying fallback rules as necessary.
-            effectiveValue:
-              type: string
-              example: '18164196065'
-              description: The field contains the valid ECBN number at the location level, or the user's main number if valid, defaulting to the location's main number if both are unavailable.
-            quality:
-              $ref: '#/components/schemas/ECBNQualityType'
-              description: Used to represent whether a number is a recommended ECBN.
-          description: Data relevant to the ECBN for this user/location/virtual line/hunt group.
-        locationECBNInfo:
-          type: object
-          properties:
-            firstName:
-              type: string
-              example: group1
-              description: The first name of the user, location member, or group name.
-            lastName:
-              type: string
-              example: .
-              description: The last name of the user or location member.
-            phoneNumber:
-              type: string
-              example: '18164196066'
-              description: The callback phone number that is associated with the location's ECBN configuration.
-            effectiveLevel:
-              $ref: '#/components/schemas/ECBNDirectLineEffectiveLevelType'
-              description: The source from which the emergency calling line ID (CLID) is selected for an actual emergency call, applying fallback rules as necessary.
-            effectiveValue:
-              type: string
-              example: '18164196066'
-              description: The field contains the valid ECBN number at the location level, or the user's main number if valid, defaulting to the location's main number if both are unavailable.
-            quality:
-              $ref: '#/components/schemas/ECBNQualityType'
-              description: Used to represent whether a number is a recommended ECBN.
-          description: Data relevant to the ECBN for this user/location/virtual line/hunt group.
-        locationMemberInfo:
-          type: object
-          properties:
-            phoneNumber:
-              type: string
-              example: '18164196067'
-              description: The callback phone number that is associated with member configured for the location ECBN.
-            firstName:
-              type: string
-              example: workspace1
-              description: The first name of the user.
-            lastName:
-              type: string
-              example: .
-              description: The last name of the user.
-            memberId:
-              type: string
-              example: Y2lzY29zcGFyazovL3VzL1BMQUNFLzExYTNmOTkwLWE2ODktNDc3ZC1iZTZiLTcxMjAwMjVkOGFiYg
-              description: Member ID of user/place/virtual line/hunt group within the location
-            memberType:
-              $ref: '#/components/schemas/MemberType'
-              description: Type of the member.
-            effectiveLevel:
-              $ref: '#/components/schemas/LocationMemberInfoEffectiveLevelType'
-              description: The source from which the emergency calling line ID (CLID) is selected for an actual emergency call, applying fallback rules as necessary.
-            effectiveValue:
-              type: string
-              example: '18164196067'
-              description: The field contains the valid ECBN number at the location level, or the user's main number if valid, defaulting to the location's main number if both are unavailable.
-            quality:
-              $ref: '#/components/schemas/ECBNQualityType'
-              description: Used to represent whether a number is a recommended ECBN.
-          description: Data relevant to the ECBN for this user/location/virtual line/hunt group.
-        defaultInfo:
-          type: object
-          properties:
-            effectiveValue:
-              type: string
-              example: '18164196068'
-              description: The field contains the ECBN number.
-            quality:
-              $ref: '#/components/schemas/ECBNQualityType'
-              description: Used to represent whether a number is a recommended ECBN.
-          description: Gives Emergency Callback Number effective value when none of the above is assigned or some other value is set behind the scene.
-        elinEnabled:
-          type: boolean
-          example: false
-          description: Indicates whether this person is allowed to use an Emergency Location Identification Number (ELIN) for emergency calls made from one of their devices.
-        elinForWebexAppEnabled:
-          type: boolean
-          example: false
-          description: Indicates whether this person is allowed to use an Emergency Location Identification Number (ELIN) for emergency calls made using Webex App.
-    ComplianceStatusResponse:
-      type: object
-      required:
-      - orgStatus
-      - complianceStatus
-      properties:
-        orgStatus:
-          $ref: '#/components/schemas/OrgStatusEnum'
-          description: The RedSky account configuration status for the organization.
-        complianceStatus:
-          $ref: '#/components/schemas/ComplianceStatusResponseEnum'
-          description: The RedSky account's compliance status.
-        companyId:
-          type: string
-          example: ddd1424c-5b48-433d-9bab-061cdfb84c90
-          description: The RedSky held token from the secret response.
-        redSkyOrgId:
-          type: string
-          example: 2ff43e05-af11-41ff-91b6-87a3b509f4z4
-          description: The RedSky organization ID for the organization which can be found in the RedSky portal.
-        adminExists:
-          type: boolean
-          example: true
-          description: '`true` if an Admin has been created in RedSky.'
-        locationsStatus:
-          $ref: '#/components/schemas/ComplianceStatusResponseLocationStatusObject'
-          description: Object that contains a list of locations, the `count` for the location list, and the `state` for the location that has completed the least amount of setup. Available if at least one location is exists.
-    UpdateLocationComplianceStatusResponse:
-      type: object
-      properties:
-        locationsStatus:
-          $ref: '#/components/schemas/ComplianceStatusLocationStatusObject'
-          description: Contains RedSky account configuration status for the locations in the organization.
-    GetComplianceStatusResponseRedSkyClientLocation:
-      type: object
-      required:
-      - id
-      - name
-      properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OL2E4Mjg5NzIyLTFiODAtNDFiNy05Njc4LTBlNzdhZThjMTA5OA
-          description: Unique identifier for the location.
-        name:
-          type: string
-          example: MainOffice
-          description: Name of the location.
-        state:
-          $ref: '#/components/schemas/GetComplianceStatusResponseLocationStateEnum'
-          description: Configuration stage that was last completed for the specified location. The order of precedence is `LOCATION_SETUP`, `ALERTS`, `NETWORK_ELEMENTS`, `ROUTING_ENABLE`. If at least one location is `LOCATION_SETUP`, then `locationState` will be set to `LOCATION_SETUP`. Otherwise, `locationState` will check for the next precedence option and at least one location should have that option.
     LocationMemberInfoEffectiveLevelType:
       type: string
       enum:
@@ -2440,76 +2366,24 @@ components:
       - LOCATION_MEMBER_NUMBER
       - NONE
       description: " * `DIRECT_LINE` - Returned calls from the Public Safety Answering Point go directly to the member. The Emergency Service Address configured by the PSTN to the member's phone is specific to the member’s location.\n * `LOCATION_ECBN` - Each location can have an ECBN configured that is different from the location’s main number. Location Default ECBN is typically configured for users without dedicated telephone numbers or with only an extension.\n * `LOCATION_NUMBER` - A location’s main number that is suitable for when the location has a single building with a single floor.\n * `LOCATION_MEMBER_NUMBER` - Configure one user with another user’s telephone number as an ECBN. This option is used in place of a location’s main number when the location has multiple floors or buildings. This allows the ECBN assigned to have a more accurate Emergency Service Address associated with it.\n * `NONE` - When no other option is selected.\n"
-    OrgStatusEnum:
-      type: string
-      enum:
-      - INITIALISE
-      - ENABLED
-      - OPTED_OUT
-      description: " * `INITIALISE` - RedSky account configuration process is in progress.\n * `ENABLED` - RedSky account configuration process is complete.\n * `OPTED_OUT` - Customer has opted out of the E911 service.\n"
-    ComplianceStatusResponseLocationStatusObject:
+    GetHuntGroupCallbackNumberDependenciesObject:
       type: object
+      required:
+      - isLocationEcbnDefault
+      - isSelfEcbnDefault
+      - dependentMemberCount
       properties:
-        state:
-          $ref: '#/components/schemas/UpdateComplianceStatusResponseLocationStateEnum'
-          description: Configuration stage that was last completed. The order of precedence is `LOCATION_SETUP`, `ALERTS`, `NETWORK_ELEMENTS`, `ROUTING_ENABLE`. If at least one location is `LOCATION_SETUP`, then `locationState` will be set to `LOCATION_SETUP`. Otherwise, `locationState` will check for the next precedence option and at least one location should have that option.
-        count:
+        isLocationEcbnDefault:
+          type: boolean
+          example: true
+          description: The default emergency callback number for the location when `isLocationEcbnDefault` is true.
+        isSelfEcbnDefault:
+          type: boolean
+          description: The default emergency callback number.
+        dependentMemberCount:
           type: number
-          example: 2
-          description: Total count of locations available in the organization.
-        locations:
-          type: array
-          items:
-            $ref: '#/components/schemas/ComplianceStatusResponseRedSkyClientLocation'
-          description: List of locations that have completed the least amount of setup. Only 4 locations are included in this list.
-    ComplianceStatusRequestEnum:
-      type: string
-      enum:
-      - OPTED_OUT
-      - LOCATION_SETUP
-      - ALERTS
-      - NETWORK_ELEMENTS
-      - ROUTING_ENABLED
-      description: " * `OPTED_OUT` - Customer has opted out of the E911 service.\n * `LOCATION_SETUP` - Building and locations stage of the RedSky account creation has been completed.\n * `ALERTS` - Email notification configuration stage of the RedSky account creation has been completed.\n * `NETWORK_ELEMENTS` - Network wire map configuration stage of the RedSky account creation process has been completed and Webex Calling will begin routing emergency test number calls (933) to RedSky.\n * `ROUTING_ENABLED` - Emergency calls for devices in the specified locations will begin to route to RedSky.\n"
-    orgPrefixObject:
-      type: string
-      enum:
-      - wxc
-      - wxc-whs
-      description: " * `wxc` - The customer is Webex calling.\n * `wxc-whs` - The customer is a wholesale.\n"
-    UpdateBuildingRequest:
-      type: object
-      properties:
-        address:
-          $ref: '#/components/schemas/AddressObject'
-          description: Contains address information for the building.
-    AddressObject:
-      type: object
-      properties:
-        addressLine1:
-          type: string
-          example: 170 West Tasman Dr
-          description: First line of the building's address.
-        addressLine2:
-          type: string
-          example: Building 6
-          description: Second line of the building's address.
-        city:
-          type: string
-          example: San Jose
-          description: City for the building's address.
-        stateOrProvince:
-          type: string
-          example: California
-          description: State or Province for the building's address.
-        zipOrPostalCode:
-          type: string
-          example: '95134'
-          description: Zip or Postal Code for the building's address.
-        country:
-          type: string
-          example: US
-          description: Country for the building's address.
+          example: 4
+          description: Number of members using this hunt group as their emergency callback number.
     VirtualLinesECBNObject:
       type: object
       required:
@@ -2624,7 +2498,7 @@ components:
               $ref: '#/components/schemas/ECBNQualityType'
               description: Used to represent whether a number is a recommended ECBN.
           description: Contains the Emergency Callback Number effective value when none of the above parameters are assigned or some other value is set.
-    GetHuntGroupCallbackNumberDependenciesObject:
+    GetWorkspaceCallbackNumberDependenciesObject:
       type: object
       required:
       - isLocationEcbnDefault
@@ -2634,27 +2508,84 @@ components:
         isLocationEcbnDefault:
           type: boolean
           example: true
-          description: The default emergency callback number for the location when `isLocationEcbnDefault` is true.
+          description: When `isLocationEcbnDefault` is true, then it is the default emergency callback number for the location.
         isSelfEcbnDefault:
           type: boolean
-          description: The default emergency callback number.
+          description: Default emergency callback number of the place if `true`.
         dependentMemberCount:
           type: number
-          example: 4
-          description: Number of members using this hunt group as their emergency callback number.
-    ECBNQualityType:
+          description: Number of members using this workspace as their emergency callback number.
+    GetComplianceStatusResponseLocationStatusObject:
+      type: object
+      properties:
+        count:
+          type: number
+          example: 2
+          description: Total count of locations available in the organization.
+        locations:
+          type: array
+          items:
+            $ref: '#/components/schemas/GetComplianceStatusResponseRedSkyClientLocation'
+          description: All the locations available in the organization.
+    ComplianceStatusResponseLocationStatusObject:
+      type: object
+      properties:
+        state:
+          $ref: '#/components/schemas/UpdateComplianceStatusResponseLocationStateEnum'
+          description: Configuration stage that was last completed. The order of precedence is `LOCATION_SETUP`, `ALERTS`, `NETWORK_ELEMENTS`, `ROUTING_ENABLE`. If at least one location is `LOCATION_SETUP`, then `locationState` will be set to `LOCATION_SETUP`. Otherwise, `locationState` will check for the next precedence option and at least one location should have that option.
+        count:
+          type: number
+          example: 2
+          description: Total count of locations available in the organization.
+        locations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ComplianceStatusResponseRedSkyClientLocation'
+          description: List of locations that have completed the least amount of setup. Only 4 locations are included in this list.
+    GetComplianceStatusResponseLocationStateEnum:
       type: string
       enum:
-      - RECOMMENDED
-      - NOT_RECOMMENDED
-      - INVALID
-      description: " * `RECOMMENDED` - An activated number, associated with a User or Workspace.\n * `NOT_RECOMMENDED` - An activated number, associated with anything else, like Auto Attendant or Hunt Group.\n * `INVALID` - An inactive or non-existent number.\n"
-    GetWorkspaceCallbackNumberObject:
+      - OPTED_OUT
+      - EXEMPTED
+      - LOCATION_SETUP
+      - ALERTS
+      - NETWORK_ELEMENTS
+      - ROUTING_ENABLE
+      - COMPLIANT
+      description: " * `OPTED_OUT` - Customer has opted out of the E911 service.\n * `EXEMPTED` - RedSky account compliance status has been exempted.\n * `LOCATION_SETUP` - RedSky account is pending location setup.\n * `ALERTS` - RedSky account is pending email notification configuration.\n * `NETWORK_ELEMENTS` - RedSky account is pending network element setup.\n * `ROUTING_ENABLE` - RedSky account is pending the routing enable setup stage.\n * `COMPLIANT` - RedSky account is compliant.\n"
+    AddressObject:
+      type: object
+      properties:
+        addressLine1:
+          type: string
+          example: 170 West Tasman Dr
+          description: First line of the building's address.
+        addressLine2:
+          type: string
+          example: Building 6
+          description: Second line of the building's address.
+        city:
+          type: string
+          example: San Jose
+          description: City for the building's address.
+        stateOrProvince:
+          type: string
+          example: California
+          description: State or Province for the building's address.
+        zipOrPostalCode:
+          type: string
+          example: '95134'
+          description: Zip or Postal Code for the building's address.
+        country:
+          type: string
+          example: US
+          description: Country for the building's address.
+    GetPersonCallbackNumberObject:
       type: object
       properties:
         selected:
           $ref: '#/components/schemas/ECBNSelectionType'
-          description: Selected number type to configure emergency call back.
+          description: Selected number type to configure emergency callback.
         directLineInfo:
           type: object
           properties:
@@ -2664,11 +2595,11 @@ components:
               description: The callback phone number that is associated with the direct line.
             firstName:
               type: string
-              example: backUpworkspace
+              example: User1
               description: The first name of the user.
             lastName:
               type: string
-              example: .
+              example: User1LastName
               description: The last name of the user.
             effectiveLevel:
               $ref: '#/components/schemas/ECBNDirectLineEffectiveLevelType'
@@ -2684,62 +2615,62 @@ components:
         locationECBNInfo:
           type: object
           properties:
-            phoneNumber:
+            firstName:
               type: string
-              example: '18164196065'
-              description: The callback phone number that is associated with the location's ECBN configuration.
+              example: group1
+              description: The first name of the user, location member, or group name.
             lastName:
               type: string
               example: .
               description: The last name of the user or location member.
+            phoneNumber:
+              type: string
+              example: '18164196066'
+              description: The callback phone number that is associated with the location's ECBN configuration.
             effectiveLevel:
               $ref: '#/components/schemas/ECBNDirectLineEffectiveLevelType'
               description: The source from which the emergency calling line ID (CLID) is selected for an actual emergency call, applying fallback rules as necessary.
             effectiveValue:
               type: string
-              example: '18164196065'
+              example: '18164196066'
               description: The field contains the valid ECBN number at the location level, or the user's main number if valid, defaulting to the location's main number if both are unavailable.
             quality:
               $ref: '#/components/schemas/ECBNQualityType'
               description: Used to represent whether a number is a recommended ECBN.
-            firstName:
-              type: string
-              example: backUpworkspace
-              description: The first name of the user, location member, or group name.
-          description: Data relevant to the user/place/virtual line/hunt group selected for ECBN for this location.
+          description: Data relevant to the ECBN for this user/location/virtual line/hunt group.
         locationMemberInfo:
           type: object
           properties:
             phoneNumber:
               type: string
-              example: '18164196065'
+              example: '18164196067'
               description: The callback phone number that is associated with member configured for the location ECBN.
             firstName:
               type: string
-              example: backUpworkspace
+              example: workspace1
               description: The first name of the user.
             lastName:
               type: string
               example: .
-              description: The last name of the user or location member.
+              description: The last name of the user.
             memberId:
               type: string
-              example: Y2lzY29zcGFyazovL3VybjpURUFNOnVzLWVhc3QtMV9pbnQxMy9QTEFDRS8wY2VlYjFmYy04ZmEyLTQ5OGEtYWM3Ni02N2MyZGQ3MGQ2ZGY=
-              description: Member ID of user/place/virtual line/hunt group within the location.
+              example: Y2lzY29zcGFyazovL3VzL1BMQUNFLzExYTNmOTkwLWE2ODktNDc3ZC1iZTZiLTcxMjAwMjVkOGFiYg
+              description: Member ID of user/place/virtual line/hunt group within the location
+            memberType:
+              $ref: '#/components/schemas/MemberType'
+              description: Type of the member.
             effectiveLevel:
               $ref: '#/components/schemas/LocationMemberInfoEffectiveLevelType'
               description: The source from which the emergency calling line ID (CLID) is selected for an actual emergency call, applying fallback rules as necessary.
             effectiveValue:
               type: string
-              example: '18164196065'
+              example: '18164196067'
               description: The field contains the valid ECBN number at the location level, or the user's main number if valid, defaulting to the location's main number if both are unavailable.
             quality:
               $ref: '#/components/schemas/ECBNQualityType'
               description: Used to represent whether a number is a recommended ECBN.
-            memberType:
-              $ref: '#/components/schemas/MemberType'
-              description: Type of the member.
-          description: Data relevant to the user/place/virtual line/hunt group selected for ECBN.
+          description: Data relevant to the ECBN for this user/location/virtual line/hunt group.
         defaultInfo:
           type: object
           properties:
@@ -2754,7 +2685,49 @@ components:
         elinEnabled:
           type: boolean
           example: false
-          description: Indicates whether this workspace is allowed to use an Emergency Location Identification Number (ELIN) for emergency calls made from one of its devices.
+          description: Indicates whether this person is allowed to use an Emergency Location Identification Number (ELIN) for emergency calls made from one of their devices.
+        elinForWebexAppEnabled:
+          type: boolean
+          example: false
+          description: Indicates whether this person is allowed to use an Emergency Location Identification Number (ELIN) for emergency calls made using Webex App.
+    RedSkyComplianceStatusRequestObject:
+      type: object
+      required:
+      - complianceStatus
+      properties:
+        complianceStatus:
+          $ref: '#/components/schemas/ComplianceStatusRequestEnum'
+          description: 'Specifies which stage of the RedSky account creation process has been completed. The stages must be completed in the following order: `LOCATION_SETUP`, `ALERTS`, `NETWORK_ELEMENTS`, `ROUTING_ENABLED`.'
+    VirtualLinesECBNDependenciesObject:
+      type: object
+      required:
+      - isLocationEcbnDefault
+      - isSelfEcbnDefault
+      - dependentMemberCount
+      properties:
+        isLocationEcbnDefault:
+          type: boolean
+          example: true
+          description: '`true` if it is the default emergency callback number for the location.'
+        isSelfEcbnDefault:
+          type: boolean
+          example: true
+          description: Default emergency callback number for the virtual line if `true`.
+        dependentMemberCount:
+          type: number
+          example: 15
+          description: Number of members using this virtual line as their emergency callback number.
+    PutLocationCallNotificationObject:
+      type: object
+      properties:
+        emergencyCallNotificationEnabled:
+          type: boolean
+          example: true
+          description: When true sends an email to the specified email address when a call is made from this location to emergency services.
+        emailAddress:
+          type: string
+          example: callback@gmail.com
+          description: Sends an email to this email address when a call is made from this location to emergency services and `emergencyCallNotificationEnabled` is true.
     ComplianceStatusLocationStatusObject:
       type: object
       properties:
@@ -2770,43 +2743,78 @@ components:
           items:
             $ref: '#/components/schemas/ComplianceStatusResponseRedSkyClientLocation'
           description: Object that contains the `id` and the `name` for the location in the request.
-    UpdateComplianceStatusResponseLocationStateEnum:
-      type: string
-      enum:
-      - LOCATION_SETUP
-      - ALERTS
-      - NETWORK_ELEMENTS
-      - ROUTING_ENABLE
-      description: " * `LOCATION_SETUP` - RedSky account is pending location setup.\n * `ALERTS` - RedSky account is pending email notification configuration.\n * `NETWORK_ELEMENTS` - RedSky account is pending network element setup.\n * `ROUTING_ENABLE` - RedSky account is pending the routing enable setup stage.\n"
-    RedSkyServiceSettingsObject:
+    GetLocationCallNotificationObject:
+      type: object
+      properties:
+        emergencyCallNotificationEnabled:
+          type: boolean
+          example: true
+          description: When true sends an email to the specified email address when a call is made from this location to emergency services.
+        emailAddress:
+          type: string
+          example: callback@gmail.com
+          description: When `emergencyCallNotificationEnabled` is true, the emergency notification email is sent to the specified email address.
+        organization:
+          type: object
+          properties:
+            emergencyCallNotificationEnabled:
+              type: boolean
+              example: true
+              description: When true sends an email to the specified email address when a call is made from this location to emergency services.
+            allowEmailNotificationAllLocationEnabled:
+              type: boolean
+              example: true
+              description: Send an emergency call notification email for all locations.
+            emailAddress:
+              type: string
+              example: test@gmail.com
+              description: When `emergencyCallNotificationEnabled` is true, the emergency notification email is sent to the specified email address.
+          description: All locations at organization level
+    GetLocationComplianceStatusResponse:
       type: object
       required:
-      - enabled
+      - orgStatus
+      - complianceStatus
       properties:
-        enabled:
-          type: boolean
-          example: true
-          description: '`true` if the service is enabled.'
+        orgStatus:
+          $ref: '#/components/schemas/OrgStatusEnum'
+          description: The RedSky account configuration status for the organization.
+        complianceStatus:
+          $ref: '#/components/schemas/ComplianceStatusResponseEnum'
+          description: The RedSky account's compliance status.
         companyId:
           type: string
-          example: a5e5808f-34ac-4ed0-b8f3-2416bc4cb785
-          description: The RedSky company ID, which can be retrieved from the RedSky portal.
-        secret:
+          example: ddd1424c-5b48-433d-9bab-061cdfb84c90
+          description: The RedSky held token from the secret response.
+        redSkyOrgId:
           type: string
-          example: qwEr4%2d
-          description: The company secret key, which can be found in the RedSky portal.
-        externalTenantEnabled:
+          example: 2ff43e05-af11-41ff-91b6-87a3b509f4z4
+          description: The RedSky organization ID for the organization which can be found in the RedSky portal.
+        adminExists:
           type: boolean
           example: true
-          description: '`true` if the RedSky reseller customer is not under a Cisco account.'
-        email:
-          type: string
-          example: test@cisco.com
-          description: The email for the RedSky account. `email` is required if `externalTenantEnabled` is true.
-        password:
-          type: string
-          example: Test@123
-          description: The password for the RedSky account. `password` is required if `externalTenantEnabled` is true.
+          description: '`true` if an Admin has been created in RedSky.'
+        locationsStatus:
+          $ref: '#/components/schemas/ComplianceStatusLocationStatusObject'
+          description: Object that contains the `state`, `id`, and `name` for the `locationId` in the request.
+    OrgStatusEnum:
+      type: string
+      enum:
+      - INITIALISE
+      - ENABLED
+      - OPTED_OUT
+      description: " * `INITIALISE` - RedSky account configuration process is in progress.\n * `ENABLED` - RedSky account configuration process is complete.\n * `OPTED_OUT` - Customer has opted out of the E911 service.\n"
+    GetLocationCallingParamtersResponse:
+      type: object
+      properties:
+        integrationEnabled:
+          type: boolean
+          example: true
+          description: Enable to allow RedSky to receive network connectivity information and test calls.
+        routingEnabled:
+          type: boolean
+          example: true
+          description: Enable to route emergency calls to RedSky.
     RedSkyCreateObject:
       type: object
       required:
@@ -2823,23 +2831,12 @@ components:
           type: string
           example: 584cf4cd-eea7-4c8c-83ee-67d88fc6eab5
           description: New organization is created under this partner organization ID if present, otherwise it will be created under a Cisco partner.
-    GetPersonCallbackNumberDependenciesObject:
-      type: object
-      required:
-      - isLocationEcbnDefault
-      - isSelfEcbnDefault
-      - dependentMemberCount
-      properties:
-        isLocationEcbnDefault:
-          type: boolean
-          example: true
-          description: The default emergency callback number for the location when `isLocationEcbnDefault` is true.
-        isSelfEcbnDefault:
-          type: boolean
-          description: The default emergency callback number for the person when `isSelfEcbnDefault` is true.
-        dependentMemberCount:
-          type: number
-          description: Number of members using this person as their emergency callback number.
+    MemberType:
+      type: string
+      enum:
+      - PEOPLE
+      - PLACE
+      description: " * `PEOPLE` - Indicates the associated member is a person.\n * `PLACE` - Indicates the associated member is a workspace.\n"
   securitySchemes:
     oauth2:
       flows:
@@ -2858,6 +2855,3 @@ components:
       description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
       scheme: bearer
       bearerFormat: JWT
-x-refined-from:
-- webex-cloud-calling-openapi.json
-- webex-emergency-services-settings-api-openapi.yml

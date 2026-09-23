@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: Webex Users API
+  title: Webex Contact Center Users API
   version: 1.0.0
-  description: 'Operations tagged Users across 2 of this provider''s published API definitions: webex-contact-center-openapi.json, webex-users-api-openapi.yml. Each path carries the servers of the definition it was published in.'
+  description: The Webex Contact Center APIs allow developers to deeply integrate, configure, and manage cloud-based contact center solutions.
   x-provenance:
     method: harvested
     authored_by: Cisco Webex
@@ -11,9 +11,6 @@ info:
     first_party: true
     note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
     provider_published: true
-    derived_view: Per-tag view of webex-contact-center-openapi.json, the provider's source document. Operations and schemas are the provider's, unmodified; only the partition is ours.
-    derived_from: webex-contact-center-openapi.json
-    operation_coverage: 17/17
   x-evidence:
   - type: source
     url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-contact-center.json
@@ -674,7 +671,7 @@ paths:
       tags:
       - Users
       summary: Get specific User by CI User ID
-      description: Retrieve an existing User using the CI ID  in a given organization. Deprecated. Use GET /v2/user/by-ci-user-id/{id} instead.
+      description: Retrieve an existing User using the CI ID in a given organization. Deprecated. Use GET /v2/user/by-ci-user-id/{id} instead.
       operationId: getUserByCiUserIdUser
       parameters:
       - name: orgid
@@ -2729,7 +2726,7 @@ paths:
       tags:
       - Users
       summary: Get specific User by CI User ID
-      description: Retrieve an existing User using the CI ID  in a given organization.
+      description: Retrieve an existing User using the CI ID in a given organization.
       operationId: getUserByCiUserIdWithUserProfileGranularAccessUser
       parameters:
       - name: orgid
@@ -3056,6 +3053,457 @@ paths:
                     references: []
 components:
   schemas:
+    UserDetailsRequestDTO:
+      type: object
+      description: Get user details by a list of user IDs in the payload.
+      properties:
+        userIds:
+          type: array
+          description: 'List of valid user IDs.
+
+            Provide this only when both `search` and `queueId` are not provided.
+
+            '
+          items:
+            description: User identifier included in the request
+            example: a1b2c3d4-e5f6-7g8h-9i10-j11k12l13m14
+        search:
+          type: string
+          description: 'Text used to search for users (e.g., by firstName, lastName or email of the user).
+
+            If provided, `queueId` is **required**.
+
+            Cannot be used in combination with `userIds`.
+
+            '
+          example: john
+        queueId:
+          type: string
+          description: 'Agent Based Queue ID to filter users .
+
+            Required if `search` is provided.
+
+            Cannot be used with `userIds`.
+
+            '
+          example: c0ffee12-3456-abcd-7890-deadbeef1234
+    JsonValue:
+      type: object
+      description: Json Value schema.
+      properties:
+        valueType:
+          type: string
+          description: Value Type.
+          enum:
+          - ARRAY
+          - OBJECT
+          - STRING
+          - NUMBER
+          - 'TRUE'
+          - 'FALSE'
+          - 'NULL'
+    UserProfileDTO_UserResponseWithUserProfile:
+      type: object
+      description: User profile data transfer object that defines access permissions and resource scope for contact center users
+      properties:
+        organizationId:
+          type: string
+          format: uuid
+          description: ID of the contact center organization. This field is required for all bulk save operations.
+          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+          maxLength: 36
+          minLength: 32
+          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
+        id:
+          type: string
+          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
+          example: 93912f11-6017-404b-bf14-5331890b1797
+        version:
+          type: integer
+          format: int32
+          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
+          example: 1
+        name:
+          type: string
+          description: The name of the user profile.
+          example: Contact Center Admin Profile
+          maxLength: 80
+          minLength: 0
+          pattern: ^[a-zA-Z0-9,_\-\s]*$
+        description:
+          type: string
+          description: An optional description of the profile.
+          example: This profile should be applied only to contact center admins.
+          maxLength: 255
+          minLength: 0
+        profileType:
+          type: string
+          description: "The type determines the privileges applicable for a profile.\n\nIt can take one of these values:\n\nSTANDARD_AGENT — Has access to Agent Desktop[m_agent_desktop] module.\n\nPREMIUM_AGENT — Has access to Agent Desktop[m_agent_desktop] and Multimedia[m_multimedia] module.\n\nSUPERVISOR — Has access to all modules except to manage tenants in the Provisioning[m_provisioning] module.\n\nADMINISTRATOR — Has access to all modules.\n\nADMINISTRATOR_ONLY — Has access to Provisioning[m_provisioning], Real Time Reports[m_real_time_reports], Call Recording[m_call_recording], IMI Digital Channels[m_imi_digital_channels], and Routing Strategy[m_routing_strategy] modules.\n\nIt is required only during a create operation. \n\nThe profile type cannot be changed for an existing user profile.\n\n"
+          enum:
+          - ADMINISTRATOR
+          - ADMINISTRATOR_ONLY
+          - SUPERVISOR
+          - PREMIUM_AGENT
+          - STANDARD_AGENT
+          - ANALYZER_ADMINISTRATOR
+          - ANALYZER_SUPERVISOR
+          - ANALYZER_USER
+          example: PREMIUM_AGENT
+        accessAllModules:
+          type: string
+          description: 'This can be used to allow users of this profile access to specific or all the Webex Contact Center modules.
+
+
+            It can take one of these values:
+
+
+            ALL — A contact center user with this profile can access all Contact Center modules.
+
+
+            SPECIFIC — A contact center user with this profile can access only specific modules.
+
+
+            '
+          enum:
+          - SPECIFIC
+          - ALL
+          - PROVISIONED_VALUE
+          - NONE
+          example: ALL
+        userProfileAppModules:
+          type: array
+          description: 'Specifies the module(s) a user of this profile has access to.
+
+
+            It should be chosen when module access is SPECIFIC.
+
+
+            Please specify all the following modules and their respective access type.
+
+
+            '
+          items:
+            $ref: '#/components/schemas/UserProfileAppModuleDTO_UserResponseWithUserProfile'
+            description: User Profile App Module.
+          uniqueItems: true
+        accessAllEntryPoints:
+          type: string
+          description: 'Allow users of this profile access to specific or all the entry points for an organization.
+
+
+            It can take one of these values:
+
+
+            ALL — A contact center user with this profile can access all the entry points for an organization.
+
+
+            SPECIFIC — A contact center user with this profile can access only specific entry points for an organization.
+
+
+            '
+          enum:
+          - SPECIFIC
+          - ALL
+          - PROVISIONED_VALUE
+          - NONE
+          example: ALL
+        accessAllSites:
+          type: string
+          description: 'Allow users of this profile access to specific or all the sites for an organization.
+
+
+            It can take one of these values:
+
+
+            ALL — A contact center user with this profile can access all the sites for an organization.
+
+
+            SPECIFIC — A contact center user with this profile can access only specific sites for an organization.
+
+
+            '
+          enum:
+          - SPECIFIC
+          - ALL
+          - PROVISIONED_VALUE
+          - NONE
+          example: ALL
+        accessAllQueues:
+          type: string
+          description: 'Allow users of this profile access to specific or all the contact center queues for an organization.
+
+
+            It can take one of these values:
+
+
+            ALL — A contact center user with this profile can access all the contact center queues for an organization.
+
+
+            SPECIFIC — A contact center user with this profile can access only specific contact center queues for an organization.
+
+
+            '
+          enum:
+          - SPECIFIC
+          - ALL
+          - PROVISIONED_VALUE
+          - NONE
+          example: ALL
+        accessAllTeams:
+          type: string
+          description: 'Allow users of this profile access to specific or all the contact center teams for an organization.
+
+
+            It can take one of these values:
+
+
+            ALL — A contact center user with this profile can access all the contact center teams for an organization.
+
+
+            SPECIFIC — A contact center user with this profile can access only specific contact center teams for an organization.
+
+
+            '
+          enum:
+          - SPECIFIC
+          - ALL
+          - PROVISIONED_VALUE
+          - NONE
+          example: ALL
+        active:
+          type: boolean
+          description: Specify whether the User profile is active or not.
+          example: true
+        editableFolderIds:
+          type: array
+          description: "Indicates the id(s) of the reporting folders a user of this profile has read and write access to. \n"
+          items:
+            description: Identifier of a folder the user profile can edit
+            example: 1
+          uniqueItems: true
+        viewableFolderIds:
+          type: array
+          description: "Indicates the id(s) of the reporting folders a user of this profile has read access to. \n"
+          items:
+            description: Identifier of a folder the user profile can view
+            example: 2
+          uniqueItems: true
+        nonViewableFolderIds:
+          type: array
+          description: "Indicates the id(s) of the restricted reporting folders for a user of this profile. \n"
+          items:
+            description: Identifier of a folder hidden from the user profile
+            example: 3
+          uniqueItems: true
+        systemDefault:
+          type: boolean
+          description: Indicates whether the created resource is system created or not
+          example: false
+        createdTime:
+          type: integer
+          format: int64
+          description: This is the created time of the entity.
+          example: 123456789
+        lastUpdatedTime:
+          type: integer
+          format: int64
+          description: This is the updated time of the entity.
+          example: 123456789
+        entryPoints:
+          type: array
+          description: "Specify the id(s) of the entry point(s) a user of this profile will have access to. \n\nIt should be chosen when entry points access is SPECIFIC. Please see '''Entry Point documentation''', and use Get EntryPoints API to fetch the values of entry points.\n\n"
+          items:
+            description: Entry point identifier assigned to the user profile
+            example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+          uniqueItems: true
+        sites:
+          type: array
+          description: "Specify the id(s) of the site(s) a user of this profile will have access to. \nIt should be chosen when sites access is SPECIFIC. Please see Sites documentation, and use Get Site API to fetch the values of site IDs.\n\n"
+          items:
+            description: Site identifier assigned to the user profile
+            example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+          uniqueItems: true
+        queues:
+          type: array
+          description: "Specify the id(s) of the queue(s) a user of this profile will have access to. \nIt should be chosen when queues access is SPECIFIC. Please see Queues documentation, and use Get Queues API to fetch the values of queue IDs.\n\n"
+          items:
+            description: Queue identifier assigned to the user profile
+            example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+          uniqueItems: true
+        teams:
+          type: array
+          description: 'Specify the id(s) of the team(s) a user of this profile will have access to.
+
+            It should be chosen when teams access is SPECIFIC. Please see Teams documentation, and use Get Teams API to fetch the values of team IDs.
+
+
+            '
+          items:
+            description: Team identifier assigned to the user profile
+            example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+          uniqueItems: true
+      required:
+      - accessAllEntryPoints
+      - accessAllModules
+      - accessAllQueues
+      - accessAllSites
+      - accessAllTeams
+      - active
+      - name
+      - profileType
+    PaginationLinks:
+      type: object
+      properties:
+        self:
+          type: string
+          description: Link to the current page.
+          example: /v1/callbacks/organization/${orgId}/scheduled-callback?page=1&pageSize=10
+        first:
+          type: string
+          description: Link to the first page.
+          example: /v1/callbacks/organization/${orgId}/scheduled-callback?page=0&pageSize=10
+        last:
+          type: string
+          description: Link to the last page.
+          example: /v1/callbacks/organization/${orgId}/scheduled-callback?page=4&pageSize=10
+        next:
+          type: string
+          description: Link to the next page.
+          example: /v1/callbacks/organization/${orgId}/scheduled-callback?page=2&pageSize=10
+        prev:
+          type: string
+          description: Link to the previous page.
+          example: /v1/callbacks/organization/${orgId}/scheduled-callback?page=0&pageSize=10
+      required:
+      - self
+    OperationError:
+      description: An error message providing details about the operation failure.
+      type: object
+      properties:
+        description:
+          type: string
+          description: A human readable explanation for the occurrence of an error.
+          example: Incorrect Credentials.
+    ReSkillAgentRequestDTO:
+      type: object
+      description: Request DTO for re-skilling an agent with a new skill profile and/or dynamic skills
+      properties:
+        organizationId:
+          type: string
+          format: uuid
+          description: ID of the contact center organization. This field is required for all bulk save operations.
+          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+          maxLength: 36
+          minLength: 32
+          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
+        id:
+          type: string
+          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
+          example: 93912f11-6017-404b-bf14-5331890b1797
+        version:
+          type: integer
+          format: int32
+          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
+          example: 1
+        skillProfileId:
+          type: string
+          description: The unique identifier of the skill profile to assign to the agent
+          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+        dynamicSkills:
+          $ref: '#/components/schemas/DynamicSkills'
+          description: Dynamic skills to add or remove from the agent
+        createdTime:
+          type: integer
+          format: int64
+          description: This is the created time of the entity.
+          example: 123456789
+        lastUpdatedTime:
+          type: integer
+          format: int64
+          description: This is the updated time of the entity.
+          example: 123456789
+    QueuesCountDTO_UserResponseWithUserProfile:
+      type: object
+      description: 'The count of each type of Contact Service Queues that the user is assigned to.
+
+        '
+      example:
+        teamBased: 5
+        skillBased: 3
+        agentBased: 2
+      properties:
+        teamBased:
+          type: integer
+          format: int32
+          description: Number of team-based queues assigned to the user.
+          example: 5
+        skillBased:
+          type: integer
+          format: int32
+          description: Number of skill-based queues assigned to the user.
+          example: 3
+        agentBased:
+          type: integer
+          format: int32
+          description: Number of agent-based queues assigned to the user.
+          example: 2
+    MetaDataPagedUser:
+      type: object
+      description: Meta Data Paged User schema.
+      properties:
+        orgid:
+          type: string
+          description: ID of the contact center organization. This field is required for all bulk save operations.
+          example: af9eecc5-0472-4549-9a83-2afdae0d4ba0
+        page:
+          type: integer
+          format: int32
+          description: Current page number.
+          example: 1
+        pageSize:
+          type: integer
+          format: int32
+          description: Page size for current data set.
+          example: 20
+        totalPages:
+          type: integer
+          format: int32
+          description: Number of pages.
+          example: 5
+        totalRecords:
+          type: integer
+          format: int64
+          description: Total number of items.
+          example: 100
+        links:
+          type: object
+          $ref: '#/components/schemas/PaginationLinks'
+          additionalProperties:
+            type: string
+            description: Links additional property.
+          description: Pagination links for navigating between result pages.
+        actualBurnoutInclusionCount:
+          type: integer
+          format: int64
+          description: Indicates the actual count of Agents selected for Agent burnout detection, including restricted agents that are not visible to requesting user.
+          example: 100
+        actualAutoCSATCount:
+          type: integer
+          format: int64
+          description: Indicates the actual count of Agents selected for Auto CSAT scores, including restricted agents that are not visible to requesting user.
+          example: 100
+        actualSummariesCount:
+          type: integer
+          format: int64
+          description: Indicates the actual count of Agents selected for Generated Summaries, including restricted agents that are not visible to requesting user.
+          example: 100
+    BulkResponseDTO:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BulkResponseItemDTO'
     ResourceCollectionDTO:
       type: object
       description: A collection of resources with their types and access levels.
@@ -3129,6 +3577,743 @@ components:
           example: 123456789
       required:
       - name
+    ErrorDetails:
+      description: Details of an error.
+      type: object
+      properties:
+        key:
+          type: string
+          description: An application defined error code.
+          example: '401'
+        message:
+          type: array
+          description: A message providing details about the error.
+          items:
+            $ref: '#/components/schemas/OperationError'
+    BulkRequestDTOUserDTO:
+      type: object
+      description: Bulk Request User schema.
+      properties:
+        items:
+          type: array
+          description: List of items in the bulk request.
+          items:
+            $ref: '#/components/schemas/BulkRequestItemDTOUserDTO'
+            description: Item.
+    BulkRequestItemDTOUpdateDynamicSkillsDTO:
+      type: object
+      description: List of items in the bulk request.
+      properties:
+        itemIdentifier:
+          type: integer
+          format: int32
+          description: Unique item identifier for a bulk operation.
+          example: 10
+        item:
+          $ref: '#/components/schemas/UpdateDynamicSkillsDTO'
+          description: Item.
+        requestAction:
+          type: string
+          description: Identifier for action type. Possible values are `SAVE` and `DELETE`.
+          example: SAVE
+    UserProfileAppModuleDTO_UserResponseWithUserProfile:
+      type: object
+      description: User Profile App Module DTO
+      properties:
+        organizationId:
+          type: string
+          format: uuid
+          description: ID of the contact center organization. This field is required for all bulk save operations.
+          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+          maxLength: 36
+          minLength: 32
+          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
+        id:
+          type: string
+          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
+          example: 93912f11-6017-404b-bf14-5331890b1797
+        version:
+          type: integer
+          format: int32
+          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
+          example: 1
+        appModuleId:
+          type: string
+          description: "The code of a Webex Contact Center module. \n\nPlease specify descriptions for each of these modules:\n\nm_provisioning - Refers to the provisioning module. Has access to Manage EntryPoints and Queues[f_manage_entrypt_queue], Revoke API Key[f_revoke_api_key], DN Mappings[f_dn_mappings], Manage User Profiles[f_manage_user_profiles], Manage Tenants[f_manage_tenants], Manage Users[f_manage_users], Portal Branding[f_portal_branding], Audit Trail[f_audit_trail], Manage Sites[f_manage_sites], Manage Teams[f_manage_teams], and Manage Dial Plans[f_manage_dial_plans] features.\n\nm_real_time_reports - Refers to the real time reporting module. Has access to Summary View[f_summary_view], Agent State Change[f_agent_state_change], Real Time Threshold Alerts[f_realtime_threshold_alerts], and Web CallBack Report[f_web_callback_report] features.\n\nm_historical_reports - Refers to the historical reporting module.\n\nm_routing_strategy - Refers to the routing strategy module. Has access to Manage Media Files[f_manage_media_files] and Manage Call Flow Scripts[f_manage_call_flow_scripts] features.\n\nm_call_recording - Refers to the call recording module.\n\nm_call_monitoring - Refers to the call monitoring module. Has access to Barge In[f_barge_in], View Blind Monitor Request[f_view_blind_monitor_requests], Whisper Coach[f_whisper_coach], Mid Call Monitor[f_mid_call_monitor], and Restricted Monitor[f_restricted_monitor_only] features.\n\nm_reporting_analytics - Refers to the reporting analytics module. Has access to Analyzer Data Exchange[f_analyzer_data_exchange] and Business Rules[f_business_rules] features. \n\nm_recording_management - Refers to the recording management module. Has access to Tags[f_tags], Security Keys[f_security_keys], Manage Recordings[f_manage_recordings], and Custom Attributes[f_custom_attributes] features.\n\nm_agent_desktop - Refers to the agent desktop module.\n\nm_logout_agents - Refers to the agent logout module.\n\nm_manage_agent_states - Refers to the agent state module. Has access to Sign Out Agent[f_sign_out_agent] and Change Agent State[f_change_agent_state] features.\n\nm_additional_supervisory_features - Refers to the additional supervisory features module. Has access to Sign Out Agents[f_sign_out_agents], Change Agent States[f_change_agent_states] and Send Messages[f_send_messages] features.\n\nm_multimedia - Refers to the multimedia module. Has access to Provisioning[f_mm_provisioning], Basic Digital[f_mm_basic_digital], Social Channel[f_mm_social_channel] and Agent Desktop[f_mm_agent_desktop] features.\n\nm_agent_wellbeing - Refers to the Agent Wellbeing module. Has access to Agent Wellbeing provisioning features.\n\nm_auto_csat - Refers to the Auto Csat module.\n\nm_generated_summaries - Refers to the Generated Summaries module.\n\nm_agent_personal_greetings - Refers to the Agent Personal Greetings module.\n\nm_functions - Refers to the Functions in flow module.\n\nm_realtime_transcripts - Refers to the Realtime Transcripts module.\n\nm_suggested_responses - Refers to the Suggested Responses module.\n"
+          example: m_provisioning
+          minLength: 1
+        moduleAccessType:
+          type: string
+          description: 'Indicates the access rights for a user of this profile for a Webex Contact Center module.
+
+
+            It can take be one of these values:
+
+
+            VIEW — A contact center user with this profile has read only access to a Contact Center module.
+
+
+            EDIT — A contact center user with this profile has read and write access to a Contact Center module.
+
+
+            NONE — A contact center user with this profile cannot access the module.
+
+
+            '
+          enum:
+          - NONE
+          - VIEW
+          - EDIT
+          example: EDIT
+        userProfileAppFeature:
+          type: array
+          description: "Specifies the module features(s) a user of this profile has access to. \n"
+          items:
+            $ref: '#/components/schemas/UserProfileAppFeatureDTO_UserResponseWithUserProfile'
+            description: User Profile App Feature item.
+          uniqueItems: true
+        createdTime:
+          type: integer
+          format: int64
+          description: This is the created time of the entity.
+          example: 123456789
+        lastUpdatedTime:
+          type: integer
+          format: int64
+          description: This is the updated time of the entity.
+          example: 123456789
+      required:
+      - appModuleId
+      - moduleAccessType
+    MetaDataWithPagingInfo:
+      type: object
+      description: Metadata of response with paging information
+      properties:
+        orgid:
+          type: string
+          format: uuid
+          description: Organization ID.
+          example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+          maxLength: 36
+          minLength: 32
+          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
+        page:
+          type: integer
+          format: int32
+          description: Current page number.
+          example: 1
+        pageSize:
+          type: integer
+          format: int32
+          description: Page size for current data set.
+          example: 100
+        totalPages:
+          type: integer
+          format: int32
+          description: Number of pages.
+          example: 1
+        totalRecords:
+          type: integer
+          format: int32
+          description: Total number of items.
+          example: 1000
+        links:
+          type: object
+          description: Map of pagination links with `self`, `next`, `prev`, `last`, and `first`.
+          example:
+            next: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=2&pageSize=10
+            last: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=3&pageSize=10
+            prev: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=0&pageSize=10
+            self: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=1&pageSize=10
+            first: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=0&pageSize=10
+      title: MetaDataWithPagingInfo
+    UserProfileAppFeatureDTO:
+      type: object
+      description: Data transfer object representing application feature access settings for a user profile
+      properties:
+        organizationId:
+          type: string
+          format: uuid
+          description: ID of the contact center organization. This field is required for all bulk save operations.
+          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+          maxLength: 36
+          minLength: 32
+          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
+        id:
+          type: string
+          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
+          example: 93912f11-6017-404b-bf14-5331890b1797
+        version:
+          type: integer
+          format: int32
+          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
+          example: 1
+        appFeatureId:
+          type: string
+          description: "The feature code of a Webex Contact Center module. \n\nPlease add all the following features with their respective modules and set it's featureAccessType to 'ON' or 'OFF', to specify if it is in use. Here is the complete list of Feature names and Feature Ids:\n\n\nFor module 'm_additional_supervisory_features' we have the following features:\n\nChange Agent States : f_change_agent_states\n\nSign out Agents : f_sign_out_agents\n\nSend Messages : f_send_messages\n\nRe-skill Agents : f_reskill_agents\n\nManage agent based queues : f_manage_agent_queue_assignments\n\nFor module 'm_real_time_reports' we have the following features:\n\nReal Time Threshold Alerts : f_realtime_threshold_alerts\n\nAgent State Change : f_agent_state_change\n\nSummary View : f_summary_view\n\nWeb Callback Report : f_web_callback_report\n\n\nFor module 'm_multimedia' we have the following features:\n\nMM Agent Desktop : f_mm_agent_desktop\n\nBasic Digital : f_mm_basic_digital\n\nMM Provisioning : f_mm_provisioning\n\nSocial Channel : f_mm_social_channel\n\n\nFor module 'm_reporting_analytics' we have the following features:\n\nAnalyzer Data Exchange : f_analyzer_data_exchange\n\nBusiness Rules : f_business_rules\n\n\nFor module 'm_manage_agent_states' we have the following features:\n\nChange Agent State : f_change_agent_state\n\nSign Out Agent : f_sign_out_agent\n\n\nFor module 'm_recording_management' we have the following features:\n\nCustom Attributes : f_custom_attributes\n\nManage Recordings : f_manage_recordings\n\nTags : f_tags\n\nSecurity Keys : f_security_keys\n\n\nFor module 'm_routing_strategy' we have the following features:\n\nManage Call Flow Scripts : f_manage_call_flow_scripts\n\nManage Media Files : f_manage_media_files\n\n\nFor module 'm_provisioning' we have the following features:\n\nManage EntryPoints and Queues : f_manage_teams\n\nManage Users : f_manage_users\n\nDN Mappings : f_dn_mappings\n\nManage Sites : f_manage_sites\n\nManage Teams : f_manage_teams\n\nManage User Profiles : f_manage_user_profiles\n\nRevoke API Key : f_revoke_api_key\n\nManage Dial Plans : f_manage_dial_plans\n\nManage Tenants : f_manage_tenants\n\nManage Entry Points and Queues : f_manage_entrypt_queue\n\nPortal Branding : f_portal_branding\n\nAudit Trail : f_audit_trail\n\nManage Business Hours : f_manage_business_hours\n\n\nFor module 'm_call_monitoring' we have the following features:\n\nMid Call Monitoring : f_mid_call_monitor\n\nBarge In : f_barge_in\n\nRestricted Monitor : f_restricted_monitor_only\n\nWhisper Coach : f_whisper_coach\n\nView Blind Monitor Request : f_view_blind_monitor_requests\n\n"
+          example: f_manage_sites
+          minLength: 1
+        appFeatureName:
+          type: string
+          description: The feature name of the Webex Contact Center module.
+          example: Manage Sites
+        featureAccessType:
+          type: string
+          description: 'Indicates whether a user of this profile has access to a module feature.
+
+
+            It can be one of these values:
+
+
+            OFF — A contact center user with this profile cannot access this module feature.
+
+
+            ON — A contact center user with this profile can access this module feature.
+
+
+            '
+          enum:
+          - 'OFF'
+          - 'ON'
+          example: 'ON'
+        createdTime:
+          type: integer
+          format: int64
+          description: This is the created time of the entity.
+          example: 123456789
+        lastUpdatedTime:
+          type: integer
+          format: int64
+          description: This is the updated time of the entity.
+          example: 123456789
+      required:
+      - appFeatureId
+      - featureAccessType
+    UpdateDynamicSkillsDTO:
+      type: object
+      description: Data transfer object for updating dynamic skills assigned to a user
+      properties:
+        organizationId:
+          type: string
+          format: uuid
+          description: ID of the contact center organization. This field is required for all bulk save operations.
+          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+          maxLength: 36
+          minLength: 32
+          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
+        id:
+          type: string
+          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
+          example: 93912f11-6017-404b-bf14-5331890b1797
+        version:
+          type: integer
+          format: int32
+          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
+          example: 1
+        userId:
+          type: string
+          description: The unique identifier of the user whose dynamic skills are being updated
+          example: 1dq21e23-1234-5578-9a83-2afdae0d4ba1
+        enumSkillValues:
+          type: array
+          description: Set of enumerated skill values for enum-type dynamic skills
+          example:
+          - SKILL_VALUE_1
+          - SKILL_VALUE_2
+          items:
+            type: string
+            description: Enum Skill Value.
+          uniqueItems: true
+        textValue:
+          type: string
+          description: Text value for text-type dynamic skills (maximum 100 characters)
+          example: Sample text skill value
+          maxLength: 100
+          minLength: 0
+        booleanValue:
+          type: boolean
+          description: Boolean value for boolean-type dynamic skills
+          example: true
+        proficiencyValue:
+          type: integer
+          format: int32
+          description: 'Proficiency value for proficiency-type dynamic skills (range: 0-10)'
+          example: 7
+          maximum: 10
+          minimum: 0
+        skillId:
+          type: string
+          description: The unique identifier of the dynamic skill being updated
+          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+        createdTime:
+          type: integer
+          format: int64
+          description: This is the created time of the entity.
+          example: 123456789
+        lastUpdatedTime:
+          type: integer
+          format: int64
+          description: This is the updated time of the entity.
+          example: 123456789
+    BulkRequestDTOUpdateDynamicSkillsDTO:
+      type: object
+      description: Bulk Request Update Dynamic Skills schema.
+      properties:
+        items:
+          type: array
+          description: List of items in the bulk request.
+          items:
+            $ref: '#/components/schemas/BulkRequestItemDTOUpdateDynamicSkillsDTO'
+            description: Item.
+    BulkRequestItemDTOUserDTO:
+      type: object
+      description: List of items in the bulk request.
+      properties:
+        itemIdentifier:
+          type: integer
+          format: int32
+          description: Unique item identifier for a bulk operation.
+          example: 10
+        item:
+          $ref: '#/components/schemas/UserDTO'
+          description: Item.
+        requestAction:
+          type: string
+          description: Identifier for action type. Possible values are `SAVE` and `DELETE`.
+          example: SAVE
+    UserDetailsResponseEnvelopeDTO:
+      type: object
+      description: Response envelope containing user details data with metadata and pagination information
+      example:
+        meta:
+          orgid: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+          page: 1
+          pageSize: 100
+          totalPages: 3
+          totalRecords: 300
+        data:
+        - id: 1dq21e23-1234-5578-9a83-2afdae0d4ba1
+          firstName: John
+          lastName: Doe
+          email: john.doe@company.com
+      properties:
+        meta:
+          type: object
+          additionalProperties:
+            description: Meta additional property.
+          description: Metadata of response with paging information. Includes orgId, page, pageSize, totalPages, totalRecords, and pagination links.
+          example:
+            orgid: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+            page: 1
+            pageSize: 100
+            totalPages: 3
+            totalRecords: 300
+            links:
+              next: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/user/fetch-user-details-by-ids?page=2&pageSize=100
+              last: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/user/fetch-user-details-by-ids?page=2&pageSize=100
+              prev: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/user/fetch-user-details-by-ids?page=0&pageSize=100
+              self: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/user/fetch-user-details-by-ids?page=1&pageSize=100
+              first: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/user/fetch-user-details-by-ids?page=0&pageSize=100
+        data:
+          type: array
+          description: List of Data.
+          items:
+            $ref: '#/components/schemas/UserDetailsResponseDTO'
+            description: Data item.
+    UserDetailsResponseDTO:
+      type: object
+      description: Data transfer object containing detailed user information
+      properties:
+        id:
+          type: string
+          description: Unique ID of the user
+          example: 123e4567-e89b-12d3-a456-426614174000
+        firstName:
+          type: string
+          description: First name of the user
+          example: John
+        lastName:
+          type: string
+          description: Last name of the user
+          example: Doe
+        email:
+          type: string
+          description: Email address of the user
+          example: john.doe@example.com
+    QueuesCountDTO:
+      type: object
+      description: 'The count of each type of Contact Service Queues that the user is assigned to.
+
+        '
+      example:
+        teamBased: 5
+        skillBased: 3
+        agentBased: 2
+      properties:
+        teamBased:
+          type: integer
+          format: int32
+          description: Number of team-based queues assigned to the user.
+          example: 5
+        skillBased:
+          type: integer
+          format: int32
+          description: Number of skill-based queues assigned to the user.
+          example: 3
+        agentBased:
+          type: integer
+          format: int32
+          description: Number of agent-based queues assigned to the user.
+          example: 2
+    ApiErrorResponse:
+      description: Response body for an API error.
+      type: object
+      properties:
+        trackingId:
+          type: string
+          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
+          example: c1a4fcef-aee2-4dea-8977-29f594760552
+        error:
+          description: An object containing details about the error.
+          $ref: '#/components/schemas/ErrorDetails'
+    UserProfileGranularAccessDTO:
+      type: object
+      description: Data Transfer Object for creating or updating a user profile with granular access controls.
+      example:
+        organizationId: f53c8b54-46ca-43f6-ba05-08426a46e23d
+        id: 93912f11-6017-404b-bf14-5331890b1797
+        version: 1
+        name: Contact Center Admin Profile
+        description: This profile should be applied only to contact center admins.
+        profileType: PREMIUM_AGENT
+        active: true
+        permissionAccessLevel: ALL
+        resourceAccessLevel: ALL
+        permissions:
+        - id: 00734874-4732-43bb-bfff-d1e75d309eb1
+          name: sites
+          access: NONE
+        editableFolderIds:
+        - 1
+        - 2
+        viewableFolderIds:
+        - 1
+        - 2
+        nonViewableFolderIds:
+        - 1
+        - 2
+        systemDefault: false
+        defaultResourceCollectionId: 80f49a6e-11d7-4651-b730-99ed2f726f61
+        resourceCollections:
+        - id: 80f49a6e-11d7-4651-b730-99ed2f726f61
+          name: Department1
+          description: Department1 description.
+          resources:
+          - name: team
+            accessLevel: SPECIFIC
+            ids:
+            - 00734874-4732-43bb-bfff-d1e75d309eb1
+            - 00734874-4732-43bb-bfff-d1e75d309eb2
+          - name: desktop-profile
+            accessLevel: ALL
+          - name: desktop-layout
+            accessLevel: NONE
+          resourceCount: 2
+        createdTime: 0
+        lastUpdatedTime: 0
+      properties:
+        organizationId:
+          type: string
+          format: uuid
+          description: ID of the contact center organization. This field is required for all bulk save operations.
+          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+          maxLength: 36
+          minLength: 32
+          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
+        id:
+          type: string
+          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
+          example: 93912f11-6017-404b-bf14-5331890b1797
+        version:
+          type: integer
+          format: int32
+          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
+          example: 1
+        name:
+          type: string
+          description: The name of the user profile.
+          example: Contact Center Admin Profile
+          maxLength: 80
+          minLength: 0
+          pattern: ^[a-zA-Z0-9,_\-\s]*$
+        description:
+          type: string
+          description: An optional description of the profile.
+          example: This profile should be applied only to contact center admins.
+          maxLength: 255
+          minLength: 0
+        profileType:
+          type: string
+          description: "The type determines the privileges applicable for a profile.\n\nIt can take one of these values:\n\nSTANDARD_AGENT — Has access to Agent Desktop[m_agent_desktop] module.\n\nPREMIUM_AGENT — Has access to Agent Desktop[m_agent_desktop] and Multimedia[m_multimedia] module.\n\nSUPERVISOR — Has access to all modules except to manage tenants in the Provisioning[m_provisioning] module.\n\nADMINISTRATOR — Has access to all modules.\n\nADMINISTRATOR_ONLY — Has access to Provisioning[m_provisioning], Real Time Reports[m_real_time_reports], Call Recording[m_call_recording], IMI Digital Channels[m_imi_digital_channels], and Routing Strategy[m_routing_strategy] modules.\n\nIt is required only during a create operation. \n\nThe profile type cannot be changed for an existing user profile.\n\n"
+          enum:
+          - ADMINISTRATOR
+          - ADMINISTRATOR_ONLY
+          - SUPERVISOR
+          - PREMIUM_AGENT
+          - STANDARD_AGENT
+          - ANALYZER_ADMINISTRATOR
+          - ANALYZER_SUPERVISOR
+          - ANALYZER_USER
+          example: PREMIUM_AGENT
+        active:
+          type: boolean
+          description: Specify whether the User profile is active or not.
+          example: true
+        permissionAccessLevel:
+          type: string
+          description: 'This can be used to allow users of this profile access to specific or all the Webex Contact Center permissions.
+
+
+            It can take one of these values:
+
+
+            ALL — A contact center user with this profile can access all Contact Center permissions.
+
+
+            SPECIFIC — A contact center user with this profile can access only specific permissions.
+
+
+            '
+          enum:
+          - SPECIFIC
+          - ALL
+          - PROVISIONED_VALUE
+          - NONE
+          example: ALL
+        resourceAccessLevel:
+          type: string
+          description: 'This can be used to allow users of this profile access to specific or all the Webex Contact Center resources.
+
+
+            It can take one of these values:
+
+
+            ALL — A contact center user with this profile can access all Contact Center resources.
+
+
+            SPECIFIC — A contact center user with this profile can access only specific resources.
+
+
+            '
+          enum:
+          - SPECIFIC
+          - ALL
+          - PROVISIONED_VALUE
+          - NONE
+          example: ALL
+        permissions:
+          type: array
+          description: 'Specifies the permissions(s) a user of this profile has access to.
+
+
+            It should be chosen when permission access is SPECIFIC.
+
+
+            Please specify all the following permissions and their respective access type.
+
+
+            '
+          items:
+            $ref: '#/components/schemas/UserProfilePermissionsDTO'
+            description: Permission.
+          uniqueItems: true
+        editableFolderIds:
+          type: array
+          description: "Indicates the id(s) of the reporting folders a user of this profile has read and write access to. \n"
+          example:
+          - 1
+          - 2
+          items:
+            type: integer
+            format: int32
+            description: Editable Folder Id.
+          uniqueItems: true
+        viewableFolderIds:
+          type: array
+          description: "Indicates the id(s) of the reporting folders a user of this profile has read access to. \n"
+          example:
+          - 1
+          - 2
+          items:
+            type: integer
+            format: int32
+            description: Viewable Folder Id.
+          uniqueItems: true
+        nonViewableFolderIds:
+          type: array
+          description: "Indicates the id(s) of the restricted reporting folders for a user of this profile. \n"
+          example:
+          - 1
+          - 2
+          items:
+            type: integer
+            format: int32
+            description: Non Viewable Folder Id.
+          uniqueItems: true
+        systemDefault:
+          type: boolean
+          description: Indicates whether the created resource is system created or not
+          example: false
+        defaultResourceCollectionId:
+          type: string
+          description: Specifies the default resource collection for this profile
+          example: 80f49a6e-11d7-4651-b730-99ed2f726f61
+        resourceCollections:
+          type: array
+          description: 'Specifies the resource collection(s) a user of this profile has access to.
+
+
+            resource collection(s) needs to be specified when resourceAccessLevel is SPECIFIC'
+          items:
+            $ref: '#/components/schemas/ResourceCollectionDTO'
+            description: Resource Collection.
+          uniqueItems: true
+        createdTime:
+          type: integer
+          format: int64
+          description: This is the created time of the entity.
+          example: 123456789
+        lastUpdatedTime:
+          type: integer
+          format: int64
+          description: This is the updated time of the entity.
+          example: 123456789
+      required:
+      - active
+      - name
+      - permissionAccessLevel
+      - profileType
+      - resourceAccessLevel
+    AssignedDynamicSkillsDTO_UserResponseWithUserProfile:
+      type: object
+      description: Data transfer object representing dynamic skills assigned to a user
+      properties:
+        organizationId:
+          type: string
+          format: uuid
+          description: ID of the contact center organization. This field is required for all bulk save operations.
+          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+          maxLength: 36
+          minLength: 32
+          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
+        id:
+          type: string
+          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
+          example: 93912f11-6017-404b-bf14-5331890b1797
+        version:
+          type: integer
+          format: int32
+          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
+          example: 1
+        skillId:
+          type: string
+          description: The ID of the skill.
+          example: skill456
+        skillName:
+          type: string
+          description: The name of the skill. Used for bulk upload operations to resolve skill by name instead of ID.
+          example: CustomerService
+        textValue:
+          type: string
+          description: A short textual description that represents a skill the agent has.
+          example: Credit card SME
+          maxLength: 100
+          minLength: 0
+        booleanValue:
+          type: boolean
+          description: Indicates whether the agent has this skill (True) or does not have the skill (False).
+          example: true
+        proficiencyValue:
+          type: integer
+          format: int32
+          description: A number between 0 and 10 to indicate how proficient the agent is in this skill.
+          example: 5
+          maximum: 10
+          minimum: 0
+        enumValue:
+          type: string
+          description: The enum value for enum-type skills. Supports multiple values as pipe-delimited string (e.g., '30|20|10').
+          example: french
+        enumSkillValues:
+          type: string
+          description: Indicates a value that represents a skill the agent has.
+          example: FRENCH
+        createdTime:
+          type: integer
+          format: int64
+          description: This is the created time of the entity.
+          example: 123456789
+        lastUpdatedTime:
+          type: integer
+          format: int64
+          description: This is the updated time of the entity.
+          example: 123456789
+      required:
+      - skillId
+    MetaDataReferencesPagingInfo:
+      title: MetaDataReferencesPagingInfo
+      type: object
+      properties:
+        orgid:
+          maxLength: 36
+          minLength: 32
+          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
+          type: string
+          description: Org ID
+          format: uuid
+          example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+        page:
+          type: integer
+          description: Current page number
+          format: int32
+          example: 1
+        pageSize:
+          type: integer
+          description: Page size for current data set
+          format: int32
+          example: 100
+        totalPages:
+          type: integer
+          description: Number of pages
+          format: int32
+          example: 1
+        totalRecords:
+          type: integer
+          description: Total number of items
+          format: int32
+          example: 1000
+        links:
+          type: object
+          description: Map of pagination links with self, next, prev, last and first
+          example:
+            next: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=2&pageSize=10
+            last: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=3&pageSize=10
+            prev: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=0&pageSize=10
+            self: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=1&pageSize=10
+            first: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=0&pageSize=10
+        referencedEntities:
+          type: array
+          description: List of referenced entities
+          example:
+          - agent-profile
+          - entrypoint
+          items:
+            type: string
+        currentEntity:
+          type: string
+          description: Name of current entity
+          example: entity_name
+      description: Metadata of response for references with paging information
     AssignedDynamicSkillsDTO:
       type: object
       description: Data transfer object representing dynamic skills assigned to a user
@@ -3195,6 +4380,96 @@ components:
           example: 123456789
       required:
       - skillId
+    EntityInfo:
+      type: object
+      properties:
+        id:
+          type: string
+          description: id
+          example: id.
+        name:
+          type: string
+          description: name
+          example: name.
+        additionalAttributes:
+          type: object
+          additionalProperties:
+            type: string
+            description: A map containing additional attributes of entity where both the key and value are Strings.
+            example: '{"key1":"value1","key2":"value2"}'
+          description: A map containing additional attributes of entity where both the key and value are Strings.
+          example:
+            key1: value1
+            key2: value2
+        createdDate:
+          type: string
+        lastModifiedDate:
+          type: string
+        version:
+          type: integer
+          format: int32
+    UserProfileAppFeatureDTO_UserResponseWithUserProfile:
+      type: object
+      description: Data transfer object representing application feature access settings for a user profile
+      properties:
+        organizationId:
+          type: string
+          format: uuid
+          description: ID of the contact center organization. This field is required for all bulk save operations.
+          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+          maxLength: 36
+          minLength: 32
+          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
+        id:
+          type: string
+          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
+          example: 93912f11-6017-404b-bf14-5331890b1797
+        version:
+          type: integer
+          format: int32
+          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
+          example: 1
+        appFeatureId:
+          type: string
+          description: "The feature code of a Webex Contact Center module. \n\nPlease add all the following features with their respective modules and set it's featureAccessType to 'ON' or 'OFF', to specify if it is in use. Here is the complete list of Feature names and Feature Ids:\n\n\nFor module 'm_additional_supervisory_features' we have the following features:\n\nChange Agent States : f_change_agent_states\n\nSign out Agents : f_sign_out_agents\n\nSend Messages : f_send_messages\n\nRe-skill Agents : f_reskill_agents\n\nManage agent based queues : f_manage_agent_queue_assignments\n\nFor module 'm_real_time_reports' we have the following features:\n\nReal Time Threshold Alerts : f_realtime_threshold_alerts\n\nAgent State Change : f_agent_state_change\n\nSummary View : f_summary_view\n\nWeb Callback Report : f_web_callback_report\n\n\nFor module 'm_multimedia' we have the following features:\n\nMM Agent Desktop : f_mm_agent_desktop\n\nBasic Digital : f_mm_basic_digital\n\nMM Provisioning : f_mm_provisioning\n\nSocial Channel : f_mm_social_channel\n\n\nFor module 'm_reporting_analytics' we have the following features:\n\nAnalyzer Data Exchange : f_analyzer_data_exchange\n\nBusiness Rules : f_business_rules\n\n\nFor module 'm_manage_agent_states' we have the following features:\n\nChange Agent State : f_change_agent_state\n\nSign Out Agent : f_sign_out_agent\n\n\nFor module 'm_recording_management' we have the following features:\n\nCustom Attributes : f_custom_attributes\n\nManage Recordings : f_manage_recordings\n\nTags : f_tags\n\nSecurity Keys : f_security_keys\n\n\nFor module 'm_routing_strategy' we have the following features:\n\nManage Call Flow Scripts : f_manage_call_flow_scripts\n\nManage Media Files : f_manage_media_files\n\n\nFor module 'm_provisioning' we have the following features:\n\nManage EntryPoints and Queues : f_manage_teams\n\nManage Users : f_manage_users\n\nDN Mappings : f_dn_mappings\n\nManage Sites : f_manage_sites\n\nManage Teams : f_manage_teams\n\nManage User Profiles : f_manage_user_profiles\n\nRevoke API Key : f_revoke_api_key\n\nManage Dial Plans : f_manage_dial_plans\n\nManage Tenants : f_manage_tenants\n\nManage Entry Points and Queues : f_manage_entrypt_queue\n\nPortal Branding : f_portal_branding\n\nAudit Trail : f_audit_trail\n\nManage Business Hours : f_manage_business_hours\n\n\nFor module 'm_call_monitoring' we have the following features:\n\nMid Call Monitoring : f_mid_call_monitor\n\nBarge In : f_barge_in\n\nRestricted Monitor : f_restricted_monitor_only\n\nWhisper Coach : f_whisper_coach\n\nView Blind Monitor Request : f_view_blind_monitor_requests\n\n"
+          example: f_manage_sites
+          minLength: 1
+        appFeatureName:
+          type: string
+          description: The feature name of the Webex Contact Center module.
+          example: Manage Sites
+        featureAccessType:
+          type: string
+          description: 'Indicates whether a user of this profile has access to a module feature.
+
+
+            It can be one of these values:
+
+
+            OFF — A contact center user with this profile cannot access this module feature.
+
+
+            ON — A contact center user with this profile can access this module feature.
+
+
+            '
+          enum:
+          - 'OFF'
+          - 'ON'
+          example: 'ON'
+        createdTime:
+          type: integer
+          format: int64
+          description: This is the created time of the entity.
+          example: 123456789
+        lastUpdatedTime:
+          type: integer
+          format: int64
+          description: This is the updated time of the entity.
+          example: 123456789
+      required:
+      - appFeatureId
+      - featureAccessType
     ResourceTypesDTO:
       type: object
       description: A resource type with its access level and associated IDs.
@@ -3286,9 +4561,9 @@ components:
       required:
       - accessLevel
       - name
-    UserProfileAppFeatureDTO_UserResponseWithUserProfile:
+    UserDynamicSkillResponseDTO:
       type: object
-      description: Data transfer object representing application feature access settings for a user profile
+      description: Response data transfer object containing user dynamic skill assignment information
       properties:
         organizationId:
           type: string
@@ -3302,308 +4577,21 @@ components:
           type: string
           description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
           example: 93912f11-6017-404b-bf14-5331890b1797
-        version:
-          type: integer
-          format: int32
-          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
-          example: 1
-        appFeatureId:
-          type: string
-          description: "The feature code of a Webex Contact Center module. \n\nPlease add all the following features with their respective modules and set it's featureAccessType to 'ON' or 'OFF', to specify if it is in use. Here is the complete list of Feature names and Feature Ids:\n\n\nFor module 'm_additional_supervisory_features' we have the following features:\n\nChange Agent States : f_change_agent_states\n\nSign out Agents : f_sign_out_agents\n\nSend Messages : f_send_messages\n\nRe-skill Agents : f_reskill_agents\n\nManage agent based queues : f_manage_agent_queue_assignments\n\nFor module 'm_real_time_reports' we have the following features:\n\nReal Time Threshold Alerts : f_realtime_threshold_alerts\n\nAgent State Change : f_agent_state_change\n\nSummary View : f_summary_view\n\nWeb Callback Report : f_web_callback_report\n\n\nFor module 'm_multimedia' we have the following features:\n\nMM Agent Desktop : f_mm_agent_desktop\n\nBasic Digital : f_mm_basic_digital\n\nMM Provisioning : f_mm_provisioning\n\nSocial Channel : f_mm_social_channel\n\n\nFor module 'm_reporting_analytics' we have the following features:\n\nAnalyzer Data Exchange : f_analyzer_data_exchange\n\nBusiness Rules : f_business_rules\n\n\nFor module 'm_manage_agent_states' we have the following features:\n\nChange Agent State : f_change_agent_state\n\nSign Out Agent : f_sign_out_agent\n\n\nFor module 'm_recording_management' we have the following features:\n\nCustom Attributes : f_custom_attributes\n\nManage Recordings : f_manage_recordings\n\nTags : f_tags\n\nSecurity Keys : f_security_keys\n\n\nFor module 'm_routing_strategy' we have the following features:\n\nManage Call Flow Scripts : f_manage_call_flow_scripts\n\nManage Media Files : f_manage_media_files\n\n\nFor module 'm_provisioning' we have the following features:\n\nManage EntryPoints and Queues : f_manage_teams\n\nManage Users : f_manage_users\n\nDN Mappings : f_dn_mappings\n\nManage Sites : f_manage_sites\n\nManage Teams : f_manage_teams\n\nManage User Profiles : f_manage_user_profiles\n\nRevoke API Key : f_revoke_api_key\n\nManage Dial Plans : f_manage_dial_plans\n\nManage Tenants : f_manage_tenants\n\nManage Entry Points and Queues : f_manage_entrypt_queue\n\nPortal Branding : f_portal_branding\n\nAudit Trail : f_audit_trail\n\nManage Business Hours : f_manage_business_hours\n\n\nFor module 'm_call_monitoring' we have the following features:\n\nMid Call Monitoring : f_mid_call_monitor\n\nBarge In : f_barge_in\n\nRestricted Monitor : f_restricted_monitor_only\n\nWhisper Coach : f_whisper_coach\n\nView Blind Monitor Request : f_view_blind_monitor_requests\n\n"
-          example: f_manage_sites
-          minLength: 1
-        appFeatureName:
-          type: string
-          description: The feature name of the Webex Contact Center module.
-          example: Manage Sites
-        featureAccessType:
-          type: string
-          description: 'Indicates whether a user of this profile has access to a module feature.
-
-
-            It can be one of these values:
-
-
-            OFF — A contact center user with this profile cannot access this module feature.
-
-
-            ON — A contact center user with this profile can access this module feature.
-
-
-            '
-          enum:
-          - 'OFF'
-          - 'ON'
-          example: 'ON'
-        createdTime:
-          type: integer
-          format: int64
-          description: This is the created time of the entity.
-          example: 123456789
-        lastUpdatedTime:
-          type: integer
-          format: int64
-          description: This is the updated time of the entity.
-          example: 123456789
-      required:
-      - appFeatureId
-      - featureAccessType
-    MetaDataReferencesPagingInfo:
-      title: MetaDataReferencesPagingInfo
-      type: object
-      properties:
-        orgid:
-          maxLength: 36
-          minLength: 32
-          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
-          type: string
-          description: Org ID
-          format: uuid
-          example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
-        page:
-          type: integer
-          description: Current page number
-          format: int32
-          example: 1
-        pageSize:
-          type: integer
-          description: Page size for current data set
-          format: int32
-          example: 100
-        totalPages:
-          type: integer
-          description: Number of pages
-          format: int32
-          example: 1
-        totalRecords:
-          type: integer
-          description: Total number of items
-          format: int32
-          example: 1000
-        links:
-          type: object
-          description: Map of pagination links with self, next, prev, last and first
-          example:
-            next: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=2&pageSize=10
-            last: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=3&pageSize=10
-            prev: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=0&pageSize=10
-            self: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=1&pageSize=10
-            first: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=0&pageSize=10
-        referencedEntities:
-          type: array
-          description: List of referenced entities
-          example:
-          - agent-profile
-          - entrypoint
-          items:
-            type: string
-        currentEntity:
-          type: string
-          description: Name of current entity
-          example: entity_name
-      description: Metadata of response for references with paging information
-    UserWithSkillDetailsDTO:
-      type: object
-      description: Data transfer object containing user information along with skill profile details
-      properties:
-        organizationId:
-          type: string
-          format: uuid
-          description: ID of the contact center organization. This field is required for all bulk save operations.
-          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
-          maxLength: 36
-          minLength: 32
-          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
-        id:
-          type: string
-          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
-          example: 93912f11-6017-404b-bf14-5331890b1797
-        version:
-          type: integer
-          format: int32
-          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
-          example: 1
         firstName:
           type: string
-          description: The first name of the user. Can be changed using Users Management in Cisco Webex Control Hub.
-          example: John1
+          description: The first name of the user.
+          example: John
         lastName:
           type: string
-          description: The last name of the user. Can be changed using Users Management in Cisco Webex Control Hub.
-          example: Wick1
+          description: The last name of the user.
+          example: Wick
         email:
           type: string
-          description: The email address of the user. Can be changed using Users Management in Cisco Webex Control Hub.
-          example: johnwick1@company.com
-        skillProfileName:
-          type: string
-          description: The skillProfileName  of the user.
-          example: skillprofileName
-        createdTime:
-          type: integer
-          format: int64
-          description: This is the created time of the entity.
-          example: 123456789
-        lastUpdatedTime:
-          type: integer
-          format: int64
-          description: This is the updated time of the entity.
-          example: 123456789
-    BulkRequestItemDTOUpdateDynamicSkillsDTO:
-      type: object
-      description: List of items in the bulk request.
-      properties:
-        itemIdentifier:
-          type: integer
-          format: int32
-          description: Unique item identifier for a bulk operation.
-          example: 10
-        item:
-          $ref: '#/components/schemas/UpdateDynamicSkillsDTO'
-          description: Item.
-        requestAction:
-          type: string
-          description: Identifier for action type. Possible values are `SAVE` and `DELETE`.
-          example: SAVE
-    BulkRequestItemDTOUserDTO:
-      type: object
-      description: List of items in the bulk request.
-      properties:
-        itemIdentifier:
-          type: integer
-          format: int32
-          description: Unique item identifier for a bulk operation.
-          example: 10
-        item:
-          $ref: '#/components/schemas/UserDTO'
-          description: Item.
-        requestAction:
-          type: string
-          description: Identifier for action type. Possible values are `SAVE` and `DELETE`.
-          example: SAVE
-    QueueSkillRequirementDTO:
-      type: object
-      description: Skill requirement for the queue
-      properties:
-        organizationId:
-          type: string
-          format: uuid
-          description: ID of the contact center organization. This field is required for all bulk save operations.
-          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
-          maxLength: 36
-          minLength: 32
-          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
-        id:
-          type: string
-          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
-          example: 93912f11-6017-404b-bf14-5331890b1797
-        version:
-          type: integer
-          format: int32
-          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
-          example: 1
-        skillId:
-          type: string
-          description: Skill ID reference
-          example: af9eecc5-0472-4549-9a83-2afdae0d4ba0
-          minLength: 1
-        skillName:
-          type: string
-          description: Indicates the name of the skill. Once created, name cannot be modified.
-          example: German Speaking
-        skillType:
-          type: string
-          description: 'This can be of the following types
-
-
-            PROFICIENCY: id = 0
-
-
-            BOOLEAN: id = 1
-
-
-            TEXT: id = 2
-
-
-            ENUM: id = 3
-
-
-            Once created, skillType cannot be modified.
-
-            '
-          example: BOOLEAN
-        condition:
-          type: string
-          description: Indicates a value that represents a skill the agent has.
-          example: IS_NOT
-        skillValue:
-          type: string
-          description: A short textual description that represents a skill the agent has.
-          example: Credit card SME
-          minLength: 1
-        weight:
-          type: integer
-          format: int32
-          description: Weight for proficiency skill requirement
-          example: 100
-          maximum: 1000
+          description: The email address of the user.
+          example: johnwick@company.com
         dynamicSkill:
-          type: boolean
-          description: Indicates whether the skill is a dynamic skill or not. Default value is false.
-          example: false
-        createdTime:
-          type: integer
-          format: int64
-          description: This is the created time of the entity.
-          example: 123456789
-        lastUpdatedTime:
-          type: integer
-          format: int64
-          description: This is the updated time of the entity.
-          example: 123456789
-      required:
-      - condition
-      - skillId
-      - skillValue
-    UserDetailsResponseEnvelopeDTO:
-      type: object
-      description: Response envelope containing user details data with metadata and pagination information
-      example:
-        meta:
-          orgid: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
-          page: 1
-          pageSize: 100
-          totalPages: 3
-          totalRecords: 300
-        data:
-        - id: 1dq21e23-1234-5578-9a83-2afdae0d4ba1
-          firstName: John
-          lastName: Doe
-          email: john.doe@company.com
-      properties:
-        meta:
-          type: object
-          additionalProperties:
-            description: Meta additional property.
-          description: Metadata of response with paging information. Includes orgId, page, pageSize, totalPages, totalRecords, and pagination links.
-          example:
-            orgid: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
-            page: 1
-            pageSize: 100
-            totalPages: 3
-            totalRecords: 300
-            links:
-              next: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/user/fetch-user-details-by-ids?page=2&pageSize=100
-              last: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/user/fetch-user-details-by-ids?page=2&pageSize=100
-              prev: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/user/fetch-user-details-by-ids?page=0&pageSize=100
-              self: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/user/fetch-user-details-by-ids?page=1&pageSize=100
-              first: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/user/fetch-user-details-by-ids?page=0&pageSize=100
-        data:
-          type: array
-          description: List of Data.
-          items:
-            $ref: '#/components/schemas/UserDetailsResponseDTO'
-            description: Data item.
+          $ref: '#/components/schemas/AssignedDynamicSkillsDTO'
+          description: The dynamic skill associated with the user
     UserDTO:
       type: object
       description: User data transfer object for creating and updating user information in the contact center system
@@ -3812,9 +4800,22 @@ components:
       - firstName
       - lastName
       - userProfileId
-    UpdateDynamicSkillsDTO:
+    EntityReferenceInfoDTO:
       type: object
-      description: Data transfer object for updating dynamic skills assigned to a user
+      properties:
+        description:
+          type: string
+          description: Description about reference info.
+          example: list of referenced entities
+        meta:
+          $ref: '#/components/schemas/MetaDataReferencesPagingInfo'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityInfo'
+    QueueSkillRequirementDTO:
+      type: object
+      description: Skill requirement for the queue
       properties:
         organizationId:
           type: string
@@ -3833,41 +4834,55 @@ components:
           format: int32
           description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
           example: 1
-        userId:
-          type: string
-          description: The unique identifier of the user whose dynamic skills are being updated
-          example: 1dq21e23-1234-5578-9a83-2afdae0d4ba1
-        enumSkillValues:
-          type: array
-          description: Set of enumerated skill values for enum-type dynamic skills
-          example:
-          - SKILL_VALUE_1
-          - SKILL_VALUE_2
-          items:
-            type: string
-            description: Enum Skill Value.
-          uniqueItems: true
-        textValue:
-          type: string
-          description: Text value for text-type dynamic skills (maximum 100 characters)
-          example: Sample text skill value
-          maxLength: 100
-          minLength: 0
-        booleanValue:
-          type: boolean
-          description: Boolean value for boolean-type dynamic skills
-          example: true
-        proficiencyValue:
-          type: integer
-          format: int32
-          description: 'Proficiency value for proficiency-type dynamic skills (range: 0-10)'
-          example: 7
-          maximum: 10
-          minimum: 0
         skillId:
           type: string
-          description: The unique identifier of the dynamic skill being updated
-          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+          description: Skill ID reference
+          example: af9eecc5-0472-4549-9a83-2afdae0d4ba0
+          minLength: 1
+        skillName:
+          type: string
+          description: Indicates the name of the skill. Once created, name cannot be modified.
+          example: German Speaking
+        skillType:
+          type: string
+          description: 'This can be of the following types
+
+
+            PROFICIENCY: id = 0
+
+
+            BOOLEAN: id = 1
+
+
+            TEXT: id = 2
+
+
+            ENUM: id = 3
+
+
+            Once created, skillType cannot be modified.
+
+            '
+          example: BOOLEAN
+        condition:
+          type: string
+          description: Indicates a value that represents a skill the agent has.
+          example: IS_NOT
+        skillValue:
+          type: string
+          description: A short textual description that represents a skill the agent has.
+          example: Credit card SME
+          minLength: 1
+        weight:
+          type: integer
+          format: int32
+          description: Weight for proficiency skill requirement
+          example: 100
+          maximum: 1000
+        dynamicSkill:
+          type: boolean
+          description: Indicates whether the skill is a dynamic skill or not. Default value is false.
+          example: false
         createdTime:
           type: integer
           format: int64
@@ -3878,40 +4893,331 @@ components:
           format: int64
           description: This is the updated time of the entity.
           example: 123456789
-    UserResponseDTO_UserResponseWithUserProfile:
+      required:
+      - condition
+      - skillId
+      - skillValue
+    UserProfileDTO:
       type: object
-      description: User response data transfer object containing user profile and configuration details
-      example:
-        id: 1dq21e23-1234-5578-9a83-2afdae0d4ba1
-        firstName: John
-        lastName: Wick
-        email: johnwick@company.com
-        workPhone: '1234567890'
-        mobile: '1234567890'
-        ciUserId: 1dq21e23-1234-5578-9a83-2afdae0d4ba1
-        broadCloudUserId: 1dq21e23-1234-5578-9a83-2afdae0d4ba1
-        timezone: America/New_York
-        userProfileId: 1dq21e23-1234-5578-9a83-2afdae0d4ba1
-        userProfileType: PREMIUM_AGENT
-        contactCenterEnabled: true
-        siteId: 1dq21e23-1234-5578-9a83-2afdae0d4ba1
-        siteName: bengaluru
-        teamIds:
-        - f53c8b54-46ca-43f6-ba05-08426a46e23d
-        skillProfileId: f53c8b54-46ca-43f6-ba05-08426a46e23d
-        agentProfileId: 8e6bb6da-2a78-4768-bef9-7e229f92af22
-        multimediaProfileId: f53c8b54-46ca-43f6-ba05-08426a46e23d
-        deafultDialledNumber: '1234567890'
-        externalIdentifier: '121212'
-        active: true
-        imiUserCreated: true
-        systemDefault: false
-        userLevelBurnoutInclusion: INCLUDED
-        userLevelAutoCSATInclusion: INCLUDED
-        userLevelWellnessBreakReminders: DISABLED
-        userLevelSummariesInclusion: INCLUDED
-        createdTime: 1679392200000
-        lastModifiedTime: 1679392200000
+      description: User profile data transfer object that defines access permissions and resource scope for contact center users
+      properties:
+        organizationId:
+          type: string
+          format: uuid
+          description: ID of the contact center organization. This field is required for all bulk save operations.
+          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+          maxLength: 36
+          minLength: 32
+          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
+        id:
+          type: string
+          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
+          example: 93912f11-6017-404b-bf14-5331890b1797
+        version:
+          type: integer
+          format: int32
+          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
+          example: 1
+        name:
+          type: string
+          description: The name of the user profile.
+          example: Contact Center Admin Profile
+          maxLength: 80
+          minLength: 0
+          pattern: ^[a-zA-Z0-9,_\-\s]*$
+        description:
+          type: string
+          description: An optional description of the profile.
+          example: This profile should be applied only to contact center admins.
+          maxLength: 255
+          minLength: 0
+        profileType:
+          type: string
+          description: "The type determines the privileges applicable for a profile.\n\nIt can take one of these values:\n\nSTANDARD_AGENT — Has access to Agent Desktop[m_agent_desktop] module.\n\nPREMIUM_AGENT — Has access to Agent Desktop[m_agent_desktop] and Multimedia[m_multimedia] module.\n\nSUPERVISOR — Has access to all modules except to manage tenants in the Provisioning[m_provisioning] module.\n\nADMINISTRATOR — Has access to all modules.\n\nADMINISTRATOR_ONLY — Has access to Provisioning[m_provisioning], Real Time Reports[m_real_time_reports], Call Recording[m_call_recording], IMI Digital Channels[m_imi_digital_channels], and Routing Strategy[m_routing_strategy] modules.\n\nIt is required only during a create operation. \n\nThe profile type cannot be changed for an existing user profile.\n\n"
+          enum:
+          - ADMINISTRATOR
+          - ADMINISTRATOR_ONLY
+          - SUPERVISOR
+          - PREMIUM_AGENT
+          - STANDARD_AGENT
+          - ANALYZER_ADMINISTRATOR
+          - ANALYZER_SUPERVISOR
+          - ANALYZER_USER
+          example: PREMIUM_AGENT
+        accessAllModules:
+          type: string
+          description: 'This can be used to allow users of this profile access to specific or all the Webex Contact Center modules.
+
+
+            It can take one of these values:
+
+
+            ALL — A contact center user with this profile can access all Contact Center modules.
+
+
+            SPECIFIC — A contact center user with this profile can access only specific modules.
+
+
+            '
+          enum:
+          - SPECIFIC
+          - ALL
+          - PROVISIONED_VALUE
+          - NONE
+          example: ALL
+        userProfileAppModules:
+          type: array
+          description: 'Specifies the module(s) a user of this profile has access to.
+
+
+            It should be chosen when module access is SPECIFIC.
+
+
+            Please specify all the following modules and their respective access type.
+
+
+            '
+          items:
+            $ref: '#/components/schemas/UserProfileAppModuleDTO'
+            description: User Profile App Module.
+          uniqueItems: true
+        accessAllEntryPoints:
+          type: string
+          description: 'Allow users of this profile access to specific or all the entry points for an organization.
+
+
+            It can take one of these values:
+
+
+            ALL — A contact center user with this profile can access all the entry points for an organization.
+
+
+            SPECIFIC — A contact center user with this profile can access only specific entry points for an organization.
+
+
+            '
+          enum:
+          - SPECIFIC
+          - ALL
+          - PROVISIONED_VALUE
+          - NONE
+          example: ALL
+        accessAllSites:
+          type: string
+          description: 'Allow users of this profile access to specific or all the sites for an organization.
+
+
+            It can take one of these values:
+
+
+            ALL — A contact center user with this profile can access all the sites for an organization.
+
+
+            SPECIFIC — A contact center user with this profile can access only specific sites for an organization.
+
+
+            '
+          enum:
+          - SPECIFIC
+          - ALL
+          - PROVISIONED_VALUE
+          - NONE
+          example: ALL
+        accessAllQueues:
+          type: string
+          description: 'Allow users of this profile access to specific or all the contact center queues for an organization.
+
+
+            It can take one of these values:
+
+
+            ALL — A contact center user with this profile can access all the contact center queues for an organization.
+
+
+            SPECIFIC — A contact center user with this profile can access only specific contact center queues for an organization.
+
+
+            '
+          enum:
+          - SPECIFIC
+          - ALL
+          - PROVISIONED_VALUE
+          - NONE
+          example: ALL
+        accessAllTeams:
+          type: string
+          description: 'Allow users of this profile access to specific or all the contact center teams for an organization.
+
+
+            It can take one of these values:
+
+
+            ALL — A contact center user with this profile can access all the contact center teams for an organization.
+
+
+            SPECIFIC — A contact center user with this profile can access only specific contact center teams for an organization.
+
+
+            '
+          enum:
+          - SPECIFIC
+          - ALL
+          - PROVISIONED_VALUE
+          - NONE
+          example: ALL
+        active:
+          type: boolean
+          description: Specify whether the User profile is active or not.
+          example: true
+        editableFolderIds:
+          type: array
+          description: "Indicates the id(s) of the reporting folders a user of this profile has read and write access to. \n"
+          items:
+            description: Identifier of a folder the user profile can edit
+            example: 1
+          uniqueItems: true
+        viewableFolderIds:
+          type: array
+          description: "Indicates the id(s) of the reporting folders a user of this profile has read access to. \n"
+          items:
+            description: Identifier of a folder the user profile can view
+            example: 2
+          uniqueItems: true
+        nonViewableFolderIds:
+          type: array
+          description: "Indicates the id(s) of the restricted reporting folders for a user of this profile. \n"
+          items:
+            description: Identifier of a folder hidden from the user profile
+            example: 3
+          uniqueItems: true
+        systemDefault:
+          type: boolean
+          description: Indicates whether the created resource is system created or not
+          example: false
+        createdTime:
+          type: integer
+          format: int64
+          description: This is the created time of the entity.
+          example: 123456789
+        lastUpdatedTime:
+          type: integer
+          format: int64
+          description: This is the updated time of the entity.
+          example: 123456789
+        entryPoints:
+          type: array
+          description: "Specify the id(s) of the entry point(s) a user of this profile will have access to. \n\nIt should be chosen when entry points access is SPECIFIC. Please see '''Entry Point documentation''', and use Get EntryPoints API to fetch the values of entry points.\n\n"
+          items:
+            description: Entry point identifier assigned to the user profile
+            example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+          uniqueItems: true
+        sites:
+          type: array
+          description: "Specify the id(s) of the site(s) a user of this profile will have access to. \nIt should be chosen when sites access is SPECIFIC. Please see Sites documentation, and use Get Site API to fetch the values of site IDs.\n\n"
+          items:
+            description: Site identifier assigned to the user profile
+            example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+          uniqueItems: true
+        queues:
+          type: array
+          description: "Specify the id(s) of the queue(s) a user of this profile will have access to. \nIt should be chosen when queues access is SPECIFIC. Please see Queues documentation, and use Get Queues API to fetch the values of queue IDs.\n\n"
+          items:
+            description: Queue identifier assigned to the user profile
+            example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+          uniqueItems: true
+        teams:
+          type: array
+          description: 'Specify the id(s) of the team(s) a user of this profile will have access to.
+
+            It should be chosen when teams access is SPECIFIC. Please see Teams documentation, and use Get Teams API to fetch the values of team IDs.
+
+
+            '
+          items:
+            description: Team identifier assigned to the user profile
+            example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+          uniqueItems: true
+      required:
+      - accessAllEntryPoints
+      - accessAllModules
+      - accessAllQueues
+      - accessAllSites
+      - accessAllTeams
+      - active
+      - name
+      - profileType
+    UserProfileAppModuleDTO:
+      type: object
+      description: User Profile App Module DTO
+      properties:
+        organizationId:
+          type: string
+          format: uuid
+          description: ID of the contact center organization. This field is required for all bulk save operations.
+          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+          maxLength: 36
+          minLength: 32
+          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
+        id:
+          type: string
+          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
+          example: 93912f11-6017-404b-bf14-5331890b1797
+        version:
+          type: integer
+          format: int32
+          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
+          example: 1
+        appModuleId:
+          type: string
+          description: "The code of a Webex Contact Center module. \n\nPlease specify descriptions for each of these modules:\n\nm_provisioning - Refers to the provisioning module. Has access to Manage EntryPoints and Queues[f_manage_entrypt_queue], Revoke API Key[f_revoke_api_key], DN Mappings[f_dn_mappings], Manage User Profiles[f_manage_user_profiles], Manage Tenants[f_manage_tenants], Manage Users[f_manage_users], Portal Branding[f_portal_branding], Audit Trail[f_audit_trail], Manage Sites[f_manage_sites], Manage Teams[f_manage_teams], and Manage Dial Plans[f_manage_dial_plans] features.\n\nm_real_time_reports - Refers to the real time reporting module. Has access to Summary View[f_summary_view], Agent State Change[f_agent_state_change], Real Time Threshold Alerts[f_realtime_threshold_alerts], and Web CallBack Report[f_web_callback_report] features.\n\nm_historical_reports - Refers to the historical reporting module.\n\nm_routing_strategy - Refers to the routing strategy module. Has access to Manage Media Files[f_manage_media_files] and Manage Call Flow Scripts[f_manage_call_flow_scripts] features.\n\nm_call_recording - Refers to the call recording module.\n\nm_call_monitoring - Refers to the call monitoring module. Has access to Barge In[f_barge_in], View Blind Monitor Request[f_view_blind_monitor_requests], Whisper Coach[f_whisper_coach], Mid Call Monitor[f_mid_call_monitor], and Restricted Monitor[f_restricted_monitor_only] features.\n\nm_reporting_analytics - Refers to the reporting analytics module. Has access to Analyzer Data Exchange[f_analyzer_data_exchange] and Business Rules[f_business_rules] features. \n\nm_recording_management - Refers to the recording management module. Has access to Tags[f_tags], Security Keys[f_security_keys], Manage Recordings[f_manage_recordings], and Custom Attributes[f_custom_attributes] features.\n\nm_agent_desktop - Refers to the agent desktop module.\n\nm_logout_agents - Refers to the agent logout module.\n\nm_manage_agent_states - Refers to the agent state module. Has access to Sign Out Agent[f_sign_out_agent] and Change Agent State[f_change_agent_state] features.\n\nm_additional_supervisory_features - Refers to the additional supervisory features module. Has access to Sign Out Agents[f_sign_out_agents], Change Agent States[f_change_agent_states] and Send Messages[f_send_messages] features.\n\nm_multimedia - Refers to the multimedia module. Has access to Provisioning[f_mm_provisioning], Basic Digital[f_mm_basic_digital], Social Channel[f_mm_social_channel] and Agent Desktop[f_mm_agent_desktop] features.\n\nm_agent_wellbeing - Refers to the Agent Wellbeing module. Has access to Agent Wellbeing provisioning features.\n\nm_auto_csat - Refers to the Auto Csat module.\n\nm_generated_summaries - Refers to the Generated Summaries module.\n\nm_agent_personal_greetings - Refers to the Agent Personal Greetings module.\n\nm_functions - Refers to the Functions in flow module.\n\nm_realtime_transcripts - Refers to the Realtime Transcripts module.\n\nm_suggested_responses - Refers to the Suggested Responses module.\n"
+          example: m_provisioning
+          minLength: 1
+        moduleAccessType:
+          type: string
+          description: 'Indicates the access rights for a user of this profile for a Webex Contact Center module.
+
+
+            It can take be one of these values:
+
+
+            VIEW — A contact center user with this profile has read only access to a Contact Center module.
+
+
+            EDIT — A contact center user with this profile has read and write access to a Contact Center module.
+
+
+            NONE — A contact center user with this profile cannot access the module.
+
+
+            '
+          enum:
+          - NONE
+          - VIEW
+          - EDIT
+          example: EDIT
+        userProfileAppFeature:
+          type: array
+          description: "Specifies the module features(s) a user of this profile has access to. \n"
+          items:
+            $ref: '#/components/schemas/UserProfileAppFeatureDTO'
+            description: User Profile App Feature item.
+          uniqueItems: true
+        createdTime:
+          type: integer
+          format: int64
+          description: This is the created time of the entity.
+          example: 123456789
+        lastUpdatedTime:
+          type: integer
+          format: int64
+          description: This is the updated time of the entity.
+          example: 123456789
+      required:
+      - appModuleId
+      - moduleAccessType
+    UserWithSkillDetailsDTO:
+      type: object
+      description: Data transfer object containing user information along with skill profile details
       properties:
         organizationId:
           type: string
@@ -3932,195 +5238,20 @@ components:
           example: 1
         firstName:
           type: string
-          description: The first name of the user.
-          example: John
+          description: The first name of the user. Can be changed using Users Management in Cisco Webex Control Hub.
+          example: John1
         lastName:
           type: string
-          description: The last name of the user.
-          example: Wick
+          description: The last name of the user. Can be changed using Users Management in Cisco Webex Control Hub.
+          example: Wick1
         email:
           type: string
-          description: The email address of the user.
-          example: johnwick@company.com
-        workPhone:
+          description: The email address of the user. Can be changed using Users Management in Cisco Webex Control Hub.
+          example: johnwick1@company.com
+        skillProfileName:
           type: string
-          description: The work phone number of the user.
-          example: '1234567890'
-        mobile:
-          type: string
-          description: The mobile phone number of the user.
-          example: '1234567890'
-        ciUserId:
-          type: string
-          description: Cisco Common Identity user Id
-          example: 1dq21e23-1234-5578-9a83-2afdae0d4ba1
-        broadCloudUserId:
-          type: string
-          description: Broadcloud user Id
-          example: 1dq21e23-1234-5578-9a83-2afdae0d4ba1
-        timezone:
-          type: string
-          description: (Optional) The time zone that you provision for your enterprise.
-          example: America/New_York
-        xspVersion:
-          type: string
-          description: (Optional) Used to subscribe for recording events.
-          example: xsp-24.0
-        subscriptionId:
-          type: string
-          description: (Optional) Used to subscribe for recording events.
-          example: 04d0bdf6-6d6a-4aae-8a8a-71c9152e6478
-        userProfileId:
-          type: string
-          description: Identifier for an user profile which a Contact Center administrator has configured.
-          example: 1dq21e23-1234-5578-9a83-2afdae0d4ba1
-        userProfileType:
-          type: string
-          description: Type of the user profile associated to this user. This is an optional response parameter based on the query parameter includeUserProfileType.
-          example: PREMIUM_AGENT
-        contactCenterEnabled:
-          type: boolean
-          description: The setting is for accessing Desktop to handle customer requests.
-          example: true
-        siteId:
-          type: string
-          description: Details of site which a Contact Center administrator has configured for the user.
-          example: 1dq21e23-1234-5578-9a83-2afdae0d4ba1
-        siteName:
-          type: string
-          description: site name that user is associated with
-          example: bengaluru
-        teamIds:
-          type: array
-          description: "Specify the teams id which got assigned to this user. \nNote: You can’t assign this profile to a capacity-based team."
-          examples:
-          - f53c8b54-46ca-43f6-ba05-08426a46e23d
-          - a53c8b54-46ca-43f6-ba05-08426a46e23f
-          items:
-            type: string
-            description: "Specify the teams id which got assigned to this user. \nNote: You can’t assign this profile to a capacity-based team."
-            examples:
-            - f53c8b54-46ca-43f6-ba05-08426a46e23d
-            - a53c8b54-46ca-43f6-ba05-08426a46e23f
-          uniqueItems: true
-        skillProfileId:
-          type: string
-          description: '(Optional) If your enterprise uses the optional Skills-Based Routing feature, This profile overrides any skill profile at the team level that is associated with the agent '
-          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
-        agentProfileId:
-          type: string
-          description: Identifier for a Desktop Profile which is a group of permissions and Agent Desktop behaviors that you assign to specific users.
-          example: 8e6bb6da-2a78-4768-bef9-7e229f92af22
-        multimediaProfileId:
-          type: string
-          description: (Optional) If your organization administrator enables Multimedia for your enterprise, you can select a multimedia profile for this team.
-          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
-        deafultDialledNumber:
-          type: string
-          description: (Optional) The dial number of the agent.
-          example: '1234567890'
-        externalIdentifier:
-          type: string
-          description: (Optional) Agent identification details, such as the employee number.
-          example: '121212'
-        active:
-          type: boolean
-          description: Specify whether the user is active or not active.
-          example: true
-        dbId:
-          type: string
-          description: Legacy identifier for migrated users.
-          example: 1dq45f23-1234-6r18-9a83-2atuiy0d4bh1
-        userProfileData:
-          $ref: '#/components/schemas/UserProfileDTO_UserResponseWithUserProfile'
-          description: Details of UserProfile which a Contact Center administrator has configured for the user.This is an optional object, returned only when the endpoint 'Get User along with profile by ID' is invoked.
-        imiUserCreated:
-          type: boolean
-          description: Specify whether or not the corresponding user is created in IMI.
-          example: true
-        preferredSupervisorTeamId:
-          type: string
-          description: The teamId to look for to load the desktop layout when a supervisor logs in to desktop.
-          example: e27d2b54-46ca-43g6-ba65-08426e46e23d
-        systemDefault:
-          type: boolean
-          description: Indicates whether the created resource is system created or not
-          example: false
-        userLevelBurnoutInclusion:
-          type: string
-          description: 'User level burnout inclusion type. Used only when Agent inclusion is set to ''Specific Agents'' at the org level Agent Wellbeing>Burnout config. If the value is missing in response, the consumer should assume a value as EXCLUDED.
-
-            This is applicable/available only when AI Assistant add-on offer/license is added to the organization.'
-          enum:
-          - INCLUDED
-          - EXCLUDED
-          example: INCLUDED
-        userLevelAutoCSATInclusion:
-          type: string
-          deprecated: true
-          description: 'User level AutoCSAT inclusion type. Used only when Agent inclusion is set to ''Specific Agents'' at the org level Cisco AI Assistant>Auto CSAT config.
-
-            '
-          enum:
-          - INCLUDED
-          - EXCLUDED
-          example: INCLUDED
-        userLevelWellnessBreakReminders:
-          type: string
-          description: 'User level Wellness break reminder type. If top level Agent burnout config has wellness break reminders enabled, this property determines if an Agent is enabled/disabled for receiving break reminders. If the value is missing in response, the consumer should assume a value as DISABLED.
-
-            This is applicable/available only when AI Assistant add-on offer/license is added to the organization.'
-          enum:
-          - DISABLED
-          - ENABLED
-          example: DISABLED
-        userLevelSummariesInclusion:
-          type: string
-          deprecated: true
-          description: 'User level Generated Summaries inclusion type. Used only when Generated Summaries is set to ''Specific Agents'' at the org level Cisco AI Assistant>Generated Summaries.
-
-            '
-          enum:
-          - INCLUDED
-          - EXCLUDED
-          example: INCLUDED
-        supervisorCapabilitiesEnabled:
-          type: boolean
-          description: Indicates whether supervisor capabilities are enabled for the user.
-          example: false
-        agentCapabilitiesEnabled:
-          type: boolean
-          description: Indicates whether agent capabilities are enabled for the user.
-          example: false
-        queuesCount:
-          $ref: '#/components/schemas/QueuesCountDTO_UserResponseWithUserProfile'
-          description: Count of queues assigned to the user by queue type (team-based, skill-based, agent-based)
-        skillProfileUpdatedBy:
-          type: string
-          description: The ID of the user who last modified the skill profile
-          example: 1dq21e23-1234-5578-9a83-2afdae0d4ba1
-        dynamicSkills:
-          type: array
-          description: The list of dynamic skills associated with the user
-          items:
-            $ref: '#/components/schemas/AssignedDynamicSkillsDTO_UserResponseWithUserProfile'
-            description: Dynamic Skill.
-        dynamicSkillsLimitReached:
-          type: boolean
-          description: Indicates if the user has reached the dynamic skills assignment limit. Present only if includeDynamicSkillsLimitReached=true is passed in the request.
-          example: true
-        dynamicSkillsUpdatedBy:
-          type: string
-          description: The name of the user who last modified dynamic skills
-        dynamicSkillsUpdatedTime:
-          type: integer
-          format: int64
-          description: The date when dynamic skills were last modified (epoch timestamp in milliseconds)
-          example: 1679392200000
-        dynamicSkillAssigned:
-          type: boolean
-          description: Indicates if the user has the specified dynamic skill assigned. Present only if checkIfUserHasDynamicSkill=true and dynamicSkillId are provided in the request.
-          example: true
+          description: The skillProfileName  of the user.
+          example: skillprofileName
         createdTime:
           type: integer
           format: int64
@@ -4131,39 +5262,6 @@ components:
           format: int64
           description: This is the updated time of the entity.
           example: 123456789
-        skillProfileUpdatedTime:
-          type: integer
-          format: int64
-          description: The date when the skill profile was last modified (epoch timestamp in milliseconds)
-          example: 1679392200000
-    ResponseEnvelopeUserDynamicSkillResponseDTO:
-      type: object
-      description: Response Envelope User Dynamic Skill Response schema.
-      properties:
-        meta:
-          type: object
-          additionalProperties:
-            description: Meta additional property.
-          description: Additional properties for Meta.
-        data:
-          type: array
-          description: List of Data.
-          items:
-            $ref: '#/components/schemas/UserDynamicSkillResponseDTO'
-            description: Data item.
-    EntityReferenceInfoDTO:
-      type: object
-      properties:
-        description:
-          type: string
-          description: Description about reference info.
-          example: list of referenced entities
-        meta:
-          $ref: '#/components/schemas/MetaDataReferencesPagingInfo'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/EntityInfo'
     BulkResponseItemDTO:
       type: object
       properties:
@@ -4208,113 +5306,6 @@ components:
         itemIdentifier: 10
         operationType: CREATE
         status: 400
-    QueuesCountDTO:
-      type: object
-      description: 'The count of each type of Contact Service Queues that the user is assigned to.
-
-        '
-      example:
-        teamBased: 5
-        skillBased: 3
-        agentBased: 2
-      properties:
-        teamBased:
-          type: integer
-          format: int32
-          description: Number of team-based queues assigned to the user.
-          example: 5
-        skillBased:
-          type: integer
-          format: int32
-          description: Number of skill-based queues assigned to the user.
-          example: 3
-        agentBased:
-          type: integer
-          format: int32
-          description: Number of agent-based queues assigned to the user.
-          example: 2
-    UserDetailsResponseDTO:
-      type: object
-      description: Data transfer object containing detailed user information
-      properties:
-        id:
-          type: string
-          description: Unique ID of the user
-          example: 123e4567-e89b-12d3-a456-426614174000
-        firstName:
-          type: string
-          description: First name of the user
-          example: John
-        lastName:
-          type: string
-          description: Last name of the user
-          example: Doe
-        email:
-          type: string
-          description: Email address of the user
-          example: john.doe@example.com
-    UserProfileAppFeatureDTO:
-      type: object
-      description: Data transfer object representing application feature access settings for a user profile
-      properties:
-        organizationId:
-          type: string
-          format: uuid
-          description: ID of the contact center organization. This field is required for all bulk save operations.
-          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
-          maxLength: 36
-          minLength: 32
-          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
-        id:
-          type: string
-          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
-          example: 93912f11-6017-404b-bf14-5331890b1797
-        version:
-          type: integer
-          format: int32
-          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
-          example: 1
-        appFeatureId:
-          type: string
-          description: "The feature code of a Webex Contact Center module. \n\nPlease add all the following features with their respective modules and set it's featureAccessType to 'ON' or 'OFF', to specify if it is in use. Here is the complete list of Feature names and Feature Ids:\n\n\nFor module 'm_additional_supervisory_features' we have the following features:\n\nChange Agent States : f_change_agent_states\n\nSign out Agents : f_sign_out_agents\n\nSend Messages : f_send_messages\n\nRe-skill Agents : f_reskill_agents\n\nManage agent based queues : f_manage_agent_queue_assignments\n\nFor module 'm_real_time_reports' we have the following features:\n\nReal Time Threshold Alerts : f_realtime_threshold_alerts\n\nAgent State Change : f_agent_state_change\n\nSummary View : f_summary_view\n\nWeb Callback Report : f_web_callback_report\n\n\nFor module 'm_multimedia' we have the following features:\n\nMM Agent Desktop : f_mm_agent_desktop\n\nBasic Digital : f_mm_basic_digital\n\nMM Provisioning : f_mm_provisioning\n\nSocial Channel : f_mm_social_channel\n\n\nFor module 'm_reporting_analytics' we have the following features:\n\nAnalyzer Data Exchange : f_analyzer_data_exchange\n\nBusiness Rules : f_business_rules\n\n\nFor module 'm_manage_agent_states' we have the following features:\n\nChange Agent State : f_change_agent_state\n\nSign Out Agent : f_sign_out_agent\n\n\nFor module 'm_recording_management' we have the following features:\n\nCustom Attributes : f_custom_attributes\n\nManage Recordings : f_manage_recordings\n\nTags : f_tags\n\nSecurity Keys : f_security_keys\n\n\nFor module 'm_routing_strategy' we have the following features:\n\nManage Call Flow Scripts : f_manage_call_flow_scripts\n\nManage Media Files : f_manage_media_files\n\n\nFor module 'm_provisioning' we have the following features:\n\nManage EntryPoints and Queues : f_manage_teams\n\nManage Users : f_manage_users\n\nDN Mappings : f_dn_mappings\n\nManage Sites : f_manage_sites\n\nManage Teams : f_manage_teams\n\nManage User Profiles : f_manage_user_profiles\n\nRevoke API Key : f_revoke_api_key\n\nManage Dial Plans : f_manage_dial_plans\n\nManage Tenants : f_manage_tenants\n\nManage Entry Points and Queues : f_manage_entrypt_queue\n\nPortal Branding : f_portal_branding\n\nAudit Trail : f_audit_trail\n\nManage Business Hours : f_manage_business_hours\n\n\nFor module 'm_call_monitoring' we have the following features:\n\nMid Call Monitoring : f_mid_call_monitor\n\nBarge In : f_barge_in\n\nRestricted Monitor : f_restricted_monitor_only\n\nWhisper Coach : f_whisper_coach\n\nView Blind Monitor Request : f_view_blind_monitor_requests\n\n"
-          example: f_manage_sites
-          minLength: 1
-        appFeatureName:
-          type: string
-          description: The feature name of the Webex Contact Center module.
-          example: Manage Sites
-        featureAccessType:
-          type: string
-          description: 'Indicates whether a user of this profile has access to a module feature.
-
-
-            It can be one of these values:
-
-
-            OFF — A contact center user with this profile cannot access this module feature.
-
-
-            ON — A contact center user with this profile can access this module feature.
-
-
-            '
-          enum:
-          - 'OFF'
-          - 'ON'
-          example: 'ON'
-        createdTime:
-          type: integer
-          format: int64
-          description: This is the created time of the entity.
-          example: 123456789
-        lastUpdatedTime:
-          type: integer
-          format: int64
-          description: This is the updated time of the entity.
-          example: 123456789
-      required:
-      - appFeatureId
-      - featureAccessType
     UserProfilePermissionsDTO:
       type: object
       description: User Profile Permissions DTO
@@ -4580,595 +5571,6 @@ components:
           example: NONE
       required:
       - name
-    EntityInfo:
-      type: object
-      properties:
-        id:
-          type: string
-          description: id
-          example: id.
-        name:
-          type: string
-          description: name
-          example: name.
-        additionalAttributes:
-          type: object
-          additionalProperties:
-            type: string
-            description: A map containing additional attributes of entity where both the key and value are Strings.
-            example: '{"key1":"value1","key2":"value2"}'
-          description: A map containing additional attributes of entity where both the key and value are Strings.
-          example:
-            key1: value1
-            key2: value2
-        createdDate:
-          type: string
-        lastModifiedDate:
-          type: string
-        version:
-          type: integer
-          format: int32
-    MetaDataPagedUser:
-      type: object
-      description: Meta Data Paged User schema.
-      properties:
-        orgid:
-          type: string
-          description: ID of the contact center organization. This field is required for all bulk save operations.
-          example: af9eecc5-0472-4549-9a83-2afdae0d4ba0
-        page:
-          type: integer
-          format: int32
-          description: Current page number.
-          example: 1
-        pageSize:
-          type: integer
-          format: int32
-          description: Page size for current data set.
-          example: 20
-        totalPages:
-          type: integer
-          format: int32
-          description: Number of pages.
-          example: 5
-        totalRecords:
-          type: integer
-          format: int64
-          description: Total number of items.
-          example: 100
-        links:
-          type: object
-          $ref: '#/components/schemas/PaginationLinks'
-          additionalProperties:
-            type: string
-            description: Links additional property.
-          description: Pagination links for navigating between result pages.
-        actualBurnoutInclusionCount:
-          type: integer
-          format: int64
-          description: Indicates the actual count of Agents selected for Agent burnout detection, including restricted agents that are not visible to requesting user.
-          example: 100
-        actualAutoCSATCount:
-          type: integer
-          format: int64
-          description: Indicates the actual count of Agents selected for Auto CSAT scores, including restricted agents that are not visible to requesting user.
-          example: 100
-        actualSummariesCount:
-          type: integer
-          format: int64
-          description: Indicates the actual count of Agents selected for Generated Summaries, including restricted agents that are not visible to requesting user.
-          example: 100
-    BulkRequestDTOUserDTO:
-      type: object
-      description: Bulk Request User schema.
-      properties:
-        items:
-          type: array
-          description: List of items in the bulk request.
-          items:
-            $ref: '#/components/schemas/BulkRequestItemDTOUserDTO'
-            description: Item.
-    UserProfileDTO_UserResponseWithUserProfile:
-      type: object
-      description: User profile data transfer object that defines access permissions and resource scope for contact center users
-      properties:
-        organizationId:
-          type: string
-          format: uuid
-          description: ID of the contact center organization. This field is required for all bulk save operations.
-          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
-          maxLength: 36
-          minLength: 32
-          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
-        id:
-          type: string
-          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
-          example: 93912f11-6017-404b-bf14-5331890b1797
-        version:
-          type: integer
-          format: int32
-          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
-          example: 1
-        name:
-          type: string
-          description: The name of the user profile.
-          example: Contact Center Admin Profile
-          maxLength: 80
-          minLength: 0
-          pattern: ^[a-zA-Z0-9,_\-\s]*$
-        description:
-          type: string
-          description: An optional description of the profile.
-          example: This profile should be applied only to contact center admins.
-          maxLength: 255
-          minLength: 0
-        profileType:
-          type: string
-          description: "The type determines the privileges applicable for a profile.\n\nIt can take one of these values:\n\nSTANDARD_AGENT — Has access to Agent Desktop[m_agent_desktop] module.\n\nPREMIUM_AGENT — Has access to Agent Desktop[m_agent_desktop] and Multimedia[m_multimedia] module.\n\nSUPERVISOR — Has access to all modules except to manage tenants in the Provisioning[m_provisioning] module.\n\nADMINISTRATOR — Has access to all modules.\n\nADMINISTRATOR_ONLY — Has access to Provisioning[m_provisioning], Real Time Reports[m_real_time_reports], Call Recording[m_call_recording], IMI Digital Channels[m_imi_digital_channels], and Routing Strategy[m_routing_strategy] modules.\n\nIt is required only during a create operation. \n\nThe profile type cannot be changed for an existing user profile.\n\n"
-          enum:
-          - ADMINISTRATOR
-          - ADMINISTRATOR_ONLY
-          - SUPERVISOR
-          - PREMIUM_AGENT
-          - STANDARD_AGENT
-          - ANALYZER_ADMINISTRATOR
-          - ANALYZER_SUPERVISOR
-          - ANALYZER_USER
-          example: PREMIUM_AGENT
-        accessAllModules:
-          type: string
-          description: 'This can be used to allow users of this profile access to specific or all the Webex Contact Center modules.
-
-
-            It can take one of these values:
-
-
-            ALL — A contact center user with this profile can access all Contact Center modules.
-
-
-            SPECIFIC — A contact center user with this profile can access only specific modules.
-
-
-            '
-          enum:
-          - SPECIFIC
-          - ALL
-          - PROVISIONED_VALUE
-          - NONE
-          example: ALL
-        userProfileAppModules:
-          type: array
-          description: 'Specifies the module(s) a user of this profile has access to.
-
-
-            It should be chosen when module access is SPECIFIC.
-
-
-            Please specify all the following modules and their respective access type.
-
-
-            '
-          items:
-            $ref: '#/components/schemas/UserProfileAppModuleDTO_UserResponseWithUserProfile'
-            description: User Profile App Module.
-          uniqueItems: true
-        accessAllEntryPoints:
-          type: string
-          description: 'Allow users of this profile access to specific or all the entry points for an organization.
-
-
-            It can take one of these values:
-
-
-            ALL — A contact center user with this profile can access all the entry points for an organization.
-
-
-            SPECIFIC — A contact center user with this profile can access only specific entry points for an organization.
-
-
-            '
-          enum:
-          - SPECIFIC
-          - ALL
-          - PROVISIONED_VALUE
-          - NONE
-          example: ALL
-        accessAllSites:
-          type: string
-          description: 'Allow users of this profile access to specific or all the sites for an organization.
-
-
-            It can take one of these values:
-
-
-            ALL — A contact center user with this profile can access all the sites for an organization.
-
-
-            SPECIFIC — A contact center user with this profile can access only specific sites for an organization.
-
-
-            '
-          enum:
-          - SPECIFIC
-          - ALL
-          - PROVISIONED_VALUE
-          - NONE
-          example: ALL
-        accessAllQueues:
-          type: string
-          description: 'Allow users of this profile access to specific or all the contact center queues for an organization.
-
-
-            It can take one of these values:
-
-
-            ALL — A contact center user with this profile can access all the contact center queues for an organization.
-
-
-            SPECIFIC — A contact center user with this profile can access only specific contact center queues for an organization.
-
-
-            '
-          enum:
-          - SPECIFIC
-          - ALL
-          - PROVISIONED_VALUE
-          - NONE
-          example: ALL
-        accessAllTeams:
-          type: string
-          description: 'Allow users of this profile access to specific or all the contact center teams for an organization.
-
-
-            It can take one of these values:
-
-
-            ALL — A contact center user with this profile can access all the contact center teams for an organization.
-
-
-            SPECIFIC — A contact center user with this profile can access only specific contact center teams for an organization.
-
-
-            '
-          enum:
-          - SPECIFIC
-          - ALL
-          - PROVISIONED_VALUE
-          - NONE
-          example: ALL
-        active:
-          type: boolean
-          description: Specify whether the User profile is active or not.
-          example: true
-        editableFolderIds:
-          type: array
-          description: "Indicates the id(s) of the reporting folders a user of this profile has read and write access to. \n"
-          items:
-            description: Identifier of a folder the user profile can edit
-            example: 1
-          uniqueItems: true
-        viewableFolderIds:
-          type: array
-          description: "Indicates the id(s) of the reporting folders a user of this profile has read access to. \n"
-          items:
-            description: Identifier of a folder the user profile can view
-            example: 2
-          uniqueItems: true
-        nonViewableFolderIds:
-          type: array
-          description: "Indicates the id(s) of the restricted reporting folders for a user of this profile. \n"
-          items:
-            description: Identifier of a folder hidden from the user profile
-            example: 3
-          uniqueItems: true
-        systemDefault:
-          type: boolean
-          description: Indicates whether the created resource is system created or not
-          example: false
-        createdTime:
-          type: integer
-          format: int64
-          description: This is the created time of the entity.
-          example: 123456789
-        lastUpdatedTime:
-          type: integer
-          format: int64
-          description: This is the updated time of the entity.
-          example: 123456789
-        entryPoints:
-          type: array
-          description: "Specify the id(s) of the entry point(s) a user of this profile will have access to. \n\nIt should be chosen when entry points access is SPECIFIC. Please see '''Entry Point documentation''', and use Get EntryPoints API to fetch the values of entry points.\n\n"
-          items:
-            description: Entry point identifier assigned to the user profile
-            example: f53c8b54-46ca-43f6-ba05-08426a46e23d
-          uniqueItems: true
-        sites:
-          type: array
-          description: "Specify the id(s) of the site(s) a user of this profile will have access to. \nIt should be chosen when sites access is SPECIFIC. Please see Sites documentation, and use Get Site API to fetch the values of site IDs.\n\n"
-          items:
-            description: Site identifier assigned to the user profile
-            example: f53c8b54-46ca-43f6-ba05-08426a46e23d
-          uniqueItems: true
-        queues:
-          type: array
-          description: "Specify the id(s) of the queue(s) a user of this profile will have access to. \nIt should be chosen when queues access is SPECIFIC. Please see Queues documentation, and use Get Queues API to fetch the values of queue IDs.\n\n"
-          items:
-            description: Queue identifier assigned to the user profile
-            example: f53c8b54-46ca-43f6-ba05-08426a46e23d
-          uniqueItems: true
-        teams:
-          type: array
-          description: 'Specify the id(s) of the team(s) a user of this profile will have access to.
-
-            It should be chosen when teams access is SPECIFIC. Please see Teams documentation, and use Get Teams API to fetch the values of team IDs.
-
-
-            '
-          items:
-            description: Team identifier assigned to the user profile
-            example: f53c8b54-46ca-43f6-ba05-08426a46e23d
-          uniqueItems: true
-      required:
-      - accessAllEntryPoints
-      - accessAllModules
-      - accessAllQueues
-      - accessAllSites
-      - accessAllTeams
-      - active
-      - name
-      - profileType
-    UserDetailsRequestDTO:
-      type: object
-      description: Get user details by a list of user IDs in the payload.
-      properties:
-        userIds:
-          type: array
-          description: 'List of valid user IDs.
-
-            Provide this only when both `search` and `queueId` are not provided.
-
-            '
-          items:
-            description: User identifier included in the request
-            example: a1b2c3d4-e5f6-7g8h-9i10-j11k12l13m14
-        search:
-          type: string
-          description: 'Text used to search for users (e.g., by firstName, lastName or email of the user).
-
-            If provided, `queueId` is **required**.
-
-            Cannot be used in combination with `userIds`.
-
-            '
-          example: john
-        queueId:
-          type: string
-          description: 'Agent Based Queue ID to filter users .
-
-            Required if `search` is provided.
-
-            Cannot be used with `userIds`.
-
-            '
-          example: c0ffee12-3456-abcd-7890-deadbeef1234
-    UserProfileGranularAccessDTO:
-      type: object
-      description: Data Transfer Object for creating or updating a user profile with granular access controls.
-      example:
-        organizationId: f53c8b54-46ca-43f6-ba05-08426a46e23d
-        id: 93912f11-6017-404b-bf14-5331890b1797
-        version: 1
-        name: Contact Center Admin Profile
-        description: This profile should be applied only to contact center admins.
-        profileType: PREMIUM_AGENT
-        active: true
-        permissionAccessLevel: ALL
-        resourceAccessLevel: ALL
-        permissions:
-        - id: 00734874-4732-43bb-bfff-d1e75d309eb1
-          name: sites
-          access: NONE
-        editableFolderIds:
-        - 1
-        - 2
-        viewableFolderIds:
-        - 1
-        - 2
-        nonViewableFolderIds:
-        - 1
-        - 2
-        systemDefault: false
-        defaultResourceCollectionId: 80f49a6e-11d7-4651-b730-99ed2f726f61
-        resourceCollections:
-        - id: 80f49a6e-11d7-4651-b730-99ed2f726f61
-          name: Department1
-          description: Department1 description.
-          resources:
-          - name: team
-            accessLevel: SPECIFIC
-            ids:
-            - 00734874-4732-43bb-bfff-d1e75d309eb1
-            - 00734874-4732-43bb-bfff-d1e75d309eb2
-          - name: desktop-profile
-            accessLevel: ALL
-          - name: desktop-layout
-            accessLevel: NONE
-          resourceCount: 2
-        createdTime: 0
-        lastUpdatedTime: 0
-      properties:
-        organizationId:
-          type: string
-          format: uuid
-          description: ID of the contact center organization. This field is required for all bulk save operations.
-          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
-          maxLength: 36
-          minLength: 32
-          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
-        id:
-          type: string
-          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
-          example: 93912f11-6017-404b-bf14-5331890b1797
-        version:
-          type: integer
-          format: int32
-          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
-          example: 1
-        name:
-          type: string
-          description: The name of the user profile.
-          example: Contact Center Admin Profile
-          maxLength: 80
-          minLength: 0
-          pattern: ^[a-zA-Z0-9,_\-\s]*$
-        description:
-          type: string
-          description: An optional description of the profile.
-          example: This profile should be applied only to contact center admins.
-          maxLength: 255
-          minLength: 0
-        profileType:
-          type: string
-          description: "The type determines the privileges applicable for a profile.\n\nIt can take one of these values:\n\nSTANDARD_AGENT — Has access to Agent Desktop[m_agent_desktop] module.\n\nPREMIUM_AGENT — Has access to Agent Desktop[m_agent_desktop] and Multimedia[m_multimedia] module.\n\nSUPERVISOR — Has access to all modules except to manage tenants in the Provisioning[m_provisioning] module.\n\nADMINISTRATOR — Has access to all modules.\n\nADMINISTRATOR_ONLY — Has access to Provisioning[m_provisioning], Real Time Reports[m_real_time_reports], Call Recording[m_call_recording], IMI Digital Channels[m_imi_digital_channels], and Routing Strategy[m_routing_strategy] modules.\n\nIt is required only during a create operation. \n\nThe profile type cannot be changed for an existing user profile.\n\n"
-          enum:
-          - ADMINISTRATOR
-          - ADMINISTRATOR_ONLY
-          - SUPERVISOR
-          - PREMIUM_AGENT
-          - STANDARD_AGENT
-          - ANALYZER_ADMINISTRATOR
-          - ANALYZER_SUPERVISOR
-          - ANALYZER_USER
-          example: PREMIUM_AGENT
-        active:
-          type: boolean
-          description: Specify whether the User profile is active or not.
-          example: true
-        permissionAccessLevel:
-          type: string
-          description: 'This can be used to allow users of this profile access to specific or all the Webex Contact Center permissions.
-
-
-            It can take one of these values:
-
-
-            ALL — A contact center user with this profile can access all Contact Center permissions.
-
-
-            SPECIFIC — A contact center user with this profile can access only specific permissions.
-
-
-            '
-          enum:
-          - SPECIFIC
-          - ALL
-          - PROVISIONED_VALUE
-          - NONE
-          example: ALL
-        resourceAccessLevel:
-          type: string
-          description: 'This can be used to allow users of this profile access to specific or all the Webex Contact Center resources.
-
-
-            It can take one of these values:
-
-
-            ALL — A contact center user with this profile can access all Contact Center resources.
-
-
-            SPECIFIC — A contact center user with this profile can access only specific resources.
-
-
-            '
-          enum:
-          - SPECIFIC
-          - ALL
-          - PROVISIONED_VALUE
-          - NONE
-          example: ALL
-        permissions:
-          type: array
-          description: 'Specifies the permissions(s) a user of this profile has access to.
-
-
-            It should be chosen when permission access is SPECIFIC.
-
-
-            Please specify all the following permissions and their respective access type.
-
-
-            '
-          items:
-            $ref: '#/components/schemas/UserProfilePermissionsDTO'
-            description: Permission.
-          uniqueItems: true
-        editableFolderIds:
-          type: array
-          description: "Indicates the id(s) of the reporting folders a user of this profile has read and write access to. \n"
-          example:
-          - 1
-          - 2
-          items:
-            type: integer
-            format: int32
-            description: Editable Folder Id.
-          uniqueItems: true
-        viewableFolderIds:
-          type: array
-          description: "Indicates the id(s) of the reporting folders a user of this profile has read access to. \n"
-          example:
-          - 1
-          - 2
-          items:
-            type: integer
-            format: int32
-            description: Viewable Folder Id.
-          uniqueItems: true
-        nonViewableFolderIds:
-          type: array
-          description: "Indicates the id(s) of the restricted reporting folders for a user of this profile. \n"
-          example:
-          - 1
-          - 2
-          items:
-            type: integer
-            format: int32
-            description: Non Viewable Folder Id.
-          uniqueItems: true
-        systemDefault:
-          type: boolean
-          description: Indicates whether the created resource is system created or not
-          example: false
-        defaultResourceCollectionId:
-          type: string
-          description: Specifies the default resource collection for this profile
-          example: 80f49a6e-11d7-4651-b730-99ed2f726f61
-        resourceCollections:
-          type: array
-          description: 'Specifies the resource collection(s) a user of this profile has access to.
-
-
-            resource collection(s) needs to be specified when resourceAccessLevel is SPECIFIC'
-          items:
-            $ref: '#/components/schemas/ResourceCollectionDTO'
-            description: Resource Collection.
-          uniqueItems: true
-        createdTime:
-          type: integer
-          format: int64
-          description: This is the created time of the entity.
-          example: 123456789
-        lastUpdatedTime:
-          type: integer
-          format: int64
-          description: This is the updated time of the entity.
-          example: 123456789
-      required:
-      - active
-      - name
-      - permissionAccessLevel
-      - profileType
-      - resourceAccessLevel
     DynamicSkills:
       type: object
       description: Container for dynamic skills operations (add/remove)
@@ -5188,556 +5590,6 @@ components:
           items:
             type: string
             description: Remove item.
-    ErrorDetails:
-      description: Details of an error.
-      type: object
-      properties:
-        key:
-          type: string
-          description: An application defined error code.
-          example: '401'
-        message:
-          type: array
-          description: A message providing details about the error.
-          items:
-            $ref: '#/components/schemas/OperationError'
-    UserDynamicSkillResponseDTO:
-      type: object
-      description: Response data transfer object containing user dynamic skill assignment information
-      properties:
-        organizationId:
-          type: string
-          format: uuid
-          description: ID of the contact center organization. This field is required for all bulk save operations.
-          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
-          maxLength: 36
-          minLength: 32
-          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
-        id:
-          type: string
-          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
-          example: 93912f11-6017-404b-bf14-5331890b1797
-        firstName:
-          type: string
-          description: The first name of the user.
-          example: John
-        lastName:
-          type: string
-          description: The last name of the user.
-          example: Wick
-        email:
-          type: string
-          description: The email address of the user.
-          example: johnwick@company.com
-        dynamicSkill:
-          $ref: '#/components/schemas/AssignedDynamicSkillsDTO'
-          description: The dynamic skill associated with the user
-    UserProfileAppModuleDTO_UserResponseWithUserProfile:
-      type: object
-      description: User Profile App Module DTO
-      properties:
-        organizationId:
-          type: string
-          format: uuid
-          description: ID of the contact center organization. This field is required for all bulk save operations.
-          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
-          maxLength: 36
-          minLength: 32
-          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
-        id:
-          type: string
-          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
-          example: 93912f11-6017-404b-bf14-5331890b1797
-        version:
-          type: integer
-          format: int32
-          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
-          example: 1
-        appModuleId:
-          type: string
-          description: "The code of a Webex Contact Center module. \n\nPlease specify descriptions for each of these modules:\n\nm_provisioning - Refers to the provisioning module. Has access to Manage EntryPoints and Queues[f_manage_entrypt_queue], Revoke API Key[f_revoke_api_key], DN Mappings[f_dn_mappings], Manage User Profiles[f_manage_user_profiles], Manage Tenants[f_manage_tenants], Manage Users[f_manage_users], Portal Branding[f_portal_branding], Audit Trail[f_audit_trail], Manage Sites[f_manage_sites], Manage Teams[f_manage_teams], and Manage Dial Plans[f_manage_dial_plans] features.\n\nm_real_time_reports - Refers to the real time reporting module. Has access to Summary View[f_summary_view], Agent State Change[f_agent_state_change], Real Time Threshold Alerts[f_realtime_threshold_alerts], and Web CallBack Report[f_web_callback_report] features.\n\nm_historical_reports - Refers to the historical reporting module.\n\nm_routing_strategy - Refers to the routing strategy module. Has access to Manage Media Files[f_manage_media_files] and Manage Call Flow Scripts[f_manage_call_flow_scripts] features.\n\nm_call_recording - Refers to the call recording module.\n\nm_call_monitoring - Refers to the call monitoring module. Has access to Barge In[f_barge_in], View Blind Monitor Request[f_view_blind_monitor_requests], Whisper Coach[f_whisper_coach], Mid Call Monitor[f_mid_call_monitor], and Restricted Monitor[f_restricted_monitor_only] features.\n\nm_reporting_analytics - Refers to the reporting analytics module. Has access to Analyzer Data Exchange[f_analyzer_data_exchange] and Business Rules[f_business_rules] features. \n\nm_recording_management - Refers to the recording management module. Has access to Tags[f_tags], Security Keys[f_security_keys], Manage Recordings[f_manage_recordings], and Custom Attributes[f_custom_attributes] features.\n\nm_agent_desktop - Refers to the agent desktop module.\n\nm_logout_agents - Refers to the agent logout module.\n\nm_manage_agent_states - Refers to the agent state module. Has access to Sign Out Agent[f_sign_out_agent] and Change Agent State[f_change_agent_state] features.\n\nm_additional_supervisory_features - Refers to the additional supervisory features module. Has access to Sign Out Agents[f_sign_out_agents], Change Agent States[f_change_agent_states] and Send Messages[f_send_messages] features.\n\nm_multimedia - Refers to the multimedia module. Has access to Provisioning[f_mm_provisioning], Basic Digital[f_mm_basic_digital], Social Channel[f_mm_social_channel] and Agent Desktop[f_mm_agent_desktop] features.\n\nm_agent_wellbeing - Refers to the Agent Wellbeing module. Has access to Agent Wellbeing provisioning features.\n\nm_auto_csat - Refers to the Auto Csat module.\n\nm_generated_summaries - Refers to the Generated Summaries module.\n\nm_agent_personal_greetings - Refers to the Agent Personal Greetings module.\n\nm_functions - Refers to the Functions in flow module.\n\nm_realtime_transcripts - Refers to the Realtime Transcripts module.\n\nm_suggested_responses - Refers to the Suggested Responses module.\n"
-          example: m_provisioning
-          minLength: 1
-        moduleAccessType:
-          type: string
-          description: 'Indicates the access rights for a user of this profile for a Webex Contact Center module.
-
-
-            It can take be one of these values:
-
-
-            VIEW — A contact center user with this profile has read only access to a Contact Center module.
-
-
-            EDIT — A contact center user with this profile has read and write access to a Contact Center module.
-
-
-            NONE — A contact center user with this profile cannot access the module.
-
-
-            '
-          enum:
-          - NONE
-          - VIEW
-          - EDIT
-          example: EDIT
-        userProfileAppFeature:
-          type: array
-          description: "Specifies the module features(s) a user of this profile has access to. \n"
-          items:
-            $ref: '#/components/schemas/UserProfileAppFeatureDTO_UserResponseWithUserProfile'
-            description: User Profile App Feature item.
-          uniqueItems: true
-        createdTime:
-          type: integer
-          format: int64
-          description: This is the created time of the entity.
-          example: 123456789
-        lastUpdatedTime:
-          type: integer
-          format: int64
-          description: This is the updated time of the entity.
-          example: 123456789
-      required:
-      - appModuleId
-      - moduleAccessType
-    BulkResponseDTO:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/BulkResponseItemDTO'
-    PaginationLinks:
-      type: object
-      properties:
-        self:
-          type: string
-          description: Link to the current page.
-          example: /v1/callbacks/organization/${orgId}/scheduled-callback?page=1&pageSize=10
-        first:
-          type: string
-          description: Link to the first page.
-          example: /v1/callbacks/organization/${orgId}/scheduled-callback?page=0&pageSize=10
-        last:
-          type: string
-          description: Link to the last page.
-          example: /v1/callbacks/organization/${orgId}/scheduled-callback?page=4&pageSize=10
-        next:
-          type: string
-          description: Link to the next page.
-          example: /v1/callbacks/organization/${orgId}/scheduled-callback?page=2&pageSize=10
-        prev:
-          type: string
-          description: Link to the previous page.
-          example: /v1/callbacks/organization/${orgId}/scheduled-callback?page=0&pageSize=10
-      required:
-      - self
-    AssignedDynamicSkillsDTO_UserResponseWithUserProfile:
-      type: object
-      description: Data transfer object representing dynamic skills assigned to a user
-      properties:
-        organizationId:
-          type: string
-          format: uuid
-          description: ID of the contact center organization. This field is required for all bulk save operations.
-          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
-          maxLength: 36
-          minLength: 32
-          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
-        id:
-          type: string
-          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
-          example: 93912f11-6017-404b-bf14-5331890b1797
-        version:
-          type: integer
-          format: int32
-          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
-          example: 1
-        skillId:
-          type: string
-          description: The ID of the skill.
-          example: skill456
-        skillName:
-          type: string
-          description: The name of the skill. Used for bulk upload operations to resolve skill by name instead of ID.
-          example: CustomerService
-        textValue:
-          type: string
-          description: A short textual description that represents a skill the agent has.
-          example: Credit card SME
-          maxLength: 100
-          minLength: 0
-        booleanValue:
-          type: boolean
-          description: Indicates whether the agent has this skill (True) or does not have the skill (False).
-          example: true
-        proficiencyValue:
-          type: integer
-          format: int32
-          description: A number between 0 and 10 to indicate how proficient the agent is in this skill.
-          example: 5
-          maximum: 10
-          minimum: 0
-        enumValue:
-          type: string
-          description: The enum value for enum-type skills. Supports multiple values as pipe-delimited string (e.g., '30|20|10').
-          example: french
-        enumSkillValues:
-          type: string
-          description: Indicates a value that represents a skill the agent has.
-          example: FRENCH
-        createdTime:
-          type: integer
-          format: int64
-          description: This is the created time of the entity.
-          example: 123456789
-        lastUpdatedTime:
-          type: integer
-          format: int64
-          description: This is the updated time of the entity.
-          example: 123456789
-      required:
-      - skillId
-    ReSkillAgentRequestDTO:
-      type: object
-      description: Request DTO for re-skilling an agent with a new skill profile and/or dynamic skills
-      properties:
-        organizationId:
-          type: string
-          format: uuid
-          description: ID of the contact center organization. This field is required for all bulk save operations.
-          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
-          maxLength: 36
-          minLength: 32
-          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
-        id:
-          type: string
-          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
-          example: 93912f11-6017-404b-bf14-5331890b1797
-        version:
-          type: integer
-          format: int32
-          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
-          example: 1
-        skillProfileId:
-          type: string
-          description: The unique identifier of the skill profile to assign to the agent
-          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
-        dynamicSkills:
-          $ref: '#/components/schemas/DynamicSkills'
-          description: Dynamic skills to add or remove from the agent
-        createdTime:
-          type: integer
-          format: int64
-          description: This is the created time of the entity.
-          example: 123456789
-        lastUpdatedTime:
-          type: integer
-          format: int64
-          description: This is the updated time of the entity.
-          example: 123456789
-    MetaDataWithPagingInfo:
-      type: object
-      description: Metadata of response with paging information
-      properties:
-        orgid:
-          type: string
-          format: uuid
-          description: Organization ID.
-          example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
-          maxLength: 36
-          minLength: 32
-          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
-        page:
-          type: integer
-          format: int32
-          description: Current page number.
-          example: 1
-        pageSize:
-          type: integer
-          format: int32
-          description: Page size for current data set.
-          example: 100
-        totalPages:
-          type: integer
-          format: int32
-          description: Number of pages.
-          example: 1
-        totalRecords:
-          type: integer
-          format: int32
-          description: Total number of items.
-          example: 1000
-        links:
-          type: object
-          description: Map of pagination links with `self`, `next`, `prev`, `last`, and `first`.
-          example:
-            next: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=2&pageSize=10
-            last: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=3&pageSize=10
-            prev: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=0&pageSize=10
-            self: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=1&pageSize=10
-            first: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=0&pageSize=10
-      title: MetaDataWithPagingInfo
-    BulkRequestDTOUpdateDynamicSkillsDTO:
-      type: object
-      description: Bulk Request Update Dynamic Skills schema.
-      properties:
-        items:
-          type: array
-          description: List of items in the bulk request.
-          items:
-            $ref: '#/components/schemas/BulkRequestItemDTOUpdateDynamicSkillsDTO'
-            description: Item.
-    UserProfileDTO:
-      type: object
-      description: User profile data transfer object that defines access permissions and resource scope for contact center users
-      properties:
-        organizationId:
-          type: string
-          format: uuid
-          description: ID of the contact center organization. This field is required for all bulk save operations.
-          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
-          maxLength: 36
-          minLength: 32
-          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
-        id:
-          type: string
-          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
-          example: 93912f11-6017-404b-bf14-5331890b1797
-        version:
-          type: integer
-          format: int32
-          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
-          example: 1
-        name:
-          type: string
-          description: The name of the user profile.
-          example: Contact Center Admin Profile
-          maxLength: 80
-          minLength: 0
-          pattern: ^[a-zA-Z0-9,_\-\s]*$
-        description:
-          type: string
-          description: An optional description of the profile.
-          example: This profile should be applied only to contact center admins.
-          maxLength: 255
-          minLength: 0
-        profileType:
-          type: string
-          description: "The type determines the privileges applicable for a profile.\n\nIt can take one of these values:\n\nSTANDARD_AGENT — Has access to Agent Desktop[m_agent_desktop] module.\n\nPREMIUM_AGENT — Has access to Agent Desktop[m_agent_desktop] and Multimedia[m_multimedia] module.\n\nSUPERVISOR — Has access to all modules except to manage tenants in the Provisioning[m_provisioning] module.\n\nADMINISTRATOR — Has access to all modules.\n\nADMINISTRATOR_ONLY — Has access to Provisioning[m_provisioning], Real Time Reports[m_real_time_reports], Call Recording[m_call_recording], IMI Digital Channels[m_imi_digital_channels], and Routing Strategy[m_routing_strategy] modules.\n\nIt is required only during a create operation. \n\nThe profile type cannot be changed for an existing user profile.\n\n"
-          enum:
-          - ADMINISTRATOR
-          - ADMINISTRATOR_ONLY
-          - SUPERVISOR
-          - PREMIUM_AGENT
-          - STANDARD_AGENT
-          - ANALYZER_ADMINISTRATOR
-          - ANALYZER_SUPERVISOR
-          - ANALYZER_USER
-          example: PREMIUM_AGENT
-        accessAllModules:
-          type: string
-          description: 'This can be used to allow users of this profile access to specific or all the Webex Contact Center modules.
-
-
-            It can take one of these values:
-
-
-            ALL — A contact center user with this profile can access all Contact Center modules.
-
-
-            SPECIFIC — A contact center user with this profile can access only specific modules.
-
-
-            '
-          enum:
-          - SPECIFIC
-          - ALL
-          - PROVISIONED_VALUE
-          - NONE
-          example: ALL
-        userProfileAppModules:
-          type: array
-          description: 'Specifies the module(s) a user of this profile has access to.
-
-
-            It should be chosen when module access is SPECIFIC.
-
-
-            Please specify all the following modules and their respective access type.
-
-
-            '
-          items:
-            $ref: '#/components/schemas/UserProfileAppModuleDTO'
-            description: User Profile App Module.
-          uniqueItems: true
-        accessAllEntryPoints:
-          type: string
-          description: 'Allow users of this profile access to specific or all the entry points for an organization.
-
-
-            It can take one of these values:
-
-
-            ALL — A contact center user with this profile can access all the entry points for an organization.
-
-
-            SPECIFIC — A contact center user with this profile can access only specific entry points for an organization.
-
-
-            '
-          enum:
-          - SPECIFIC
-          - ALL
-          - PROVISIONED_VALUE
-          - NONE
-          example: ALL
-        accessAllSites:
-          type: string
-          description: 'Allow users of this profile access to specific or all the sites for an organization.
-
-
-            It can take one of these values:
-
-
-            ALL — A contact center user with this profile can access all the sites for an organization.
-
-
-            SPECIFIC — A contact center user with this profile can access only specific sites for an organization.
-
-
-            '
-          enum:
-          - SPECIFIC
-          - ALL
-          - PROVISIONED_VALUE
-          - NONE
-          example: ALL
-        accessAllQueues:
-          type: string
-          description: 'Allow users of this profile access to specific or all the contact center queues for an organization.
-
-
-            It can take one of these values:
-
-
-            ALL — A contact center user with this profile can access all the contact center queues for an organization.
-
-
-            SPECIFIC — A contact center user with this profile can access only specific contact center queues for an organization.
-
-
-            '
-          enum:
-          - SPECIFIC
-          - ALL
-          - PROVISIONED_VALUE
-          - NONE
-          example: ALL
-        accessAllTeams:
-          type: string
-          description: 'Allow users of this profile access to specific or all the contact center teams for an organization.
-
-
-            It can take one of these values:
-
-
-            ALL — A contact center user with this profile can access all the contact center teams for an organization.
-
-
-            SPECIFIC — A contact center user with this profile can access only specific contact center teams for an organization.
-
-
-            '
-          enum:
-          - SPECIFIC
-          - ALL
-          - PROVISIONED_VALUE
-          - NONE
-          example: ALL
-        active:
-          type: boolean
-          description: Specify whether the User profile is active or not.
-          example: true
-        editableFolderIds:
-          type: array
-          description: "Indicates the id(s) of the reporting folders a user of this profile has read and write access to. \n"
-          items:
-            description: Identifier of a folder the user profile can edit
-            example: 1
-          uniqueItems: true
-        viewableFolderIds:
-          type: array
-          description: "Indicates the id(s) of the reporting folders a user of this profile has read access to. \n"
-          items:
-            description: Identifier of a folder the user profile can view
-            example: 2
-          uniqueItems: true
-        nonViewableFolderIds:
-          type: array
-          description: "Indicates the id(s) of the restricted reporting folders for a user of this profile. \n"
-          items:
-            description: Identifier of a folder hidden from the user profile
-            example: 3
-          uniqueItems: true
-        systemDefault:
-          type: boolean
-          description: Indicates whether the created resource is system created or not
-          example: false
-        createdTime:
-          type: integer
-          format: int64
-          description: This is the created time of the entity.
-          example: 123456789
-        lastUpdatedTime:
-          type: integer
-          format: int64
-          description: This is the updated time of the entity.
-          example: 123456789
-        entryPoints:
-          type: array
-          description: "Specify the id(s) of the entry point(s) a user of this profile will have access to. \n\nIt should be chosen when entry points access is SPECIFIC. Please see '''Entry Point documentation''', and use Get EntryPoints API to fetch the values of entry points.\n\n"
-          items:
-            description: Entry point identifier assigned to the user profile
-            example: f53c8b54-46ca-43f6-ba05-08426a46e23d
-          uniqueItems: true
-        sites:
-          type: array
-          description: "Specify the id(s) of the site(s) a user of this profile will have access to. \nIt should be chosen when sites access is SPECIFIC. Please see Sites documentation, and use Get Site API to fetch the values of site IDs.\n\n"
-          items:
-            description: Site identifier assigned to the user profile
-            example: f53c8b54-46ca-43f6-ba05-08426a46e23d
-          uniqueItems: true
-        queues:
-          type: array
-          description: "Specify the id(s) of the queue(s) a user of this profile will have access to. \nIt should be chosen when queues access is SPECIFIC. Please see Queues documentation, and use Get Queues API to fetch the values of queue IDs.\n\n"
-          items:
-            description: Queue identifier assigned to the user profile
-            example: f53c8b54-46ca-43f6-ba05-08426a46e23d
-          uniqueItems: true
-        teams:
-          type: array
-          description: 'Specify the id(s) of the team(s) a user of this profile will have access to.
-
-            It should be chosen when teams access is SPECIFIC. Please see Teams documentation, and use Get Teams API to fetch the values of team IDs.
-
-
-            '
-          items:
-            description: Team identifier assigned to the user profile
-            example: f53c8b54-46ca-43f6-ba05-08426a46e23d
-          uniqueItems: true
-      required:
-      - accessAllEntryPoints
-      - accessAllModules
-      - accessAllQueues
-      - accessAllSites
-      - accessAllTeams
-      - active
-      - name
-      - profileType
     UserResponseDTO:
       type: object
       description: User response data transfer object containing user profile and configuration details
@@ -5999,9 +5851,55 @@ components:
           format: int64
           description: The date when the skill profile was last modified (epoch timestamp in milliseconds)
           example: 1679392200000
-    UserProfileAppModuleDTO:
+    ResponseEnvelopeUserDynamicSkillResponseDTO:
       type: object
-      description: User Profile App Module DTO
+      description: Response Envelope User Dynamic Skill Response schema.
+      properties:
+        meta:
+          type: object
+          additionalProperties:
+            description: Meta additional property.
+          description: Additional properties for Meta.
+        data:
+          type: array
+          description: List of Data.
+          items:
+            $ref: '#/components/schemas/UserDynamicSkillResponseDTO'
+            description: Data item.
+    UserResponseDTO_UserResponseWithUserProfile:
+      type: object
+      description: User response data transfer object containing user profile and configuration details
+      example:
+        id: 1dq21e23-1234-5578-9a83-2afdae0d4ba1
+        firstName: John
+        lastName: Wick
+        email: johnwick@company.com
+        workPhone: '1234567890'
+        mobile: '1234567890'
+        ciUserId: 1dq21e23-1234-5578-9a83-2afdae0d4ba1
+        broadCloudUserId: 1dq21e23-1234-5578-9a83-2afdae0d4ba1
+        timezone: America/New_York
+        userProfileId: 1dq21e23-1234-5578-9a83-2afdae0d4ba1
+        userProfileType: PREMIUM_AGENT
+        contactCenterEnabled: true
+        siteId: 1dq21e23-1234-5578-9a83-2afdae0d4ba1
+        siteName: bengaluru
+        teamIds:
+        - f53c8b54-46ca-43f6-ba05-08426a46e23d
+        skillProfileId: f53c8b54-46ca-43f6-ba05-08426a46e23d
+        agentProfileId: 8e6bb6da-2a78-4768-bef9-7e229f92af22
+        multimediaProfileId: f53c8b54-46ca-43f6-ba05-08426a46e23d
+        deafultDialledNumber: '1234567890'
+        externalIdentifier: '121212'
+        active: true
+        imiUserCreated: true
+        systemDefault: false
+        userLevelBurnoutInclusion: INCLUDED
+        userLevelAutoCSATInclusion: INCLUDED
+        userLevelWellnessBreakReminders: DISABLED
+        userLevelSummariesInclusion: INCLUDED
+        createdTime: 1679392200000
+        lastModifiedTime: 1679392200000
       properties:
         organizationId:
           type: string
@@ -6020,41 +5918,197 @@ components:
           format: int32
           description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
           example: 1
-        appModuleId:
+        firstName:
           type: string
-          description: "The code of a Webex Contact Center module. \n\nPlease specify descriptions for each of these modules:\n\nm_provisioning - Refers to the provisioning module. Has access to Manage EntryPoints and Queues[f_manage_entrypt_queue], Revoke API Key[f_revoke_api_key], DN Mappings[f_dn_mappings], Manage User Profiles[f_manage_user_profiles], Manage Tenants[f_manage_tenants], Manage Users[f_manage_users], Portal Branding[f_portal_branding], Audit Trail[f_audit_trail], Manage Sites[f_manage_sites], Manage Teams[f_manage_teams], and Manage Dial Plans[f_manage_dial_plans] features.\n\nm_real_time_reports - Refers to the real time reporting module. Has access to Summary View[f_summary_view], Agent State Change[f_agent_state_change], Real Time Threshold Alerts[f_realtime_threshold_alerts], and Web CallBack Report[f_web_callback_report] features.\n\nm_historical_reports - Refers to the historical reporting module.\n\nm_routing_strategy - Refers to the routing strategy module. Has access to Manage Media Files[f_manage_media_files] and Manage Call Flow Scripts[f_manage_call_flow_scripts] features.\n\nm_call_recording - Refers to the call recording module.\n\nm_call_monitoring - Refers to the call monitoring module. Has access to Barge In[f_barge_in], View Blind Monitor Request[f_view_blind_monitor_requests], Whisper Coach[f_whisper_coach], Mid Call Monitor[f_mid_call_monitor], and Restricted Monitor[f_restricted_monitor_only] features.\n\nm_reporting_analytics - Refers to the reporting analytics module. Has access to Analyzer Data Exchange[f_analyzer_data_exchange] and Business Rules[f_business_rules] features. \n\nm_recording_management - Refers to the recording management module. Has access to Tags[f_tags], Security Keys[f_security_keys], Manage Recordings[f_manage_recordings], and Custom Attributes[f_custom_attributes] features.\n\nm_agent_desktop - Refers to the agent desktop module.\n\nm_logout_agents - Refers to the agent logout module.\n\nm_manage_agent_states - Refers to the agent state module. Has access to Sign Out Agent[f_sign_out_agent] and Change Agent State[f_change_agent_state] features.\n\nm_additional_supervisory_features - Refers to the additional supervisory features module. Has access to Sign Out Agents[f_sign_out_agents], Change Agent States[f_change_agent_states] and Send Messages[f_send_messages] features.\n\nm_multimedia - Refers to the multimedia module. Has access to Provisioning[f_mm_provisioning], Basic Digital[f_mm_basic_digital], Social Channel[f_mm_social_channel] and Agent Desktop[f_mm_agent_desktop] features.\n\nm_agent_wellbeing - Refers to the Agent Wellbeing module. Has access to Agent Wellbeing provisioning features.\n\nm_auto_csat - Refers to the Auto Csat module.\n\nm_generated_summaries - Refers to the Generated Summaries module.\n\nm_agent_personal_greetings - Refers to the Agent Personal Greetings module.\n\nm_functions - Refers to the Functions in flow module.\n\nm_realtime_transcripts - Refers to the Realtime Transcripts module.\n\nm_suggested_responses - Refers to the Suggested Responses module.\n"
-          example: m_provisioning
-          minLength: 1
-        moduleAccessType:
+          description: The first name of the user.
+          example: John
+        lastName:
           type: string
-          description: 'Indicates the access rights for a user of this profile for a Webex Contact Center module.
+          description: The last name of the user.
+          example: Wick
+        email:
+          type: string
+          description: The email address of the user.
+          example: johnwick@company.com
+        workPhone:
+          type: string
+          description: The work phone number of the user.
+          example: '1234567890'
+        mobile:
+          type: string
+          description: The mobile phone number of the user.
+          example: '1234567890'
+        ciUserId:
+          type: string
+          description: Cisco Common Identity user Id
+          example: 1dq21e23-1234-5578-9a83-2afdae0d4ba1
+        broadCloudUserId:
+          type: string
+          description: Broadcloud user Id
+          example: 1dq21e23-1234-5578-9a83-2afdae0d4ba1
+        timezone:
+          type: string
+          description: (Optional) The time zone that you provision for your enterprise.
+          example: America/New_York
+        xspVersion:
+          type: string
+          description: (Optional) Used to subscribe for recording events.
+          example: xsp-24.0
+        subscriptionId:
+          type: string
+          description: (Optional) Used to subscribe for recording events.
+          example: 04d0bdf6-6d6a-4aae-8a8a-71c9152e6478
+        userProfileId:
+          type: string
+          description: Identifier for an user profile which a Contact Center administrator has configured.
+          example: 1dq21e23-1234-5578-9a83-2afdae0d4ba1
+        userProfileType:
+          type: string
+          description: Type of the user profile associated to this user. This is an optional response parameter based on the query parameter includeUserProfileType.
+          example: PREMIUM_AGENT
+        contactCenterEnabled:
+          type: boolean
+          description: The setting is for accessing Desktop to handle customer requests.
+          example: true
+        siteId:
+          type: string
+          description: Details of site which a Contact Center administrator has configured for the user.
+          example: 1dq21e23-1234-5578-9a83-2afdae0d4ba1
+        siteName:
+          type: string
+          description: site name that user is associated with
+          example: bengaluru
+        teamIds:
+          type: array
+          description: "Specify the teams id which got assigned to this user. \nNote: You can’t assign this profile to a capacity-based team."
+          examples:
+          - f53c8b54-46ca-43f6-ba05-08426a46e23d
+          - a53c8b54-46ca-43f6-ba05-08426a46e23f
+          items:
+            type: string
+            description: "Specify the teams id which got assigned to this user. \nNote: You can’t assign this profile to a capacity-based team."
+            examples:
+            - f53c8b54-46ca-43f6-ba05-08426a46e23d
+            - a53c8b54-46ca-43f6-ba05-08426a46e23f
+          uniqueItems: true
+        skillProfileId:
+          type: string
+          description: '(Optional) If your enterprise uses the optional Skills-Based Routing feature, This profile overrides any skill profile at the team level that is associated with the agent '
+          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+        agentProfileId:
+          type: string
+          description: Identifier for a Desktop Profile which is a group of permissions and Agent Desktop behaviors that you assign to specific users.
+          example: 8e6bb6da-2a78-4768-bef9-7e229f92af22
+        multimediaProfileId:
+          type: string
+          description: (Optional) If your organization administrator enables Multimedia for your enterprise, you can select a multimedia profile for this team.
+          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+        deafultDialledNumber:
+          type: string
+          description: (Optional) The dial number of the agent.
+          example: '1234567890'
+        externalIdentifier:
+          type: string
+          description: (Optional) Agent identification details, such as the employee number.
+          example: '121212'
+        active:
+          type: boolean
+          description: Specify whether the user is active or not active.
+          example: true
+        dbId:
+          type: string
+          description: Legacy identifier for migrated users.
+          example: 1dq45f23-1234-6r18-9a83-2atuiy0d4bh1
+        userProfileData:
+          $ref: '#/components/schemas/UserProfileDTO_UserResponseWithUserProfile'
+          description: Details of UserProfile which a Contact Center administrator has configured for the user.This is an optional object, returned only when the endpoint 'Get User along with profile by ID' is invoked.
+        imiUserCreated:
+          type: boolean
+          description: Specify whether or not the corresponding user is created in IMI.
+          example: true
+        preferredSupervisorTeamId:
+          type: string
+          description: The teamId to look for to load the desktop layout when a supervisor logs in to desktop.
+          example: e27d2b54-46ca-43g6-ba65-08426e46e23d
+        systemDefault:
+          type: boolean
+          description: Indicates whether the created resource is system created or not
+          example: false
+        userLevelBurnoutInclusion:
+          type: string
+          description: 'User level burnout inclusion type. Used only when Agent inclusion is set to ''Specific Agents'' at the org level Agent Wellbeing>Burnout config. If the value is missing in response, the consumer should assume a value as EXCLUDED.
 
-
-            It can take be one of these values:
-
-
-            VIEW — A contact center user with this profile has read only access to a Contact Center module.
-
-
-            EDIT — A contact center user with this profile has read and write access to a Contact Center module.
-
-
-            NONE — A contact center user with this profile cannot access the module.
-
+            This is applicable/available only when AI Assistant add-on offer/license is added to the organization.'
+          enum:
+          - INCLUDED
+          - EXCLUDED
+          example: INCLUDED
+        userLevelAutoCSATInclusion:
+          type: string
+          deprecated: true
+          description: 'User level AutoCSAT inclusion type. Used only when Agent inclusion is set to ''Specific Agents'' at the org level Cisco AI Assistant>Auto CSAT config.
 
             '
           enum:
-          - NONE
-          - VIEW
-          - EDIT
-          example: EDIT
-        userProfileAppFeature:
+          - INCLUDED
+          - EXCLUDED
+          example: INCLUDED
+        userLevelWellnessBreakReminders:
+          type: string
+          description: 'User level Wellness break reminder type. If top level Agent burnout config has wellness break reminders enabled, this property determines if an Agent is enabled/disabled for receiving break reminders. If the value is missing in response, the consumer should assume a value as DISABLED.
+
+            This is applicable/available only when AI Assistant add-on offer/license is added to the organization.'
+          enum:
+          - DISABLED
+          - ENABLED
+          example: DISABLED
+        userLevelSummariesInclusion:
+          type: string
+          deprecated: true
+          description: 'User level Generated Summaries inclusion type. Used only when Generated Summaries is set to ''Specific Agents'' at the org level Cisco AI Assistant>Generated Summaries.
+
+            '
+          enum:
+          - INCLUDED
+          - EXCLUDED
+          example: INCLUDED
+        supervisorCapabilitiesEnabled:
+          type: boolean
+          description: Indicates whether supervisor capabilities are enabled for the user.
+          example: false
+        agentCapabilitiesEnabled:
+          type: boolean
+          description: Indicates whether agent capabilities are enabled for the user.
+          example: false
+        queuesCount:
+          $ref: '#/components/schemas/QueuesCountDTO_UserResponseWithUserProfile'
+          description: Count of queues assigned to the user by queue type (team-based, skill-based, agent-based)
+        skillProfileUpdatedBy:
+          type: string
+          description: The ID of the user who last modified the skill profile
+          example: 1dq21e23-1234-5578-9a83-2afdae0d4ba1
+        dynamicSkills:
           type: array
-          description: "Specifies the module features(s) a user of this profile has access to. \n"
+          description: The list of dynamic skills associated with the user
           items:
-            $ref: '#/components/schemas/UserProfileAppFeatureDTO'
-            description: User Profile App Feature item.
-          uniqueItems: true
+            $ref: '#/components/schemas/AssignedDynamicSkillsDTO_UserResponseWithUserProfile'
+            description: Dynamic Skill.
+        dynamicSkillsLimitReached:
+          type: boolean
+          description: Indicates if the user has reached the dynamic skills assignment limit. Present only if includeDynamicSkillsLimitReached=true is passed in the request.
+          example: true
+        dynamicSkillsUpdatedBy:
+          type: string
+          description: The name of the user who last modified dynamic skills
+        dynamicSkillsUpdatedTime:
+          type: integer
+          format: int64
+          description: The date when dynamic skills were last modified (epoch timestamp in milliseconds)
+          example: 1679392200000
+        dynamicSkillAssigned:
+          type: boolean
+          description: Indicates if the user has the specified dynamic skill assigned. Present only if checkIfUserHasDynamicSkill=true and dynamicSkillId are provided in the request.
+          example: true
         createdTime:
           type: integer
           format: int64
@@ -6065,68 +6119,11 @@ components:
           format: int64
           description: This is the updated time of the entity.
           example: 123456789
-      required:
-      - appModuleId
-      - moduleAccessType
-    ApiErrorResponse:
-      description: Response body for an API error.
-      type: object
-      properties:
-        trackingId:
-          type: string
-          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
-          example: c1a4fcef-aee2-4dea-8977-29f594760552
-        error:
-          description: An object containing details about the error.
-          $ref: '#/components/schemas/ErrorDetails'
-    QueuesCountDTO_UserResponseWithUserProfile:
-      type: object
-      description: 'The count of each type of Contact Service Queues that the user is assigned to.
-
-        '
-      example:
-        teamBased: 5
-        skillBased: 3
-        agentBased: 2
-      properties:
-        teamBased:
+        skillProfileUpdatedTime:
           type: integer
-          format: int32
-          description: Number of team-based queues assigned to the user.
-          example: 5
-        skillBased:
-          type: integer
-          format: int32
-          description: Number of skill-based queues assigned to the user.
-          example: 3
-        agentBased:
-          type: integer
-          format: int32
-          description: Number of agent-based queues assigned to the user.
-          example: 2
-    JsonValue:
-      type: object
-      description: Json Value schema.
-      properties:
-        valueType:
-          type: string
-          description: Value Type.
-          enum:
-          - ARRAY
-          - OBJECT
-          - STRING
-          - NUMBER
-          - 'TRUE'
-          - 'FALSE'
-          - 'NULL'
-    OperationError:
-      description: An error message providing details about the operation failure.
-      type: object
-      properties:
-        description:
-          type: string
-          description: A human readable explanation for the occurrence of an error.
-          example: Incorrect Credentials.
+          format: int64
+          description: The date when the skill profile was last modified (epoch timestamp in milliseconds)
+          example: 1679392200000
   securitySchemes:
     oauth2:
       flows:
@@ -6154,6 +6151,3 @@ components:
       scheme: bearer
       bearerFormat: JWT
       description: JWT bearer token authentication. Obtain your token from the Webex Developer Portal.
-x-refined-from:
-- webex-contact-center-openapi.json
-- webex-users-api-openapi.yml

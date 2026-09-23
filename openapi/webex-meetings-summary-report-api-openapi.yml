@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: Webex Meetings Summary Report API
+  title: Webex Meetings Meetings Summary Report API
   version: 1.0.0
-  description: 'Operations tagged Meetings Summary Report across 2 of this provider''s published API definitions: webex-meeting-openapi.json, webex-meetings-summary-report-api-openapi.yml. Each path carries the servers of the definition it was published in.'
+  description: The Webex Meetings APIs enable developers to schedule, manage, and retrieve information about Webex meetings, webinars, and events.
   x-provenance:
     method: harvested
     authored_by: Cisco Webex
@@ -11,7 +11,6 @@ info:
     first_party: true
     note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
     provider_published: true
-    derived_view: Per-tag view of the provider's source document. Operations and schemas are the provider's, unmodified; only the partition is ours.
   x-evidence:
   - type: source
     url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-meeting.json
@@ -107,16 +106,16 @@ paths:
         The list returned is sorted in descending order by the date and time the meetings were started.
 
 
-        Long result sets are split into [pages](/docs/basics#pagination).
+        Long result sets are split into pages.
 
 
-        * `siteUrl` is required, and the meeting usage reports of the specified site are listed. All available Webex sites can be retrieved by the [Get Site List](/docs/api/v1/meeting-preferences/get-site-list) API.
+        * `siteUrl` is required, and the meeting usage reports of the specified site are listed. All available Webex sites can be retrieved by the Get Site List API.
 
 
         #### Request Header
 
 
-        * `timezone`: [Time zone](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List) in conformance with the [IANA time zone database](https://www.iana.org/time-zones). The default timezone is `UTC` if not defined.'
+        * `timezone`: Time zone in conformance with the IANA time zone database. The default timezone is `UTC` if not defined.'
       tags:
       - Meetings Summary Report
       parameters:
@@ -255,13 +254,13 @@ paths:
         If it''s a normal meeting host, the API returns meeting attendee reports of the meetings hosted by the user himself on the specified site filtered by meeting ID, meeting number or meeting title.
 
 
-        The list returned is grouped by meeting instances. Both the groups and items of each group are sorted in descending order of `joinedTime`. For example, if `meetingId` is specified and it''s a meeting series ID, the returned list is grouped by meeting instances of that series. The groups are sorted in descending order of `joinedTime`, and within each group the items are also sorted in descending order of `joinedTime`. Please refer to [Meetings Overview](/docs/meetings) for details of meeting series, scheduled meeting and meeting instance.
+        The list returned is grouped by meeting instances. Both the groups and items of each group are sorted in descending order of `joinedTime`. For example, if `meetingId` is specified and it''s a meeting series ID, the returned list is grouped by meeting instances of that series. The groups are sorted in descending order of `joinedTime`, and within each group the items are also sorted in descending order of `joinedTime`. Please refer to Meetings Overview for details of meeting series, scheduled meeting and meeting instance.
 
 
-        Long result sets are split into [pages](/docs/basics#pagination).
+        Long result sets are split into pages.
 
 
-        * `siteUrl` is required, and the meeting attendee reports of the specified site are listed. All available Webex sites can be retrieved by the [Get Site List](/docs/api/v1/meeting-preferences/get-site-list) API.
+        * `siteUrl` is required, and the meeting attendee reports of the specified site are listed. All available Webex sites can be retrieved by the Get Site List API.
 
 
         * `meetingId`, `meetingNumber` and `meetingTitle` are optional parameters to query the meeting attendee reports, but at least one of them should be specified. If more than one parameter in the sequence of `meetingId`, `meetingNumber`, and `meetingTitle` are specified, the first one in the sequence is used. Currently, only ended meeting instance IDs and meeting series IDs are supported for `meetingId`. IDs of scheduled meetings or personal room meetings are not supported.
@@ -270,7 +269,7 @@ paths:
         #### Request Header
 
 
-        * `timezone`: [Time zone](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List) in conformance with the [IANA time zone database](https://www.iana.org/time-zones). The default timezone is `UTC` if not defined.'
+        * `timezone`: Time zone in conformance with the IANA time zone database. The default timezone is `UTC` if not defined.'
       tags:
       - Meetings Summary Report
       parameters:
@@ -328,104 +327,6 @@ paths:
         example: Asia/Shanghai
 components:
   schemas:
-    MeetingUsageReportTrackingCodeObject:
-      type: object
-      properties:
-        name:
-          type: string
-          example: Department
-          description: Name of the tracking code.
-        value:
-          type: string
-          example: Engineering
-          description: Value of the tracking code.
-    MeetingAttendeeReportObject:
-      type: object
-      properties:
-        meetingId:
-          type: string
-          example: 089b137c3cf34b578896941e2d49dfe8_I_146987372776523573
-          description: Unique identifier for the meeting.
-        meetingNumber:
-          type: number
-          example: 123456789
-          description: Meeting number.
-        meetingTitle:
-          type: string
-          example: John's Meeting
-          description: Meeting title.
-        displayName:
-          type: string
-          example: John Andersen
-          description: Attendee's display name.
-        email:
-          type: string
-          example: John Andersen
-          description: Attendee's email.
-        joinedTime:
-          type: string
-          example: '2023-01-18T10:26:30+08:00'
-          description: The date and time when the attendee joined the meeting. It's in the timezone specified in the request header or in the `UTC` timezone if timezone is not specified.
-        leftTime:
-          type: string
-          example: '2023-01-18T10:46:30+08:00'
-          description: The date and time when the attendee left the meeting. It's in the timezone specified in the request header or in the `UTC` timezone if timezone is not specified.
-        duration:
-          type: number
-          example: 20
-          description: Duration of the attendee in the meeting in minutes.
-        participantType:
-          type: string
-          enum:
-          - host
-          - attendee
-          description: "The attendee's role in the meeting.\n * `host` - Meeting host.\n * `attendee` - Meeting attendee.\n"
-        ipAddress:
-          type: string
-          example: 172.16.244.151
-          description: IP address of the attendee when he attended the meeting.
-        clientAgent:
-          type: string
-          example: WINDOWS,IE
-          description: Information of the attendee's operating system and application when he attended the meeting.
-        company:
-          type: string
-          example: ExampleCompany
-          description: Attendee's company.
-        phoneNumber:
-          type: string
-          example: '85763644'
-          description: Attendee's phone number.
-        address1:
-          type: string
-          example: '85763644'
-          description: Attendee's address, part one.
-        address2:
-          type: string
-          example: '85763644'
-          description: Attendee's address, part two.
-        city:
-          type: string
-          example: '85763644'
-          description: Attendee's city.
-        state:
-          type: string
-          example: '85763644'
-          description: Attendee's state.
-        country:
-          type: string
-          example: '85763644'
-          description: Attendee's country.
-        zipCode:
-          type: string
-          example: '85763644'
-          description: Attendee's zip code.
-        registered:
-          type: boolean
-          description: Whether or not the attendee has registered the meeting.
-        invited:
-          type: boolean
-          description: Whether or not the attendee has been invited to the meeting.
     MeetingUsageReportObject:
       type: object
       properties:
@@ -532,6 +433,104 @@ components:
           items:
             $ref: '#/components/schemas/MeetingUsageReportTrackingCodeObject'
           description: Tracking codes of the meeting.
+    MeetingUsageReportTrackingCodeObject:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Department
+          description: Name of the tracking code.
+        value:
+          type: string
+          example: Engineering
+          description: Value of the tracking code.
+    MeetingAttendeeReportObject:
+      type: object
+      properties:
+        meetingId:
+          type: string
+          example: 089b137c3cf34b578896941e2d49dfe8_I_146987372776523573
+          description: Unique identifier for the meeting.
+        meetingNumber:
+          type: number
+          example: 123456789
+          description: Meeting number.
+        meetingTitle:
+          type: string
+          example: John's Meeting
+          description: Meeting title.
+        displayName:
+          type: string
+          example: John Andersen
+          description: Attendee's display name.
+        email:
+          type: string
+          example: John Andersen
+          description: Attendee's email.
+        joinedTime:
+          type: string
+          example: '2023-01-18T10:26:30+08:00'
+          description: The date and time when the attendee joined the meeting. It's in the timezone specified in the request header or in the `UTC` timezone if timezone is not specified.
+        leftTime:
+          type: string
+          example: '2023-01-18T10:46:30+08:00'
+          description: The date and time when the attendee left the meeting. It's in the timezone specified in the request header or in the `UTC` timezone if timezone is not specified.
+        duration:
+          type: number
+          example: 20
+          description: Duration of the attendee in the meeting in minutes.
+        participantType:
+          type: string
+          enum:
+          - host
+          - attendee
+          description: "The attendee's role in the meeting.\n * `host` - Meeting host.\n * `attendee` - Meeting attendee.\n"
+        ipAddress:
+          type: string
+          example: 172.16.244.151
+          description: IP address of the attendee when he attended the meeting.
+        clientAgent:
+          type: string
+          example: WINDOWS,IE
+          description: Information of the attendee's operating system and application when he attended the meeting.
+        company:
+          type: string
+          example: ExampleCompany
+          description: Attendee's company.
+        phoneNumber:
+          type: string
+          example: '85763644'
+          description: Attendee's phone number.
+        address1:
+          type: string
+          example: '85763644'
+          description: Attendee's address, part one.
+        address2:
+          type: string
+          example: '85763644'
+          description: Attendee's address, part two.
+        city:
+          type: string
+          example: '85763644'
+          description: Attendee's city.
+        state:
+          type: string
+          example: '85763644'
+          description: Attendee's state.
+        country:
+          type: string
+          example: '85763644'
+          description: Attendee's country.
+        zipCode:
+          type: string
+          example: '85763644'
+          description: Attendee's zip code.
+        registered:
+          type: boolean
+          description: Whether or not the attendee has registered the meeting.
+        invited:
+          type: boolean
+          description: Whether or not the attendee has been invited to the meeting.
   securitySchemes:
     oauth2:
       flows:
@@ -545,15 +544,3 @@ components:
       description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
       scheme: bearer
       bearerFormat: JWT
-    bearerAuth:
-      type: oauth2
-      description: OAuth 2.0 Bearer token authentication
-      flows:
-        authorizationCode:
-          authorizationUrl: https://webexapis.com/v1/authorize
-          tokenUrl: https://webexapis.com/v1/access_token
-          scopes:
-            spark:applications_token: Create access tokens for Service Apps
-x-refined-from:
-- webex-meeting-openapi.json
-- webex-meetings-summary-report-api-openapi.yml

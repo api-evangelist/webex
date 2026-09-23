@@ -2,7 +2,8 @@ openapi: 3.2.0
 info:
   title: Webex Devices API
   version: 1.0.0
-  description: 'Operations tagged Devices across 3 of this provider''s published API definitions: webex-cloud-calling-openapi.json, webex-device-openapi.json, webex-devices-api-openapi.yml. Each path carries the servers of the definition it was published in.'
+  x-refined-note:
+  - x-evidence differs across the merged source definitions and was not carried
   x-provenance:
     method: harvested
     authored_by: Cisco Webex
@@ -11,12 +12,7 @@ info:
     first_party: true
     note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
     provider_published: true
-    derived_view: Per-tag view of the provider's source document. Operations and schemas are the provider's, unmodified; only the partition is ours.
-  x-evidence:
-  - type: source
-    url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-device.json
-  - type: raw
-    url: https://raw.githubusercontent.com/webex/webex-openapi-specs/main/public-spec/webex-device.json
+  description: 'Operations tagged Devices across 2 of this provider''s published API definitions: webex-cloud-calling-openapi.json, webex-device-openapi.json. Each path carries the servers of the definition it was published in.'
 tags:
 - name: Devices
 paths:
@@ -410,16 +406,19 @@ paths:
         Specify the `mac`, `model` and either `workspaceId` or `personId`.
 
 
-        * You can get the `model` from the [supported devices](/docs/api/v1/device-call-settings/read-the-list-of-supported-devices) API.
+        * You can get the `model` from the supported devices API.
 
 
         * Either `workspaceId` or `personId` should be provided. If both are supplied, the request will be invalid.
 
 
-        * The `password` field is only required for third party devices. You can obtain the required third party phone configuration from [here](/docs/api/v1/beta-device-call-settings-with-third-party-device-support/get-third-party-device).
+        * The `password` field is only required for third party devices. You can obtain the required third party phone configuration from here.
 
 
-        <div><Callout type="warning">Adding a device to a person with a Webex Calling Standard license will disable Webex Calling across their Webex mobile, tablet, desktop, and browser applications.</Callout></div><br><div><Callout type="warning">When adding devices to a Webex Calling Professional licensed person or workspace, wait for each API call to finish before starting the next. This prevents race conditions that can cause errors when assigning primary versus secondary device status.</Callout></div>'
+        Adding a device to a person with a Webex Calling Standard license will disable Webex Calling across their Webex mobile, tablet, desktop, and browser applications.
+
+
+        When adding devices to a Webex Calling Professional licensed person or workspace, wait for each API call to finish before starting the next. This prevents race conditions that can cause errors when assigning primary versus secondary device status.'
       tags:
       - Devices
       parameters:
@@ -612,7 +611,7 @@ paths:
         Specify the device ID in the `deviceId` parameter in the URI.
 
 
-        <div><Callout type="warning">Deleting a device from a person with a Webex Calling Standard license will enable Webex Calling across their Webex mobile, tablet, desktop, and browser applications.</Callout></div>'
+        Deleting a device from a person with a Webex Calling Standard license will enable Webex Calling across their Webex mobile, tablet, desktop, and browser applications.'
       tags:
       - Devices
       parameters:
@@ -715,7 +714,7 @@ paths:
         Specify the device ID in the `deviceId` parameter in the URI.
 
 
-        Include only the tag array in the request body, no other device attributes can be changed. This action will overwrite any previous tags. A common approach is to first [GET the devices''s details](/docs/api/v1/devices/get-device-details), make changes to the `tags` array, and then PATCH the new complete array with this endpoint.'
+        Include only the tag array in the request body, no other device attributes can be changed. This action will overwrite any previous tags. A common approach is to first GET the devices''s details, make changes to the `tags` array, and then PATCH the new complete array with this endpoint.'
       tags:
       - Devices
       parameters:
@@ -817,10 +816,13 @@ paths:
         * If no `model` is supplied, the `code` returned will only be accepted on RoomOS devices.
 
 
-        * If your device is a phone, you must provide the `model` as a field. You can get the `model` from the [supported devices](/docs/api/v1/device-call-settings/read-the-list-of-supported-devices) API.
+        * If your device is a phone, you must provide the `model` as a field. You can get the `model` from the supported devices API.
 
 
-        <div><Callout type="warning">Adding a device to a person with a Webex Calling Standard license will disable Webex Calling across their Webex mobile, tablet, desktop, and browser applications.</Callout></div><br><div><Callout type="warning">When adding devices to a Webex Calling Professional licensed person or workspace, wait for each API call to finish before starting the next. This prevents race conditions that can cause errors when assigning primary versus secondary device status.</Callout></div>'
+        Adding a device to a person with a Webex Calling Standard license will disable Webex Calling across their Webex mobile, tablet, desktop, and browser applications.
+
+
+        When adding devices to a Webex Calling Professional licensed person or workspace, wait for each API call to finish before starting the next. This prevents race conditions that can cause errors when assigning primary versus secondary device status.'
       tags:
       - Devices
       parameters:
@@ -853,34 +855,30 @@ paths:
                   description: The model of the device being created. The corresponding device model display name sometimes called the product name, can also be used to specify the model.
 components:
   schemas:
-    DeviceCapabilities:
+    DeviceCollectionResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Device'
+    DevicePlatform:
       type: string
       enum:
-      - xapi
+      - cisco
+      - microsoftTeamsRoom
+      description: Device platform
+      example: cisco
     NetworkConnectivityType:
       type: string
       enum:
       - wired
       description: The current network connectivity for the device.
       example: wired
-    DeviceConnectionStatus:
+    DeviceCapabilities:
       type: string
       enum:
-      - connected
-      - disconnected
-      - connected_with_issues
-      - offline_expired
-      - activating
-      - pending
-      - unknown
-      - offline_deep_sleep
-      description: The connection status of the device.
-      example: connected
-    DevicePermissions:
-      type: string
-      enum:
-      - xapi:readonly
-      - xapi:all
+      - xapi
     Device:
       type: object
       required:
@@ -1022,21 +1020,24 @@ components:
               - 'on'
               - upcoming
               description: The planned maintenance mode for the device
-    DevicePlatform:
+    DeviceConnectionStatus:
       type: string
       enum:
-      - cisco
-      - microsoftTeamsRoom
-      description: Device platform
-      example: cisco
-    ManagedBy:
+      - connected
+      - disconnected
+      - connected_with_issues
+      - offline_expired
+      - activating
+      - pending
+      - unknown
+      - offline_deep_sleep
+      description: The connection status of the device.
+      example: connected
+    DevicePermissions:
       type: string
       enum:
-      - CISCO
-      - CUSTOMER
-      - PARTNER
-      description: Entity managing the device configuration.
-      example: CISCO
+      - xapi:readonly
+      - xapi:all
     ActivationCode:
       type: object
       properties:
@@ -1048,13 +1049,14 @@ components:
           type: string
           example: '2017-11-16T23:38:03.215Z'
           description: The date and time the activation code expires.
-    DeviceCollectionResponse:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/Device'
+    ManagedBy:
+      type: string
+      enum:
+      - CISCO
+      - CUSTOMER
+      - PARTNER
+      description: Entity managing the device configuration.
+      example: CISCO
   securitySchemes:
     oauth2:
       flows:
@@ -1076,4 +1078,3 @@ components:
 x-refined-from:
 - webex-cloud-calling-openapi.json
 - webex-device-openapi.json
-- webex-devices-api-openapi.yml

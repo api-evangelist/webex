@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: Webex Captures API
+  title: Webex Contact Center Captures API
   version: 1.0.0
-  description: 'Operations tagged Captures across 2 of this provider''s published API definitions: webex-captures-api-openapi.yml, webex-contact-center-openapi.json. Each path carries the servers of the definition it was published in.'
+  description: The Webex Contact Center APIs allow developers to deeply integrate, configure, and manage cloud-based contact center solutions.
   x-provenance:
     method: harvested
     authored_by: Cisco Webex
@@ -11,9 +11,6 @@ info:
     first_party: true
     note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
     provider_published: true
-    derived_view: Per-tag view of webex-contact-center-openapi.json, the provider's source document. Operations and schemas are the provider's, unmodified; only the partition is ours.
-    derived_from: webex-contact-center-openapi.json
-    operation_coverage: 1/1
   x-evidence:
   - type: source
     url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-contact-center.json
@@ -27,7 +24,70 @@ paths:
       tags:
       - Captures
       summary: List Captures
-      description: Retrieve a list of Captures given a set of task IDs
+      description: 'Retrieve a list of Captures given a set of task IDs.
+
+
+        ### Captures Availability
+
+
+        Not all tasks will have captures by default and they will be available based on the organization''s configurations and retention policy. Querying closed tasks is recommended, as open tasks may return incomplete data.
+
+
+        Transcripts retrieved through this API are post-interaction artifacts.
+
+        - For voice, transcripts are available when at least one transcript based configuration/feature is enabled such as Auto CSAT, Agent Well Being, Call Drop Summary, Topics Analytics.
+
+
+        - For digital channels such as Chat, Email, Social, Work Item, and Custom Messaging, transcripts are generated from the conversation messages. Please refer guide for digital transcripts for more details
+
+
+        ### URL Expiry
+
+
+        The maximum duration of validity of pre signed URL or default value when no value is passed for urlExpiration is 60 minutes.
+
+
+        ### Authentication & Authorization
+
+
+        This API requires a valid bearer token. The caller must satisfy the scope and role requirements for one of the following:
+
+
+        #### Service App
+
+        - **Required Scope:** `cjp:config_read`
+
+        - The `orgId` must be provided in the request body and must match the token''s org.
+
+        - For service app setup, refer to Contact Center Service Apps.
+
+
+        #### Org Admin
+
+        - **Required Scopes:** `Identity:SCIM` and `Identity:Organization`
+
+        - **Required Role (one of):** `id_full_admin`, `id_readonly_admin`, `cjp.admin`, or `atlas-portal.partner.provision_admin`
+
+        - The user must belong to the organization being queried. If `orgId` is provided in the request body, it must match the token''s org. If `orgId` is omitted, it is inferred from the token.
+
+
+        #### Partner Admin
+
+        - **Required Scope:** `Identity:SCIM` for the managed org
+
+        - **Required Role:** `atlas-portal.partner.salesadmin`
+
+        - The org ID must be included in the managed org list. This is accomplished by adding the org to the `Managed customer orgs` list in control hub.
+
+
+        #### Supervisor
+
+        - **Required Role:** `cjp.supervisor`
+
+        - The user must belong to the organization being queried. If `orgId` is provided in the request body, it must match the token''s org. If `orgId` is omitted, it is inferred from the token.
+
+
+        **Note:** Please refer to the contact center setup documentation for the configuration details.'
       operationId: downloadMultiRecordingPath
       requestBody:
         content:
@@ -57,54 +117,77 @@ paths:
           description: An Unexpected Error Occurred
 components:
   schemas:
-    RecordingQuery:
+    MultipleInteractionsRecording:
       required:
-      - taskIds
+      - recording
+      - transcription
       type: object
       properties:
-        orgId:
+        taskId:
           type: string
-          description: Organization ID to use for this operation. If unspecified, inferred from token. Token must have permission to interact with this organization.
-          example: 8e18afdf-db79-449b-b4f5-ee4f14d9f45e
-        urlExpiration:
-          maximum: 60
-          type: integer
-          description: Expiration time of returned s3 url (in minutes).
-          format: int32
-          example: 30
-        taskIds:
-          maxItems: 10
-          uniqueItems: true
+          description: The ID of the task.
+          format: uuid
+          example: e890a591-63f0-4984-a8f2-00e631368fb4
+        recording:
           type: array
-          description: Comma separated list of taskIds to gather captures for. Maximum number of taskIds allowed are 10
-          example:
-          - 8e18afdf-db79-449b-b4f5-ee4f14d9f45e
           items:
-            type: string
-            format: uuid
-        includeSegments:
-          type: boolean
-          description: Flag; (true) for individual capture segments of main recording, (false) for a stitched capture.
-          example: true
-        includeVARecordings:
-          type: boolean
-          description: Flag; (true) for including virtual agent (VA) recordings, (false) for excluding virtual agent recordings. The default value is false.
-          example: false
-    RecordingMulti:
+            $ref: '#/components/schemas/RecordingMulti'
+        transcription:
+          type: array
+          items:
+            $ref: '#/components/schemas/TranscriptMulti'
+        screenRecordings:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScreenRecordingMulti'
+    ScreenRecordingAttributes:
       required:
+      - fileName
+      - filePath
+      - startTime
+      - stopTime
+      - agentId
+      - screenId
+      type: object
+      properties:
+        fileName:
+          type: string
+          description: The file name of the screen recording.
+          example: 3305322a-630c-4791-a068-4a751529c4d7-segment.wav
+        filePath:
+          type: string
+          description: Screen recording download URL.
+          example: https://cjp-ccone-intgus1-media-storage-recording.s3.amazonaws.com/470c589d-ce3f-4afe-adec-575c73c0e472
+        startTime:
+          type: integer
+          description: Begin time of screen recording (epoch timestamp)
+          format: int64
+          example: 1617373126000
+        stopTime:
+          type: integer
+          description: End time of screen recording (epoch timestamp).
+          format: int64
+          example: 1627373126000
+        agentId:
+          type: string
+          description: The ID of the agent whose screen was recorded.
+          example: e890a591-63f0-4984-a8f2-00e631368fb4
+        screenId:
+          type: string
+          description: The ID of the screen being recorded.
+          example: 2e8f4a19-7b35-4c6d-93a1-d5f0b7c2e855
+    ScreenRecordingMulti:
+      required:
+      - id
       - attributes
       type: object
       properties:
         id:
           type: string
-          description: The ID of the recording.
-          example: f1b130da-0cad-4d8b-91dd-7a3085440e89
-        segment:
-          type: boolean
-          description: Flag; Indicates if this is the entire recording or only a segment of main recording. This flag will be always false for consult callType.
-          example: true
+          description: The ID of the screen recording.
+          example: f13b9c64-0d72-4e8a-b5f1-9a6d3c2e7b15
         attributes:
-          $ref: '#/components/schemas/RecordingAttributes'
+          $ref: '#/components/schemas/ScreenRecordingAttributes'
     RecordingAttributes:
       type: object
       properties:
@@ -150,44 +233,21 @@ components:
           type: boolean
           description: Applicable only to virtual agent recordings. Flag; (true) indicates the virtual agent recording may contain sensitive information, (false) otherwise.
           example: true
-    MultipleInteractionsRecording:
+    RecordingMulti:
       required:
-      - recording
-      - transcription
+      - attributes
       type: object
       properties:
-        taskId:
+        id:
           type: string
-          description: The ID of the task.
-          format: uuid
-          example: e890a591-63f0-4984-a8f2-00e631368fb4
-        recording:
-          type: array
-          items:
-            $ref: '#/components/schemas/RecordingMulti'
-        transcription:
-          type: array
-          items:
-            $ref: '#/components/schemas/TranscriptMulti'
-    DownloadMultipleInteractionsResponse:
-      required:
-      - data
-      - meta
-      type: object
-      properties:
-        meta:
-          $ref: '#/components/schemas/RecordingMetaData'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/MultipleInteractionsRecording'
-    RecordingBodyParams:
-      required:
-      - query
-      type: object
-      properties:
-        query:
-          $ref: '#/components/schemas/RecordingQuery'
+          description: The ID of the recording.
+          example: f1b130da-0cad-4d8b-91dd-7a3085440e89
+        segment:
+          type: boolean
+          description: Flag; Indicates if this is the entire recording or only a segment of main recording. This flag will be always false for consult callType.
+          example: true
+        attributes:
+          $ref: '#/components/schemas/RecordingAttributes'
     RecordingMetaData:
       type: object
       properties:
@@ -201,13 +261,66 @@ components:
           description: Number of minutes (from now) when the signed url expires.
           format: int32
           example: 30
+    RecordingQuery:
+      required:
+      - taskIds
+      type: object
+      properties:
+        orgId:
+          type: string
+          description: Organization ID to use for this operation. If unspecified, inferred from token. Token must have permission to interact with this organization.
+          example: 8e18afdf-db79-449b-b4f5-ee4f14d9f45e
+        urlExpiration:
+          maximum: 60
+          type: integer
+          description: Expiration time of returned s3 url (in minutes).
+          format: int32
+          example: 30
+        taskIds:
+          maxItems: 10
+          uniqueItems: true
+          type: array
+          description: Comma separated list of taskIds to gather captures for. Maximum number of taskIds allowed are 10
+          example:
+          - 8e18afdf-db79-449b-b4f5-ee4f14d9f45e
+          items:
+            type: string
+            format: uuid
+        includeSegments:
+          type: boolean
+          description: Flag; (true) for individual capture segments of main recording, (false) for a stitched capture.
+          example: true
+        includeVARecordings:
+          type: boolean
+          description: Flag; (true) for including virtual agent (VA) recordings, (false) for excluding virtual agent recordings. The default value is false.
+          example: false
+        includeScreenRecordings:
+          type: boolean
+          description: Flag; (true) will return screen recording if available else will return empty array, (false) will exclude screen recordings. The default value is false.
+          example: false
+        includeAllDigitalVersions:
+          type: boolean
+          description: Flag; (true) returns all available digital transcript artifacts for each requested task, including both legacy and schema-versioned digital transcript artifacts when both exist. (false) or omitted returns the default Captures behavior. This field applies only to digital transcript artifacts and does not change recording or voice transcript retrieval.
+          example: true
+    DownloadMultipleInteractionsResponse:
+      required:
+      - data
+      - meta
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/RecordingMetaData'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/MultipleInteractionsRecording'
     TranscriptMulti:
       type: object
       properties:
         Source:
           type: string
           description: Source of the transcription
-          example: recording|chat|sms etc.
+          example: recording|realtime-voice|chat|sms|{{ <WorkItem> channel name }}|{{ <CustomMessaging> channel name }} etc.
         Provider:
           type: string
           description: Provider of the generated transcription
@@ -236,6 +349,13 @@ components:
           type: string
           description: Create time of capture(epoch timestamp)
           example: '1617373126000'
+    RecordingBodyParams:
+      required:
+      - query
+      type: object
+      properties:
+        query:
+          $ref: '#/components/schemas/RecordingQuery'
   securitySchemes:
     oauth2:
       flows:
@@ -249,15 +369,6 @@ components:
       description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
       scheme: bearer
       bearerFormat: JWT
-    bearerAuth:
-      type: oauth2
-      description: OAuth 2.0 Bearer token authentication
-      flows:
-        authorizationCode:
-          authorizationUrl: https://webexapis.com/v1/authorize
-          tokenUrl: https://webexapis.com/v1/access_token
-          scopes:
-            spark:applications_token: Create access tokens for Service Apps
     BEARER_TOKEN_FROM_CI:
       type: http
       in: header
@@ -267,6 +378,8 @@ components:
       description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
       scheme: bearer
       bearerFormat: JWT
-x-refined-from:
-- webex-captures-api-openapi.yml
-- webex-contact-center-openapi.json
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT bearer token authentication. Obtain your token from the Webex Developer Portal.

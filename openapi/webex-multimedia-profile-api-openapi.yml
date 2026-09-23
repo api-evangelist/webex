@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: Webex Multimedia Profile API
+  title: Webex Contact Center Multimedia Profile API
   version: 1.0.0
-  description: 'Operations tagged Multimedia Profile across 2 of this provider''s published API definitions: webex-contact-center-openapi.json, webex-multimedia-profile-api-openapi.yml. Each path carries the servers of the definition it was published in.'
+  description: The Webex Contact Center APIs allow developers to deeply integrate, configure, and manage cloud-based contact center solutions.
   x-provenance:
     method: harvested
     authored_by: Cisco Webex
@@ -11,9 +11,6 @@ info:
     first_party: true
     note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
     provider_published: true
-    derived_view: Per-tag view of webex-contact-center-openapi.json, the provider's source document. Operations and schemas are the provider's, unmodified; only the partition is ours.
-    derived_from: webex-contact-center-openapi.json
-    operation_coverage: 10/10
   x-evidence:
   - type: source
     url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-contact-center.json
@@ -750,6 +747,318 @@ paths:
       deprecated: false
 components:
   schemas:
+    BulkRequestDTOMultimediaProfileDTO:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BulkRequestItemDTOMultimediaProfileDTO'
+    MetaDataReferencesPagingInfo:
+      title: MetaDataReferencesPagingInfo
+      type: object
+      properties:
+        orgid:
+          maxLength: 36
+          minLength: 32
+          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
+          type: string
+          description: Org ID
+          format: uuid
+          example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+        page:
+          type: integer
+          description: Current page number
+          format: int32
+          example: 1
+        pageSize:
+          type: integer
+          description: Page size for current data set
+          format: int32
+          example: 100
+        totalPages:
+          type: integer
+          description: Number of pages
+          format: int32
+          example: 1
+        totalRecords:
+          type: integer
+          description: Total number of items
+          format: int32
+          example: 1000
+        links:
+          type: object
+          description: Map of pagination links with self, next, prev, last and first
+          example:
+            next: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=2&pageSize=10
+            last: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=3&pageSize=10
+            prev: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=0&pageSize=10
+            self: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=1&pageSize=10
+            first: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=0&pageSize=10
+        referencedEntities:
+          type: array
+          description: List of referenced entities
+          example:
+          - agent-profile
+          - entrypoint
+          items:
+            type: string
+        currentEntity:
+          type: string
+          description: Name of current entity
+          example: entity_name
+      description: Metadata of response for references with paging information
+    MultimediaProfileChannelDTO:
+      required:
+      - chat
+      - email
+      - social
+      - telephony
+      type: object
+      properties:
+        organizationId:
+          maxLength: 36
+          minLength: 32
+          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
+          type: string
+          description: ID of the contact center organization. It is required to define for the following operations - All bulk save operations
+          format: uuid
+          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+        id:
+          type: string
+          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
+          example: 93912f11-6017-404b-bf14-5331890b1797
+        version:
+          type: integer
+          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
+          format: int32
+          example: 1
+        telephony:
+          type: integer
+          description: Define the upper limits for this channel type. It should be either 0 or 1.
+          format: int32
+          example: 0
+        chat:
+          type: integer
+          description: Define the upper limits for this channel type. It should range from 0 to 5.
+          format: int32
+          example: 5
+        email:
+          type: integer
+          description: Define the upper limits for this channel type. It should range from 0 to 10.
+          format: int32
+          example: 5
+        social:
+          type: integer
+          description: Define the upper limits for this channel type. It should range from 0 to 5.
+          format: int32
+          example: 4
+        createdTime:
+          type: integer
+          description: Creation time(in epoch millis) of this resource.
+          format: int64
+          readOnly: true
+          example: 1617536244000
+        lastUpdatedTime:
+          type: integer
+          description: Time(in epoch millis) when this resource was last updated.
+          format: int64
+          readOnly: true
+          example: 1617536244000
+    EntityInfo:
+      type: object
+      properties:
+        id:
+          type: string
+          description: id
+          example: id.
+        name:
+          type: string
+          description: name
+          example: name.
+        additionalAttributes:
+          type: object
+          additionalProperties:
+            type: string
+            description: A map containing additional attributes of entity where both the key and value are Strings.
+            example: '{"key1":"value1","key2":"value2"}'
+          description: A map containing additional attributes of entity where both the key and value are Strings.
+          example:
+            key1: value1
+            key2: value2
+        createdDate:
+          type: string
+        lastModifiedDate:
+          type: string
+        version:
+          type: integer
+          format: int32
+    BulkResponseItemDTO:
+      type: object
+      properties:
+        itemIdentifier:
+          type: integer
+          description: Unique item identifier for a bulk operation.
+          format: int32
+          example: 10
+        status:
+          type: integer
+          description: Indicates the error status code.
+          format: int32
+          example: 400
+        operationType:
+          type: string
+          description: The kind of operation desired of an entity.
+          example: CREATE
+          enum:
+          - CREATE
+          - UPDATE
+          - DELETE
+          - GET
+        href:
+          type: string
+          description: The resource URI of an entity.
+          example: /api/organization/6705c69d-4585-42ad-bfc3-79cc485dfb15/team/7b26d174-0016-4682-9858-65918e05f85
+        apiError:
+          $ref: '#/components/schemas/ApiErrorResponse'
+      example:
+        apiError:
+          error:
+            key: '400'
+            message:
+            - description: 'siteId: not found for given orgId.'
+              entity: string
+              references:
+              - id: string
+                name: string
+            reason: dependency exists
+          trackingId: ccconfig_c1a4fcef-aee2-4dea-8977-29f594760552
+        href: /api/organization/6705c69d-4585-42ad-bfc3-79cc485dfb15/team/7b26d174-0016-4682-9858-65918e05f85
+        itemIdentifier: 10
+        operationType: CREATE
+        status: 400
+    OperationError:
+      description: An error message providing details about the operation failure.
+      type: object
+      properties:
+        description:
+          type: string
+          description: A human readable explanation for the occurrence of an error.
+          example: Incorrect Credentials.
+    Response:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        details:
+          type: object
+          additionalProperties:
+            type: object
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'
+    Link:
+      type: object
+      properties:
+        href:
+          type: string
+        hreflang:
+          type: string
+        title:
+          type: string
+        type:
+          type: string
+        deprecation:
+          type: string
+        profile:
+          type: string
+        name:
+          type: string
+        templated:
+          type: boolean
+    MultimediaProfileExportDTO:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        chat:
+          type: integer
+          format: int32
+        email:
+          type: integer
+          format: int32
+        fax:
+          type: integer
+          format: int32
+        telephony:
+          type: integer
+          format: int32
+        video:
+          type: integer
+          format: int32
+        social:
+          type: integer
+          format: int32
+        others:
+          type: integer
+          format: int32
+        active:
+          type: boolean
+        blendingModeEnabled:
+          type: boolean
+        blendingMode:
+          type: string
+        manuallyAssignable:
+          $ref: '#/components/schemas/MultimediaProfileChannelDTO'
+    BulkRequestItemDTOMultimediaProfileDTO:
+      type: object
+      properties:
+        itemIdentifier:
+          type: integer
+          description: Unique item identifier for a bulk operation.
+          format: int32
+          example: 10
+        item:
+          $ref: '#/components/schemas/MultimediaProfileDTO'
+        requestAction:
+          type: string
+          description: Identifier for action type. Possible values can be SAVE and DELETE.
+          example: SAVE
+    ApiErrorResponse:
+      description: Response body for an API error.
+      type: object
+      properties:
+        trackingId:
+          type: string
+          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
+          example: c1a4fcef-aee2-4dea-8977-29f594760552
+        error:
+          description: An object containing details about the error.
+          $ref: '#/components/schemas/ErrorDetails'
+    BulkResponseDTO:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BulkResponseItemDTO'
+    ErrorDetails:
+      description: Details of an error.
+      type: object
+      properties:
+        key:
+          type: string
+          description: An application defined error code.
+          example: '401'
+        message:
+          type: array
+          description: A message providing details about the error.
+          items:
+            $ref: '#/components/schemas/OperationError'
     MultimediaProfileDTO:
       required:
       - active
@@ -851,91 +1160,6 @@ components:
           format: int64
           readOnly: true
           example: 1617536244000
-    MultimediaProfileChannelDTO:
-      required:
-      - chat
-      - email
-      - social
-      - telephony
-      type: object
-      properties:
-        organizationId:
-          maxLength: 36
-          minLength: 32
-          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
-          type: string
-          description: ID of the contact center organization. It is required to define for the following operations - All bulk save operations
-          format: uuid
-          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
-        id:
-          type: string
-          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
-          example: 93912f11-6017-404b-bf14-5331890b1797
-        version:
-          type: integer
-          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
-          format: int32
-          example: 1
-        telephony:
-          type: integer
-          description: Define the upper limits for this channel type. It should be either 0 or 1.
-          format: int32
-          example: 0
-        chat:
-          type: integer
-          description: Define the upper limits for this channel type. It should range from 0 to 5.
-          format: int32
-          example: 5
-        email:
-          type: integer
-          description: Define the upper limits for this channel type. It should range from 0 to 10.
-          format: int32
-          example: 5
-        social:
-          type: integer
-          description: Define the upper limits for this channel type. It should range from 0 to 5.
-          format: int32
-          example: 4
-        createdTime:
-          type: integer
-          description: Creation time(in epoch millis) of this resource.
-          format: int64
-          readOnly: true
-          example: 1617536244000
-        lastUpdatedTime:
-          type: integer
-          description: Time(in epoch millis) when this resource was last updated.
-          format: int64
-          readOnly: true
-          example: 1617536244000
-    EntityInfo:
-      type: object
-      properties:
-        id:
-          type: string
-          description: id
-          example: id.
-        name:
-          type: string
-          description: name
-          example: name.
-        additionalAttributes:
-          type: object
-          additionalProperties:
-            type: string
-            description: A map containing additional attributes of entity where both the key and value are Strings.
-            example: '{"key1":"value1","key2":"value2"}'
-          description: A map containing additional attributes of entity where both the key and value are Strings.
-          example:
-            key1: value1
-            key2: value2
-        createdDate:
-          type: string
-        lastModifiedDate:
-          type: string
-        version:
-          type: integer
-          format: int32
     ResponseEnvelopeMultimediaProfileDTO:
       type: object
       properties:
@@ -947,246 +1171,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/MultimediaProfileDTO'
-    MultimediaProfileExportDTO:
-      type: object
-      properties:
-        name:
-          type: string
-        description:
-          type: string
-        chat:
-          type: integer
-          format: int32
-        email:
-          type: integer
-          format: int32
-        fax:
-          type: integer
-          format: int32
-        telephony:
-          type: integer
-          format: int32
-        video:
-          type: integer
-          format: int32
-        social:
-          type: integer
-          format: int32
-        others:
-          type: integer
-          format: int32
-        active:
-          type: boolean
-        blendingModeEnabled:
-          type: boolean
-        blendingMode:
-          type: string
-        manuallyAssignable:
-          $ref: '#/components/schemas/MultimediaProfileChannelDTO'
-    MetaDataReferencesPagingInfo:
-      title: MetaDataReferencesPagingInfo
-      type: object
-      properties:
-        orgid:
-          maxLength: 36
-          minLength: 32
-          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
-          type: string
-          description: Org ID
-          format: uuid
-          example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
-        page:
-          type: integer
-          description: Current page number
-          format: int32
-          example: 1
-        pageSize:
-          type: integer
-          description: Page size for current data set
-          format: int32
-          example: 100
-        totalPages:
-          type: integer
-          description: Number of pages
-          format: int32
-          example: 1
-        totalRecords:
-          type: integer
-          description: Total number of items
-          format: int32
-          example: 1000
-        links:
-          type: object
-          description: Map of pagination links with self, next, prev, last and first
-          example:
-            next: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=2&pageSize=10
-            last: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=3&pageSize=10
-            prev: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=0&pageSize=10
-            self: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=1&pageSize=10
-            first: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=0&pageSize=10
-        referencedEntities:
-          type: array
-          description: List of referenced entities
-          example:
-          - agent-profile
-          - entrypoint
-          items:
-            type: string
-        currentEntity:
-          type: string
-          description: Name of current entity
-          example: entity_name
-      description: Metadata of response for references with paging information
-    Link:
-      type: object
-      properties:
-        href:
-          type: string
-        hreflang:
-          type: string
-        title:
-          type: string
-        type:
-          type: string
-        deprecation:
-          type: string
-        profile:
-          type: string
-        name:
-          type: string
-        templated:
-          type: boolean
-    Response:
-      type: object
-      properties:
-        code:
-          type: integer
-          format: int32
-        details:
-          type: object
-          additionalProperties:
-            type: object
-        links:
-          type: array
-          items:
-            $ref: '#/components/schemas/Link'
-    EntityReferenceInfoDTO:
-      type: object
-      properties:
-        description:
-          type: string
-          description: Description about reference info.
-          example: list of referenced entities
-        meta:
-          $ref: '#/components/schemas/MetaDataReferencesPagingInfo'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/EntityInfo'
-    BulkResponseItemDTO:
-      type: object
-      properties:
-        itemIdentifier:
-          type: integer
-          description: Unique item identifier for a bulk operation.
-          format: int32
-          example: 10
-        status:
-          type: integer
-          description: Indicates the error status code.
-          format: int32
-          example: 400
-        operationType:
-          type: string
-          description: The kind of operation desired of an entity.
-          example: CREATE
-          enum:
-          - CREATE
-          - UPDATE
-          - DELETE
-          - GET
-        href:
-          type: string
-          description: The resource URI of an entity.
-          example: /api/organization/6705c69d-4585-42ad-bfc3-79cc485dfb15/team/7b26d174-0016-4682-9858-65918e05f85
-        apiError:
-          $ref: '#/components/schemas/ApiErrorResponse'
-      example:
-        apiError:
-          error:
-            key: '400'
-            message:
-            - description: 'siteId: not found for given orgId.'
-              entity: string
-              references:
-              - id: string
-                name: string
-            reason: dependency exists
-          trackingId: ccconfig_c1a4fcef-aee2-4dea-8977-29f594760552
-        href: /api/organization/6705c69d-4585-42ad-bfc3-79cc485dfb15/team/7b26d174-0016-4682-9858-65918e05f85
-        itemIdentifier: 10
-        operationType: CREATE
-        status: 400
-    BulkRequestItemDTOMultimediaProfileDTO:
-      type: object
-      properties:
-        itemIdentifier:
-          type: integer
-          description: Unique item identifier for a bulk operation.
-          format: int32
-          example: 10
-        item:
-          $ref: '#/components/schemas/MultimediaProfileDTO'
-        requestAction:
-          type: string
-          description: Identifier for action type. Possible values can be SAVE and DELETE.
-          example: SAVE
-    ApiErrorResponse:
-      description: Response body for an API error.
-      type: object
-      properties:
-        trackingId:
-          type: string
-          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
-          example: c1a4fcef-aee2-4dea-8977-29f594760552
-        error:
-          description: An object containing details about the error.
-          $ref: '#/components/schemas/ErrorDetails'
-    ErrorDetails:
-      description: Details of an error.
-      type: object
-      properties:
-        key:
-          type: string
-          description: An application defined error code.
-          example: '401'
-        message:
-          type: array
-          description: A message providing details about the error.
-          items:
-            $ref: '#/components/schemas/OperationError'
-    BulkResponseDTO:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/BulkResponseItemDTO'
-    BulkRequestDTOMultimediaProfileDTO:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/BulkRequestItemDTOMultimediaProfileDTO'
-    OperationError:
-      description: An error message providing details about the operation failure.
-      type: object
-      properties:
-        description:
-          type: string
-          description: A human readable explanation for the occurrence of an error.
-          example: Incorrect Credentials.
     BulkExportDTOMultimediaProfileExportDTO:
       type: object
       properties:
@@ -1213,6 +1197,19 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/MultimediaProfileExportDTO'
+    EntityReferenceInfoDTO:
+      type: object
+      properties:
+        description:
+          type: string
+          description: Description about reference info.
+          example: list of referenced entities
+        meta:
+          $ref: '#/components/schemas/MetaDataReferencesPagingInfo'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityInfo'
   securitySchemes:
     oauth2:
       flows:
@@ -1240,6 +1237,3 @@ components:
       scheme: bearer
       bearerFormat: JWT
       description: JWT bearer token authentication. Obtain your token from the Webex Developer Portal.
-x-refined-from:
-- webex-contact-center-openapi.json
-- webex-multimedia-profile-api-openapi.yml

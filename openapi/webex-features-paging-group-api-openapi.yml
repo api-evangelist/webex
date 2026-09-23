@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: 'Webex Features:  Paging Group API'
+  title: 'Webex Cloud Calling Features: Paging Group API'
   version: 1.0.0
-  description: 'Operations tagged Features:  Paging Group across 2 of this provider''s published API definitions: webex-cloud-calling-openapi.json, webex-features-paging-group-api-openapi.yml. Each path carries the servers of the definition it was published in.'
+  description: The Webex Cloud Calling APIs enable comprehensive management of cloud-based calling services, including user provisioning, device assignment, call routing, feature configuration, and number management.
   x-provenance:
     method: harvested
     authored_by: Cisco Webex
@@ -11,9 +11,6 @@ info:
     first_party: true
     note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
     provider_published: true
-    derived_view: Per-tag view of webex-cloud-calling-openapi.json, the provider's source document. Operations and schemas are the provider's, unmodified; only the partition is ours.
-    derived_from: webex-cloud-calling-openapi.json
-    operation_coverage: 6/6
   x-evidence:
   - type: source
     url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-cloud-calling.json
@@ -684,6 +681,62 @@ components:
         tollFreeNumber:
           type: boolean
           description: Flag to indicate toll free number.
+    SelectionObject:
+      type: string
+      enum:
+      - CUSTOM_NAME
+      - DISPLAY_NAME
+      description: " * `DISPLAY_NAME` - When this option is selected, `displayName` is to be shown for this workspace.\n * `CUSTOM_NAME` - When this option is selected, `customName` is to be shown for this workspace."
+    PostPagingGroupObject:
+      type: object
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          example: PagingGroup-1
+          description: Unique name for the paging group. Minimum length is 1. Maximum length is 30.
+        phoneNumber:
+          type: string
+          example: '+15558675309'
+          description: Paging group phone number. Minimum length is 1. Maximum length is 23.  Either `phoneNumber` or `extension` is mandatory.
+        extension:
+          type: string
+          example: '7781'
+          description: Paging group extension. Minimum length is 2. Maximum length is 10.  Either `phoneNumber` or `extension` is mandatory.
+        languageCode:
+          type: string
+          example: en_us
+          description: Language code.
+        firstName:
+          type: string
+          example: Paging
+          description: First name that displays when a group page is performed. Minimum length is 1. Maximum length is 64. This field has been deprecated. Please use `directLineCallerIdName` and `dialByName` instead.
+        lastName:
+          type: string
+          example: Group
+          description: Last name that displays when a group page is performed. Minimum length is 1. Maximum length is 64. This field has been deprecated. Please use `directLineCallerIdName` and `dialByName` instead.
+        originatorCallerIdEnabled:
+          type: boolean
+          example: true
+          description: Determines what is shown on target users caller ID when a group page is performed. If true shows page originator ID.
+        originators:
+          type: array
+          items:
+            type: string
+          description: An array of people, workspace, and virtual lines IDs who can originate pages to this paging group.
+        targets:
+          type: array
+          items:
+            type: string
+          description: An array of people, workspaces and virtual lines IDs will add to a paging group as paging call targets.
+        directLineCallerIdName:
+          $ref: '#/components/schemas/DirectLineCallerIdNameObject'
+          description: Settings for the direct line caller ID name to be shown for this paging group.
+        dialByName:
+          type: string
+          example: Hakim Smith
+          description: The name to be used for dial by name functions.  Characters of `%`,  `+`, `\`, `"` and Unicode characters are not allowed.
     GetPagingGroupAgentObject:
       type: object
       required:
@@ -725,6 +778,13 @@ components:
           type: string
           example: '12347781'
           description: Routing prefix + extension of a person or workspace.
+    TelephonyType:
+      type: string
+      enum:
+      - PSTN_NUMBER
+      description: ' * `PSTN_NUMBER` - The object is a PSTN number.
+
+        '
     GetPagingGroupObject:
       type: object
       required:
@@ -795,6 +855,44 @@ components:
           type: string
           example: Hakim Smith
           description: The name to be used for dial by name functions.
+    PagingGroupPrimaryAvailableNumberObject:
+      type: object
+      required:
+      - phoneNumber
+      - state
+      - isMainNumber
+      - tollFreeNumber
+      - telephonyType
+      - isServiceNumber
+      properties:
+        phoneNumber:
+          type: string
+          example: '+12056350001'
+          description: A unique identifier for the PSTN phone number.
+        state:
+          $ref: '#/components/schemas/STATE'
+          description: Phone number's state.
+        isMainNumber:
+          type: boolean
+          example: true
+          description: If `true`, the phone number is used as a location CLID.
+        tollFreeNumber:
+          type: boolean
+          example: true
+          description: If `true`, the phone number is a toll-free number.
+        telephonyType:
+          $ref: '#/components/schemas/TelephonyType'
+          description: The telephony type for the number.
+        isServiceNumber:
+          type: boolean
+          example: true
+          description: If `true`, the phone number is a service number; otherwise, it is a standard number. Service numbers are high-utilization or high-concurrency PSTN phone numbers that are neither mobile nor toll-free.
+    STATE:
+      type: string
+      enum:
+      - ACTIVE
+      - INACTIVE
+      description: " * `ACTIVE` - Phone number is in the active state.\n * `INACTIVE` - Phone number is in the inactive state.\n"
     UpdatePagingGroupObject:
       type: object
       properties:
@@ -847,83 +945,6 @@ components:
           type: string
           example: Hakim Smith
           description: Sets or clears the name to be used for dial by name functions. To clear the `dialByName`, the attribute must be set to null or empty string. Characters of `%`,  `+`, `\`, `"` and Unicode characters are not allowed.
-    SelectionObject:
-      type: string
-      enum:
-      - CUSTOM_NAME
-      - DISPLAY_NAME
-      description: " * `DISPLAY_NAME` - When this option is selected, `displayName` is to be shown for this workspace.\n * `CUSTOM_NAME` - When this option is selected, `customName` is to be shown for this workspace."
-    DirectLineCallerIdNameObject:
-      type: object
-      properties:
-        selection:
-          $ref: '#/components/schemas/SelectionObject'
-          description: The selection of the direct line caller ID name. Defaults to `DISPLAY_NAME`.
-        customName:
-          type: string
-          example: Hakim Smith
-          description: The custom direct line caller ID name. Required if `selection` is set to `CUSTOM_NAME`.
-      description: Settings for the direct line caller ID name to be shown for this workspace.
-    PostPagingGroupObject:
-      type: object
-      required:
-      - name
-      properties:
-        name:
-          type: string
-          example: PagingGroup-1
-          description: Unique name for the paging group. Minimum length is 1. Maximum length is 30.
-        phoneNumber:
-          type: string
-          example: '+15558675309'
-          description: Paging group phone number. Minimum length is 1. Maximum length is 23.  Either `phoneNumber` or `extension` is mandatory.
-        extension:
-          type: string
-          example: '7781'
-          description: Paging group extension. Minimum length is 2. Maximum length is 10.  Either `phoneNumber` or `extension` is mandatory.
-        languageCode:
-          type: string
-          example: en_us
-          description: Language code.
-        firstName:
-          type: string
-          example: Paging
-          description: First name that displays when a group page is performed. Minimum length is 1. Maximum length is 64. This field has been deprecated. Please use `directLineCallerIdName` and `dialByName` instead.
-        lastName:
-          type: string
-          example: Group
-          description: Last name that displays when a group page is performed. Minimum length is 1. Maximum length is 64. This field has been deprecated. Please use `directLineCallerIdName` and `dialByName` instead.
-        originatorCallerIdEnabled:
-          type: boolean
-          example: true
-          description: Determines what is shown on target users caller ID when a group page is performed. If true shows page originator ID.
-        originators:
-          type: array
-          items:
-            type: string
-          description: An array of people, workspace, and virtual lines IDs who can originate pages to this paging group.
-        targets:
-          type: array
-          items:
-            type: string
-          description: An array of people, workspaces and virtual lines IDs will add to a paging group as paging call targets.
-        directLineCallerIdName:
-          $ref: '#/components/schemas/DirectLineCallerIdNameObject'
-          description: Settings for the direct line caller ID name to be shown for this paging group.
-        dialByName:
-          type: string
-          example: Hakim Smith
-          description: The name to be used for dial by name functions.  Characters of `%`,  `+`, `\`, `"` and Unicode characters are not allowed.
-    PagingGroupPrimaryAvailableNumberListGetObject:
-      type: object
-      required:
-      - phoneNumbers
-      properties:
-        phoneNumbers:
-          type: array
-          items:
-            $ref: '#/components/schemas/PagingGroupPrimaryAvailableNumberObject'
-          description: Array of phone numbers.
     DirectLineCallerIdNameObjectForPut:
       type: object
       properties:
@@ -935,51 +956,27 @@ components:
           example: Hakim Smith
           description: Sets or clears the custom direct line caller ID name.  To clear the `customName`, the attribute must be set to null or empty string. Required if `selection` is set to `CUSTOM_NAME`.
       description: Settings for the direct line caller ID name to be shown for this workspace.
-    STATE:
-      type: string
-      enum:
-      - ACTIVE
-      - INACTIVE
-      description: " * `ACTIVE` - Phone number is in the active state.\n * `INACTIVE` - Phone number is in the inactive state.\n"
-    TelephonyType:
-      type: string
-      enum:
-      - PSTN_NUMBER
-      description: ' * `PSTN_NUMBER` - The object is a PSTN number.
-
-        '
-    PagingGroupPrimaryAvailableNumberObject:
+    PagingGroupPrimaryAvailableNumberListGetObject:
       type: object
       required:
-      - phoneNumber
-      - state
-      - isMainNumber
-      - tollFreeNumber
-      - telephonyType
-      - isServiceNumber
+      - phoneNumbers
       properties:
-        phoneNumber:
+        phoneNumbers:
+          type: array
+          items:
+            $ref: '#/components/schemas/PagingGroupPrimaryAvailableNumberObject'
+          description: Array of phone numbers.
+    DirectLineCallerIdNameObject:
+      type: object
+      properties:
+        selection:
+          $ref: '#/components/schemas/SelectionObject'
+          description: The selection of the direct line caller ID name. Defaults to `DISPLAY_NAME`.
+        customName:
           type: string
-          example: '+12056350001'
-          description: A unique identifier for the PSTN phone number.
-        state:
-          $ref: '#/components/schemas/STATE'
-          description: Phone number's state.
-        isMainNumber:
-          type: boolean
-          example: true
-          description: If `true`, the phone number is used as a location CLID.
-        tollFreeNumber:
-          type: boolean
-          example: true
-          description: If `true`, the phone number is a toll-free number.
-        telephonyType:
-          $ref: '#/components/schemas/TelephonyType'
-          description: The telephony type for the number.
-        isServiceNumber:
-          type: boolean
-          example: true
-          description: If `true`, the phone number is a service number; otherwise, it is a standard number. Service numbers are high-utilization or high-concurrency PSTN phone numbers that are neither mobile nor toll-free.
+          example: Hakim Smith
+          description: The custom direct line caller ID name. Required if `selection` is set to `CUSTOM_NAME`.
+      description: Settings for the direct line caller ID name to be shown for this workspace.
   securitySchemes:
     oauth2:
       flows:
@@ -998,6 +995,3 @@ components:
       description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
       scheme: bearer
       bearerFormat: JWT
-x-refined-from:
-- webex-cloud-calling-openapi.json
-- webex-features-paging-group-api-openapi.yml

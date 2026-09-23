@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: Webex Call Settings For Me With UserHub Phase2 API
+  title: Webex Cloud Calling Call Settings For Me With UserHub…
   version: 1.0.0
-  description: 'Operations tagged Call Settings For Me With UserHub Phase2 across 2 of this provider''s published API definitions: webex-call-settings-for-me-with-userhub-phase2-api-openapi.yml, webex-cloud-calling-openapi.json. Each path carries the servers of the definition it was published in.'
+  description: The Webex Cloud Calling APIs enable comprehensive management of cloud-based calling services, including user provisioning, device assignment, call routing, feature configuration, and number management.
   x-provenance:
     method: harvested
     authored_by: Cisco Webex
@@ -11,9 +11,6 @@ info:
     first_party: true
     note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
     provider_published: true
-    derived_view: Per-tag view of webex-cloud-calling-openapi.json, the provider's source document. Operations and schemas are the provider's, unmodified; only the partition is ours.
-    derived_from: webex-cloud-calling-openapi.json
-    operation_coverage: 35/35
   x-evidence:
   - type: source
     url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-cloud-calling.json
@@ -1785,8 +1782,6 @@ paths:
       description: 'Modify Selective Call Accept Criteria Settings for the authenticated user.
 
 
-
-
         Selective Call Accept allows you to create customized rules to accept specific calls for users based on the phone number,identity and the time or day of the call.
 
 
@@ -1820,8 +1815,6 @@ paths:
       summary: Delete a Selective Call Accept Criteria
       operationId: deleteMySelectiveCallAcceptCriteria
       description: 'Delete a Selective Call Accept Criteria for the authenticated user.
-
-
 
 
         Selective Call Accept allows you to create customized rules to accept specific calls for users based on the phone number,identity and the time or day of the call.
@@ -2302,25 +2295,246 @@ paths:
               $ref: '#/components/schemas/SelectiveForwardCallSettingPatch'
 components:
   schemas:
-    SelectiveAcceptCallCriteriaPatch:
+    UserLocationScheduleEvent:
+      type: object
+      description: Schedule Event configuration.
+      required:
+      - id
+      - name
+      - startDate
+      - endDate
+      - allDayEnabled
+      example:
+        id: Y2lzY29zcGFyazovL3VzL1VTRVJfU0NIRURVTEVfRVZFTlQvUlZaRlRsUk9RVTFG
+        name: Event1 Name
+        startDate: '2023-02-06'
+        endDate: '2023-02-06'
+        allDayEnabled: true
+        recurrence:
+          recurForEver: true
+          recurYearlyByDay:
+            day: MONDAY
+            week: FIRST
+            month: FEBRUARY
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1NDSEVEVUxFX0VWRU5UL1RXOXVaR0Y1VTJOb1pXUjFiR1U
+          description: A unique identifier for the schedule event.
+        name:
+          type: string
+          example: MondaySchedule
+          description: Name for the event.
+        startDate:
+          type: string
+          example: '2021-11-01'
+          description: Start Date of Event.
+        endDate:
+          type: string
+          example: '2021-11-30'
+          description: End Date of Event.
+        startTime:
+          type: string
+          example: '12:20'
+          description: Start time of event.
+        endTime:
+          type: string
+          example: '14:20'
+          description: End time of event.
+        allDayEnabled:
+          type: boolean
+          description: An indication of whether given event is an all-day event or not.
+        recurrence:
+          $ref: '#/components/schemas/RecurrenceObject'
+    SelectiveCallForwardCriteriaPatch:
+      type: object
+      example:
+        forwardToPhoneNumber: '+16175550100'
+        destinationVoicemailEnabled: false
+        scheduleName: Holiday V2
+        scheduleType: businessHours
+        scheduleLevel: PEOPLE
+        callsFrom: SELECT_PHONE_NUMBERS
+        phoneNumbers:
+        - '+16177817766'
+        anonymousCallersEnabled: true
+        unavailableCallersEnabled: false
+        forwardEnabled: true
+      description: Request body for updating selective call forwarding criteria settings.
+      properties:
+        forwardToPhoneNumber:
+          type: string
+          description: The phone number to which calls are forwarded when the criteria conditions are met.
+          example: '+16175550100'
+        destinationVoicemailEnabled:
+          type: boolean
+          description: Indicates whether calls that meet the criteria are forwarded to the destination phone number's voicemail.
+          example: false
+        scheduleName:
+          type: string
+          description: Name of the schedule to be associated with the criteria.
+          example: Holiday V2
+        scheduleType:
+          type: string
+          enum:
+          - businessHours
+          - holidays
+          description: "Type of the schedule.\n * `businessHours` - Business hours schedule type.\n * `holidays` - Holidays schedule type.\n"
+        scheduleLevel:
+          type: string
+          enum:
+          - PEOPLE
+          - LOCATION
+          description: " * `PEOPLE` - The schedule is at the user level.\n * `LOCATION` - The schedule is at the location level.\n"
+        callsFrom:
+          type: string
+          enum:
+          - ANY_PHONE_NUMBER
+          - SELECT_PHONE_NUMBERS
+          - ANY_INTERNAL
+          - ANY_EXTERNAL
+          description: "Specifies the type of callsFrom, categorizing incoming data based on callsFrom types or numbers that match the current criteria.\n * `ANY_PHONE_NUMBER` - The criteria applies to any phone number.\n* `SELECT_PHONE_NUMBERS` - The criteria applies to selected phone numbers.\n* `ANY_INTERNAL` - The criteria applies to any internal number.\n* `ANY_EXTERNAL` - The criteria applies to any external number.\n"
+        anonymousCallersEnabled:
+          type: boolean
+          description: Indicates whether anonymous callers are included in this criteria. Required if `callsFrom` is `SELECT_PHONE_NUMBERS`.
+          example: true
+        unavailableCallersEnabled:
+          type: boolean
+          description: Indicates whether unavailable callers are included in this criteria. Required if `callsFrom` is `SELECT_PHONE_NUMBERS`.
+          example: true
+        phoneNumbers:
+          type: array
+          description: List of phone numbers to update for this criteria. Required if `callsFrom` is `SELECT_PHONE_NUMBERS`.
+          items:
+            type: string
+            description: Phone number that the criteria applies to.
+        forwardEnabled:
+          type: boolean
+          description: Determines whether selective call forwarding is applied for calls matching this criteria. If `true`, the selective forwarding is applied. If `false`, this criteria acts as a 'Don't Forward' rule, preventing selectively forwarding of the calls. Criteria with `forwardEnabled` set to `false` (Don't Forward) take precedence over criteria with `forwardEnabled` set to `true` (Forward).
+          example: false
+    UserScheduleGetResponse:
+      type: object
+      description: Lists the schedule and it's events' details for the requested Schedule.
+      required:
+      - id
+      - type
+      - name
+      example:
+        id: Y2lzY29zcGFyazovL3VzL1VTRVJfU0NIRURVTEUvVTJOb1pXUjFiR1V4
+        type: businessHours
+        name: Schedule1
+        events:
+        - id: Y2lzY29zcGFyazovL3VzL1VTRVJfU0NIRURVTEVfRVZFTlQvUlZaRlRsUk9RVTFG
+          name: EVENTNAME
+          startDate: '2023-02-06'
+          endDate: '2023-02-06'
+          allDayEnabled: true
+          recurrence:
+            recurForEver: true
+            recurDaily:
+              recurInterval: 1
+        - id: Y2lzY29zcGFyazovL3VzL1VTRVJfU0NIRURVTEVfRVZFTlQvUm5KcFpHRjVJREk9
+          name: Friday 2
+          startDate: '2020-10-30'
+          endDate: '2020-10-30'
+          startTime: '13:00'
+          endTime: '17:00'
+          allDayEnabled: false
+          recurrence:
+            recurForEver: true
+            recurWeekly:
+              sunday: false
+              monday: false
+              tuesday: false
+              wednesday: false
+              thursday: false
+              friday: true
+              saturday: false
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the schedule.
+          example: Y2lzY29zcGFyazovL3VzL1VTRVJfU0NIRURVTEUvVTJOb1pXUjFiR1V4
+        name:
+          type: string
+          description: Name of the schedule.
+          example: Schedule1
+        type:
+          type: string
+          enum:
+          - businessHours
+          - holidays
+          description: " * `businessHours` - The schedule is for business hours.\n * `holidays` - The schedule is for holidays.\n"
+        events:
+          type: array
+          description: List of events in the schedule.
+          items:
+            $ref: '#/components/schemas/UserScheduleEvent'
+    ResponseId:
+      type: object
+      description: Response object that contains the unique identifier for the created or updated criteria.
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the criteria.
+      example:
+        id: Y2lzY29zcGFyazovL3VzL0NSSVRFUklBL2RHVnpkRjltYVd4MFpYST0
+    RecurWeeklyObject:
+      type: object
+      required:
+      - sunday
+      properties:
+        sunday:
+          type: boolean
+          example: true
+          description: Frequency of occurrence in weeks and select the day - Sunday.
+        monday:
+          type: boolean
+          example: true
+          description: Frequency of occurrence in weeks and select the day - Monday.
+        tuesday:
+          type: boolean
+          example: true
+          description: Frequency of occurrence in weeks and select the day - Tuesday.
+        wednesday:
+          type: boolean
+          example: true
+          description: Frequency of occurrence in weeks and select the day - Wednesday.
+        thursday:
+          type: boolean
+          example: true
+          description: Frequency of occurrence in weeks and select the day - Thursday.
+        friday:
+          type: boolean
+          example: true
+          description: Frequency of occurrence in weeks and select the day - Friday.
+        saturday:
+          type: boolean
+          example: true
+          description: Frequency of occurrence in weeks and select the day - Saturday.
+    SelectiveAcceptCallCriteriaGet:
       type: object
       required:
       - callsFrom
       - acceptEnabled
       properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0NSSVRFUklBL1oxNzI5NzA4NzUwMTY4MDI
+          description: Criteria ID.
         scheduleName:
           type: string
           example: CFS-Criteria-F-2
-          description: Name of the schedule to which the criteria is created.
+          description: Name of the Schedule to which the criteria is created.
         scheduleType:
           $ref: '#/components/schemas/ScheduleType'
           description: Schedule Type.
         scheduleLevel:
           $ref: '#/components/schemas/ScheduleLevel'
-          description: schedule level of the criteria.
+          description: Schedule Level of the criteria.
         callsFrom:
           $ref: '#/components/schemas/CallsFromSelectiveAccept'
-          description: Accept calls from selected.
+          description: Accept calls selection.
         anonymousCallersEnabled:
           type: boolean
           description: Boolean flag indicating if calls from custom numbers, private numbers are enabled.
@@ -2336,61 +2550,224 @@ components:
         acceptEnabled:
           type: boolean
           example: true
-          description: Boolean flag to enable/disable the selective accept criteria.
-    NumberOwnerType:
-      type: string
-      enum:
-      - PLACE
-      - PEOPLE
-      - VIRTUAL_LINE
-      - AUTO_ATTENDANT
-      - CALL_QUEUE
-      - GROUP_PAGING
-      - HUNT_GROUP
-      - VOICE_MESSAGING
-      - OFFICE_ANYWHERE
-      - CONTACT_CENTER_LINK
-      - CONTACT_CENTER_ADAPTER
-      - ROUTE_LIST
-      - VOICEMAIL_GROUP
-      - COLLABORATE_BRIDGE
-      description: " * `PLACE` - PSTN phone number's owner is a workspace.\n * `PEOPLE` - PSTN phone number's owner is a person.\n * `VIRTUAL_LINE` - PSTN phone number's owner is a Virtual Profile.\n * `AUTO_ATTENDANT` - PSTN phone number's owner is an auto-attendant.\n * `CALL_QUEUE` - PSTN phone number's owner is a call queue.\n * `GROUP_PAGING` - PSTN phone number's owner is a group paging.\n * `HUNT_GROUP` - PSTN phone number's owner is a hunt group.\n * `VOICE_MESSAGING` - PSTN phone number's owner is a voice messaging.\n * `OFFICE_ANYWHERE` - PSTN phone number's owner is a Single Number Reach.\n * `CONTACT_CENTER_LINK` - PSTN phone number's owner is a Contact Center link.\n * `CONTACT_CENTER_ADAPTER` - PSTN phone number's owner is a Contact Center adapter.\n * `ROUTE_LIST` - PSTN phone number's owner is a route list.\n * `VOICEMAIL_GROUP` - PSTN phone number's owner is a voicemail group.\n * `COLLABORATE_BRIDGE` - PSTN phone number's owner is a collaborate bridge.\n"
-    SelectiveForwardCallSettingsGet:
+          description: Boolean flag indicating if selective call accept is enabled.
+    SelectiveAcceptCallCriteria:
       type: object
       required:
-      - enabled
+      - id
+      - scheduleName
+      - source
+      - acceptEnabled
       properties:
-        enabled:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0NSSVRFUklBLzg2NTAxZDFlLTg1MWMtNDgwYi1hZmE2LTA5MTU4NzQ3NzdmZQ
+          description: Unique identifier for criteria.
+        scheduleName:
+          type: string
+          example: Business Vacation
+          description: Name of the location's schedule which determines when the selective reject is in effect.
+        source:
+          $ref: '#/components/schemas/SelectiveAcceptCallSource'
+          description: If criteria are applicable for calls from any phone number, specific phone number or forwarded ones.
+        acceptEnabled:
           type: boolean
           example: true
-          description: '`true` if the Selective Forward feature is enabled.'
-        defaultPhoneNumberToForward:
-          type: string
-          description: The phone number to which calls are forwarded by default when the criteria conditions are met.
-          example: '+16175550100'
-        ringReminderEnabled:
-          type: boolean
-          description: If `true`, a brief tone will be played on the person's phone when a call has been forwarded.
-          example: false
-        destinationVoicemailEnabled:
-          type: boolean
-          description: Indicates whether calls that meet the criteria are forwarded to the destination phone number's voicemail.
-          example: false
-        criteria:
-          type: array
-          items:
-            $ref: '#/components/schemas/SelectiveForwardCallCriteria'
-          description: A list of criteria specifying conditions when selective accept is in effect.
+          description: This setting specifies to choose to accept or not to accept the calls that fit within these parameters.
+    SourceForSelectiveForward:
+      type: string
+      enum:
+      - ALL_NUMBERS
+      - SPECIFIC_NUMBERS
+      - ANY_INTERNAL
+      - ANY_EXTERNAL
+      description: " * `ALL_NUMBERS` - Criteria applies to all incoming numbers.\n * `SPECIFIC_NUMBERS` - Criteria applies only for specific incoming numbers.\n * `ANY_INTERNAL` - Criteria applies to all internal incoming numbers.\n * `ANY_EXTERNAL` - Criteria applies to all external incoming numbers.\n"
+    UserSchedulePatchRequest:
+      type: object
+      description: Modify the schedule name and / or it's events' details for the requested Schedule.
+      required:
+      - name
       example:
-        enabled: true
-        defaultPhoneNumberToForward: '+16175550100'
-        ringReminderEnabled: false
-        destinationVoicemailEnabled: false
-        criteria:
-        - id: Y2lzY29zcGFyazovL3VzL0NSSVRFUklBL1oxNzU0MzgzODQzNTA5NzY
-          scheduleName: CustomHoliday(Group)
-          source: ALL_NUMBERS
-          forwardEnabled: true
+        name: Schedule1
+        events:
+        - name: EVENT NAME
+          newName: Event Name
+          startDate: '2023-02-06'
+          endDate: '2023-02-06'
+          allDayEnabled: true
+          recurrence:
+            recurForEver: true
+            recurDaily:
+              recurInterval: 1
+        - name: Friday 2
+          newName: Weekly Event
+          startDate: '2020-10-30'
+          endDate: '2020-10-30'
+          startTime: '13:00'
+          endTime: '17:00'
+          allDayEnabled: false
+          recurrence:
+            recurForEver: true
+            recurWeekly:
+              sunday: false
+              monday: false
+              tuesday: false
+              wednesday: false
+              thursday: false
+              friday: true
+              saturday: false
+      properties:
+        name:
+          type: string
+          description: Name of the schedule.
+          example: Schedule1
+        events:
+          type: array
+          description: List of events in the schedule.
+          items:
+            $ref: '#/components/schemas/UserScheduleEventPatch'
+    RecurrenceObject:
+      type: object
+      properties:
+        recurForEver:
+          type: boolean
+          description: Flag to indicate if event will recur forever.
+        recurEndDate:
+          type: string
+          example: '2021-11-30'
+          description: End date of recurrence.
+        recurWeekly:
+          $ref: '#/components/schemas/RecurWeeklyObject'
+          description: Weekly recurrence definition.
+        recurYearlyByDate:
+          $ref: '#/components/schemas/RecurYearlyByDateObject'
+          description: Recurrence definition yearly by date.
+        recurYearlyByDay:
+          $ref: '#/components/schemas/RecurYearlyByDayObject'
+          description: Recurrence definition yearly by day.
+    CallNotifyCriteriaGet:
+      type: object
+      description: Call Notify individual Criterion detailed settings response object containing schedule, phone numbers, and notification configurations.
+      example:
+        id: Y2lzY29zcGFyazovL3VzL0NSSVRFUklBL1oxNzU0MzgzODQzNTA5NzY
+        scheduleName: CustomHoliday(Group)
+        scheduleType: holidays
+        scheduleLevel: PEOPLE
+        callsFrom: SELECT_PHONE_NUMBERS
+        anonymousCallersEnabled: false
+        unavailableCallersEnabled: false
+        phoneNumbers:
+        - '+16177817765'
+        notificationEnabled: false
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the call notify criteria.
+          example: Y2lzY29zcGFyazovL3VzL0NSSVRFUklBL1oxNzU0MzgzODQzNTA5NzY
+        scheduleName:
+          type: string
+          description: Name of the schedule associated with the criteria.
+          example: CustomHoliday(Group)
+        scheduleType:
+          type: string
+          enum:
+          - businessHours
+          - holidays
+          description: "Type of the schedule.\n * `businessHours` - Business hours schedule type.\n * `holidays` - Holidays schedule type.\n"
+        scheduleLevel:
+          type: string
+          enum:
+          - PEOPLE
+          - LOCATION
+          description: " * `PEOPLE` - The schedule is at the user level.\n * `LOCATION` - The schedule is at the location level.\n"
+        callsFrom:
+          type: string
+          enum:
+          - ANY_PHONE_NUMBER
+          - SELECT_PHONE_NUMBERS
+          description: "Specifies the type of callsFrom, categorizing incoming data based on callsFrom types or numbers that match the current criteria.\n * `ANY_PHONE_NUMBER` - The criteria applies to any phone number.\n* `SELECT_PHONE_NUMBERS` - The criteria applies to selected phone numbers.\n"
+        anonymousCallersEnabled:
+          type: boolean
+          description: Indicates whether anonymous callers are included in this criteria.
+          example: false
+        unavailableCallersEnabled:
+          type: boolean
+          description: Indicates whether unavailable callers are included in this criteria.
+          example: false
+        phoneNumbers:
+          type: array
+          description: List of phone numbers that this criteria applies to.
+          items:
+            type: string
+            description: Phone number that the criteria applies to.
+        notificationEnabled:
+          type: boolean
+          description: Determines whether call notify is applied for calls matching this criteria. If `true`, call notification is applied. If `false`, this criteria acts as a 'Don't Notify Me' rule, preventing call notification. Criteria with `notificationEnabled` set to `false` (Don't Notify Me) take precedence over criteria with `notificationEnabled` set to `true` (Notify Me).
+          example: false
+    PriorityAlertCriteria:
+      type: object
+      required:
+      - id
+      - source
+      - notificationEnabled
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0NSSVRFUklBLzg2NTAxZDFlLTg1MWMtNDgwYi1hZmE2LTA5MTU4NzQ3NzdmZQ
+          description: Unique identifier for criteria.
+        scheduleName:
+          type: string
+          example: Business Vacation
+          description: Name of the location's schedule which determines when the priority alert is in effect.
+        source:
+          type: string
+          enum:
+          - ALL_NUMBERS
+          - SPECIFIC_NUMBERS
+          description: "If criteria are applicable for calls from any phone number or specific phone number.\n * `ALL_NUMBERS` - Indicates that priority alert criteria apply for all incoming numbers.\n * `SPECIFIC_NUMBERS` - Indicates priority alert criteria only apply to specific incoming numbers.\n"
+        notificationEnabled:
+          type: boolean
+          example: true
+          description: When set to `true` notification is enabled for calls that meet the current criteria. Criteria with `notificationEnabled` set to `false` take priority.
+    ScheduleEventObject:
+      type: object
+      required:
+      - name
+      - startDate
+      - endDate
+      properties:
+        name:
+          type: string
+          example: MondaySchedule
+          description: Name for the event.
+        startDate:
+          type: string
+          example: '2021-11-01'
+          description: Start date of event.
+        endDate:
+          type: string
+          example: '2021-11-30'
+          description: End date of event.
+        startTime:
+          type: string
+          example: '12:20'
+          description: Start time of event. Mandatory if the event is not all day.
+        endTime:
+          type: string
+          example: '14:20'
+          description: End time of event. Mandatory if the event is not all day.
+        allDayEnabled:
+          type: boolean
+          description: An indication of whether given event is an all-day event or not. Mandatory if the `startTime` and `endTime` are not defined.
+        recurrence:
+          $ref: '#/components/schemas/RecurrenceObject'
+          description: Recurrence definition.
+    CallsFromSelectiveAccept:
+      type: string
+      enum:
+      - ANY_PHONE_NUMBER
+      - SELECT_PHONE_NUMBERS
+      description: " * `ANY_PHONE_NUMBER` - Criteria applies for any incoming number.\n * `SELECT_PHONE_NUMBERS` - Criteria applies for selected incoming numbers.\n"
     SelectiveCallForwardCriteriaGet:
       type: object
       description: Selective Call Forwarding individual Criterion detailed settings response object.
@@ -2462,271 +2839,19 @@ components:
           type: boolean
           description: Determines whether selective call forwarding is applied for calls matching this criteria. If `true`, the selective forwarding is applied. If `false`, this criteria acts as a 'Don't Forward' rule, preventing selectively forwarding of the calls. Criteria with `forwardEnabled` set to `false` (Don't Forward) take precedence over criteria with `forwardEnabled` set to `true` (Forward).
           example: false
-    SelectiveAcceptCallCriteriaPost:
+    PriorityAlertCriteriaPatch:
       type: object
-      required:
-      - callsFrom
-      - acceptEnabled
-      properties:
-        scheduleName:
-          type: string
-          example: CFS-Criteria-F-2
-          description: Name of the schedule to which the criteria is created.
-        scheduleType:
-          $ref: '#/components/schemas/ScheduleType'
-          description: The schedule type.
-        scheduleLevel:
-          $ref: '#/components/schemas/ScheduleLevel'
-          description: schedule level of the criteria.
-        callsFrom:
-          $ref: '#/components/schemas/CallsFromSelectiveAccept'
-          description: Accept calls selection.
-        anonymousCallersEnabled:
-          type: boolean
-          description: Boolean flag indicating if calls from custom numbers, private numbers are enabled.
-        unavailableCallersEnabled:
-          type: boolean
-          description: Boolean flag indicating if calls from custom numbers, unavailable numbers are enabled.
+      example:
+        scheduleName: Holiday V2
+        scheduleType: holidays
+        scheduleLevel: LOCATION
+        callsFrom: SELECT_PHONE_NUMBERS
+        anonymousCallersEnabled: true
+        unavailableCallersEnabled: true
+        notificationEnabled: false
         phoneNumbers:
-          type: array
-          items:
-            type: string
-            example: '["+1986751234","+1986751234"]'
-          description: List of phone numbers. It does not include extensions. In some regions, phone numbers are not returned in E.164 format. This will be supported in a future update.
-        acceptEnabled:
-          type: boolean
-          example: true
-          description: Boolean flag indicating if selective call accept is enabled.
-    CallsFromSelectiveAccept:
-      type: string
-      enum:
-      - ANY_PHONE_NUMBER
-      - SELECT_PHONE_NUMBERS
-      description: " * `ANY_PHONE_NUMBER` - Criteria applies for any incoming number.\n * `SELECT_PHONE_NUMBERS` - Criteria applies for selected incoming numbers.\n"
-    UserSchedulePostRequest:
-      type: object
-      description: Request body for creating a new user schedule.
-      required:
-      - type
-      - name
-      properties:
-        type:
-          type: string
-          enum:
-          - businessHours
-          - holidays
-          description: "Type of the schedule.\n * `businessHours` - Business hours schedule type.\n * `holidays` - Holidays schedule type.\n"
-        name:
-          type: string
-          example: Schedule ABC
-          description: Unique name for the schedule.
-        events:
-          type: array
-          items:
-            $ref: '#/components/schemas/ScheduleEventObject'
-          description: List of schedule events.
-    UserScheduleEvent:
-      type: object
-      description: Schedule Event configuration.
-      required:
-      - id
-      - name
-      - startDate
-      - endDate
-      - allDayEnabled
-      example:
-        id: Y2lzY29zcGFyazovL3VzL1VTRVJfU0NIRURVTEVfRVZFTlQvUlZaRlRsUk9RVTFG
-        name: Event1 Name
-        startDate: '2023-02-06'
-        endDate: '2023-02-06'
-        allDayEnabled: true
-        recurrence:
-          recurForEver: true
-          recurYearlyByDay:
-            day: MONDAY
-            week: FIRST
-            month: FEBRUARY
-      properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1NDSEVEVUxFX0VWRU5UL1RXOXVaR0Y1VTJOb1pXUjFiR1U
-          description: A unique identifier for the schedule event.
-        name:
-          type: string
-          example: MondaySchedule
-          description: Name for the event.
-        startDate:
-          type: string
-          example: '2021-11-01'
-          description: Start Date of Event.
-        endDate:
-          type: string
-          example: '2021-11-30'
-          description: End Date of Event.
-        startTime:
-          type: string
-          example: '12:20'
-          description: Start time of event.
-        endTime:
-          type: string
-          example: '14:20'
-          description: End time of event.
-        allDayEnabled:
-          type: boolean
-          description: An indication of whether given event is an all-day event or not.
-        recurrence:
-          $ref: '#/components/schemas/UserScheduleRecurrenceObject'
-    SelectiveAcceptCallCriteriaGet:
-      type: object
-      required:
-      - callsFrom
-      - acceptEnabled
-      properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0NSSVRFUklBL1oxNzI5NzA4NzUwMTY4MDI
-          description: Criteria ID.
-        scheduleName:
-          type: string
-          example: CFS-Criteria-F-2
-          description: Name of the Schedule to which the criteria is created.
-        scheduleType:
-          $ref: '#/components/schemas/ScheduleType'
-          description: Schedule Type.
-        scheduleLevel:
-          $ref: '#/components/schemas/ScheduleLevel'
-          description: Schedule Level of the criteria.
-        callsFrom:
-          $ref: '#/components/schemas/CallsFromSelectiveAccept'
-          description: Accept calls selection.
-        anonymousCallersEnabled:
-          type: boolean
-          description: Boolean flag indicating if calls from custom numbers, private numbers are enabled.
-        unavailableCallersEnabled:
-          type: boolean
-          description: Boolean flag indicating if calls from custom numbers, unavailable numbers are enabled.
-        phoneNumbers:
-          type: array
-          items:
-            type: string
-            example: '["+1986751234","+1986751234"]'
-          description: List of phone numbers. It does not include extensions. In some regions phone numbers are not returned in E.164 format. This will be supported in a future update.
-        acceptEnabled:
-          type: boolean
-          example: true
-          description: Boolean flag indicating if selective call accept is enabled.
-    SelectiveAcceptCallSource:
-      type: string
-      enum:
-      - ALL_NUMBERS
-      - SPECIFIC_NUMBERS
-      - FORWARDED
-      description: " * `ALL_NUMBERS` - Selective accept criteria applies for all incoming numbers.\n * `SPECIFIC_NUMBERS` - Selective accept criteria applies for calls from specific numbers.\n * `FORWARDED` - Selective accept criteria applies for all forwarded calls.\n"
-    UserLocationScheduleEvent:
-      type: object
-      description: Schedule Event configuration.
-      required:
-      - id
-      - name
-      - startDate
-      - endDate
-      - allDayEnabled
-      example:
-        id: Y2lzY29zcGFyazovL3VzL1VTRVJfU0NIRURVTEVfRVZFTlQvUlZaRlRsUk9RVTFG
-        name: Event1 Name
-        startDate: '2023-02-06'
-        endDate: '2023-02-06'
-        allDayEnabled: true
-        recurrence:
-          recurForEver: true
-          recurYearlyByDay:
-            day: MONDAY
-            week: FIRST
-            month: FEBRUARY
-      properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1NDSEVEVUxFX0VWRU5UL1RXOXVaR0Y1VTJOb1pXUjFiR1U
-          description: A unique identifier for the schedule event.
-        name:
-          type: string
-          example: MondaySchedule
-          description: Name for the event.
-        startDate:
-          type: string
-          example: '2021-11-01'
-          description: Start Date of Event.
-        endDate:
-          type: string
-          example: '2021-11-30'
-          description: End Date of Event.
-        startTime:
-          type: string
-          example: '12:20'
-          description: Start time of event.
-        endTime:
-          type: string
-          example: '14:20'
-          description: End time of event.
-        allDayEnabled:
-          type: boolean
-          description: An indication of whether given event is an all-day event or not.
-        recurrence:
-          $ref: '#/components/schemas/RecurrenceObject'
-    ResponseId:
-      type: object
-      description: Response object that contains the unique identifier for the created or updated criteria.
-      properties:
-        id:
-          type: string
-          description: The unique identifier for the criteria.
-      example:
-        id: Y2lzY29zcGFyazovL3VzL0NSSVRFUklBL2RHVnpkRjltYVd4MFpYST0
-    UserScheduleListGetResponse:
-      type: object
-      description: Lists all the schedules for the authenticated user. Also includes LOCATION level schedules for the user's location.
-      example:
-        schedules:
-        - id: Y2lzY29zcGFyazovL3VzL1VTRVJfU0NIRURVTEUvVTJOb1pXUjFiR1V4
-          name: Schedule1
-          type: businessHours
-          level: PEOPLE
-        - id: Y2lzY29zcGFyazovL3VzL1VTRVJfU0NIRURVTEUvVkdWaGJTQkliMnhwWkdGNQ
-          name: Team Holiday
-          type: holidays
-          level: LOCATION
-      properties:
-        schedules:
-          type: array
-          description: List of schedules
-          items:
-            $ref: '#/components/schemas/UserSchedule'
-    SelectiveAcceptCallCriteria:
-      type: object
-      required:
-      - id
-      - scheduleName
-      - source
-      - acceptEnabled
-      properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0NSSVRFUklBLzg2NTAxZDFlLTg1MWMtNDgwYi1hZmE2LTA5MTU4NzQ3NzdmZQ
-          description: Unique identifier for criteria.
-        scheduleName:
-          type: string
-          example: Business Vacation
-          description: Name of the location's schedule which determines when the selective reject is in effect.
-        source:
-          $ref: '#/components/schemas/SelectiveAcceptCallSource'
-          description: If criteria are applicable for calls from any phone number, specific phone number or forwarded ones.
-        acceptEnabled:
-          type: boolean
-          example: true
-          description: This setting specifies to choose to accept or not to accept the calls that fit within these parameters.
-    CallNotifyCriteriaPatch:
-      type: object
-      description: Request body for updating call notify criteria settings.
+        - '+16177817766'
+      description: Request body for updating priority alert criteria settings.
       properties:
         scheduleName:
           type: string
@@ -2766,34 +2891,86 @@ components:
             description: Phone number that the criteria applies to.
         notificationEnabled:
           type: boolean
-          description: Determines whether call notification is applied for calls matching this criteria. If `true`, call notify is applied. If `false`, this criteria acts as a 'Don't Notify Me' rule, preventing call notification. Criteria with `notificationEnabled` set to `false` (Don't Notify Me) take precedence over criteria with `notificationEnabled` set to `true` (Notify).
+          description: Determines whether priority alerting is applied for calls matching this criteria. If `true`, priority alerting is applied. If `false`, this criteria acts as a 'Don't Alert' rule, preventing priority alerting. Criteria with `notificationEnabled` set to `false` (Don't Alert) take precedence over criteria with `notificationEnabled` set to `true` (Alert).
           example: false
-    RecurYearlyByDateObject:
+    UserScheduleRecurrenceObject:
+      type: object
+      description: Recurrence definition for a user's schedule event.
+      example:
+        recurForEver: true
+        recurEndDate: '2020-03-31'
+        recurDaily:
+          recurInterval: 1
+        recurWeekly:
+          sunday: false
+          monday: true
+          tuesday: false
+          wednesday: true
+          thursday: false
+          friday: true
+          saturday: false
+      properties:
+        recurForEver:
+          type: boolean
+          example: true
+          description: Flag to indicate if event will recur forever.
+        recurEndDate:
+          type: string
+          example: '2021-11-30'
+          description: End date of recurrence.
+        recurEndOccurrence:
+          type: integer
+          example: 2
+          description: Number of occurrences after which the event will stop recurring.
+        recurDaily:
+          type: object
+          example:
+            recurInterval: 1
+          required:
+          - recurInterval
+          properties:
+            recurInterval:
+              type: number
+              example: 1
+              description: Recurring interval in days. The number of days after the start when an event will repeat.  Repetitions cannot overlap.
+          description: Specifies the number of days between the start of each recurrence and is not allowed with `recurWeekly`.
+        recurWeekly:
+          $ref: '#/components/schemas/RecurWeeklyObject'
+    SelectiveAcceptCallCriteriaPatch:
       type: object
       required:
-      - dayOfMonth
-      - month
+      - callsFrom
+      - acceptEnabled
       properties:
-        dayOfMonth:
-          type: number
-          example: 1
-          description: Schedule the event on a specific day of the month.
-        month:
+        scheduleName:
           type: string
-          enum:
-          - JANUARY
-          - FEBRUARY
-          - MARCH
-          - APRIL
-          - MAY
-          - JUNE
-          - JULY
-          - AUGUST
-          - SEPTEMBER
-          - OCTOBER
-          - NOVEMBER
-          - DECEMBER
-          description: Schedule the event on a specific month of the year.
+          example: CFS-Criteria-F-2
+          description: Name of the schedule to which the criteria is created.
+        scheduleType:
+          $ref: '#/components/schemas/ScheduleType'
+          description: Schedule Type.
+        scheduleLevel:
+          $ref: '#/components/schemas/ScheduleLevel'
+          description: schedule level of the criteria.
+        callsFrom:
+          $ref: '#/components/schemas/CallsFromSelectiveAccept'
+          description: Accept calls from selected.
+        anonymousCallersEnabled:
+          type: boolean
+          description: Boolean flag indicating if calls from custom numbers, private numbers are enabled.
+        unavailableCallersEnabled:
+          type: boolean
+          description: Boolean flag indicating if calls from custom numbers, unavailable numbers are enabled.
+        phoneNumbers:
+          type: array
+          items:
+            type: string
+            example: '["+1986751234","+1986751234"]'
+          description: List of phone numbers. It does not include extensions. In some regions phone numbers are not returned in E.164 format. This will be supported in a future update.
+        acceptEnabled:
+          type: boolean
+          example: true
+          description: Boolean flag to enable/disable the selective accept criteria.
     CallNotifyCriteriaListGet:
       type: object
       description: User call notify criteria response object containing configurations of Criteria.
@@ -2820,105 +2997,116 @@ components:
         notificationEnabled:
           type: boolean
           description: Determines whether call notify is applied for calls matching this criteria. If `true`, call notification is applied. If `false`, this criteria acts as a 'Don't Notify Me' rule, preventing call notification. Criteria with `notificationEnabled` set to `false` (Don't Notify Me) take precedence over criteria with `notificationEnabled` set to `true` (Notify Me).
-    PriorityAlertCriteria:
+    SelectiveAcceptCallSource:
+      type: string
+      enum:
+      - ALL_NUMBERS
+      - SPECIFIC_NUMBERS
+      - FORWARDED
+      description: " * `ALL_NUMBERS` - Selective accept criteria applies for all incoming numbers.\n * `SPECIFIC_NUMBERS` - Selective accept criteria applies for calls from specific numbers.\n * `FORWARDED` - Selective accept criteria applies for all forwarded calls.\n"
+    LocationAssignedNumber:
       type: object
-      required:
-      - id
-      - source
-      - notificationEnabled
+      description: Details of a assigned phone number/extension in the user's location.
       properties:
-        id:
+        phoneNumber:
           type: string
-          example: Y2lzY29zcGFyazovL3VzL0NSSVRFUklBLzg2NTAxZDFlLTg1MWMtNDgwYi1hZmE2LTA5MTU4NzQ3NzdmZQ
-          description: Unique identifier for criteria.
-        scheduleName:
+          description: The phone number in E.164 format.
+        extension:
           type: string
-          example: Business Vacation
-          description: Name of the location's schedule which determines when the priority alert is in effect.
-        source:
+          description: The extension.
+        state:
           type: string
           enum:
-          - ALL_NUMBERS
-          - SPECIFIC_NUMBERS
-          description: "If criteria are applicable for calls from any phone number or specific phone number.\n * `ALL_NUMBERS` - Indicates that priority alert criteria apply for all incoming numbers.\n * `SPECIFIC_NUMBERS` - Indicates priority alert criteria only apply to specific incoming numbers.\n"
-        notificationEnabled:
+          - ACTIVE
+          - INACTIVE
+          description: " * `ACTIVE` - Phone number is in the active state.\n * `INACTIVE` - Phone number is in the inactive state.\n"
+        phoneNumberType:
+          type: string
+          enum:
+          - PRIMARY
+          - ALTERNATE
+          - FAX
+          description: '* `PRIMARY` - A direct phone number.
+
+            * `ALTERNATE` - An alternate phone number.
+
+            * `FAX` - A FAX number.
+
+            '
+        tollFreeNumber:
           type: boolean
-          example: true
-          description: When set to `true` notification is enabled for calls that meet the current criteria. Criteria with `notificationEnabled` set to `false` take priority.
-    SelectiveForwardCallCriteria:
+          description: Indicate if the number is toll free.
+        owner:
+          type: object
+          required:
+          - type
+          properties:
+            type:
+              $ref: '#/components/schemas/NumberOwnerType'
+            firstName:
+              type: string
+              example: Test
+              description: First name of the phone number/extension owner. This field is present only for type `PEOPLE` and `VIRTUAL_LINE`.
+            lastName:
+              type: string
+              example: Person
+              description: Last name of the phone number/extension owner. This field is present only for type `PEOPLE` and `VIRTUAL_LINE`.
+            displayName:
+              type: string
+              example: Test
+              description: Display Name of the phone number/extension owner.
+          description: The owner details.
+    RecurYearlyByDayObject:
       type: object
       required:
-      - id
-      - scheduleName
-      - source
-      - ringEnabled
+      - day
+      - week
+      - month
       properties:
-        id:
+        day:
           type: string
-          example: Y2lzY29zcGFyazovL3VzL0NSSVRFUklBLzg2NTAxZDFlLTg1MWMtNDgwYi1hZmE2LTA5MTU4NzQ3NzdmZQ
-          description: Unique identifier for criteria.
-        scheduleName:
+          enum:
+          - SUNDAY
+          - MONDAY
+          - TUESDAY
+          - WEDNESDAY
+          - THURSDAY
+          - FRIDAY
+          - SATURDAY
+          description: Schedule the event on a specific day.
+        week:
           type: string
-          example: Business Vacation
-          description: Name of the location's schedule which determines when the sequential ring is in effect.
-        source:
-          $ref: '#/components/schemas/SourceForSelectiveForward'
-          description: Criteria are applicable for calls from any phone number or a specific phone number.
-        ringEnabled:
-          type: boolean
-          example: true
-          description: When set to `true` sequential ringing is enabled for calls that meet the current criteria. Criteria with `ringEnabled` set to `false` take priority.
-    RecurrenceObject:
-      type: object
-      properties:
-        recurForEver:
-          type: boolean
-          description: Flag to indicate if event will recur forever.
-        recurEndDate:
+          enum:
+          - FIRST
+          - SECOND
+          - THIRD
+          - FOURTH
+          - LAST
+          description: Schedule the event on a specific week.
+        month:
           type: string
-          example: '2021-11-30'
-          description: End date of recurrence.
-        recurWeekly:
-          $ref: '#/components/schemas/RecurWeeklyObject'
-          description: Weekly recurrence definition.
-        recurYearlyByDate:
-          $ref: '#/components/schemas/RecurYearlyByDateObject'
-          description: Recurrence definition yearly by date.
-        recurYearlyByDay:
-          $ref: '#/components/schemas/RecurYearlyByDayObject'
-          description: Recurrence definition yearly by day.
-    PriorityAlertGet:
+          enum:
+          - JANUARY
+          - FEBRUARY
+          - MARCH
+          - APRIL
+          - MAY
+          - JUNE
+          - JULY
+          - AUGUST
+          - SEPTEMBER
+          - OCTOBER
+          - NOVEMBER
+          - DECEMBER
+          description: Schedule the event on a specific month.
+    SelectiveAcceptCallSettingPatch:
       type: object
       required:
       - enabled
       properties:
         enabled:
           type: boolean
-          example: true
-          description: '`true` if the Priority Alert feature is enabled.'
-        criteria:
-          type: array
-          items:
-            $ref: '#/components/schemas/PriorityAlertCriteria'
-          description: A list of criteria specifying conditions when priority alert is in effect.
-    SelectiveForwardCallSettingPatch:
-      type: object
-      properties:
-        enabled:
-          type: boolean
-          example: true
-          description: '`true` if the Selective Forward feature is enabled.'
-        defaultPhoneNumberToForward:
-          type: string
-          example: '+1934898988'
-          description: Enter the phone number to forward calls to during this schedule.
-        ringReminderEnabled:
-          type: boolean
-          example: true
-          description: When `true`, enables a ring reminder for such calls.
-        destinationVoicemailEnabled:
-          type: boolean
-          description: Enables forwarding for all calls to voicemail. This option is only available for internal phone numbers or extensions.
+          description: indicates whether selective accept is enabled or not.
     UserScheduleEventPatch:
       type: object
       description: Modify the Schedule Event configuration.
@@ -2969,168 +3157,43 @@ components:
           description: An indication of whether given event is an all-day event or not.
         recurrence:
           $ref: '#/components/schemas/UserScheduleRecurrenceObject'
-    CallNotifyGet:
+    SelectiveAcceptCallSettingsGet:
       type: object
-      description: User call notify settings response object containing configurations of Criteria and whether CallNotify is enabled.
+      required:
+      - enabled
+      properties:
+        enabled:
+          type: boolean
+          example: true
+          description: '`true` if the Selective Accept feature is enabled.'
+        criteria:
+          type: array
+          items:
+            $ref: '#/components/schemas/SelectiveAcceptCallCriteria'
+          description: A list of criteria specifying conditions when selective accept is in effect.
       example:
-        enabled: false
-        emailAddress: callnotify@example.com
+        enabled: true
         criteria:
         - id: Y2lzY29zcGFyazovL3VzL0NSSVRFUklBL1oxNzU0MzgzODQzNTA5NzY
           scheduleName: CustomHoliday(Group)
           source: ALL_NUMBERS
-          notificationEnabled: false
-      properties:
-        enabled:
-          type: boolean
-          description: Indicates whether the call notify feature is enabled for the user.
-        emailAddress:
-          type: string
-          description: Email Address to which call notifications to be received.
-        criteria:
-          type: array
-          description: List of Call Notify Criteria configured by the user.
-          items:
-            $ref: '#/components/schemas/CallNotifyCriteriaListGet'
-    UserSchedulePatchRequest:
+          acceptEnabled: true
+    LocationAssignedNumbersGet:
       type: object
-      description: Modify the schedule name and / or it's events' details for the requested Schedule.
-      required:
-      - name
+      description: Response object containing the list of assigned phone numbers/extension in the user's location.
+      properties:
+        phoneNumbers:
+          type: array
+          description: List of assigned phone numbers/extension in user's location.
+          items:
+            $ref: '#/components/schemas/LocationAssignedNumber'
       example:
-        name: Schedule1
-        events:
-        - name: EVENT NAME
-          newName: Event Name
-          startDate: '2023-02-06'
-          endDate: '2023-02-06'
-          allDayEnabled: true
-          recurrence:
-            recurForEver: true
-            recurDaily:
-              recurInterval: 1
-        - name: Friday 2
-          newName: Weekly Event
-          startDate: '2020-10-30'
-          endDate: '2020-10-30'
-          startTime: '13:00'
-          endTime: '17:00'
-          allDayEnabled: false
-          recurrence:
-            recurForEver: true
-            recurWeekly:
-              sunday: false
-              monday: false
-              tuesday: false
-              wednesday: false
-              thursday: false
-              friday: true
-              saturday: false
-      properties:
-        name:
-          type: string
-          description: Name of the schedule.
-          example: Schedule1
-        events:
-          type: array
-          description: List of events in the schedule.
-          items:
-            $ref: '#/components/schemas/UserScheduleEventPatch'
-    RecurWeeklyObject:
-      type: object
-      required:
-      - sunday
-      properties:
-        sunday:
-          type: boolean
-          example: true
-          description: Frequency of occurrence in weeks and select the day - Sunday.
-        monday:
-          type: boolean
-          example: true
-          description: Frequency of occurrence in weeks and select the day - Monday.
-        tuesday:
-          type: boolean
-          example: true
-          description: Frequency of occurrence in weeks and select the day - Tuesday.
-        wednesday:
-          type: boolean
-          example: true
-          description: Frequency of occurrence in weeks and select the day - Wednesday.
-        thursday:
-          type: boolean
-          example: true
-          description: Frequency of occurrence in weeks and select the day - Thursday.
-        friday:
-          type: boolean
-          example: true
-          description: Frequency of occurrence in weeks and select the day - Friday.
-        saturday:
-          type: boolean
-          example: true
-          description: Frequency of occurrence in weeks and select the day - Saturday.
-    UserSchedule:
-      type: object
-      description: Individual Schedule configuration.
-      required:
-      - id
-      - name
-      - type
-      - level
-      properties:
-        id:
-          type: string
-          description: Unique identifier for the schedule.
-          example: Y2lzY29zcGFyazovL3VzL1VTRVJfU0NIRURVTEUvVTJOb1pXUjFiR1V4
-        name:
-          type: string
-          description: Name of the schedule.
-          example: Schedule1
-        type:
-          type: string
-          enum:
-          - businessHours
-          - holidays
-          description: " * `businessHours` - The schedule is for business hours.\n * `holidays` - The schedule is for holidays.\n"
-        level:
-          type: string
-          enum:
-          - PEOPLE
-          - LOCATION
-          description: " * `PEOPLE` - The schedule is at the user level.\n * `LOCATION` - The schedule is at the location level.\n"
-    ScheduleEventObject:
-      type: object
-      required:
-      - name
-      - startDate
-      - endDate
-      properties:
-        name:
-          type: string
-          example: MondaySchedule
-          description: Name for the event.
-        startDate:
-          type: string
-          example: '2021-11-01'
-          description: Start date of event.
-        endDate:
-          type: string
-          example: '2021-11-30'
-          description: End date of event.
-        startTime:
-          type: string
-          example: '12:20'
-          description: Start time of event. Mandatory if the event is not all day.
-        endTime:
-          type: string
-          example: '14:20'
-          description: End time of event. Mandatory if the event is not all day.
-        allDayEnabled:
-          type: boolean
-          description: An indication of whether given event is an all-day event or not. Mandatory if the `startTime` and `endTime` are not defined.
-        recurrence:
-          $ref: '#/components/schemas/RecurrenceObject'
-          description: Recurrence definition.
+        phoneNumbers:
+        - phoneNumber: '+12145551234'
+          extension: '1234'
+          state: ACTIVE
+          phoneNumberType: PRIMARY
+          tollFreeNumber: false
     CallNotifyPatch:
       type: object
       description: Request body for updating call notify settings.
@@ -3145,6 +3208,184 @@ components:
           example: callnotify@example.com
       required:
       - enabled
+    SelectiveForwardCallCriteria:
+      type: object
+      required:
+      - id
+      - scheduleName
+      - source
+      - ringEnabled
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0NSSVRFUklBLzg2NTAxZDFlLTg1MWMtNDgwYi1hZmE2LTA5MTU4NzQ3NzdmZQ
+          description: Unique identifier for criteria.
+        scheduleName:
+          type: string
+          example: Business Vacation
+          description: Name of the location's schedule which determines when the sequential ring is in effect.
+        source:
+          $ref: '#/components/schemas/SourceForSelectiveForward'
+          description: Criteria are applicable for calls from any phone number or a specific phone number.
+        ringEnabled:
+          type: boolean
+          example: true
+          description: When set to `true` sequential ringing is enabled for calls that meet the current criteria. Criteria with `ringEnabled` set to `false` take priority.
+    NumberOwnerType:
+      type: string
+      enum:
+      - PLACE
+      - PEOPLE
+      - VIRTUAL_LINE
+      - AUTO_ATTENDANT
+      - CALL_QUEUE
+      - GROUP_PAGING
+      - HUNT_GROUP
+      - VOICE_MESSAGING
+      - OFFICE_ANYWHERE
+      - CONTACT_CENTER_LINK
+      - CONTACT_CENTER_ADAPTER
+      - ROUTE_LIST
+      - VOICEMAIL_GROUP
+      - COLLABORATE_BRIDGE
+      description: " * `PLACE` - PSTN phone number's owner is a workspace.\n * `PEOPLE` - PSTN phone number's owner is a person.\n * `VIRTUAL_LINE` - PSTN phone number's owner is a Virtual Profile.\n * `AUTO_ATTENDANT` - PSTN phone number's owner is an auto-attendant.\n * `CALL_QUEUE` - PSTN phone number's owner is a call queue.\n * `GROUP_PAGING` - PSTN phone number's owner is a group paging.\n * `HUNT_GROUP` - PSTN phone number's owner is a hunt group.\n * `VOICE_MESSAGING` - PSTN phone number's owner is a voice messaging.\n * `OFFICE_ANYWHERE` - PSTN phone number's owner is a Single Number Reach.\n * `CONTACT_CENTER_LINK` - PSTN phone number's owner is a Contact Center link.\n * `CONTACT_CENTER_ADAPTER` - PSTN phone number's owner is a Contact Center adapter.\n * `ROUTE_LIST` - PSTN phone number's owner is a route list.\n * `VOICEMAIL_GROUP` - PSTN phone number's owner is a voicemail group.\n * `COLLABORATE_BRIDGE` - PSTN phone number's owner is a collaborate bridge.\n"
+    UserSchedulePostRequest:
+      type: object
+      description: Request body for creating a new user schedule.
+      required:
+      - type
+      - name
+      properties:
+        type:
+          type: string
+          enum:
+          - businessHours
+          - holidays
+          description: "Type of the schedule.\n * `businessHours` - Business hours schedule type.\n * `holidays` - Holidays schedule type.\n"
+        name:
+          type: string
+          example: Schedule ABC
+          description: Unique name for the schedule.
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScheduleEventObject'
+          description: List of schedule events.
+    ScheduleLevel:
+      type: string
+      enum:
+      - PEOPLE
+      - GROUP
+      description: " * `PEOPLE` - The schedule level that specifies that criteria is of People level.\n * `GROUP` - The schedule level that specifies that criteria is of Group level.\n"
+    PriorityAlertGet:
+      type: object
+      required:
+      - enabled
+      properties:
+        enabled:
+          type: boolean
+          example: true
+          description: '`true` if the Priority Alert feature is enabled.'
+        criteria:
+          type: array
+          items:
+            $ref: '#/components/schemas/PriorityAlertCriteria'
+          description: A list of criteria specifying conditions when priority alert is in effect.
+    PriorityAlertCriteriaGet:
+      type: object
+      description: Priority Alert individual Criterion detailed settings response object containing schedule, phone numbers, and notification configurations.
+      example:
+        id: Y2lzY29zcGFyazovL3VzL0NSSVRFUklBL1oxNzU0MzgzODQzNTA5NzY
+        scheduleName: CustomHoliday(Group)
+        scheduleType: holidays
+        scheduleLevel: PEOPLE
+        callsFrom: SELECT_PHONE_NUMBERS
+        anonymousCallersEnabled: false
+        unavailableCallersEnabled: false
+        phoneNumbers:
+        - '+16177817765'
+        notificationEnabled: false
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the priority alert criteria.
+          example: Y2lzY29zcGFyazovL3VzL0NSSVRFUklBL1oxNzU0MzgzODQzNTA5NzY
+        scheduleName:
+          type: string
+          description: Name of the schedule associated with the criteria.
+          example: CustomHoliday(Group)
+        scheduleType:
+          type: string
+          enum:
+          - businessHours
+          - holidays
+          description: "Type of the schedule.\n * `businessHours` - Business hours schedule type.\n * `holidays` - Holidays schedule type.\n"
+        scheduleLevel:
+          type: string
+          enum:
+          - PEOPLE
+          - LOCATION
+          description: " * `PEOPLE` - The schedule is at the user level.\n * `LOCATION` - The schedule is at the location level.\n"
+        callsFrom:
+          type: string
+          enum:
+          - ANY_PHONE_NUMBER
+          - SELECT_PHONE_NUMBERS
+          description: "Specifies the type of callsFrom, categorizing incoming data based on callsFrom types or numbers that match the current criteria.\n * `ANY_PHONE_NUMBER` - The criteria applies to any phone number.\n* `SELECT_PHONE_NUMBERS` - The criteria applies to selected phone numbers.\n"
+        anonymousCallersEnabled:
+          type: boolean
+          description: Indicates whether anonymous callers are included in this criteria.
+          example: false
+        unavailableCallersEnabled:
+          type: boolean
+          description: Indicates whether unavailable callers are included in this criteria.
+          example: false
+        phoneNumbers:
+          type: array
+          description: List of phone numbers that this criteria applies to.
+          items:
+            type: string
+            description: Phone number that the criteria applies to.
+        notificationEnabled:
+          type: boolean
+          description: Determines whether priority alerting is applied for calls matching this criteria. If `true`, priority alerting is applied. If `false`, this criteria acts as a 'Don't Alert' rule, preventing priority alerting. Criteria with `notificationEnabled` set to `false` (Don't Alert) take precedence over criteria with `notificationEnabled` set to `true` (Alert).
+          example: false
+    SelectiveForwardCallSettingsGet:
+      type: object
+      required:
+      - enabled
+      properties:
+        enabled:
+          type: boolean
+          example: true
+          description: '`true` if the Selective Forward feature is enabled.'
+        defaultPhoneNumberToForward:
+          type: string
+          description: The phone number to which calls are forwarded by default when the criteria conditions are met.
+          example: '+16175550100'
+        ringReminderEnabled:
+          type: boolean
+          description: If `true`, a brief tone will be played on the person's phone when a call has been forwarded.
+          example: false
+        destinationVoicemailEnabled:
+          type: boolean
+          description: Indicates whether calls that meet the criteria are forwarded to the destination phone number's voicemail.
+          example: false
+        criteria:
+          type: array
+          items:
+            $ref: '#/components/schemas/SelectiveForwardCallCriteria'
+          description: A list of criteria specifying conditions when selective accept is in effect.
+      example:
+        enabled: true
+        defaultPhoneNumberToForward: '+16175550100'
+        ringReminderEnabled: false
+        destinationVoicemailEnabled: false
+        criteria:
+        - id: Y2lzY29zcGFyazovL3VzL0NSSVRFUklBL1oxNzU0MzgzODQzNTA5NzY
+          scheduleName: CustomHoliday(Group)
+          source: ALL_NUMBERS
+          forwardEnabled: true
     UserLocationScheduleGetResponse:
       type: object
       description: Lists the schedule and it's events' details for the requested (Location) Schedule. LOCATION level schedule for the user's location.
@@ -3205,49 +3446,116 @@ components:
           description: List of events in the schedule.
           items:
             $ref: '#/components/schemas/UserLocationScheduleEvent'
-    RecurYearlyByDayObject:
+    UserScheduleEvent:
+      type: object
+      description: Schedule Event configuration.
+      required:
+      - id
+      - name
+      - startDate
+      - endDate
+      - allDayEnabled
+      example:
+        id: Y2lzY29zcGFyazovL3VzL1VTRVJfU0NIRURVTEVfRVZFTlQvUlZaRlRsUk9RVTFG
+        name: Event1 Name
+        startDate: '2023-02-06'
+        endDate: '2023-02-06'
+        allDayEnabled: true
+        recurrence:
+          recurForEver: true
+          recurYearlyByDay:
+            day: MONDAY
+            week: FIRST
+            month: FEBRUARY
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1NDSEVEVUxFX0VWRU5UL1RXOXVaR0Y1VTJOb1pXUjFiR1U
+          description: A unique identifier for the schedule event.
+        name:
+          type: string
+          example: MondaySchedule
+          description: Name for the event.
+        startDate:
+          type: string
+          example: '2021-11-01'
+          description: Start Date of Event.
+        endDate:
+          type: string
+          example: '2021-11-30'
+          description: End Date of Event.
+        startTime:
+          type: string
+          example: '12:20'
+          description: Start time of event.
+        endTime:
+          type: string
+          example: '14:20'
+          description: End time of event.
+        allDayEnabled:
+          type: boolean
+          description: An indication of whether given event is an all-day event or not.
+        recurrence:
+          $ref: '#/components/schemas/UserScheduleRecurrenceObject'
+    ScheduleType:
+      type: string
+      enum:
+      - businessHours
+      - holidays
+      description: " * `businessHours` - The schedule type that specifies the business or working hours during the day.\n * `holidays` - The schedule type that specifies the day when your organization is not open.\n"
+    SelectiveForwardCallSettingPatch:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          example: true
+          description: '`true` if the Selective Forward feature is enabled.'
+        defaultPhoneNumberToForward:
+          type: string
+          example: '+1934898988'
+          description: Enter the phone number to forward calls to during this schedule.
+        ringReminderEnabled:
+          type: boolean
+          example: true
+          description: When `true`, enables a ring reminder for such calls.
+        destinationVoicemailEnabled:
+          type: boolean
+          description: Enables forwarding for all calls to voicemail. This option is only available for internal phone numbers or extensions.
+    SelectiveAcceptCallCriteriaPost:
       type: object
       required:
-      - day
-      - week
-      - month
+      - callsFrom
+      - acceptEnabled
       properties:
-        day:
+        scheduleName:
           type: string
-          enum:
-          - SUNDAY
-          - MONDAY
-          - TUESDAY
-          - WEDNESDAY
-          - THURSDAY
-          - FRIDAY
-          - SATURDAY
-          description: Schedule the event on a specific day.
-        week:
-          type: string
-          enum:
-          - FIRST
-          - SECOND
-          - THIRD
-          - FOURTH
-          - LAST
-          description: Schedule the event on a specific week.
-        month:
-          type: string
-          enum:
-          - JANUARY
-          - FEBRUARY
-          - MARCH
-          - APRIL
-          - MAY
-          - JUNE
-          - JULY
-          - AUGUST
-          - SEPTEMBER
-          - OCTOBER
-          - NOVEMBER
-          - DECEMBER
-          description: Schedule the event on a specific month.
+          example: CFS-Criteria-F-2
+          description: Name of the schedule to which the criteria is created.
+        scheduleType:
+          $ref: '#/components/schemas/ScheduleType'
+          description: The schedule type.
+        scheduleLevel:
+          $ref: '#/components/schemas/ScheduleLevel'
+          description: schedule level of the criteria.
+        callsFrom:
+          $ref: '#/components/schemas/CallsFromSelectiveAccept'
+          description: Accept calls selection.
+        anonymousCallersEnabled:
+          type: boolean
+          description: Boolean flag indicating if calls from custom numbers, private numbers are enabled.
+        unavailableCallersEnabled:
+          type: boolean
+          description: Boolean flag indicating if calls from custom numbers, unavailable numbers are enabled.
+        phoneNumbers:
+          type: array
+          items:
+            type: string
+            example: '["+1986751234","+1986751234"]'
+          description: List of phone numbers. It does not include extensions. In some regions, phone numbers are not returned in E.164 format. This will be supported in a future update.
+        acceptEnabled:
+          type: boolean
+          example: true
+          description: Boolean flag indicating if selective call accept is enabled.
     PriorityAlertPatch:
       type: object
       required:
@@ -3256,154 +3564,33 @@ components:
         enabled:
           type: boolean
           description: '`true` if the Priority Alert feature is enabled.'
-    PriorityAlertCriteriaGet:
+    UserScheduleListGetResponse:
       type: object
-      description: Priority Alert individual Criterion detailed settings response object containing schedule, phone numbers, and notification configurations.
+      description: Lists all the schedules for the authenticated user. Also includes LOCATION level schedules for the user's location.
       example:
-        id: Y2lzY29zcGFyazovL3VzL0NSSVRFUklBL1oxNzU0MzgzODQzNTA5NzY
-        scheduleName: CustomHoliday(Group)
-        scheduleType: holidays
-        scheduleLevel: PEOPLE
-        callsFrom: SELECT_PHONE_NUMBERS
-        anonymousCallersEnabled: false
-        unavailableCallersEnabled: false
-        phoneNumbers:
-        - '+16177817765'
-        notificationEnabled: false
+        schedules:
+        - id: Y2lzY29zcGFyazovL3VzL1VTRVJfU0NIRURVTEUvVTJOb1pXUjFiR1V4
+          name: Schedule1
+          type: businessHours
+          level: PEOPLE
+        - id: Y2lzY29zcGFyazovL3VzL1VTRVJfU0NIRURVTEUvVkdWaGJTQkliMnhwWkdGNQ
+          name: Team Holiday
+          type: holidays
+          level: LOCATION
       properties:
-        id:
-          type: string
-          description: Unique identifier for the priority alert criteria.
-          example: Y2lzY29zcGFyazovL3VzL0NSSVRFUklBL1oxNzU0MzgzODQzNTA5NzY
-        scheduleName:
-          type: string
-          description: Name of the schedule associated with the criteria.
-          example: CustomHoliday(Group)
-        scheduleType:
-          type: string
-          enum:
-          - businessHours
-          - holidays
-          description: "Type of the schedule.\n * `businessHours` - Business hours schedule type.\n * `holidays` - Holidays schedule type.\n"
-        scheduleLevel:
-          type: string
-          enum:
-          - PEOPLE
-          - LOCATION
-          description: " * `PEOPLE` - The schedule is at the user level.\n * `LOCATION` - The schedule is at the location level.\n"
-        callsFrom:
-          type: string
-          enum:
-          - ANY_PHONE_NUMBER
-          - SELECT_PHONE_NUMBERS
-          description: "Specifies the type of callsFrom, categorizing incoming data based on callsFrom types or numbers that match the current criteria.\n * `ANY_PHONE_NUMBER` - The criteria applies to any phone number.\n* `SELECT_PHONE_NUMBERS` - The criteria applies to selected phone numbers.\n"
-        anonymousCallersEnabled:
-          type: boolean
-          description: Indicates whether anonymous callers are included in this criteria.
-          example: false
-        unavailableCallersEnabled:
-          type: boolean
-          description: Indicates whether unavailable callers are included in this criteria.
-          example: false
-        phoneNumbers:
+        schedules:
           type: array
-          description: List of phone numbers that this criteria applies to.
+          description: List of schedules
           items:
-            type: string
-            description: Phone number that the criteria applies to.
-        notificationEnabled:
-          type: boolean
-          description: Determines whether priority alerting is applied for calls matching this criteria. If `true`, priority alerting is applied. If `false`, this criteria acts as a 'Don't Alert' rule, preventing priority alerting. Criteria with `notificationEnabled` set to `false` (Don't Alert) take precedence over criteria with `notificationEnabled` set to `true` (Alert).
-          example: false
-    UserScheduleRecurrenceObject:
+            $ref: '#/components/schemas/UserSchedule'
+    UserSchedule:
       type: object
-      description: Recurrence definition for a user's schedule event.
-      example:
-        recurForEver: true
-        recurEndDate: '2020-03-31'
-        recurDaily:
-          recurInterval: 1
-        recurWeekly:
-          sunday: false
-          monday: true
-          tuesday: false
-          wednesday: true
-          thursday: false
-          friday: true
-          saturday: false
-      properties:
-        recurForEver:
-          type: boolean
-          example: true
-          description: Flag to indicate if event will recur forever.
-        recurEndDate:
-          type: string
-          example: '2021-11-30'
-          description: End date of recurrence.
-        recurEndOccurrence:
-          type: integer
-          example: 2
-          description: Number of occurrences after which the event will stop recurring.
-        recurDaily:
-          type: object
-          example:
-            recurInterval: 1
-          required:
-          - recurInterval
-          properties:
-            recurInterval:
-              type: number
-              example: 1
-              description: Recurring interval in days. The number of days after the start when an event will repeat.  Repetitions cannot overlap.
-          description: Specifies the number of days between the start of each recurrence and is not allowed with `recurWeekly`.
-        recurWeekly:
-          $ref: '#/components/schemas/RecurWeeklyObject'
-    SourceForSelectiveForward:
-      type: string
-      enum:
-      - ALL_NUMBERS
-      - SPECIFIC_NUMBERS
-      - ANY_INTERNAL
-      - ANY_EXTERNAL
-      description: " * `ALL_NUMBERS` - Criteria applies to all incoming numbers.\n * `SPECIFIC_NUMBERS` - Criteria applies only for specific incoming numbers.\n * `ANY_INTERNAL` - Criteria applies to all internal incoming numbers.\n * `ANY_EXTERNAL` - Criteria applies to all external incoming numbers.\n"
-    UserScheduleGetResponse:
-      type: object
-      description: Lists the schedule and it's events' details for the requested Schedule.
+      description: Individual Schedule configuration.
       required:
       - id
-      - type
       - name
-      example:
-        id: Y2lzY29zcGFyazovL3VzL1VTRVJfU0NIRURVTEUvVTJOb1pXUjFiR1V4
-        type: businessHours
-        name: Schedule1
-        events:
-        - id: Y2lzY29zcGFyazovL3VzL1VTRVJfU0NIRURVTEVfRVZFTlQvUlZaRlRsUk9RVTFG
-          name: EVENTNAME
-          startDate: '2023-02-06'
-          endDate: '2023-02-06'
-          allDayEnabled: true
-          recurrence:
-            recurForEver: true
-            recurDaily:
-              recurInterval: 1
-        - id: Y2lzY29zcGFyazovL3VzL1VTRVJfU0NIRURVTEVfRVZFTlQvUm5KcFpHRjVJREk9
-          name: Friday 2
-          startDate: '2020-10-30'
-          endDate: '2020-10-30'
-          startTime: '13:00'
-          endTime: '17:00'
-          allDayEnabled: false
-          recurrence:
-            recurForEver: true
-            recurWeekly:
-              sunday: false
-              monday: false
-              tuesday: false
-              wednesday: false
-              thursday: false
-              friday: true
-              saturday: false
+      - type
+      - level
       properties:
         id:
           type: string
@@ -3419,137 +3606,65 @@ components:
           - businessHours
           - holidays
           description: " * `businessHours` - The schedule is for business hours.\n * `holidays` - The schedule is for holidays.\n"
-        events:
-          type: array
-          description: List of events in the schedule.
-          items:
-            $ref: '#/components/schemas/UserScheduleEvent'
-    ScheduleLevel:
-      type: string
-      enum:
-      - PEOPLE
-      - GROUP
-      description: " * `PEOPLE` - The schedule level that specifies that criteria is of People level.\n * `GROUP` - The schedule level that specifies that criteria is of Group level.\n"
-    LocationAssignedNumbersGet:
-      type: object
-      description: Response object containing the list of assigned phone numbers/extension in the user's location.
-      properties:
-        phoneNumbers:
-          type: array
-          description: List of assigned phone numbers/extension in user's location.
-          items:
-            $ref: '#/components/schemas/LocationAssignedNumber'
-      example:
-        phoneNumbers:
-        - phoneNumber: '+12145551234'
-          extension: '1234'
-          state: ACTIVE
-          phoneNumberType: PRIMARY
-          tollFreeNumber: false
-    CallNotifyCriteriaGet:
-      type: object
-      description: Call Notify individual Criterion detailed settings response object containing schedule, phone numbers, and notification configurations.
-      example:
-        id: Y2lzY29zcGFyazovL3VzL0NSSVRFUklBL1oxNzU0MzgzODQzNTA5NzY
-        scheduleName: CustomHoliday(Group)
-        scheduleType: holidays
-        scheduleLevel: PEOPLE
-        callsFrom: SELECT_PHONE_NUMBERS
-        anonymousCallersEnabled: false
-        unavailableCallersEnabled: false
-        phoneNumbers:
-        - '+16177817765'
-        notificationEnabled: false
-      properties:
-        id:
-          type: string
-          description: Unique identifier for the call notify criteria.
-          example: Y2lzY29zcGFyazovL3VzL0NSSVRFUklBL1oxNzU0MzgzODQzNTA5NzY
-        scheduleName:
-          type: string
-          description: Name of the schedule associated with the criteria.
-          example: CustomHoliday(Group)
-        scheduleType:
-          type: string
-          enum:
-          - businessHours
-          - holidays
-          description: "Type of the schedule.\n * `businessHours` - Business hours schedule type.\n * `holidays` - Holidays schedule type.\n"
-        scheduleLevel:
+        level:
           type: string
           enum:
           - PEOPLE
           - LOCATION
           description: " * `PEOPLE` - The schedule is at the user level.\n * `LOCATION` - The schedule is at the location level.\n"
-        callsFrom:
-          type: string
-          enum:
-          - ANY_PHONE_NUMBER
-          - SELECT_PHONE_NUMBERS
-          description: "Specifies the type of callsFrom, categorizing incoming data based on callsFrom types or numbers that match the current criteria.\n * `ANY_PHONE_NUMBER` - The criteria applies to any phone number.\n* `SELECT_PHONE_NUMBERS` - The criteria applies to selected phone numbers.\n"
-        anonymousCallersEnabled:
-          type: boolean
-          description: Indicates whether anonymous callers are included in this criteria.
-          example: false
-        unavailableCallersEnabled:
-          type: boolean
-          description: Indicates whether unavailable callers are included in this criteria.
-          example: false
-        phoneNumbers:
-          type: array
-          description: List of phone numbers that this criteria applies to.
-          items:
-            type: string
-            description: Phone number that the criteria applies to.
-        notificationEnabled:
-          type: boolean
-          description: Determines whether call notify is applied for calls matching this criteria. If `true`, call notification is applied. If `false`, this criteria acts as a 'Don't Notify Me' rule, preventing call notification. Criteria with `notificationEnabled` set to `false` (Don't Notify Me) take precedence over criteria with `notificationEnabled` set to `true` (Notify Me).
-          example: false
-    SelectiveAcceptCallSettingsGet:
+    RecurYearlyByDateObject:
       type: object
       required:
-      - enabled
+      - dayOfMonth
+      - month
       properties:
-        enabled:
-          type: boolean
-          example: true
-          description: '`true` if the Selective Accept feature is enabled.'
-        criteria:
-          type: array
-          items:
-            $ref: '#/components/schemas/SelectiveAcceptCallCriteria'
-          description: A list of criteria specifying conditions when selective accept is in effect.
+        dayOfMonth:
+          type: number
+          example: 1
+          description: Schedule the event on a specific day of the month.
+        month:
+          type: string
+          enum:
+          - JANUARY
+          - FEBRUARY
+          - MARCH
+          - APRIL
+          - MAY
+          - JUNE
+          - JULY
+          - AUGUST
+          - SEPTEMBER
+          - OCTOBER
+          - NOVEMBER
+          - DECEMBER
+          description: Schedule the event on a specific month of the year.
+    CallNotifyGet:
+      type: object
+      description: User call notify settings response object containing configurations of Criteria and whether CallNotify is enabled.
       example:
-        enabled: true
+        enabled: false
+        emailAddress: callnotify@example.com
         criteria:
         - id: Y2lzY29zcGFyazovL3VzL0NSSVRFUklBL1oxNzU0MzgzODQzNTA5NzY
           scheduleName: CustomHoliday(Group)
           source: ALL_NUMBERS
-          acceptEnabled: true
-    SelectiveCallForwardCriteriaPatch:
-      type: object
-      example:
-        forwardToPhoneNumber: '+16175550100'
-        destinationVoicemailEnabled: false
-        scheduleName: Holiday V2
-        scheduleType: businessHours
-        scheduleLevel: PEOPLE
-        callsFrom: SELECT_PHONE_NUMBERS
-        phoneNumbers:
-        - '+16177817766'
-        anonymousCallersEnabled: true
-        unavailableCallersEnabled: false
-        forwardEnabled: true
-      description: Request body for updating selective call forwarding criteria settings.
+          notificationEnabled: false
       properties:
-        forwardToPhoneNumber:
-          type: string
-          description: The phone number to which calls are forwarded when the criteria conditions are met.
-          example: '+16175550100'
-        destinationVoicemailEnabled:
+        enabled:
           type: boolean
-          description: Indicates whether calls that meet the criteria are forwarded to the destination phone number's voicemail.
-          example: false
+          description: Indicates whether the call notify feature is enabled for the user.
+        emailAddress:
+          type: string
+          description: Email Address to which call notifications to be received.
+        criteria:
+          type: array
+          description: List of Call Notify Criteria configured by the user.
+          items:
+            $ref: '#/components/schemas/CallNotifyCriteriaListGet'
+    CallNotifyCriteriaPatch:
+      type: object
+      description: Request body for updating call notify criteria settings.
+      properties:
         scheduleName:
           type: string
           description: Name of the schedule to be associated with the criteria.
@@ -3571,9 +3686,7 @@ components:
           enum:
           - ANY_PHONE_NUMBER
           - SELECT_PHONE_NUMBERS
-          - ANY_INTERNAL
-          - ANY_EXTERNAL
-          description: "Specifies the type of callsFrom, categorizing incoming data based on callsFrom types or numbers that match the current criteria.\n * `ANY_PHONE_NUMBER` - The criteria applies to any phone number.\n* `SELECT_PHONE_NUMBERS` - The criteria applies to selected phone numbers.\n* `ANY_INTERNAL` - The criteria applies to any internal number.\n* `ANY_EXTERNAL` - The criteria applies to any external number.\n"
+          description: "Specifies the type of callsFrom, categorizing incoming data based on callsFrom types or numbers that match the current criteria.\n * `ANY_PHONE_NUMBER` - The criteria applies to any phone number.\n* `SELECT_PHONE_NUMBERS` - The criteria applies to selected phone numbers.\n"
         anonymousCallersEnabled:
           type: boolean
           description: Indicates whether anonymous callers are included in this criteria. Required if `callsFrom` is `SELECT_PHONE_NUMBERS`.
@@ -3588,16 +3701,10 @@ components:
           items:
             type: string
             description: Phone number that the criteria applies to.
-        forwardEnabled:
+        notificationEnabled:
           type: boolean
-          description: Determines whether selective call forwarding is applied for calls matching this criteria. If `true`, the selective forwarding is applied. If `false`, this criteria acts as a 'Don't Forward' rule, preventing selectively forwarding of the calls. Criteria with `forwardEnabled` set to `false` (Don't Forward) take precedence over criteria with `forwardEnabled` set to `true` (Forward).
+          description: Determines whether call notification is applied for calls matching this criteria. If `true`, call notify is applied. If `false`, this criteria acts as a 'Don't Notify Me' rule, preventing call notification. Criteria with `notificationEnabled` set to `false` (Don't Notify Me) take precedence over criteria with `notificationEnabled` set to `true` (Notify).
           example: false
-    ScheduleType:
-      type: string
-      enum:
-      - businessHours
-      - holidays
-      description: " * `businessHours` - The schedule type that specifies the business or working hours during the day.\n * `holidays` - The schedule type that specifies the day when your organization is not open.\n"
     UserScheduleEventPostRequest:
       type: object
       description: Modify the Schedule Event configuration.
@@ -3643,120 +3750,6 @@ components:
           description: An indication of whether given event is an all-day event or not.
         recurrence:
           $ref: '#/components/schemas/UserScheduleRecurrenceObject'
-    SelectiveAcceptCallSettingPatch:
-      type: object
-      required:
-      - enabled
-      properties:
-        enabled:
-          type: boolean
-          description: indicates whether selective accept is enabled or not.
-    LocationAssignedNumber:
-      type: object
-      description: Details of a assigned phone number/extension in the user's location.
-      properties:
-        phoneNumber:
-          type: string
-          description: The phone number in E.164 format.
-        extension:
-          type: string
-          description: The extension.
-        state:
-          type: string
-          enum:
-          - ACTIVE
-          - INACTIVE
-          description: " * `ACTIVE` - Phone number is in the active state.\n * `INACTIVE` - Phone number is in the inactive state.\n"
-        phoneNumberType:
-          type: string
-          enum:
-          - PRIMARY
-          - ALTERNATE
-          - FAX
-          description: '* `PRIMARY` - A direct phone number.
-
-            * `ALTERNATE` - An alternate phone number.
-
-            * `FAX` - A FAX number.
-
-            '
-        tollFreeNumber:
-          type: boolean
-          description: Indicate if the number is toll free.
-        owner:
-          type: object
-          required:
-          - type
-          properties:
-            type:
-              $ref: '#/components/schemas/NumberOwnerType'
-            firstName:
-              type: string
-              example: Test
-              description: First name of the phone number/extension owner. This field is present only for type `PEOPLE` and `VIRTUAL_LINE`.
-            lastName:
-              type: string
-              example: Person
-              description: Last name of the phone number/extension owner. This field is present only for type `PEOPLE` and `VIRTUAL_LINE`.
-            displayName:
-              type: string
-              example: Test
-              description: Display Name of the phone number/extension owner.
-          description: The owner details.
-    PriorityAlertCriteriaPatch:
-      type: object
-      example:
-        scheduleName: Holiday V2
-        scheduleType: holidays
-        scheduleLevel: LOCATION
-        callsFrom: SELECT_PHONE_NUMBERS
-        anonymousCallersEnabled: true
-        unavailableCallersEnabled: true
-        notificationEnabled: false
-        phoneNumbers:
-        - '+16177817766'
-      description: Request body for updating priority alert criteria settings.
-      properties:
-        scheduleName:
-          type: string
-          description: Name of the schedule to be associated with the criteria.
-          example: Holiday V2
-        scheduleType:
-          type: string
-          enum:
-          - businessHours
-          - holidays
-          description: "Type of the schedule.\n * `businessHours` - Business hours schedule type.\n * `holidays` - Holidays schedule type.\n"
-        scheduleLevel:
-          type: string
-          enum:
-          - PEOPLE
-          - LOCATION
-          description: " * `PEOPLE` - The schedule is at the user level.\n * `LOCATION` - The schedule is at the location level.\n"
-        callsFrom:
-          type: string
-          enum:
-          - ANY_PHONE_NUMBER
-          - SELECT_PHONE_NUMBERS
-          description: "Specifies the type of callsFrom, categorizing incoming data based on callsFrom types or numbers that match the current criteria.\n * `ANY_PHONE_NUMBER` - The criteria applies to any phone number.\n* `SELECT_PHONE_NUMBERS` - The criteria applies to selected phone numbers.\n"
-        anonymousCallersEnabled:
-          type: boolean
-          description: Indicates whether anonymous callers are included in this criteria. Required if `callsFrom` is `SELECT_PHONE_NUMBERS`.
-          example: true
-        unavailableCallersEnabled:
-          type: boolean
-          description: Indicates whether unavailable callers are included in this criteria. Required if `callsFrom` is `SELECT_PHONE_NUMBERS`.
-          example: true
-        phoneNumbers:
-          type: array
-          description: List of phone numbers to update for this criteria. Required if `callsFrom` is `SELECT_PHONE_NUMBERS`.
-          items:
-            type: string
-            description: Phone number that the criteria applies to.
-        notificationEnabled:
-          type: boolean
-          description: Determines whether priority alerting is applied for calls matching this criteria. If `true`, priority alerting is applied. If `false`, this criteria acts as a 'Don't Alert' rule, preventing priority alerting. Criteria with `notificationEnabled` set to `false` (Don't Alert) take precedence over criteria with `notificationEnabled` set to `true` (Alert).
-          example: false
   securitySchemes:
     oauth2:
       flows:
@@ -3771,14 +3764,7 @@ components:
       scheme: bearer
       bearerFormat: JWT
     bearerAuth:
-      type: oauth2
-      description: OAuth 2.0 Bearer token authentication
-      flows:
-        authorizationCode:
-          authorizationUrl: https://webexapis.com/v1/authorize
-          tokenUrl: https://webexapis.com/v1/access_token
-          scopes:
-            spark:applications_token: Create access tokens for Service Apps
-x-refined-from:
-- webex-call-settings-for-me-with-userhub-phase2-api-openapi.yml
-- webex-cloud-calling-openapi.json
+      type: http
+      description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
+      scheme: bearer
+      bearerFormat: JWT

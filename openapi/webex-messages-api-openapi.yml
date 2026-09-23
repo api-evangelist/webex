@@ -2,7 +2,8 @@ openapi: 3.2.0
 info:
   title: Webex Messages API
   version: 1.0.0
-  description: 'Operations tagged Messages across 3 of this provider''s published API definitions: webex-meeting-openapi.json, webex-messages-api-openapi.yml, webex-messaging-openapi.json. Each path carries the servers of the definition it was published in.'
+  x-refined-note:
+  - x-evidence differs across the merged source definitions and was not carried
   x-provenance:
     method: harvested
     authored_by: Cisco Webex
@@ -11,14 +12,7 @@ info:
     first_party: true
     note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
     provider_published: true
-    derived_view: Per-tag view of webex-messaging-openapi.json, the provider's source document. Operations and schemas are the provider's, unmodified; only the partition is ours.
-    derived_from: webex-messaging-openapi.json
-    operation_coverage: 6/7
-  x-evidence:
-  - type: source
-    url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-messaging.json
-  - type: raw
-    url: https://raw.githubusercontent.com/webex/webex-openapi-specs/main/public-spec/webex-messaging.json
+  description: 'Operations tagged Messages across 2 of this provider''s published API definitions: webex-meeting-openapi.json, webex-messaging-openapi.json. Each path carries the servers of the definition it was published in.'
 tags:
 - name: Messages
 paths:
@@ -64,7 +58,7 @@ paths:
       description: 'Deletes a Meeting Message from the In Meeting Chat, using its ID.
 
 
-        This ID can be retrieved by a Compliance Officer using the [events API](/docs/api/v1/events/list-events) filtering on the `meetingMessages` resource type.
+        This ID can be retrieved by a Compliance Officer using the events API filtering on the `meetingMessages` resource type.
 
 
         NOTE: When viewing the response from the events API, there are 2 `id` fields. The ID to be used here can be found under the `data` field in the response.
@@ -159,13 +153,13 @@ paths:
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: List Messages
       operationId: List Messages
-      description: 'Lists all messages in a room.  Each message will include content attachments if present.
+      description: 'Lists all messages in a room. Each message will include content attachments if present.
 
 
         The list sorts the messages in descending order by creation date.
 
 
-        Long result sets will be split into [pages](/docs/basics#pagination).'
+        Long result sets will be split into pages.'
       tags:
       - Messages
       parameters:
@@ -286,7 +280,7 @@ paths:
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Create a Message
       operationId: Create a Message
-      description: 'Post a plain text or [rich text](/docs/basics#formatting-messages) message, and optionally, a [file attachment](/docs/basics#message-attachments) attachment, to a room.
+      description: 'Post a plain text or rich text message, and optionally, a file attachment attachment, to a room.
 
 
         The `files` parameter is an array, which accepts multiple values to allow for future expansion, but currently only one file may be included with the message. File previews are only rendered for attachments of 1MB or less.'
@@ -355,7 +349,7 @@ paths:
                   type: array
                   items:
                     $ref: '#/components/schemas/Attachment'
-                  description: Content attachments to attach to the message. Only one card per message is supported. See the [Cards Guide](/docs/api/guides/cards) for more information.
+                  description: Content attachments to attach to the message. Only one card per message is supported. See the [Cards Guide](/docs/buttons-and-cards) for more information.
   /messages/direct:
     get:
       responses:
@@ -526,7 +520,25 @@ paths:
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Edit a Message
       operationId: Edit a Message
-      description: "Update a message you have posted not more than 10 times.\n\nSpecify the `messageId` of the message you want to edit.\n\nEdits of messages containing files or attachments are not currently supported.\nIf a user attempts to edit a message containing files or attachments a `400 Bad Request` will be returned by the API with a message stating that the feature is currently unsupported.\n\nThere is also a maximum number of times a user can edit a message. The maximum currently supported is 10 edits per message.\n    If a user attempts to edit a message greater that the maximum times allowed the API will return 400 Bad Request with a message stating the edit limit has been reached.\n\nWhile only the `roomId` and `text` or `markdown` attributes are *required* in the request body, a common pattern for editing message is to first call `GET /messages/{id}` for the message you wish to edit and to then update the `text` or `markdown` attribute accordingly, passing the updated message object in the request body of the `PUT /messages/{id}` request.\nWhen this pattern is used on a message that included markdown, the `html` attribute must be deleted prior to making the `PUT` request."
+      description: 'Update a message you have posted not more than 10 times.
+
+
+        Specify the `messageId` of the message you want to edit.
+
+
+        Edits of messages containing files or attachments are not currently supported.
+
+        If a user attempts to edit a message containing files or attachments a `400 Bad Request` will be returned by the API with a message stating that the feature is currently unsupported.
+
+
+        There is also a maximum number of times a user can edit a message. The maximum currently supported is 10 edits per message.
+
+        If a user attempts to edit a message greater that the maximum times allowed the API will return 400 Bad Request with a message stating the edit limit has been reached.
+
+
+        While only the `roomId` and `text` or `markdown` attributes are *required* in the request body, a common pattern for editing message is to first call `GET /messages/{id}` for the message you wish to edit and to then update the `text` or `markdown` attribute accordingly, passing the updated message object in the request body of the `PUT /messages/{id}` request.
+
+        When this pattern is used on a message that included markdown, the `html` attribute must be deleted prior to making the `PUT` request.'
       tags:
       - Messages
       parameters:
@@ -698,156 +710,6 @@ paths:
           type: string
 components:
   schemas:
-    DirectMessageCollectionResponse:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/DirectMessage'
-    DirectMessage:
-      type: object
-      properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL01FU1NBR0UvOTJkYjNiZTAtNDNiZC0xMWU2LThhZTktZGQ1YjNkZmM1NjVk
-          description: The unique identifier for the message.
-        roomId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1JPT00vODQxZjY5MjAtNDdlZC00NmE0LWI2YmItZTVjM2M1YTc3Yzgy
-          description: The room ID of the message.
-        roomType:
-          type: string
-          example: direct
-          description: The type of room. Will always be `direct`.
-        text:
-          type: string
-          example: Hey there, what do you think of this project update presentation (http://sharepoint.example.com/presentation.pptx)?
-          description: The message, in plain text. If `markdown` is specified this parameter may be *optionally* used to provide alternate text for UI clients that do not support rich text.
-        markdown:
-          type: string
-          example: Hey there, what do you think of [this project update presentation](http://sharepoint.example.com/presentation.pptx)?
-          description: The message, in Markdown format.
-        files:
-          type: array
-          items:
-            type: string
-            example: http://www.example.com/images/media.png
-          description: Public URLs for files attached to the message. For the supported media types and the behavior of file uploads, see [Message Attachments](/docs/api/basics#message-attachments).
-        personId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9mNWIzNjE4Ny1jOGRkLTQ3MjctOGIyZi1mOWM0NDdmMjkwNDY
-          description: The person ID of the message author.
-        personEmail:
-          type: string
-          example: matt@example.com
-          description: The email address of the message author.
-        created:
-          type: string
-          example: '2015-10-18T14:26:16+00:00'
-          description: The date and time the message was created.
-    ListMessage:
-      type: object
-      properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL01FU1NBR0UvOTJkYjNiZTAtNDNiZC0xMWU2LThhZTktZGQ1YjNkZmM1NjVk
-          description: The unique identifier for the message.
-        parentId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL01FU1NBR0UvOTJkYjNiZTAtNDNiZC0xMWU2LThhZTktZGQ1YjNkZmM1NjVk
-          description: The unique identifier for the parent message.
-        roomId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1JPT00vYmJjZWIxYWQtNDNmMS0zYjU4LTkxNDctZjE0YmIwYzRkMTU0
-          description: The room ID of the message.
-        roomType:
-          type: string
-          enum:
-          - direct
-          - group
-          description: "The type of room.\n * `direct` - 1:1 room\n * `group` - group room\n"
-        text:
-          type: string
-          example: PROJECT UPDATE - A new project plan has been published on http://example.com/s/lf5vj. The PM for this project is Mike C. and the Engineering Manager is Jane W.
-          description: The message, in plain text. If `markdown` is specified this parameter may be *optionally* used to provide alternate text for UI clients that do not support rich text.
-        markdown:
-          type: string
-          example: '**PROJECT UPDATE** A new project plan has been published on <http://example.com/s/lf5vj>. The PM for this project is <@personEmail:mike@example.com> and the Engineering Manager is <@personEmail:jane@example.com>.'
-          description: The message, in Markdown format.
-        html:
-          type: string
-          example: <p><strong>PROJECT UPDATE</strong> A new project plan has been published <a href=\"http://example.com/s/lf5vj\" rel=\"nofollow\">here</a>. The PM for this project is mike@example.com and the Engineering Manager is jane@example.com.</p>
-          description: The text content of the message, in HTML format. This read-only property is used by the Webex clients.
-        files:
-          type: array
-          items:
-            type: string
-            example: http://www.example.com/images/media.png
-          description: Public URLs for files attached to the message. For the supported media types and the behavior of file uploads, see [Message Attachments](/docs/basics#message-attachments).
-        personId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9mNWIzNjE4Ny1jOGRkLTQ3MjctOGIyZi1mOWM0NDdmMjkwNDY
-          description: The person ID of the message author.
-        personEmail:
-          type: string
-          example: matt@example.com
-          description: The email address of the message author.
-        mentionedPeople:
-          type: array
-          items:
-            type: string
-            example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8yNDlmNzRkOS1kYjhhLTQzY2EtODk2Yi04NzllZDI0MGFjNTM,Y2lzY29zcGFyazovL3VzL1BFT1BMRS83YWYyZjcyYy0xZDk1LTQxZjAtYTcxNi00MjlmZmNmYmM0ZDg
-          description: People IDs for anyone mentioned in the message.
-        mentionedGroups:
-          type: array
-          items:
-            type: string
-            example: all
-          description: Group names for the groups mentioned in the message.
-        attachments:
-          type: array
-          items:
-            $ref: '#/components/schemas/Attachment'
-          description: Message content attachments attached to the message. See the [Cards Guide](/docs/api/guides/cards) for more information.
-        created:
-          type: string
-          example: '2015-10-18T14:26:16+00:00'
-          description: The date and time the message was created.
-        updated:
-          type: string
-          example: '2015-10-18T14:27:16+00:00'
-          description: The date and time that the message was last edited by the author. This field is only present when the message contents have changed.
-        isVoiceClip:
-          type: boolean
-          description: '`true` if the audio file is a voice clip recorded by the client; `false` if the audio file is a standard audio file not posted using the voice clip feature.'
-    File:
-      type: object
-      required:
-      - fileId
-      - type
-      - contentUrl
-      properties:
-        fileId:
-          type: string
-          example: BFT1BMRS8yNDlmNzRkOS1kYjhhLTQzY2
-          description: The `fileId` of the attachment.
-        type:
-          type: string
-          enum:
-          - external
-          - native
-          description: "The type of attachment.\n * `external` - Attachment stored externally.\n * `native` - Attachment stored within the Webex platform.\n"
-        contentUrl:
-          type: string
-          example: https://testecmwebexteams-my.sharepoint.com/:w:/g/personal/admin_testecmwebexteams_onmicrosoft_com/ESCiJiALU0pBlVm6TVhZ2k0B69XNVB1kWoaa7RIV9GERTg
-          description: The URL for the content.
-    Attachment:
-      type: object
-      properties:
-        content:
-          $ref: '#/components/schemas/File'
-          description: Enterprise Content Management file.
     Message:
       type: object
       properties:
@@ -923,6 +785,156 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ListMessage'
+    DirectMessage:
+      type: object
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL01FU1NBR0UvOTJkYjNiZTAtNDNiZC0xMWU2LThhZTktZGQ1YjNkZmM1NjVk
+          description: The unique identifier for the message.
+        roomId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1JPT00vODQxZjY5MjAtNDdlZC00NmE0LWI2YmItZTVjM2M1YTc3Yzgy
+          description: The room ID of the message.
+        roomType:
+          type: string
+          example: direct
+          description: The type of room. Will always be `direct`.
+        text:
+          type: string
+          example: Hey there, what do you think of this project update presentation (http://sharepoint.example.com/presentation.pptx)?
+          description: The message, in plain text. If `markdown` is specified this parameter may be *optionally* used to provide alternate text for UI clients that do not support rich text.
+        markdown:
+          type: string
+          example: Hey there, what do you think of [this project update presentation](http://sharepoint.example.com/presentation.pptx)?
+          description: The message, in Markdown format.
+        files:
+          type: array
+          items:
+            type: string
+            example: http://www.example.com/images/media.png
+          description: Public URLs for files attached to the message. For the supported media types and the behavior of file uploads, see [Message Attachments](/docs/api/basics#message-attachments).
+        personId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9mNWIzNjE4Ny1jOGRkLTQ3MjctOGIyZi1mOWM0NDdmMjkwNDY
+          description: The person ID of the message author.
+        personEmail:
+          type: string
+          example: matt@example.com
+          description: The email address of the message author.
+        created:
+          type: string
+          example: '2015-10-18T14:26:16+00:00'
+          description: The date and time the message was created.
+    File:
+      type: object
+      required:
+      - fileId
+      - type
+      - contentUrl
+      properties:
+        fileId:
+          type: string
+          example: BFT1BMRS8yNDlmNzRkOS1kYjhhLTQzY2
+          description: The `fileId` of the attachment.
+        type:
+          type: string
+          enum:
+          - external
+          - native
+          description: "The type of attachment.\n * `external` - Attachment stored externally.\n * `native` - Attachment stored within the Webex platform.\n"
+        contentUrl:
+          type: string
+          example: https://testecmwebexteams-my.sharepoint.com/:w:/g/personal/admin_testecmwebexteams_onmicrosoft_com/ESCiJiALU0pBlVm6TVhZ2k0B69XNVB1kWoaa7RIV9GERTg
+          description: The URL for the content.
+    ListMessage:
+      type: object
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL01FU1NBR0UvOTJkYjNiZTAtNDNiZC0xMWU2LThhZTktZGQ1YjNkZmM1NjVk
+          description: The unique identifier for the message.
+        parentId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL01FU1NBR0UvOTJkYjNiZTAtNDNiZC0xMWU2LThhZTktZGQ1YjNkZmM1NjVk
+          description: The unique identifier for the parent message.
+        roomId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1JPT00vYmJjZWIxYWQtNDNmMS0zYjU4LTkxNDctZjE0YmIwYzRkMTU0
+          description: The room ID of the message.
+        roomType:
+          type: string
+          enum:
+          - direct
+          - group
+          description: "The type of room.\n * `direct` - 1:1 room\n * `group` - group room\n"
+        text:
+          type: string
+          example: PROJECT UPDATE - A new project plan has been published on http://example.com/s/lf5vj. The PM for this project is Mike C. and the Engineering Manager is Jane W.
+          description: The message, in plain text. If `markdown` is specified this parameter may be *optionally* used to provide alternate text for UI clients that do not support rich text.
+        markdown:
+          type: string
+          example: '**PROJECT UPDATE** A new project plan has been published on <http://example.com/s/lf5vj>. The PM for this project is <@personEmail:mike@example.com> and the Engineering Manager is <@personEmail:jane@example.com>.'
+          description: The message, in Markdown format.
+        html:
+          type: string
+          example: <p><strong>PROJECT UPDATE</strong> A new project plan has been published <a href=\"http://example.com/s/lf5vj\" rel=\"nofollow\">here</a>. The PM for this project is mike@example.com and the Engineering Manager is jane@example.com.</p>
+          description: The text content of the message, in HTML format. This read-only property is used by the Webex clients.
+        files:
+          type: array
+          items:
+            type: string
+            example: http://www.example.com/images/media.png
+          description: Public URLs for files attached to the message. For the supported media types and the behavior of file uploads, see [Message Attachments](/docs/basics#message-attachments).
+        personId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9mNWIzNjE4Ny1jOGRkLTQ3MjctOGIyZi1mOWM0NDdmMjkwNDY
+          description: The person ID of the message author.
+        personEmail:
+          type: string
+          example: matt@example.com
+          description: The email address of the message author.
+        mentionedPeople:
+          type: array
+          items:
+            type: string
+            example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8yNDlmNzRkOS1kYjhhLTQzY2EtODk2Yi04NzllZDI0MGFjNTM,Y2lzY29zcGFyazovL3VzL1BFT1BMRS83YWYyZjcyYy0xZDk1LTQxZjAtYTcxNi00MjlmZmNmYmM0ZDg
+          description: People IDs for anyone mentioned in the message.
+        mentionedGroups:
+          type: array
+          items:
+            type: string
+            example: all
+          description: Group names for the groups mentioned in the message.
+        attachments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Attachment'
+          description: Message content attachments attached to the message. See the [Cards Guide](/docs/buttons-and-cards) for more information.
+        created:
+          type: string
+          example: '2015-10-18T14:26:16+00:00'
+          description: The date and time the message was created.
+        updated:
+          type: string
+          example: '2015-10-18T14:27:16+00:00'
+          description: The date and time that the message was last edited by the author. This field is only present when the message contents have changed.
+        isVoiceClip:
+          type: boolean
+          description: '`true` if the audio file is a voice clip recorded by the client; `false` if the audio file is a standard audio file not posted using the voice clip feature.'
+    DirectMessageCollectionResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/DirectMessage'
+    Attachment:
+      type: object
+      properties:
+        content:
+          $ref: '#/components/schemas/File'
+          description: Enterprise Content Management file.
   securitySchemes:
     oauth2:
       flows:
@@ -936,16 +948,6 @@ components:
       description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
       scheme: bearer
       bearerFormat: JWT
-    bearerAuth:
-      type: oauth2
-      description: OAuth 2.0 Bearer token authentication
-      flows:
-        authorizationCode:
-          authorizationUrl: https://webexapis.com/v1/authorize
-          tokenUrl: https://webexapis.com/v1/access_token
-          scopes:
-            spark:applications_token: Create access tokens for Service Apps
 x-refined-from:
 - webex-meeting-openapi.json
-- webex-messages-api-openapi.yml
 - webex-messaging-openapi.json

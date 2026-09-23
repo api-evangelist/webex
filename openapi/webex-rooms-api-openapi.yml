@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: Webex Rooms API
+  title: Webex Messaging Rooms API
   version: 1.0.0
-  description: 'Operations tagged Rooms across 2 of this provider''s published API definitions: webex-messaging-openapi.json, webex-rooms-api-openapi.yml. Each path carries the servers of the definition it was published in.'
+  description: The Webex Messaging APIs offer robust programmatic access to messaging features within Webex, including sending and receiving messages, managing spaces, memberships, attachments, and moderating content.
   x-provenance:
     method: harvested
     authored_by: Cisco Webex
@@ -11,9 +11,6 @@ info:
     first_party: true
     note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
     provider_published: true
-    derived_view: Per-tag view of webex-messaging-openapi.json, the provider's source document. Operations and schemas are the provider's, unmodified; only the partition is ours.
-    derived_from: webex-messaging-openapi.json
-    operation_coverage: 6/6
   x-evidence:
   - type: source
     url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-messaging.json
@@ -87,10 +84,10 @@ paths:
       description: 'List rooms to which the authenticated user belongs to.
 
 
-        The `title` of the room for 1:1 rooms will be the display name of the other person. Please use the [memberships API](https://developer.webex.com/docs/api/v1/memberships) to list the people in the space.
+        The `title` of the room for 1:1 rooms will be the display name of the other person. Please use the memberships API to list the people in the space.
 
 
-        Long result sets will be split into [pages](/docs/basics#pagination).
+        Long result sets will be split into pages.
 
 
         Known Limitations:
@@ -206,10 +203,10 @@ paths:
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Create a Room
       operationId: Create a Room
-      description: 'Creates a room. The authenticated user is automatically added as a member of the room. See the [Memberships API](/docs/api/v1/memberships) to learn how to add more people to the room.
+      description: 'Creates a room. The authenticated user is automatically added as a member of the room. See the Memberships API to learn how to add more people to the room.
 
 
-        To create a 1:1 room, use the [Create Messages](/docs/api/v1/messages/create-a-message) endpoint to send a message directly to another person by using the `toPersonId` or `toPersonEmail` parameters.
+        To create a 1:1 room, use the Create Messages endpoint to send a message directly to another person by using the `toPersonId` or `toPersonEmail` parameters.
 
 
         Bots are not able to create and simultaneously classify a room. A bot may update a space classification after a person of the same owning organization joined the space as the first human user.
@@ -320,7 +317,7 @@ paths:
       description: 'Shows details for a room, by ID.
 
 
-        The `title` of the room for 1:1 rooms will be the display name of the other person. When a Compliance Officer lists 1:1 rooms, the "other" person cannot be determined. This means that the room''s title may not be filled in and instead shows "Empty Title". Please use the [memberships API](https://developer.webex.com/docs/api/v1/memberships) to list the other person in the space.
+        The `title` of the room for 1:1 rooms will be the display name of the other person. When a Compliance Officer lists 1:1 rooms, the "other" person cannot be determined. This means that the room''s title may not be filled in and instead shows "Empty Title". Please use the memberships API to list the other person in the space.
 
 
         Specify the room ID in the `roomId` parameter in the URI.'
@@ -403,14 +400,10 @@ paths:
         To remove a `description` please use a space character ` ` by itself.
 
 
-        <div><Callout type="info">When using this method for moving a space under a team, ensure that all moderators in the space are also team members. If a moderator is not part of the team, demote or remove them as a moderator. Alternatively, add the non-team moderators to the team. This ensures compliance with the requirement that all space moderators must be team members for successful operation execution.
-
-        </Callout></div>
+        When using this method for moving a space under a team, ensure that all moderators in the space are also team members. If a moderator is not part of the team, demote or remove them as a moderator. Alternatively, add the non-team moderators to the team. This ensures compliance with the requirement that all space moderators must be team members for successful operation execution.
 
 
-        <div><Callout type="info">A Compliance Officer who is not a member of a space can only update the `classificationId`, `isAnnouncementOnly`, `description`, and `isPublic` fields.
-
-        </Callout></div>'
+        A Compliance Officer who is not a member of a space can only update the `classificationId`, `isAnnouncementOnly`, `description`, and `isPublic` fields.'
       tags:
       - Rooms
       parameters:
@@ -576,17 +569,9 @@ paths:
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Get Room Meeting Details
       operationId: Get Room Meeting Details
-      description: '<div>
+      description: 'The meetingInfo API is deprecated and will be EOL on Jan 31, 2025. Meetings in the WSMP must be scheduled and licensed via the meetings backend.
 
-        <callout type="warning">
-
-        The meetingInfo API is deprecated and will be EOL on Jan 31, 2025. Meetings in the WSMP must be scheduled and licensed via the meetings backend.
-
-        The [Create a Meeting](/docs/api/v1/meetings/create-a-meeting) endpoint will provide the SIP address for the meeting to call.
-
-        </callout>
-
-        </div>
+        The Create a Meeting endpoint will provide the SIP address for the meeting to call.
 
 
         Shows Webex meeting details for a room such as the SIP address, meeting URL, toll-free and toll dial-in numbers.
@@ -605,6 +590,37 @@ paths:
           type: string
 components:
   schemas:
+    RoomMeetingDetails:
+      type: object
+      properties:
+        roomId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1JPT00vYmJjZWIxYWQtNDNmMS0zYjU4LTkxNDctZjE0YmIwYzRkMTU0
+          description: A unique identifier for the room.
+        meetingLink:
+          type: string
+          example: https://cisco.webex.com/m/37a7d3a8-6563-487f-9577-cd029101c087
+          description: The Webex meeting URL for the room.
+        sipAddress:
+          type: string
+          example: 201632887@cisco.webex.com
+          description: The SIP address for the room.
+        meetingNumber:
+          type: string
+          example: '201632887'
+          description: The Webex meeting number for the room.
+        meetingId:
+          type: string
+          example: c1c30b52501b4d34aa75a57bdb867853
+          description: The Webex meeting ID for the room.
+        callInTollFreeNumber:
+          type: string
+          example: +1-866-432-9903
+          description: The toll-free PSTN number for the room.
+        callInTollNumber:
+          type: string
+          example: +1-408-525-6800
+          description: The toll (local) PSTN number for the room.
     RoomCollectionResponse:
       type: object
       properties:
@@ -675,37 +691,6 @@ components:
           type: string
           example: Company Announcements
           description: The description of the space.
-    RoomMeetingDetails:
-      type: object
-      properties:
-        roomId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1JPT00vYmJjZWIxYWQtNDNmMS0zYjU4LTkxNDctZjE0YmIwYzRkMTU0
-          description: A unique identifier for the room.
-        meetingLink:
-          type: string
-          example: https://cisco.webex.com/m/37a7d3a8-6563-487f-9577-cd029101c087
-          description: The Webex meeting URL for the room.
-        sipAddress:
-          type: string
-          example: 201632887@cisco.webex.com
-          description: The SIP address for the room.
-        meetingNumber:
-          type: string
-          example: '201632887'
-          description: The Webex meeting number for the room.
-        meetingId:
-          type: string
-          example: c1c30b52501b4d34aa75a57bdb867853
-          description: The Webex meeting ID for the room.
-        callInTollFreeNumber:
-          type: string
-          example: +1-866-432-9903
-          description: The toll-free PSTN number for the room.
-        callInTollNumber:
-          type: string
-          example: +1-408-525-6800
-          description: The toll (local) PSTN number for the room.
   securitySchemes:
     oauth2:
       flows:
@@ -719,15 +704,3 @@ components:
       description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
       scheme: bearer
       bearerFormat: JWT
-    bearerAuth:
-      type: oauth2
-      description: OAuth 2.0 Bearer token authentication
-      flows:
-        authorizationCode:
-          authorizationUrl: https://webexapis.com/v1/authorize
-          tokenUrl: https://webexapis.com/v1/access_token
-          scopes:
-            spark:applications_token: Create access tokens for Service Apps
-x-refined-from:
-- webex-messaging-openapi.json
-- webex-rooms-api-openapi.yml

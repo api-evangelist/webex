@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: Webex Preferences API
+  title: Webex Meetings Preferences API
   version: 1.0.0
-  description: 'Operations tagged Preferences across 2 of this provider''s published API definitions: webex-meeting-openapi.json, webex-preferences-api-openapi.yml. Each path carries the servers of the definition it was published in.'
+  description: The Webex Meetings APIs enable developers to schedule, manage, and retrieve information about Webex meetings, webinars, and events.
   x-provenance:
     method: harvested
     authored_by: Cisco Webex
@@ -11,9 +11,6 @@ info:
     first_party: true
     note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
     provider_published: true
-    derived_view: Per-tag view of webex-meeting-openapi.json, the provider's source document. Operations and schemas are the provider's, unmodified; only the partition is ours.
-    derived_from: webex-meeting-openapi.json
-    operation_coverage: 14/14
   x-evidence:
   - type: source
     url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-meeting.json
@@ -1440,6 +1437,176 @@ paths:
               $ref: '#/components/schemas/BatchRefreshPMRIDObject'
 components:
   schemas:
+    PMRObject:
+      type: object
+      required:
+      - topic
+      - hostPin
+      - personalMeetingRoomLink
+      - enabledAutoLock
+      - enabledNotifyHost
+      - supportCoHost
+      - sipAddress
+      - dialInIpAddress
+      - telephony
+      properties:
+        topic:
+          type: string
+          example: John's PMR
+          description: Personal Meeting Room topic. The length of `topic` is between 1 and 128. This attribute can be modified with the [Update Personal Meeting Room Options](/docs/api/v1/meeting-preferences/update-personal-meeting-room-options) API.
+        hostPin:
+          type: string
+          example: '4325'
+          description: PIN for joining the room as host. The host PIN must be digits of a predefined length, e.g. 4 digits. It cannot contain sequential digits, such as 1234 or 4321, or repeated digits of the predefined length, such as 1111. The predefined length for host PIN can be viewed in user's `My Personal Room` page and it can only be changed by site administrator. This attribute can be modified with the [Update Personal Meeting Room Options](/docs/api/v1/meeting-preferences/update-personal-meeting-room-options) API.
+        personalMeetingRoomLink:
+          type: string
+          example: https://site4-example.webex.com/meet/john
+          description: 'Personal Meeting Room link. It cannot be empty. ***Note***: This is a read-only attribute.'
+        enabledAutoLock:
+          type: boolean
+          description: Option to automatically lock the Personal Room a number of minutes after a meeting starts. When a room is locked, invitees cannot enter until the owner admits them. The period after which the meeting is locked is defined by `autoLockMinutes`. This attribute can be modified with the [Update Personal Meeting Room Options](/docs/api/v1/meeting-preferences/update-personal-meeting-room-options) API.
+        autoLockMinutes:
+          type: number
+          description: Number of minutes after which the Personal Room is locked if `enabledAutoLock` is enabled. Valid options are 0, 5, 10, 15 and 20. This attribute can be modified with the [Update Personal Meeting Room Options](/docs/api/v1/meeting-preferences/update-personal-meeting-room-options) API.
+        enabledNotifyHost:
+          type: boolean
+          description: Flag to enable notifying the owner of a Personal Room when someone enters the Personal Room lobby while the owner is not in the room. This attribute can be modified with the [Update Personal Meeting Room Options](/docs/api/v1/meeting-preferences/update-personal-meeting-room-options) API.
+        supportCoHost:
+          type: boolean
+          description: Flag allowing other invitees to host a meeting in the Personal Room without the owner. This attribute can be modified with the [Update Personal Meeting Room Options](/docs/api/v1/meeting-preferences/update-personal-meeting-room-options) API.
+        supportAnyoneAsCoHost:
+          type: boolean
+          description: Whether or not to allow any attendee with a host account on the target site to become a cohost when joining the Personal Room. The target site is user's preferred site. This attribute can be modified with the [Update Personal Meeting Room Options](/docs/api/v1/meeting-preferences/update-personal-meeting-room-options) API.
+        allowFirstUserToBeCoHost:
+          type: boolean
+          description: Whether or not to allow the first attendee with a host account on the target site to become a cohost when joining the Personal Room. The target site is user's preferred site. This attribute can be modified with the [Update Personal Meeting Room Options](/docs/api/v1/meeting-preferences/update-personal-meeting-room-options) API.
+        allowAuthenticatedDevices:
+          type: boolean
+          description: Whether or not to allow authenticated video devices in the user's organization to start or join the meeting without a prompt. This attribute can be modified with the [Update Personal Meeting Room Options](/docs/api/v1/meeting-preferences/update-personal-meeting-room-options) API.
+        coHosts:
+          type: array
+          items:
+            type: object
+            required:
+            - email
+            - displayName
+            properties:
+              email:
+                type: string
+                example: john.andersen@example.com
+                description: Email address for cohost. This attribute can be modified with the [Update Personal Meeting Room Options](/docs/api/v1/meeting-preferences/update-personal-meeting-room-options) API.
+              displayName:
+                type: string
+                example: John Andersen
+                description: Display name for cohost. This attribute can be modified with the [Update Personal Meeting Room Options](/docs/api/v1/meeting-preferences/update-personal-meeting-room-options) API.
+          description: Array defining cohosts for the room if both `supportAnyoneAsCoHost` and `allowFirstUserToBeCoHost` are `false`. This attribute can be modified with the [Update Personal Meeting Room Options](/docs/api/v1/meeting-preferences/update-personal-meeting-room-options) API.
+        sipAddress:
+          type: string
+          example: john.andersen@example.com
+          description: SIP address for callback from a video system.
+        dialInIpAddress:
+          type: string
+          example: 192.168.100.100
+          description: IP address for callback from a video system.
+        telephony:
+          type: object
+          required:
+          - accessCode
+          - callInNumbers
+          properties:
+            accessCode:
+              type: string
+              example: '1234567890'
+              description: Code for authenticating a user to join teleconference. Users join the teleconference using the call-in number or the global call-in number, followed by the value of the `accessCode`.
+            callInNumbers:
+              type: array
+              items:
+                type: object
+                required:
+                - label
+                - callInNumber
+                - tollType
+                properties:
+                  label:
+                    type: string
+                    example: Call-in toll-free number (US/Canada)
+                    description: Label for call-in number.
+                  callInNumber:
+                    type: string
+                    example: '123456789'
+                    description: Call-in number to join teleconference from a phone.
+                  tollType:
+                    type: string
+                    enum:
+                    - toll
+                    - tollFree
+                    description: Type of toll for the call-in number.
+              description: Array of call-in numbers for joining teleconference from a phone.
+            links:
+              type: object
+              required:
+              - rel
+              - href
+              - method
+              properties:
+                rel:
+                  type: string
+                  example: globalCallinNumbers
+                  description: Link relation describing how the target resource is related to the current context (conforming with [RFC5998](https://tools.ietf.org/html/rfc5988)).
+                href:
+                  type: string
+                  example: /api/v1/meetings/2c87cf8ece4e414a9fe5516e4a0aac76/globalCallinNumbers
+                  description: Target resource URI (conforming with [RFC5998](https://tools.ietf.org/html/rfc5988)).
+                method:
+                  type: string
+                  example: GET
+                  description: Target resource method (conforming with [RFC5998](https://tools.ietf.org/html/rfc5988)).
+              description: '[HATEOAS](https://en.wikipedia.org/wiki/HATEOAS) information of global call-in numbers for joining teleconference from a phone.'
+          description: Information for callbacks from meeting to phone or for joining a teleconference using a phone.
+    SitesObject:
+      type: object
+      required:
+      - sites
+      properties:
+        sites:
+          type: array
+          items:
+            type: object
+            required:
+            - siteUrl
+            - default
+            properties:
+              siteUrl:
+                type: string
+                example: site1-example.webex.com
+                description: 'Access URL for the site. ***Note***: This is a read-only attribute. The value can be assigned as user''s default site with the [Update Default Site](/docs/api/v1/meeting-preferences/update-default-site) API.'
+              default:
+                type: boolean
+                description: Flag identifying the site as the default site. Users can list meetings and recordings, and create meetings on the default site.
+          description: Array of sites for the user. Users can have one site or multiple sites. This concept is specific to Webex Meetings. Any `siteUrl` in the site list can be assigned as user's default site with the [Update Default Site](/docs/api/v1/meeting-preferences/update-default-site) API.
+    BatchRefreshPMRIDObject:
+      type: object
+      required:
+      - siteUrl
+      properties:
+        siteUrl:
+          type: string
+          example: example.webex.com
+          description: Site URL to refresh the personal room IDs.
+        personalMeetingRoomIds:
+          type: array
+          items:
+            $ref: '#/components/schemas/PMRIDObject'
+          description: Information of whose personal room IDs are to be refreshed and how to refresh. The maximum size of `items` is 100.
+    SchedulingOptionsDelegateEmailsObject:
+      type: object
+      properties:
+        emails:
+          type: array
+          items:
+            type: string
+            example: marcus.hoffmann@example.com, brenda.song@example.com
+          description: You can allow other hosts to schedule meetings on your behalf by entering their email addresses here. This attribute can be modified with the [Update Scheduling Options](/docs/api/v1/meeting-preferences/update-scheduling-options), [Insert Delegate Emails](/docs/api/v1/meeting-preferences/insert-delegate-emails), and [Update Scheduling Options](/docs/api/v1/meeting-preferences/delete-delegate-emails) APIs.
     BatchRefreshPMRIDResponseObject:
       type: object
       properties:
@@ -1452,93 +1619,65 @@ components:
           items:
             $ref: '#/components/schemas/PMRIDResponseObject'
           description: Information for the refreshed personal room IDs.
-    UpdateVideoObject:
+    UpdatePMRObject:
       type: object
       required:
-      - videoDevices
+      - topic
+      - hostPin
+      - enabledAutoLock
+      - autoLockMinutes
+      - enabledNotifyHost
+      - supportCoHost
+      - coHosts
       properties:
-        videoDevices:
-          type: array
-          items:
-            type: object
-            required:
-            - deviceName
-            - deviceAddress
-            - isDefault
-            properties:
-              deviceName:
-                type: string
-                example: device1
-                description: Video system name. It cannot be empty. This attribute can be modified with the [Update Video Options](/docs/api/v1/meeting-preferences/update-video-options) API.
-              deviceAddress:
-                type: string
-                example: device1@example.com
-                description: Video address. It cannot be empty and must be in valid email format. This attribute can be modified with the [Update Video Options](/docs/api/v1/meeting-preferences/update-video-options) API.
-              isDefault:
-                type: boolean
-                example: true
-                description: Flag identifying the device as the default video device. If user's video device list is not empty, one and only one device must be set as default. This attribute can be modified with the [Update Video Options](/docs/api/v1/meeting-preferences/update-video-options) API.
-          description: Array of video devices. If the array is not empty, one device and no more than one devices must be set as default device.
-    PMRIDResponseObject:
-      type: object
-      properties:
-        email:
+        topic:
           type: string
-          example: john.andersen@example.com
-          description: Email address for the meeting host whose personal room ID has been refreshed.
-        personId:
+          example: John's PMR
+          description: Personal Meeting Room topic to be updated.
+        hostPin:
           type: string
-          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8yNWJiZjgzMS01YmU5LTRjMjUtYjRiMC05YjU5MmM4YTA4NmI
-          description: Unique identifier for the meeting host whose personal room ID has been refreshed.
-        personalMeetingRoomId:
-          type: string
-          example: prABCD23670651
-          description: Refreshed personal room ID.
-    GetVideoObject:
-      type: object
-      required:
-      - videoDevices
-      properties:
-        videoDevices:
-          type: array
-          items:
-            type: object
-            required:
-            - deviceName
-            - deviceAddress
-            - isDefault
-            properties:
-              deviceName:
-                type: string
-                example: device1
-                description: Video system name. It cannot be empty. This attribute can be modified with the [Update Video Options](/docs/api/v1/meeting-preferences/update-video-options) API.
-              deviceAddress:
-                type: string
-                example: device1@example.com
-                description: Video address. It cannot be empty and must be in valid email format. This attribute can be modified with the [Update Video Options](/docs/api/v1/meeting-preferences/update-video-options) API.
-              isDefault:
-                type: boolean
-                example: true
-                description: Flag identifying the device as the default video device. If user's video device list is not empty, one and only one device must be set as default. This attribute can be modified with the [Update Video Options](/docs/api/v1/meeting-preferences/update-video-options) API.
-          description: Array of video devices. This attribute can be modified with the [Update Video Options](/docs/api/v1/meeting-preferences/update-video-options) API.
-    PMRIDObject:
-      type: object
-      properties:
-        email:
-          type: string
-          example: john.andersen@example.com
-          description: Email address of the meeting host whose personal room ID will be refreshed.
-        personId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8yNWJiZjgzMS01YmU5LTRjMjUtYjRiMC05YjU5MmM4YTA4NmI
-          description: Unique identifier for the meeting host whose personal room ID will be refreshed.
-        systemGenerated:
+          example: '4325'
+          description: Updated PIN for joining the room as host. The host PIN must be digits of a predefined length, e.g. 4 digits. It cannot contain sequential digits, such as 1234 or 4321, or repeated digits of the predefined length, such as 1111. The predefined length for host PIN can be viewed in user's `My Personal Room` page and it can only be changed by site administrator.
+        enabledAutoLock:
           type: boolean
-          description: Whether or not to automatically refresh the personal room ID by the site's settings. Refresh the personal room ID by the site's settings automatically if `systemGenerated` is true; otherwise, replace the existing personal room ID with the specified value if `systemGenerated` is false or not specified.
-        personalMeetingRoomId:
-          type: string
-          example: prABCD23670651
-          description: New personal room ID specified by the admin user.
+          description: Update for option to automatically lock the Personal Room a number of minutes after a meeting starts. When a room is locked, invitees cannot enter until the owner admits them. The period after which the meeting is locked is defined by `autoLockMinutes`.
+        autoLockMinutes:
+          type: number
+          description: Updated number of minutes after which the Personal Room is locked if `enabledAutoLock` is enabled. Valid options are 0, 5, 10, 15 and 20.
+        enabledNotifyHost:
+          type: boolean
+          example: true
+          description: Update for flag to enable notifying the owner of a Personal Room when someone enters the Personal Room lobby while the owner is not in the room.
+        supportCoHost:
+          type: boolean
+          example: true
+          description: Update for flag allowing other invitees to host a meetingCoHost in the Personal Room without the owner.
+        supportAnyoneAsCoHost:
+          type: boolean
+          description: Whether or not to allow any attendee with a host account on the target site to become a cohost when joining the Personal Room. The target site is user's preferred site.
+        allowFirstUserToBeCoHost:
+          type: boolean
+          description: Whether or not to allow the first attendee with a host account on the target site to become a cohost when joining the Personal Room. The target site is user's preferred site.
+        allowAuthenticatedDevices:
+          type: boolean
+          description: Whether or not to allow authenticated video devices in the user's organization to start or join the meeting without a prompt.
+        coHosts:
+          type: array
+          items:
+            type: object
+            required:
+            - email
+            - displayName
+            properties:
+              email:
+                type: string
+                example: john.andersen@example.com
+                description: Email address for cohost. This attribute can be modified with the [Update Personal Meeting Room Options](/docs/api/v1/meeting-preferences/update-personal-meeting-room-options) API.
+              displayName:
+                type: string
+                example: John Andersen
+                description: Display name for cohost. This attribute can be modified with the [Update Personal Meeting Room Options](/docs/api/v1/meeting-preferences/update-personal-meeting-room-options) API.
+          description: Updated array defining cohosts for the room if both `supportAnyoneAsCoHost` and `allowFirstUserToBeCoHost` are `false`
     AudioObject:
       type: object
       required:
@@ -1615,118 +1754,93 @@ components:
               type: boolean
               description: 'Flag to enable/disable Call Me number display on the meeting client. This attribute can be modified with the with the [Update Audio Options](/docs/api/v1/meeting-preferences/update-audio-options) API. ***Note***: This feature is only effective if the site supports the ***Call Me*** feature.'
           description: Mobile phone number. We recommend that phone numbers be specified to facilitate connecting via audio. This attribute can be modified with the with the [Update Audio Options](/docs/api/v1/meeting-preferences/update-audio-options) API.
-    SchedulingOptionsDelegateEmailsObject:
+    PMRIDResponseObject:
       type: object
       properties:
-        emails:
-          type: array
-          items:
-            type: string
-            example: marcus.hoffmann@example.com, brenda.song@example.com
-          description: You can allow other hosts to schedule meetings on your behalf by entering their email addresses here. This attribute can be modified with the [Update Scheduling Options](/docs/api/v1/meeting-preferences/update-scheduling-options), [Insert Delegate Emails](/docs/api/v1/meeting-preferences/insert-delegate-emails), and [Update Scheduling Options](/docs/api/v1/meeting-preferences/delete-delegate-emails) APIs.
-    DefaultSiteObject:
-      type: object
-      required:
-      - siteUrl
-      properties:
-        siteUrl:
+        email:
           type: string
-          example: site1-example.webex.com
-          description: Access URL for the site.
-    SitesObject:
+          example: john.andersen@example.com
+          description: Email address for the meeting host whose personal room ID has been refreshed.
+        personId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8yNWJiZjgzMS01YmU5LTRjMjUtYjRiMC05YjU5MmM4YTA4NmI
+          description: Unique identifier for the meeting host whose personal room ID has been refreshed.
+        personalMeetingRoomId:
+          type: string
+          example: prABCD23670651
+          description: Refreshed personal room ID.
+    GetVideoObject:
       type: object
       required:
-      - sites
+      - videoDevices
       properties:
-        sites:
+        videoDevices:
           type: array
           items:
             type: object
             required:
-            - siteUrl
-            - default
+            - deviceName
+            - deviceAddress
+            - isDefault
             properties:
-              siteUrl:
+              deviceName:
                 type: string
-                example: site1-example.webex.com
-                description: 'Access URL for the site. ***Note***: This is a read-only attribute. The value can be assigned as user''s default site with the [Update Default Site](/docs/api/v1/meeting-preferences/update-default-site) API.'
-              default:
+                example: device1
+                description: Video system name. It cannot be empty. This attribute can be modified with the [Update Video Options](/docs/api/v1/meeting-preferences/update-video-options) API.
+              deviceAddress:
+                type: string
+                example: device1@example.com
+                description: Video address. It cannot be empty and must be in valid email format. This attribute can be modified with the [Update Video Options](/docs/api/v1/meeting-preferences/update-video-options) API.
+              isDefault:
                 type: boolean
-                description: Flag identifying the site as the default site. Users can list meetings and recordings, and create meetings on the default site.
-          description: Array of sites for the user. Users can have one site or multiple sites. This concept is specific to Webex Meetings. Any `siteUrl` in the site list can be assigned as user's default site with the [Update Default Site](/docs/api/v1/meeting-preferences/update-default-site) API.
-    UpdatePMRObject:
+                example: true
+                description: Flag identifying the device as the default video device. If user's video device list is not empty, one and only one device must be set as default. This attribute can be modified with the [Update Video Options](/docs/api/v1/meeting-preferences/update-video-options) API.
+          description: Array of video devices. This attribute can be modified with the [Update Video Options](/docs/api/v1/meeting-preferences/update-video-options) API.
+    UpdateVideoObject:
       type: object
       required:
-      - topic
-      - hostPin
-      - enabledAutoLock
-      - autoLockMinutes
-      - enabledNotifyHost
-      - supportCoHost
-      - coHosts
+      - videoDevices
       properties:
-        topic:
-          type: string
-          example: John's PMR
-          description: Personal Meeting Room topic to be updated.
-        hostPin:
-          type: string
-          example: '4325'
-          description: Updated PIN for joining the room as host. The host PIN must be digits of a predefined length, e.g. 4 digits. It cannot contain sequential digits, such as 1234 or 4321, or repeated digits of the predefined length, such as 1111. The predefined length for host PIN can be viewed in user's `My Personal Room` page and it can only be changed by site administrator.
-        enabledAutoLock:
-          type: boolean
-          description: Update for option to automatically lock the Personal Room a number of minutes after a meeting starts. When a room is locked, invitees cannot enter until the owner admits them. The period after which the meeting is locked is defined by `autoLockMinutes`.
-        autoLockMinutes:
-          type: number
-          description: Updated number of minutes after which the Personal Room is locked if `enabledAutoLock` is enabled. Valid options are 0, 5, 10, 15 and 20.
-        enabledNotifyHost:
-          type: boolean
-          example: true
-          description: Update for flag to enable notifying the owner of a Personal Room when someone enters the Personal Room lobby while the owner is not in the room.
-        supportCoHost:
-          type: boolean
-          example: true
-          description: Update for flag allowing other invitees to host a meetingCoHost in the Personal Room without the owner.
-        supportAnyoneAsCoHost:
-          type: boolean
-          description: Whether or not to allow any attendee with a host account on the target site to become a cohost when joining the Personal Room. The target site is user's preferred site.
-        allowFirstUserToBeCoHost:
-          type: boolean
-          description: Whether or not to allow the first attendee with a host account on the target site to become a cohost when joining the Personal Room. The target site is user's preferred site.
-        allowAuthenticatedDevices:
-          type: boolean
-          description: Whether or not to allow authenticated video devices in the user's organization to start or join the meeting without a prompt.
-        coHosts:
+        videoDevices:
           type: array
           items:
             type: object
             required:
-            - email
-            - displayName
+            - deviceName
+            - deviceAddress
+            - isDefault
             properties:
-              email:
+              deviceName:
                 type: string
-                example: john.andersen@example.com
-                description: Email address for cohost. This attribute can be modified with the [Update Personal Meeting Room Options](/docs/api/v1/meeting-preferences/update-personal-meeting-room-options) API.
-              displayName:
+                example: device1
+                description: Video system name. It cannot be empty. This attribute can be modified with the [Update Video Options](/docs/api/v1/meeting-preferences/update-video-options) API.
+              deviceAddress:
                 type: string
-                example: John Andersen
-                description: Display name for cohost. This attribute can be modified with the [Update Personal Meeting Room Options](/docs/api/v1/meeting-preferences/update-personal-meeting-room-options) API.
-          description: Updated array defining cohosts for the room if both `supportAnyoneAsCoHost` and `allowFirstUserToBeCoHost` are `false`
-    BatchRefreshPMRIDObject:
+                example: device1@example.com
+                description: Video address. It cannot be empty and must be in valid email format. This attribute can be modified with the [Update Video Options](/docs/api/v1/meeting-preferences/update-video-options) API.
+              isDefault:
+                type: boolean
+                example: true
+                description: Flag identifying the device as the default video device. If user's video device list is not empty, one and only one device must be set as default. This attribute can be modified with the [Update Video Options](/docs/api/v1/meeting-preferences/update-video-options) API.
+          description: Array of video devices. If the array is not empty, one device and no more than one devices must be set as default device.
+    PMRIDObject:
       type: object
-      required:
-      - siteUrl
       properties:
-        siteUrl:
+        email:
           type: string
-          example: example.webex.com
-          description: Site URL to refresh the personal room IDs.
-        personalMeetingRoomIds:
-          type: array
-          items:
-            $ref: '#/components/schemas/PMRIDObject'
-          description: Information of whose personal room IDs are to be refreshed and how to refresh. The maximum size of `items` is 100.
+          example: john.andersen@example.com
+          description: Email address of the meeting host whose personal room ID will be refreshed.
+        personId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8yNWJiZjgzMS01YmU5LTRjMjUtYjRiMC05YjU5MmM4YTA4NmI
+          description: Unique identifier for the meeting host whose personal room ID will be refreshed.
+        systemGenerated:
+          type: boolean
+          description: Whether or not to automatically refresh the personal room ID by the site's settings. Refresh the personal room ID by the site's settings automatically if `systemGenerated` is true; otherwise, replace the existing personal room ID with the specified value if `systemGenerated` is false or not specified.
+        personalMeetingRoomId:
+          type: string
+          example: prABCD23670651
+          description: New personal room ID specified by the admin user.
     SchedulingOptionsObject:
       type: object
       required:
@@ -1765,6 +1879,15 @@ components:
         default:
           type: boolean
           description: Flag identifying the site as the default site. Users can list meetings and recordings, and create meetings on the default site.
+    DefaultSiteObject:
+      type: object
+      required:
+      - siteUrl
+      properties:
+        siteUrl:
+          type: string
+          example: site1-example.webex.com
+          description: Access URL for the site.
     MeetingPreferenceObject:
       type: object
       required:
@@ -2024,132 +2147,6 @@ components:
                 type: boolean
                 description: Flag identifying the site as the default site. Users can list meetings and recordings, and create meetings on the default site.
           description: List of user's Webex meeting sites including default site.
-    PMRObject:
-      type: object
-      required:
-      - topic
-      - hostPin
-      - personalMeetingRoomLink
-      - enabledAutoLock
-      - enabledNotifyHost
-      - supportCoHost
-      - sipAddress
-      - dialInIpAddress
-      - telephony
-      properties:
-        topic:
-          type: string
-          example: John's PMR
-          description: Personal Meeting Room topic. The length of `topic` is between 1 and 128. This attribute can be modified with the [Update Personal Meeting Room Options](/docs/api/v1/meeting-preferences/update-personal-meeting-room-options) API.
-        hostPin:
-          type: string
-          example: '4325'
-          description: PIN for joining the room as host. The host PIN must be digits of a predefined length, e.g. 4 digits. It cannot contain sequential digits, such as 1234 or 4321, or repeated digits of the predefined length, such as 1111. The predefined length for host PIN can be viewed in user's `My Personal Room` page and it can only be changed by site administrator. This attribute can be modified with the [Update Personal Meeting Room Options](/docs/api/v1/meeting-preferences/update-personal-meeting-room-options) API.
-        personalMeetingRoomLink:
-          type: string
-          example: https://site4-example.webex.com/meet/john
-          description: 'Personal Meeting Room link. It cannot be empty. ***Note***: This is a read-only attribute.'
-        enabledAutoLock:
-          type: boolean
-          description: Option to automatically lock the Personal Room a number of minutes after a meeting starts. When a room is locked, invitees cannot enter until the owner admits them. The period after which the meeting is locked is defined by `autoLockMinutes`. This attribute can be modified with the [Update Personal Meeting Room Options](/docs/api/v1/meeting-preferences/update-personal-meeting-room-options) API.
-        autoLockMinutes:
-          type: number
-          description: Number of minutes after which the Personal Room is locked if `enabledAutoLock` is enabled. Valid options are 0, 5, 10, 15 and 20. This attribute can be modified with the [Update Personal Meeting Room Options](/docs/api/v1/meeting-preferences/update-personal-meeting-room-options) API.
-        enabledNotifyHost:
-          type: boolean
-          description: Flag to enable notifying the owner of a Personal Room when someone enters the Personal Room lobby while the owner is not in the room. This attribute can be modified with the [Update Personal Meeting Room Options](/docs/api/v1/meeting-preferences/update-personal-meeting-room-options) API.
-        supportCoHost:
-          type: boolean
-          description: Flag allowing other invitees to host a meeting in the Personal Room without the owner. This attribute can be modified with the [Update Personal Meeting Room Options](/docs/api/v1/meeting-preferences/update-personal-meeting-room-options) API.
-        supportAnyoneAsCoHost:
-          type: boolean
-          description: Whether or not to allow any attendee with a host account on the target site to become a cohost when joining the Personal Room. The target site is user's preferred site. This attribute can be modified with the [Update Personal Meeting Room Options](/docs/api/v1/meeting-preferences/update-personal-meeting-room-options) API.
-        allowFirstUserToBeCoHost:
-          type: boolean
-          description: Whether or not to allow the first attendee with a host account on the target site to become a cohost when joining the Personal Room. The target site is user's preferred site. This attribute can be modified with the [Update Personal Meeting Room Options](/docs/api/v1/meeting-preferences/update-personal-meeting-room-options) API.
-        allowAuthenticatedDevices:
-          type: boolean
-          description: Whether or not to allow authenticated video devices in the user's organization to start or join the meeting without a prompt. This attribute can be modified with the [Update Personal Meeting Room Options](/docs/api/v1/meeting-preferences/update-personal-meeting-room-options) API.
-        coHosts:
-          type: array
-          items:
-            type: object
-            required:
-            - email
-            - displayName
-            properties:
-              email:
-                type: string
-                example: john.andersen@example.com
-                description: Email address for cohost. This attribute can be modified with the [Update Personal Meeting Room Options](/docs/api/v1/meeting-preferences/update-personal-meeting-room-options) API.
-              displayName:
-                type: string
-                example: John Andersen
-                description: Display name for cohost. This attribute can be modified with the [Update Personal Meeting Room Options](/docs/api/v1/meeting-preferences/update-personal-meeting-room-options) API.
-          description: Array defining cohosts for the room if both `supportAnyoneAsCoHost` and `allowFirstUserToBeCoHost` are `false`. This attribute can be modified with the [Update Personal Meeting Room Options](/docs/api/v1/meeting-preferences/update-personal-meeting-room-options) API.
-        sipAddress:
-          type: string
-          example: john.andersen@example.com
-          description: SIP address for callback from a video system.
-        dialInIpAddress:
-          type: string
-          example: 192.168.100.100
-          description: IP address for callback from a video system.
-        telephony:
-          type: object
-          required:
-          - accessCode
-          - callInNumbers
-          properties:
-            accessCode:
-              type: string
-              example: '1234567890'
-              description: Code for authenticating a user to join teleconference. Users join the teleconference using the call-in number or the global call-in number, followed by the value of the `accessCode`.
-            callInNumbers:
-              type: array
-              items:
-                type: object
-                required:
-                - label
-                - callInNumber
-                - tollType
-                properties:
-                  label:
-                    type: string
-                    example: Call-in toll-free number (US/Canada)
-                    description: Label for call-in number.
-                  callInNumber:
-                    type: string
-                    example: '123456789'
-                    description: Call-in number to join teleconference from a phone.
-                  tollType:
-                    type: string
-                    enum:
-                    - toll
-                    - tollFree
-                    description: Type of toll for the call-in number.
-              description: Array of call-in numbers for joining teleconference from a phone.
-            links:
-              type: object
-              required:
-              - rel
-              - href
-              - method
-              properties:
-                rel:
-                  type: string
-                  example: globalCallinNumbers
-                  description: Link relation describing how the target resource is related to the current context (conforming with [RFC5998](https://tools.ietf.org/html/rfc5988)).
-                href:
-                  type: string
-                  example: /api/v1/meetings/2c87cf8ece4e414a9fe5516e4a0aac76/globalCallinNumbers
-                  description: Target resource URI (conforming with [RFC5998](https://tools.ietf.org/html/rfc5988)).
-                method:
-                  type: string
-                  example: GET
-                  description: Target resource method (conforming with [RFC5998](https://tools.ietf.org/html/rfc5988)).
-              description: '[HATEOAS](https://en.wikipedia.org/wiki/HATEOAS) information of global call-in numbers for joining teleconference from a phone.'
-          description: Information for callbacks from meeting to phone or for joining a teleconference using a phone.
   securitySchemes:
     oauth2:
       flows:
@@ -2163,15 +2160,3 @@ components:
       description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
       scheme: bearer
       bearerFormat: JWT
-    bearerAuth:
-      type: oauth2
-      description: OAuth 2.0 Bearer token authentication
-      flows:
-        authorizationCode:
-          authorizationUrl: https://webexapis.com/v1/authorize
-          tokenUrl: https://webexapis.com/v1/access_token
-          scopes:
-            spark:applications_token: Create access tokens for Service Apps
-x-refined-from:
-- webex-meeting-openapi.json
-- webex-preferences-api-openapi.yml

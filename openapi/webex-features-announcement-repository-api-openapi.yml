@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: 'Webex Features: Announcement Repository API'
+  title: 'Webex Cloud Calling Features: Announcement Repository API'
   version: 1.0.0
-  description: 'Operations tagged Features: Announcement Repository across 2 of this provider''s published API definitions: webex-cloud-calling-openapi.json, webex-features-announcement-repository-api-openapi.yml. Each path carries the servers of the definition it was published in.'
+  description: The Webex Cloud Calling APIs enable comprehensive management of cloud-based calling services, including user provisioning, device assignment, call routing, feature configuration, and number management.
   x-provenance:
     method: harvested
     authored_by: Cisco Webex
@@ -11,9 +11,6 @@ info:
     first_party: true
     note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
     provider_published: true
-    derived_view: Per-tag view of webex-cloud-calling-openapi.json, the provider's source document. Operations and schemas are the provider's, unmodified; only the partition is ours.
-    derived_from: webex-cloud-calling-openapi.json
-    operation_coverage: 19/19
   x-evidence:
   - type: source
     url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-cloud-calling.json
@@ -1443,18 +1440,148 @@ paths:
           type: string
 components:
   schemas:
-    GenerateTtsResponse:
+    GenerateTtsRequest:
       type: object
-      description: Response containing the ID of the text-to-speech generation request.
+      description: Request payload for generating a text-to-speech audio prompt.
+      required:
+      - voice
+      - text
+      - languageCode
+      properties:
+        voice:
+          type: string
+          example: ashley
+          description: The voice ID used to generate the audio prompt. Use the List Text-to-Speech Voices API to retrieve available voices.
+        text:
+          type: string
+          example: Welcome to our service. Please hold while we connect you.
+          description: The text to convert to speech.
+        languageCode:
+          type: string
+          example: en_us
+          description: The language code used to generate the audio prompt. Use the List Text-to-Speech Voices API to retrieve the language code supported by the selected voice.
+    TtsVoicesResponse:
+      type: object
+      description: Response containing the list of supported text-to-speech voices.
       example:
-        id: Y2lzY29zcGFyazovL3VzL1RFWFRfVE9fU1BFRUNILzMyMDE2NGY0LWU1YTMtNDFmZi1hMzI2LTY3YzA5OGU0MWQxZA
+        voices:
+        - id: ashley
+          label: Ashley-Female
+          languageCode: en_us
+        - id: steve
+          label: Steve-Male
+          languageCode: en_us
+      required:
+      - voices
+      properties:
+        voices:
+          type: array
+          example:
+          - id: ashley
+            label: Ashley-Female
+            languageCode: en_us
+          - id: steve
+            label: Steve-Male
+            languageCode: en_us
+          items:
+            $ref: '#/components/schemas/TtsVoice'
+          description: Array of available text-to-speech voices.
+    FeatureReferenceObject:
+      type: object
+      description: Metadata describing a call feature that references an announcement.
       required:
       - id
+      - name
+      - type
+      - locationId
+      - locationName
       properties:
         id:
           type: string
-          example: Y2lzY29zcGFyazovL3VzL1RFWFRfVE9fU1BFRUNILzMyMDE2NGY0LWU1YTMtNDFmZi1hMzI2LTY3YzA5OGU0MWQxZA
-          description: Unique identifier of the text-to-speech generation request. Use this ID to track status using the Get Text-to-Speech Generation Status API.
+          example: Y2lzY29zcGFyazovL3VzL0FVVE9fQVRURU5EQU5UL2QzVjBPWFIxWjJkM2FFQm1iR1Y0TWk1amFYTmpieTVqYjIw
+          description: Unique identifier of the call feature referenced. The call Feature can be Auto Attendant, Call Queue or Music On hold.
+        name:
+          type: string
+          example: Main Line AA - Test
+          description: Name of the call feature referenced.
+        type:
+          type: string
+          example: Auto Attendant
+          description: Resource Type of the call feature.
+        locationId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi81ZTk3MzFlNy1iOWQ0LTRmMWQtYjYyMi05NDgwMDhhMjkzMzM
+          description: Unique identifier of the location.
+        locationName:
+          type: string
+          example: RCDN
+          description: Location name of the announcement file.
+    AnnouncementsListResponse:
+      type: object
+      description: Response containing announcement summary details for list operations.
+      required:
+      - id
+      - name
+      - fileSize
+      - mediaFileType
+      - lastUpdated
+      - level
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0FOTk9VTkNFTUVOVC8zMjAxNjRmNC1lNWEzLTQxZmYtYTMyNi02N2MwOThlNDFkMWQ
+          description: Unique identifier of the announcement.
+        name:
+          type: string
+          example: Public_Announcement
+          description: Name of the announcement.
+        fileName:
+          type: string
+          example: Sample_Greetings_file.wav
+          description: File name of the uploaded binary announcement greeting.
+        fileSize:
+          type: string
+          example: '356'
+          description: Size of the file in kilobytes.
+        mediaFileType:
+          type: string
+          example: WAV
+          description: Media file type of the announcement file.
+        lastUpdated:
+          type: string
+          example: '2023-06-13T18:39:53.651Z'
+          description: LastUpdated timestamp (in UTC format) of the announcement.
+        level:
+          type: string
+          enum:
+          - LOCATION
+          - ORGANIZATION
+          description: The level at which this announcement exists.
+        location:
+          $ref: '#/components/schemas/LocationObject'
+          description: The details of location at which this announcement exists.
+        isTextToSpeech:
+          type: boolean
+          example: false
+          description: Indicates whether the announcement is text-to-speech.
+    GetMediaUrlResponse:
+      type: object
+      description: Response containing the information required to download and decrypt an announcement media file.
+      required:
+      - preSignedUrl
+      - kmsKeyUri
+      properties:
+        preSignedUrl:
+          type: string
+          description: A pre-signed S3 URL for downloading the announcement media file. The URL is time-limited and should be used promptly.
+          example: https://s3.amazonaws.com/wxc-media/customers/bf01164f-ed87-44d9-bc41-f63f26fb9663/media/af01164f-ed87-44d9-bc41-f63f26fb8663?X-Amz-Signature=def456
+        kmsKeyUri:
+          type: string
+          description: The KMS key URI required to decrypt the media file downloaded from the pre-signed URL.
+          example: kms://kms-cisco.wbx2.com/keys/b56642f3-d597-420c-8a55-41aaa8c5b6e7
+      example:
+        preSignedUrl: https://s3.amazonaws.com/wxc-media/customers/bf01164f-ed87-44d9-bc41-f63f26fb9663/media/af01164f-ed87-44d9-bc41-f63f26fb8663?X-Amz-Signature=def456
+        kmsKeyUri: kms://kms-cisco.wbx2.com/keys/b56642f3-d597-420c-8a55-41aaa8c5b6e7
     AnnouncementResponse:
       type: object
       description: Response containing announcement details.
@@ -1515,61 +1642,30 @@ components:
           type: string
           example: Welcome to our service. Please hold while we connect you.
           description: Text content for text-to-speech announcement.
-    TtsVoice:
+    GenerateUploadUrlResponse:
       type: object
-      description: Text-to-Speech voice metadata.
-      example:
-        id: ashley
-        label: Ashley-Female
-        languageCode: en_us
+      description: Response containing the information required to encrypt and upload an announcement media file.
       required:
-      - id
-      - label
-      - languageCode
-      properties:
-        id:
-          type: string
-          example: ashley
-          description: The voice ID used to generate the audio prompt.
-        label:
-          type: string
-          example: Ashley-Female
-          description: The voice label, including the voice name and gender.
-        languageCode:
-          type: string
-          example: en_us
-          description: The language code supported by the voice.
-    AnnouncementRequestBody:
-      type: object
-      description: Request payload for uploading or updating an announcement in the repository.
-      required:
-      - name
+      - preSignedUrl
+      - kmsKeyUri
       - fileUri
-      - fileName
-      - isTextToSpeech
       properties:
-        name:
+        preSignedUrl:
           type: string
-          minLength: 1
-          maxLength: 256
-          example: Public_Announcement
-          description: Name of the announcement.
+          description: A pre-signed S3 URL for uploading the announcement media file. The URL is time-limited and should be used promptly.
+          example: https://s3.amazonaws.com/wxc-media/uploads/af01164f-ed87-44d9-bc41-f63f26fb8663?X-Amz-Signature=abc123
+        kmsKeyUri:
+          type: string
+          description: The KMS key URI used to encrypt the media file before uploading to the pre-signed URL.
+          example: kms://kms-cisco.wbx2.com/keys/b56642f3-d597-420c-8a55-41aaa8c5b6e7
         fileUri:
           type: string
-          minLength: 1
-          maxLength: 256
-          example: https://example.com/announcements/greeting.wav
-          description: URI of the announcement file.
-        fileName:
-          type: string
-          minLength: 1
-          maxLength: 80
-          example: greeting.wav
-          description: File name of the announcement.
-        isTextToSpeech:
-          type: boolean
-          example: false
-          description: Indicates whether the announcement is text-to-speech.
+          description: A file URI that identifies the uploaded media. Use this URI when configuring announcements.
+          example: cmf://customers/bf01164f-ed87-44d9-bc41-f63f26fb9663/media/af01164f-ed87-44d9-bc41-f63f26fb8663
+      example:
+        preSignedUrl: https://s3.amazonaws.com/wxc-media/uploads/af01164f-ed87-44d9-bc41-f63f26fb8663?X-Amz-Signature=abc123
+        kmsKeyUri: kms://kms-cisco.wbx2.com/keys/b56642f3-d597-420c-8a55-41aaa8c5b6e7
+        fileUri: cmf://customers/bf01164f-ed87-44d9-bc41-f63f26fb9663/media/af01164f-ed87-44d9-bc41-f63f26fb8663
     AnnouncementResponseWithId:
       type: object
       description: Response containing the unique identifier of a created or updated announcement.
@@ -1605,6 +1701,30 @@ components:
           type: number
           example: 1000
           description: Total file size limit for the repository in megabytes.
+    TtsVoice:
+      type: object
+      description: Text-to-Speech voice metadata.
+      example:
+        id: ashley
+        label: Ashley-Female
+        languageCode: en_us
+      required:
+      - id
+      - label
+      - languageCode
+      properties:
+        id:
+          type: string
+          example: ashley
+          description: The voice ID used to generate the audio prompt.
+        label:
+          type: string
+          example: Ashley-Female
+          description: The voice label, including the voice name and gender.
+        languageCode:
+          type: string
+          example: en_us
+          description: The language code supported by the voice.
     AnnouncementResponseWithPlaylist:
       type: object
       description: Response containing announcement details and available playlists.
@@ -1670,139 +1790,6 @@ components:
           type: string
           example: Welcome to our service. Please hold while we connect you.
           description: Text content for text-to-speech announcement.
-    FeatureReferenceObject:
-      type: object
-      description: Metadata describing a call feature that references an announcement.
-      required:
-      - id
-      - name
-      - type
-      - locationId
-      - locationName
-      properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0FVVE9fQVRURU5EQU5UL2QzVjBPWFIxWjJkM2FFQm1iR1Y0TWk1amFYTmpieTVqYjIw
-          description: Unique identifier of the call feature referenced. The call Feature can be Auto Attendant, Call Queue or Music On hold.
-        name:
-          type: string
-          example: Main Line AA - Test
-          description: Name of the call feature referenced.
-        type:
-          type: string
-          example: Auto Attendant
-          description: Resource Type of the call feature.
-        locationId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi81ZTk3MzFlNy1iOWQ0LTRmMWQtYjYyMi05NDgwMDhhMjkzMzM
-          description: Unique identifier of the location.
-        locationName:
-          type: string
-          example: RCDN
-          description: Location name of the announcement file.
-    LocationObject:
-      type: object
-      properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzEyMzQ1Njc4OTAxMjM0NTY3ODkw
-          description: The ID of the location.
-        name:
-          type: string
-          example: San Jose
-          description: The name of the location.
-    GenerateTtsRequest:
-      type: object
-      description: Request payload for generating a text-to-speech audio prompt.
-      required:
-      - voice
-      - text
-      - languageCode
-      properties:
-        voice:
-          type: string
-          example: ashley
-          description: The voice ID used to generate the audio prompt. Use the List Text-to-Speech Voices API to retrieve available voices.
-        text:
-          type: string
-          example: Welcome to our service. Please hold while we connect you.
-          description: The text to convert to speech.
-        languageCode:
-          type: string
-          example: en_us
-          description: The language code used to generate the audio prompt. Use the List Text-to-Speech Voices API to retrieve the language code supported by the selected voice.
-    GenerateUploadUrlResponse:
-      type: object
-      description: Response containing the information required to encrypt and upload an announcement media file.
-      required:
-      - preSignedUrl
-      - kmsKeyUri
-      - fileUri
-      properties:
-        preSignedUrl:
-          type: string
-          description: A pre-signed S3 URL for uploading the announcement media file. The URL is time-limited and should be used promptly.
-          example: https://s3.amazonaws.com/wxc-media/uploads/af01164f-ed87-44d9-bc41-f63f26fb8663?X-Amz-Signature=abc123
-        kmsKeyUri:
-          type: string
-          description: The KMS key URI used to encrypt the media file before uploading to the pre-signed URL.
-          example: kms://kms-cisco.wbx2.com/keys/b56642f3-d597-420c-8a55-41aaa8c5b6e7
-        fileUri:
-          type: string
-          description: A file URI that identifies the uploaded media. Use this URI when configuring announcements.
-          example: cmf://customers/bf01164f-ed87-44d9-bc41-f63f26fb9663/media/af01164f-ed87-44d9-bc41-f63f26fb8663
-      example:
-        preSignedUrl: https://s3.amazonaws.com/wxc-media/uploads/af01164f-ed87-44d9-bc41-f63f26fb8663?X-Amz-Signature=abc123
-        kmsKeyUri: kms://kms-cisco.wbx2.com/keys/b56642f3-d597-420c-8a55-41aaa8c5b6e7
-        fileUri: cmf://customers/bf01164f-ed87-44d9-bc41-f63f26fb9663/media/af01164f-ed87-44d9-bc41-f63f26fb8663
-    AnnouncementsListResponse:
-      type: object
-      description: Response containing announcement summary details for list operations.
-      required:
-      - id
-      - name
-      - fileSize
-      - mediaFileType
-      - lastUpdated
-      - level
-      properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0FOTk9VTkNFTUVOVC8zMjAxNjRmNC1lNWEzLTQxZmYtYTMyNi02N2MwOThlNDFkMWQ
-          description: Unique identifier of the announcement.
-        name:
-          type: string
-          example: Public_Announcement
-          description: Name of the announcement.
-        fileName:
-          type: string
-          example: Sample_Greetings_file.wav
-          description: File name of the uploaded binary announcement greeting.
-        fileSize:
-          type: string
-          example: '356'
-          description: Size of the file in kilobytes.
-        mediaFileType:
-          type: string
-          example: WAV
-          description: Media file type of the announcement file.
-        lastUpdated:
-          type: string
-          example: '2023-06-13T18:39:53.651Z'
-          description: LastUpdated timestamp (in UTC format) of the announcement.
-        level:
-          type: string
-          enum:
-          - LOCATION
-          - ORGANIZATION
-          description: The level at which this announcement exists.
-        location:
-          $ref: '#/components/schemas/LocationObject'
-          description: The details of location at which this announcement exists.
-        isTextToSpeech:
-          type: boolean
-          example: false
-          description: Indicates whether the announcement is text-to-speech.
     AnnouncementFileUriResponse:
       type: object
       description: Response containing the URI of an announcement media file.
@@ -1815,24 +1802,37 @@ components:
           description: URI of the announcement media file URLs. Use this value with the Get Media Download URL API to get URLs for downloading the announcement media file.
       example:
         fileUri: cmf://customers/bf01164f-ed87-44d9-bc41-f63f26fb9663/media/urls/tmp/af01164f-ed87-44d9-bc41-f63f26fb8663
-    GetMediaUrlResponse:
+    AnnouncementRequestBody:
       type: object
-      description: Response containing the information required to download and decrypt an announcement media file.
+      description: Request payload for uploading or updating an announcement in the repository.
       required:
-      - preSignedUrl
-      - kmsKeyUri
+      - name
+      - fileUri
+      - fileName
+      - isTextToSpeech
       properties:
-        preSignedUrl:
+        name:
           type: string
-          description: A pre-signed S3 URL for downloading the announcement media file. The URL is time-limited and should be used promptly.
-          example: https://s3.amazonaws.com/wxc-media/customers/bf01164f-ed87-44d9-bc41-f63f26fb9663/media/af01164f-ed87-44d9-bc41-f63f26fb8663?X-Amz-Signature=def456
-        kmsKeyUri:
+          minLength: 1
+          maxLength: 256
+          example: Public_Announcement
+          description: Name of the announcement.
+        fileUri:
           type: string
-          description: The KMS key URI required to decrypt the media file downloaded from the pre-signed URL.
-          example: kms://kms-cisco.wbx2.com/keys/b56642f3-d597-420c-8a55-41aaa8c5b6e7
-      example:
-        preSignedUrl: https://s3.amazonaws.com/wxc-media/customers/bf01164f-ed87-44d9-bc41-f63f26fb9663/media/af01164f-ed87-44d9-bc41-f63f26fb8663?X-Amz-Signature=def456
-        kmsKeyUri: kms://kms-cisco.wbx2.com/keys/b56642f3-d597-420c-8a55-41aaa8c5b6e7
+          minLength: 1
+          maxLength: 256
+          example: https://example.com/announcements/greeting.wav
+          description: URI of the announcement file.
+        fileName:
+          type: string
+          minLength: 1
+          maxLength: 80
+          example: greeting.wav
+          description: File name of the announcement.
+        isTextToSpeech:
+          type: boolean
+          example: false
+          description: Indicates whether the announcement is text-to-speech.
     TtsStatusResponse:
       type: object
       description: Response containing text-to-speech generation status and file references.
@@ -1892,6 +1892,18 @@ components:
           type: string
           example: Text exceeds maximum allowed length.
           description: A detailed message describing why generation failed. Only present when status is `FAILURE`.
+    GenerateTtsResponse:
+      type: object
+      description: Response containing the ID of the text-to-speech generation request.
+      example:
+        id: Y2lzY29zcGFyazovL3VzL1RFWFRfVE9fU1BFRUNILzMyMDE2NGY0LWU1YTMtNDFmZi1hMzI2LTY3YzA5OGU0MWQxZA
+      required:
+      - id
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1RFWFRfVE9fU1BFRUNILzMyMDE2NGY0LWU1YTMtNDFmZi1hMzI2LTY3YzA5OGU0MWQxZA
+          description: Unique identifier of the text-to-speech generation request. Use this ID to track status using the Get Text-to-Speech Generation Status API.
     PlaylistObject:
       type: object
       description: Basic playlist metadata available for announcement selection.
@@ -1907,32 +1919,6 @@ components:
           type: string
           example: testingAnnouncementPlaylist
           description: Unique name for the playlist.
-    TtsVoicesResponse:
-      type: object
-      description: Response containing the list of supported text-to-speech voices.
-      example:
-        voices:
-        - id: ashley
-          label: Ashley-Female
-          languageCode: en_us
-        - id: steve
-          label: Steve-Male
-          languageCode: en_us
-      required:
-      - voices
-      properties:
-        voices:
-          type: array
-          example:
-          - id: ashley
-            label: Ashley-Female
-            languageCode: en_us
-          - id: steve
-            label: Steve-Male
-            languageCode: en_us
-          items:
-            $ref: '#/components/schemas/TtsVoice'
-          description: Array of available text-to-speech voices.
     TtsUsageResponse:
       type: object
       description: Response containing text-to-speech usage information.
@@ -1956,6 +1942,17 @@ components:
           type: string
           example: '2026-01-01T00:00:00.000Z'
           description: The timestamp when the usage counter will reset. It will be returned when reaching the maximum allowed API calls in the time window.
+    LocationObject:
+      type: object
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzEyMzQ1Njc4OTAxMjM0NTY3ODkw
+          description: The ID of the location.
+        name:
+          type: string
+          example: San Jose
+          description: The name of the location.
   securitySchemes:
     oauth2:
       flows:
@@ -1974,6 +1971,3 @@ components:
       description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
       scheme: bearer
       bearerFormat: JWT
-x-refined-from:
-- webex-cloud-calling-openapi.json
-- webex-features-announcement-repository-api-openapi.yml

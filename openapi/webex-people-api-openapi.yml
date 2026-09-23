@@ -2,7 +2,8 @@ openapi: 3.2.0
 info:
   title: Webex People API
   version: 1.0.0
-  description: 'Operations tagged People across 5 of this provider''s published API definitions: webex-admin-openapi.json, webex-cloud-calling-openapi.json, webex-meeting-openapi.json, webex-messaging-openapi.json, webex-people-api-openapi.yml. Each path carries the servers of the definition it was published in.'
+  x-refined-note:
+  - x-evidence differs across the merged source definitions and was not carried
   x-provenance:
     method: harvested
     authored_by: Cisco Webex
@@ -11,14 +12,7 @@ info:
     first_party: true
     note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
     provider_published: true
-    derived_view: Per-tag view of webex-admin-openapi.json, the provider's source document. Operations and schemas are the provider's, unmodified; only the partition is ours.
-    derived_from: webex-admin-openapi.json
-    operation_coverage: 6/6
-  x-evidence:
-  - type: source
-    url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-admin.json
-  - type: raw
-    url: https://raw.githubusercontent.com/webex/webex-openapi-specs/main/public-spec/webex-admin.json
+  description: 'Operations tagged People across 4 of this provider''s published API definitions: webex-admin-openapi.json, webex-cloud-calling-openapi.json, webex-meeting-openapi.json, webex-messaging-openapi.json. Each path carries the servers of the definition it was published in.'
 tags:
 - name: People
 paths:
@@ -118,7 +112,7 @@ paths:
       description: 'List people in your organization. For most users, either the `email` or `displayName` parameter is required. Admin users can omit these fields and list all users in their organization.
 
 
-        Response properties associated with a user''s presence status, such as `status` or `lastActivity`, will only be returned for people within your organization or an organization you manage. Presence information will not be returned if the authenticated user has [disabled status sharing](https://help.webex.com/nkzs6wl/). Calling /people frequently to poll `status` information for a large set of users will quickly lead to `429` errors and throttling of such requests and is therefore discouraged.
+        Response properties associated with a user''s presence status, such as `status` or `lastActivity`, will only be returned for people within your organization or an organization you manage. Presence information will not be returned if the authenticated user has disabled status sharing. Calling /people frequently to poll `status` information for a large set of users will quickly lead to `429` errors and throttling of such requests and is therefore discouraged.
 
 
         Admin users can include `Webex Calling` (BroadCloud) user details in the response by specifying `callingData` parameter as `true`. Admin users can list all users in a location. Admin users will receive an enriched payload with additional administrative fields like `licenses`,`roles`, `locations` etc. These fields are shown when accessing a user via GET /people/{id}, not when doing a GET /people?id=
@@ -130,7 +124,7 @@ paths:
         Lookup by `roles` is only supported for Admin users for the people within the same org.
 
 
-        Long result sets will be split into [pages](/docs/basics#pagination).'
+        Long result sets will be split into pages.'
       tags:
       - People
       parameters:
@@ -562,7 +556,7 @@ paths:
       description: 'Shows details for a person, by ID.
 
 
-        Response properties associated with a user''s presence status, such as `status` or `lastActivity`, will only be displayed for people within your organization or an organization you manage. Presence information will not be shown if the authenticated user has [disabled status sharing](https://help.webex.com/nkzs6wl/).
+        Response properties associated with a user''s presence status, such as `status` or `lastActivity`, will only be displayed for people within your organization or an organization you manage. Presence information will not be shown if the authenticated user has disabled status sharing.
 
 
         Admin users can include `Webex Calling` (BroadCloud) user details in the response by specifying `callingData` parameter as `true`.
@@ -677,7 +671,51 @@ paths:
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Update a Person
       operationId: Update a Person
-      description: "Update details for a person, by ID.\n\nSpecify the person ID in the `personId` parameter in the URI. Only an admin can update a person details.\n\nInclude all details for the person. This action expects all user details to be present in the request. A common approach is to first [GET the person's details](/docs/api/v1/people/get-person-details), make changes, then PUT both the changed and unchanged values.\n\nAdmin users can include `Webex Calling` (BroadCloud) user details in the response by specifying `callingData` parameter as true.\n\nWhen doing attendee management, to update a user from host role to an attendee for a site append `#attendee` to the respective `siteUrl` and remove the meeting host license for this site from the license array.\nTo update a person from an attendee role to a host for a site, add the meeting license for this site in the meeting array, and remove that site from the `siteurl` parameter.\n\nTo remove the attendee privilege for a user on a meeting site, remove the `sitename#attendee` from the `siteUrl`s array. The `showAllTypes` parameter must be set to `true`.\n\n**NOTE**:\n\n* When assigning a Webex Calling license, either a telephone number or extension must already be assigned to the person or provided in the request payload.\n\n* When `callingData` is set to `true`, a Webex Calling license must be included in the `licenses` array.\n\n* The `locationId` can only be set when assigning a calling license to a user. It cannot be changed if a user is already an existing calling user.\n\n* The `extension` field should be used to update the Webex Calling extension for a person. The extension value should not include the location routing prefix. The `work_extension` type in the `phoneNumbers` object as seen in the response payload of [List People](/docs/api/v1/people/list-people) or [Get Person Details](/docs/api/v1/people/get-person-details), cannot be used to set the Webex Calling extension for a person.\n\n* When updating a user with multiple email addresses using a PUT request, ensure that the primary email address is listed first in the array. Note that the order of email addresses returned by a GET request is not guaranteed..\n\n* The People API is a combination of several microservices, each responsible for specific attributes of a person. As a result, a PUT request that returns an error response code may still have altered some values of the person's data. Therefore, it is recommended to perform a GET request after encountering an error to verify the current state of the resource. \n\n* Some licenses are implicitly assigned by the system and cannot be admin controlled. They are necessary for the baseline function of the Webex system. If you get an error about implicitly assigned licensed that cannot be removed, please ensure you have the corresponding license in your PUT request.\n\n* When assigning multiple licenses in a single request, the system will assign all valid and available licenses. If any requested licenses cannot be assigned, the operation will continue with the remaining licenses. As a result, it is possible that not all requested licenses are assigned to the user."
+      description: 'Update details for a person, by ID.
+
+
+        Specify the person ID in the `personId` parameter in the URI. Only an admin can update a person details.
+
+
+        Include all details for the person. This action expects all user details to be present in the request. A common approach is to first GET the person''s details, make changes, then PUT both the changed and unchanged values.
+
+
+        Admin users can include `Webex Calling` (BroadCloud) user details in the response by specifying `callingData` parameter as true.
+
+
+        When doing attendee management, to update a user from host role to an attendee for a site append `#attendee` to the respective `siteUrl` and remove the meeting host license for this site from the license array.
+
+        To update a person from an attendee role to a host for a site, add the meeting license for this site in the meeting array, and remove that site from the `siteurl` parameter.
+
+
+        To remove the attendee privilege for a user on a meeting site, remove the `sitename#attendee` from the `siteUrl`s array. The `showAllTypes` parameter must be set to `true`.
+
+
+        **NOTE**:
+
+
+        * When assigning a Webex Calling license, either a telephone number or extension must already be assigned to the person or provided in the request payload.
+
+
+        * When `callingData` is set to `true`, a Webex Calling license must be included in the `licenses` array.
+
+
+        * The `locationId` can only be set when assigning a calling license to a user. It cannot be changed if a user is already an existing calling user.
+
+
+        * The `extension` field should be used to update the Webex Calling extension for a person. The extension value should not include the location routing prefix. The `work_extension` type in the `phoneNumbers` object as seen in the response payload of List People or Get Person Details, cannot be used to set the Webex Calling extension for a person.
+
+
+        * When updating a user with multiple email addresses using a PUT request, ensure that the primary email address is listed first in the array. Note that the order of email addresses returned by a GET request is not guaranteed..
+
+
+        * The People API is a combination of several microservices, each responsible for specific attributes of a person. As a result, a PUT request that returns an error response code may still have altered some values of the person''s data. Therefore, it is recommended to perform a GET request after encountering an error to verify the current state of the resource.
+
+
+        * Some licenses are implicitly assigned by the system and cannot be admin controlled. They are necessary for the baseline function of the Webex system. If you get an error about implicitly assigned licensed that cannot be removed, please ensure you have the corresponding license in your PUT request.
+
+
+        * When assigning multiple licenses in a single request, the system will assign all valid and available licenses. If any requested licenses cannot be assigned, the operation will continue with the remaining licenses. As a result, it is possible that not all requested licenses are assigned to the user.'
       tags:
       - People
       parameters:
@@ -1289,4 +1327,3 @@ x-refined-from:
 - webex-cloud-calling-openapi.json
 - webex-meeting-openapi.json
 - webex-messaging-openapi.json
-- webex-people-api-openapi.yml

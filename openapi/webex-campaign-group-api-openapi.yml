@@ -2,7 +2,7 @@ openapi: 3.2.0
 info:
   title: Webex Contact Center Campaign Group API
   version: 1.0.0
-  description: The Webex Contact Center APIs allow developers to deeply integrate, configure, and manage cloud-based contact center solutions. These APIs cover agent lifecycle management, queue and routing configuration, customer journey tracking, and access to real-time and historical analytics. Use cases include embedding agent controls in custom UIs, automating workforce management, integrating with CRM and ticketing systems, and building custom reporting dashboards. The APIs empower organizations to deliver personalized, efficient customer experiences and optimize contact center operations.
+  description: The Webex Contact Center APIs allow developers to deeply integrate, configure, and manage cloud-based contact center solutions.
   x-provenance:
     method: harvested
     authored_by: Cisco Webex
@@ -246,7 +246,7 @@ paths:
                 $ref: '#/components/schemas/GatewayTimeoutError'
 components:
   schemas:
-    NotFoundError:
+    ServiceUnavailableError:
       type: object
       required:
       - code
@@ -254,60 +254,46 @@ components:
       properties:
         code:
           type: integer
-          description: Application error code indicating resource not found.
-          example: 1004
+          enum:
+          - 503
+          description: HTTP status code for Service Unavailable.
+          example: 503
         message:
           type: string
-          description: A detailed error message explaining what resource was not found.
-          example: Campaign group 'Carshield_25May2026' not found.
+          description: A detailed error message explaining the service unavailability.
+          example: Service is temporarily unavailable. Please try again later.
         trackingId:
           type: string
           description: A unique identifier for this error that can be used for debugging purposes.
-          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f593
+          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f598
       example:
-        code: 1004
-        message: Campaign group 'Carshield_25May2026' not found.
-        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f593
-    ContactAttemptsStrategy:
+        code: 503
+        message: Service is temporarily unavailable. Please try again later.
+        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f598
+    TooManyRequestsError:
       type: object
-      description: Strategy that governs how many times and in what order contacts are attempted.
+      required:
+      - code
+      - message
       properties:
-        maxAttempts:
-          type: array
-          description: Maximum attempts for the interval.
-          items:
-            $ref: '#/components/schemas/MaxAttemptRule'
-        contactModesPriority:
-          type: array
-          description: Ordered priority of contact modes.
-          items:
-            $ref: '#/components/schemas/ContactModePriority'
-        sequentialDialing:
-          $ref: '#/components/schemas/SequentialDialing'
-        wrapUpCodesSet:
-          type: string
-          description: Name of the wrap-up codes set applied to the campaign.
-          example: Auto_Loans_WrapUpCodes_Set
-        telephonyOutcomeSet:
-          type: string
-          description: Name of the telephony outcome set applied to the campaign.
-          example: Auto_Loans_TelephonyOutcomes_Set
-    ContactModePriority:
-      type: object
-      properties:
-        mode:
-          type: string
-          description: Display name of the contact mode (e.g., `Home`, `Office`).
-          example: Home
-        priority:
+        code:
           type: integer
-          description: Priority order for the contact mode (lower is higher priority).
-          example: 1
-        maxCount:
-          type:
-          - integer
-          - 'null'
-          description: Maximum count for this contact mode.
+          enum:
+          - 429
+          description: HTTP status code for Too Many Requests.
+          example: 429
+        message:
+          type: string
+          description: A detailed error message explaining the rate limit.
+          example: Too many requests. Rate limit exceeded.
+        trackingId:
+          type: string
+          description: A unique identifier for this error that can be used for debugging purposes.
+          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f595
+      example:
+        code: 429
+        message: Too many requests. Rate limit exceeded.
+        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f595
     CycleInterval:
       type: object
       description: Time between dialing cycles, expressed in days/hours/minutes.
@@ -324,7 +310,7 @@ components:
           type: integer
           description: Minutes component.
           example: 30
-    ForbiddenError:
+    InternalServerError:
       type: object
       required:
       - code
@@ -332,46 +318,60 @@ components:
       properties:
         code:
           type: integer
-          enum:
-          - 403
-          description: HTTP status code for Forbidden.
-          example: 403
+          description: Application error code for the internal server error.
+          example: 1006
         message:
           type: string
-          description: A detailed error message explaining the authorization failure.
-          example: Feature is not enabled for this organization.
+          description: A detailed error message explaining the server error.
+          example: An unexpected error occurred while processing your request.
         trackingId:
           type: string
-          description: A unique identifier for this error that can be used for debugging purposes.
-          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f592
+          description: A unique identifier for this error that can be used for debugging purposes. Include this when contacting support.
+          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f596
       example:
-        code: 403
-        message: Feature is not enabled for this organization.
-        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f592
-    UnauthorizedError:
+        code: 1006
+        message: An unexpected error occurred while processing your request.
+        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f596
+    AdvancedScheduleDay:
       type: object
+      description: Advanced schedule entry describing one day of the week and its calling time slots.
       required:
-      - code
-      - message
+      - name
+      - day
+      - slots
       properties:
-        code:
-          type: integer
+        name:
+          type: string
+          description: Day-of-week name.
           enum:
-          - 401
-          description: HTTP status code for Unauthorized.
-          example: 401
-        message:
+          - Sunday
+          - Monday
+          - Tuesday
+          - Wednesday
+          - Thursday
+          - Friday
+          - Saturday
+          example: Monday
+        day:
           type: string
-          description: A detailed error message explaining the authentication failure.
-          example: Invalid or expired access token.
-        trackingId:
-          type: string
-          description: A unique identifier for this error that can be used for debugging purposes.
-          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f591
-      example:
-        code: 401
-        message: Invalid or expired access token.
-        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f591
+          description: Day-of-week index as a string. `1` = Sunday through `7` = Saturday.
+          enum:
+          - '1'
+          - '2'
+          - '3'
+          - '4'
+          - '5'
+          - '6'
+          - '7'
+          example: '2'
+        slots:
+          type: array
+          description: One or more start/end time slots active on this day.
+          items:
+            $ref: '#/components/schemas/ScheduleSlot'
+          example:
+          - startTime: 08:00
+            endTime: '20:00'
     CampaignBasicInfo:
       type: object
       description: Basic information for a campaign within a campaign group.
@@ -552,13 +552,7 @@ components:
           type: string
           description: End time of the schedule slot in HH:mm (24-hour) format.
           example: 06:00
-    ContactFlowPriority:
-      type: object
-      description: 'Defines how contacts are prioritized within the dialing flow. The shape of the object varies based on `priorityBasedOn`: `Contact Attribute` uses the `attributes` field; `FreshVsRetry` uses fresh/retry split fields.'
-      oneOf:
-      - $ref: '#/components/schemas/ContactAttributePriority'
-      - $ref: '#/components/schemas/FreshVsRetryPriority'
-    InternalServerError:
+    NotFoundError:
       type: object
       required:
       - code
@@ -566,114 +560,20 @@ components:
       properties:
         code:
           type: integer
-          description: Application error code for the internal server error.
-          example: 1006
+          description: Application error code indicating resource not found.
+          example: 1004
         message:
           type: string
-          description: A detailed error message explaining the server error.
-          example: An unexpected error occurred while processing your request.
-        trackingId:
-          type: string
-          description: A unique identifier for this error that can be used for debugging purposes. Include this when contacting support.
-          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f596
-      example:
-        code: 1006
-        message: An unexpected error occurred while processing your request.
-        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f596
-    BadRequestError:
-      type: object
-      required:
-      - code
-      - message
-      properties:
-        code:
-          type: integer
-          description: Application error code for the bad request.
-          example: 1001
-        message:
-          type: string
-          description: A detailed error message explaining what went wrong with the request.
-          example: Invalid pageSize. Allowed range is 1 to 100.
+          description: A detailed error message explaining what resource was not found.
+          example: Campaign group 'Carshield_25May2026' not found.
         trackingId:
           type: string
           description: A unique identifier for this error that can be used for debugging purposes.
-          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f594b
+          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f593
       example:
-        code: 1001
-        message: Invalid pageSize. Allowed range is 1 to 100.
-        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f594b
-    GatewayTimeoutError:
-      type: object
-      required:
-      - code
-      - message
-      properties:
-        code:
-          type: integer
-          enum:
-          - 504
-          description: HTTP status code for Gateway Timeout.
-          example: 504
-        message:
-          type: string
-          description: A detailed error message explaining the timeout.
-          example: The server did not receive a timely response from an upstream server.
-        trackingId:
-          type: string
-          description: A unique identifier for this error that can be used for debugging purposes.
-          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f599
-      example:
-        code: 504
-        message: The server did not receive a timely response from an upstream server.
-        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f599
-    ContactAttributePriority:
-      type: object
-      description: Contact-attribute-based priority. Contacts are ordered by the values of the named attributes.
-      properties:
-        priorityBasedOn:
-          type: string
-          description: Discriminator value indicating attribute-based priority.
-          enum:
-          - Contact Attribute
-          example: Contact Attribute
-        attributes:
-          type: array
-          description: Names of the contact attributes used for ordering.
-          items:
-            type: string
-          example:
-          - Outstanding_Balance
-        orderBy:
-          type: string
-          description: Sort order applied to the attribute values.
-          enum:
-          - Ascending
-          - Descending
-          example: Descending
-    TooManyRequestsError:
-      type: object
-      required:
-      - code
-      - message
-      properties:
-        code:
-          type: integer
-          enum:
-          - 429
-          description: HTTP status code for Too Many Requests.
-          example: 429
-        message:
-          type: string
-          description: A detailed error message explaining the rate limit.
-          example: Too many requests. Rate limit exceeded.
-        trackingId:
-          type: string
-          description: A unique identifier for this error that can be used for debugging purposes.
-          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f595
-      example:
-        code: 429
-        message: Too many requests. Rate limit exceeded.
-        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f595
+        code: 1004
+        message: Campaign group 'Carshield_25May2026' not found.
+        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f593
     MaxAttemptRule:
       type: object
       properties:
@@ -685,179 +585,6 @@ components:
           type: string
           description: Maximum number of attempts allowed in the interval.
           example: '4'
-    SequentialDialing:
-      type: object
-      description: Sequential dialing configuration for the campaign.
-      properties:
-        enabled:
-          type: integer
-          description: Whether sequential dialing is enabled. `1` for enabled, `0` for disabled.
-          enum:
-          - 0
-          - 1
-          example: 1
-        noOfCycles:
-          type: integer
-          description: Maximum number of dialing cycles.
-          example: 5
-        cycleInterval:
-          $ref: '#/components/schemas/CycleInterval'
-    FreshVsRetryPriority:
-      type: object
-      description: Fresh-versus-retry priority. Splits dialing capacity between brand-new contacts and retry attempts using the configured percentages and ordering.
-      properties:
-        priorityBasedOn:
-          type: string
-          description: Discriminator value indicating fresh-versus-retry priority.
-          enum:
-          - FreshVsRetry
-          example: FreshVsRetry
-        retryPercentage:
-          type: string
-          description: Percentage of dialing capacity allocated to retry attempts. Combined with `freshPercentage` should equal 100.
-          example: '45'
-        retryPriority:
-          type: string
-          description: Order in which retry contacts are picked.
-          enum:
-          - FIFO
-          - LIFO
-          example: LIFO
-        freshPercentage:
-          type: string
-          description: Percentage of dialing capacity allocated to fresh contacts. Combined with `retryPercentage` should equal 100.
-          example: '55'
-        freshPriority:
-          type: string
-          description: Order in which fresh contacts are picked.
-          enum:
-          - FIFO
-          - LIFO
-          example: FIFO
-    AdvancedScheduleDay:
-      type: object
-      description: Advanced schedule entry describing one day of the week and its calling time slots.
-      required:
-      - name
-      - day
-      - slots
-      properties:
-        name:
-          type: string
-          description: Day-of-week name.
-          enum:
-          - Sunday
-          - Monday
-          - Tuesday
-          - Wednesday
-          - Thursday
-          - Friday
-          - Saturday
-          example: Monday
-        day:
-          type: string
-          description: Day-of-week index as a string. `1` = Sunday through `7` = Saturday.
-          enum:
-          - '1'
-          - '2'
-          - '3'
-          - '4'
-          - '5'
-          - '6'
-          - '7'
-          example: '2'
-        slots:
-          type: array
-          description: One or more start/end time slots active on this day.
-          items:
-            $ref: '#/components/schemas/ScheduleSlot'
-          example:
-          - startTime: 08:00
-            endTime: '20:00'
-    PaginationInfo:
-      type: object
-      description: Pagination metadata for a paged response.
-      required:
-      - page
-      - pageSize
-      - totalCount
-      - totalPages
-      properties:
-        page:
-          type: integer
-          description: Current page number (1-based).
-          example: 1
-        pageSize:
-          type: integer
-          description: Number of items returned per page.
-          example: 20
-        totalCount:
-          type: integer
-          description: Total number of campaigns matching the query.
-          example: 14
-        totalPages:
-          type: integer
-          description: Total number of pages available for the query.
-          example: 1
-    ServiceUnavailableError:
-      type: object
-      required:
-      - code
-      - message
-      properties:
-        code:
-          type: integer
-          enum:
-          - 503
-          description: HTTP status code for Service Unavailable.
-          example: 503
-        message:
-          type: string
-          description: A detailed error message explaining the service unavailability.
-          example: Service is temporarily unavailable. Please try again later.
-        trackingId:
-          type: string
-          description: A unique identifier for this error that can be used for debugging purposes.
-          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f598
-      example:
-        code: 503
-        message: Service is temporarily unavailable. Please try again later.
-        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f598
-    SafeCallingWindow:
-      type: object
-      properties:
-        scwStartTime:
-          type: string
-          description: Start time of the safe-calling window in HH:mm (24-hour) format.
-          example: 08:00
-        scwEndTime:
-          type: string
-          description: End time of the safe-calling window in HH:mm (24-hour) format.
-          example: '20:00'
-    BadGatewayError:
-      type: object
-      required:
-      - code
-      - message
-      properties:
-        code:
-          type: integer
-          enum:
-          - 502
-          description: HTTP status code for Bad Gateway.
-          example: 502
-        message:
-          type: string
-          description: A detailed error message explaining the gateway error.
-          example: The server received an invalid response from an upstream server.
-        trackingId:
-          type: string
-          description: A unique identifier for this error that can be used for debugging purposes.
-          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f597
-      example:
-        code: 502
-        message: The server received an invalid response from an upstream server.
-        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f597
     GetCampaignListResponse:
       type: object
       description: Response payload for retrieving campaigns within a campaign group, including pagination metadata.
@@ -909,6 +636,279 @@ components:
             $ref: '#/components/schemas/CampaignBasicInfo'
         pagination:
           $ref: '#/components/schemas/PaginationInfo'
+    ContactAttemptsStrategy:
+      type: object
+      description: Strategy that governs how many times and in what order contacts are attempted.
+      properties:
+        maxAttempts:
+          type: array
+          description: Maximum attempts for the interval.
+          items:
+            $ref: '#/components/schemas/MaxAttemptRule'
+        contactModesPriority:
+          type: array
+          description: Ordered priority of contact modes.
+          items:
+            $ref: '#/components/schemas/ContactModePriority'
+        sequentialDialing:
+          $ref: '#/components/schemas/SequentialDialing'
+        wrapUpCodesSet:
+          type: string
+          description: Name of the wrap-up codes set applied to the campaign.
+          example: Auto_Loans_WrapUpCodes_Set
+        telephonyOutcomeSet:
+          type: string
+          description: Name of the telephony outcome set applied to the campaign.
+          example: Auto_Loans_TelephonyOutcomes_Set
+    BadGatewayError:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: integer
+          enum:
+          - 502
+          description: HTTP status code for Bad Gateway.
+          example: 502
+        message:
+          type: string
+          description: A detailed error message explaining the gateway error.
+          example: The server received an invalid response from an upstream server.
+        trackingId:
+          type: string
+          description: A unique identifier for this error that can be used for debugging purposes.
+          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f597
+      example:
+        code: 502
+        message: The server received an invalid response from an upstream server.
+        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f597
+    ContactModePriority:
+      type: object
+      properties:
+        mode:
+          type: string
+          description: Display name of the contact mode (e.g., `Home`, `Office`).
+          example: Home
+        priority:
+          type: integer
+          description: Priority order for the contact mode (lower is higher priority).
+          example: 1
+        maxCount:
+          type:
+          - integer
+          - 'null'
+          description: Maximum count for this contact mode.
+    GatewayTimeoutError:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: integer
+          enum:
+          - 504
+          description: HTTP status code for Gateway Timeout.
+          example: 504
+        message:
+          type: string
+          description: A detailed error message explaining the timeout.
+          example: The server did not receive a timely response from an upstream server.
+        trackingId:
+          type: string
+          description: A unique identifier for this error that can be used for debugging purposes.
+          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f599
+      example:
+        code: 504
+        message: The server did not receive a timely response from an upstream server.
+        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f599
+    ForbiddenError:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: integer
+          enum:
+          - 403
+          description: HTTP status code for Forbidden.
+          example: 403
+        message:
+          type: string
+          description: A detailed error message explaining the authorization failure.
+          example: Feature is not enabled for this organization.
+        trackingId:
+          type: string
+          description: A unique identifier for this error that can be used for debugging purposes.
+          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f592
+      example:
+        code: 403
+        message: Feature is not enabled for this organization.
+        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f592
+    ContactAttributePriority:
+      type: object
+      description: Contact-attribute-based priority. Contacts are ordered by the values of the named attributes.
+      properties:
+        priorityBasedOn:
+          type: string
+          description: Discriminator value indicating attribute-based priority.
+          enum:
+          - Contact Attribute
+          example: Contact Attribute
+        attributes:
+          type: array
+          description: Names of the contact attributes used for ordering.
+          items:
+            type: string
+          example:
+          - Outstanding_Balance
+        orderBy:
+          type: string
+          description: Sort order applied to the attribute values.
+          enum:
+          - Ascending
+          - Descending
+          example: Descending
+    SequentialDialing:
+      type: object
+      description: Sequential dialing configuration for the campaign.
+      properties:
+        enabled:
+          type: integer
+          description: Whether sequential dialing is enabled. `1` for enabled, `0` for disabled.
+          enum:
+          - 0
+          - 1
+          example: 1
+        noOfCycles:
+          type: integer
+          description: Maximum number of dialing cycles.
+          example: 5
+        cycleInterval:
+          $ref: '#/components/schemas/CycleInterval'
+    BadRequestError:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: integer
+          description: Application error code for the bad request.
+          example: 1001
+        message:
+          type: string
+          description: A detailed error message explaining what went wrong with the request.
+          example: Invalid pageSize. Allowed range is 1 to 100.
+        trackingId:
+          type: string
+          description: A unique identifier for this error that can be used for debugging purposes.
+          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f594b
+      example:
+        code: 1001
+        message: Invalid pageSize. Allowed range is 1 to 100.
+        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f594b
+    SafeCallingWindow:
+      type: object
+      properties:
+        scwStartTime:
+          type: string
+          description: Start time of the safe-calling window in HH:mm (24-hour) format.
+          example: 08:00
+        scwEndTime:
+          type: string
+          description: End time of the safe-calling window in HH:mm (24-hour) format.
+          example: '20:00'
+    PaginationInfo:
+      type: object
+      description: Pagination metadata for a paged response.
+      required:
+      - page
+      - pageSize
+      - totalCount
+      - totalPages
+      properties:
+        page:
+          type: integer
+          description: Current page number (1-based).
+          example: 1
+        pageSize:
+          type: integer
+          description: Number of items returned per page.
+          example: 20
+        totalCount:
+          type: integer
+          description: Total number of campaigns matching the query.
+          example: 14
+        totalPages:
+          type: integer
+          description: Total number of pages available for the query.
+          example: 1
+    ContactFlowPriority:
+      type: object
+      description: 'Defines how contacts are prioritized within the dialing flow. The shape of the object varies based on `priorityBasedOn`: `Contact Attribute` uses the `attributes` field; `FreshVsRetry` uses fresh/retry split fields.'
+      oneOf:
+      - $ref: '#/components/schemas/ContactAttributePriority'
+      - $ref: '#/components/schemas/FreshVsRetryPriority'
+    UnauthorizedError:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: integer
+          enum:
+          - 401
+          description: HTTP status code for Unauthorized.
+          example: 401
+        message:
+          type: string
+          description: A detailed error message explaining the authentication failure.
+          example: Invalid or expired access token.
+        trackingId:
+          type: string
+          description: A unique identifier for this error that can be used for debugging purposes.
+          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f591
+      example:
+        code: 401
+        message: Invalid or expired access token.
+        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f591
+    FreshVsRetryPriority:
+      type: object
+      description: Fresh-versus-retry priority. Splits dialing capacity between brand-new contacts and retry attempts using the configured percentages and ordering.
+      properties:
+        priorityBasedOn:
+          type: string
+          description: Discriminator value indicating fresh-versus-retry priority.
+          enum:
+          - FreshVsRetry
+          example: FreshVsRetry
+        retryPercentage:
+          type: string
+          description: Percentage of dialing capacity allocated to retry attempts. Combined with `freshPercentage` should equal 100.
+          example: '45'
+        retryPriority:
+          type: string
+          description: Order in which retry contacts are picked.
+          enum:
+          - FIFO
+          - LIFO
+          example: LIFO
+        freshPercentage:
+          type: string
+          description: Percentage of dialing capacity allocated to fresh contacts. Combined with `retryPercentage` should equal 100.
+          example: '55'
+        freshPriority:
+          type: string
+          description: Order in which fresh contacts are picked.
+          enum:
+          - FIFO
+          - LIFO
+          example: FIFO
   securitySchemes:
     oauth2:
       flows:

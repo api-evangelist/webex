@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: Webex BroadWorks Subscribers API
+  title: Webex Broadworks Calling BroadWorks Subscribers API
   version: 1.0.0
-  description: 'Operations tagged BroadWorks Subscribers across 2 of this provider''s published API definitions: webex-broadworks-openapi.json, webex-broadworks-subscribers-api-openapi.yml. Each path carries the servers of the definition it was published in.'
+  description: The Webex BroadWorks Calling APIs provide access to advanced calling features and user management for BroadWorks-powered Webex Calling deployments.
   x-provenance:
     method: harvested
     authored_by: Cisco Webex
@@ -11,7 +11,6 @@ info:
     first_party: true
     note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
     provider_published: true
-    derived_view: Per-tag view of the provider's source document. Operations and schemas are the provider's, unmodified; only the partition is ours.
   x-evidence:
   - type: source
     url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-broadworks.json
@@ -431,7 +430,12 @@ paths:
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Update a BroadWorks Subscriber
       operationId: Update a BroadWorks Subscriber
-      description: "This API lets a Service Provider update certain details of a provisioned BroadWorks subscriber\non Webex.\n\n<div>\n        <Callout type='info'>The updated items will not be immediately reflected in the response body, but can be subsequently obtained via the [Get a BroadWorks Subscriber](/docs/api/v1/broadworks-subscribers/get-a-broadworks-subscriber) API once the status has transitioned from the updating state to the provisioned state.</Callout>\n</div>"
+      description: 'This API lets a Service Provider update certain details of a provisioned BroadWorks subscriber
+
+        on Webex.
+
+
+        The updated items will not be immediately reflected in the response body, but can be subsequently obtained via the Get a BroadWorks Subscriber API once the status has transitioned from the updating state to the provisioned state.'
       tags:
       - BroadWorks Subscribers
       parameters:
@@ -588,15 +592,7 @@ paths:
       description: 'Verify the likely success of provisioning a broadworks subscriber.
 
 
-        <div>
-
-        <Callout type=''info''>
-
-        The Prerequisite for using this API is to have at least one Broadworks Cluster configured against partner using Partner Hub. The Provisioning Precheck APIs supports two variants of Broadworks Provisioning Precheck Requests. Please refer to [Using the Provisioning Precheck API](/docs/api/guides/webex-for-broadworks-developers-guide#using-the-precheck-provisioning-api) section in [Webex for BroadWorks](/docs/api/guides/webex-for-broadworks-developers-guide) guide for more information.
-
-        </Callout>
-
-        </div>'
+        The Prerequisite for using this API is to have at least one Broadworks Cluster configured against partner using Partner Hub. The Provisioning Precheck APIs supports two variants of Broadworks Provisioning Precheck Requests. Please refer to Using the Provisioning Precheck API section in Webex for BroadWorks guide for more information.'
       tags:
       - BroadWorks Subscribers
       parameters: []
@@ -726,14 +722,25 @@ paths:
           type: string
 components:
   schemas:
-    SubscriberListResponse:
+    SubscriberProvisioningPrecheckResponse:
       type: object
       properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/Subscriber'
-          description: An array of Subscriber objects.
+        message:
+          type: string
+          example: success
+          description: A textual representation of the Precheck response message containing the `infoCode` object in the case of a success response and the `errorCode` object in the case of failure.
+        info:
+          type: object
+          properties:
+            infoCode:
+              type: number
+              example: 100
+              description: Provisioning Precheck `infoCode`.
+            description:
+              type: string
+              example: Provisioning Precheck validation successful.
+              description: A textual description of the `infoCode`.
+          description: A list of `ProvisioningPreCheckResponseInfo` objects.
     Subscriber:
       type: object
       properties:
@@ -816,25 +823,6 @@ components:
         selfActivated:
           type: boolean
           description: Indicates if the subscriber was self activated, rather than provisioned via these APIs.
-    SubscriberProvisioningPrecheckResponse:
-      type: object
-      properties:
-        message:
-          type: string
-          example: success
-          description: A textual representation of the Precheck response message containing the `infoCode` object in the case of a success response and the `errorCode` object in the case of failure.
-        info:
-          type: object
-          properties:
-            infoCode:
-              type: number
-              example: 100
-              description: Provisioning Precheck `infoCode`.
-            description:
-              type: string
-              example: Provisioning Precheck validation successful.
-              description: A textual description of the `infoCode`.
-          description: A list of `ProvisioningPreCheckResponseInfo` objects.
     Error:
       type: object
       properties:
@@ -846,6 +834,14 @@ components:
           type: string
           example: The BroadWorks UserID is already associated with an existing user.
           description: A description of the error.
+    SubscriberListResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Subscriber'
+          description: An array of Subscriber objects.
   securitySchemes:
     oauth2:
       flows:
@@ -864,6 +860,3 @@ components:
       description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
       scheme: bearer
       bearerFormat: JWT
-x-refined-from:
-- webex-broadworks-openapi.json
-- webex-broadworks-subscribers-api-openapi.yml

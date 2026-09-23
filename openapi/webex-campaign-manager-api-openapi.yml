@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: Webex Campaign Manager API
+  title: Webex Contact Center Campaign Manager API
   version: 1.0.0
-  description: 'Operations tagged Campaign Manager across 2 of this provider''s published API definitions: webex-campaign-manager-api-openapi.yml, webex-contact-center-openapi.json. Each path carries the servers of the definition it was published in.'
+  description: The Webex Contact Center APIs allow developers to deeply integrate, configure, and manage cloud-based contact center solutions.
   x-provenance:
     method: harvested
     authored_by: Cisco Webex
@@ -11,9 +11,6 @@ info:
     first_party: true
     note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
     provider_published: true
-    derived_view: Per-tag view of webex-contact-center-openapi.json, the provider's source document. Operations and schemas are the provider's, unmodified; only the partition is ours.
-    derived_from: webex-contact-center-openapi.json
-    operation_coverage: 4/4
   x-evidence:
   - type: source
     url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-contact-center.json
@@ -43,75 +40,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/CampaignListResponse'
         '400':
-          description: Incorrect fields in request
+          description: Bad Request
         '401':
-          description: Invalid or absent Authorization header
+          description: Unauthorized, Token is Invalid
         '403':
-          description: Invalid OAuth 2.0 Bearer Token
-        '500':
-          description: Internal Server Error
-        '503':
-          description: Service Unavailable
-  /v1/dialer/campaign/{campaignId}:
-    put:
-      tags:
-      - Campaign Manager
-      summary: Update Campaign Request
-      description: 'By using an update campaign API, businesses can automate the process of modifying and managing outbound campaigns, and integrate campaign updates into their existing workflows or applications. This can help to improve efficiency and reduce errors, as well as allow for greater flexibility and control over outbound campaigns. Requires ''cjp.config_write'' scope and one of the following roles: ''cjp.admin'',''id_full_admin'',''atlas-portal.partner.salesadmin'',''atlas-portal.partner.provision_admin'' for authorization.'
-      operationId: updateCampaignRoute
-      parameters:
-      - name: campaignId
-        in: path
-        description: The unique request id of the campaign that needs to be updated
-        required: true
-        schema:
-          type: string
-        example: Campaign1
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateCampaignRequest'
-      responses:
-        '202':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CampaignListResponse'
-          description: The campaign was updated successfully
-        '400':
-          description: Incorrect fields in request
-        '401':
-          description: Invalid or absent Authorization header
-        '403':
-          description: Invalid OAuth 2.0 Bearer Token
-        '500':
-          description: Internal Server Error
-        '503':
-          description: Service Unavailable
-    delete:
-      tags:
-      - Campaign Manager
-      summary: Stop Campaign Request
-      description: 'The stop campaign API enables businesses to automate the process of managing outbound campaigns and integrate campaign deletion into their existing workflows or applications. Requires ''cjp.config_write'' scope and one of the following roles: ''cjp.admin'',''id_full_admin'',''atlas-portal.partner.salesadmin'',''atlas-portal.partner.provision_admin'' for authorization.'
-      operationId: stopCampaignRoute
-      parameters:
-      - name: campaignId
-        in: path
-        description: The unique request id of the campaign that needs to be stopped
-        required: true
-        schema:
-          type: string
-        example: Campaign1
-      responses:
-        '204':
-          description: The campaign was stopped.
-        '400':
-          description: Incorrect fields in request
-        '401':
-          description: Invalid or absent Authorization header
-        '403':
-          description: Invalid OAuth 2.0 Bearer Token
+          description: Forbidden Request
         '500':
           description: Internal Server Error
         '503':
@@ -168,71 +101,72 @@ paths:
           description: Internal Server Error
         '503':
           description: Service Unavailable
+  /v1/dialer/campaign/{campaignId}:
+    put:
+      tags:
+      - Campaign Manager
+      summary: Update Campaign Request
+      description: 'By using an update campaign API, businesses can automate the process of modifying and managing outbound campaigns, and integrate campaign updates into their existing workflows or applications. This can help to improve efficiency and reduce errors, as well as allow for greater flexibility and control over outbound campaigns. Requires ''cjp.config_write'' scope and one of the following roles: ''cjp.admin'',''id_full_admin'',''atlas-portal.partner.salesadmin'',''atlas-portal.partner.provision_admin'' for authorization.'
+      operationId: updateCampaignRoute
+      parameters:
+      - name: campaignId
+        in: path
+        description: The unique request id of the campaign that needs to be updated
+        required: true
+        schema:
+          type: string
+        example: Campaign1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCampaignRequest'
+      responses:
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignListResponse'
+          description: The campaign was updated successfully
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized, Token is Invalid
+        '403':
+          description: Forbidden Request
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+    delete:
+      tags:
+      - Campaign Manager
+      summary: Stop Campaign Request
+      description: 'The stop campaign API enables businesses to automate the process of managing outbound campaigns and integrate campaign deletion into their existing workflows or applications. Requires ''cjp.config_write'' scope and one of the following roles: ''cjp.admin'',''id_full_admin'',''atlas-portal.partner.salesadmin'',''atlas-portal.partner.provision_admin'' for authorization.'
+      operationId: stopCampaignRoute
+      parameters:
+      - name: campaignId
+        in: path
+        description: The unique request id of the campaign that needs to be stopped
+        required: true
+        schema:
+          type: string
+        example: Campaign1
+      responses:
+        '204':
+          description: The campaign was stopped.
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized, Token is Invalid
+        '403':
+          description: Forbidden Request
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
 components:
   schemas:
-    UpdateCampaignRequest:
-      required:
-      - dialingRate
-      - dialingListFetchURL
-      - outdialANI
-      type: object
-      properties:
-        dialingRate:
-          type: number
-          format: float
-          description: Number of contacts to be dialed out per available Agent. For Progressive 1:1 Dialer, it will support for only 1 contact and for Progressive 1:N Dialer it can support upto 10 contacts to be dialed out per available Agent
-          example: 1
-        campaignName:
-          type: string
-          description: (Optional) Used if different than id, maximum length 64 characters.
-          example: campaign1
-        authToken:
-          type: string
-          description: (Not in use) The token needed by the dialer for querying records.
-          example: Bearer <AuthToken>
-        dialingListFetchURL:
-          type: string
-          description: URL the dialer will use to fetch the list of contacts to dial for the campaign from campaign manager, maximum length 1024 characters.
-          example: campaignMgr/v1/<campaignId>/dialinglist/
-        outdialANI:
-          type: string
-          description: The ANI (E164)  that will be presented to the customer. These must be restricted to the configured outdial Eps in Webex Contact Center, maximum length 50 characters.
-          example: '9784330011'
-        noAnswerRingLimit:
-          type: integer
-          description: (Optional) Number of seconds before a dialed call from the dialer is considered not answered. The range is from 16 to 80, default is 32. This field is not applicable for Direct preview campaigns.
-          example: 32
-        maxDialingRate:
-          type: number
-          format: float
-          description: Caps the maximum dialing rate per agent at this value. The range is from 1.0 to 10.0, default is 1.0.
-          example: 10
-        reservationPercentage:
-          type: integer
-          description: (Not in use) The percentage of agents to reserve within the queue associated with the campaign. The range is from 0 to 100 , default is 100.
-          example: 50
-        previewOfferTimeout:
-          type: integer
-          description: (Required only if previewOfferTimeoutAutoAction is provided) The number of seconds dialer waits for an agent to act on a preview campaign record, before performing the provided previewOfferTimeoutAutoAction. The range is from 0 to 7200 seconds(2 hours) for ACCEPT auto-action, and from 10 to 7200 seconds(2 hours) for other auto-actions. The default value is 600 seconds(10 minutes).
-          example: 300
-        previewOfferTimeoutAutoAction:
-          type: string
-          description: (Required only if previewOfferTimeout is provided) The automatic action to be performed after the previewOfferTimeout duration has elapsed, if agent takes no action on the preview campaign record offered. The action can be "ACCEPT", "SKIP" or "REMOVE". The default action is "SKIP".
-          example: ACCEPT
-        previewActionsDisabled:
-          type: array
-          items:
-            type: string
-          description: (Optional) The list of preview actions to be disabled for the agent when a preview campaign record is offered. The list can be empty if no action should be disabled, otherwise it can be either "SKIP" or "REMOVE" or both. The default is an empty list
-          example: '["SKIP", "REMOVE"]'
-    MetaSubInfo:
-      properties:
-        orgId:
-          description: Organization ID used for this operation.
-          example: 97cdbf45-ebe2-4687-8341-44d5c7abf101
-          format: uuid
-          type: string
-      type: object
     StartCampaignRequest:
       required:
       - id
@@ -333,15 +267,15 @@ components:
             type: string
           description: (Optional) The list of preview actions to be disabled for the agent when a preview campaign record is offered. Can be empty if no action should be disabled, otherwise should be one of "SKIP", "REMOVE" or both. The default is an empty list
           example: '["SKIP", "REMOVE"]'
-    CampaignURLResponse:
+        validCampaignTimes:
+          $ref: '#/components/schemas/ValidCampaignTimes'
+    MetaSubInfo:
       properties:
-        location:
-          description: Returns the url for performing subsequent campaign updates or campaign stop
-          example: https://api.wxcc-<dc>.cisco.com/v1/dialer/campaign/<campaignId>
-          format: url
+        orgId:
+          description: Organization ID used for this operation.
+          example: 97cdbf45-ebe2-4687-8341-44d5c7abf101
+          format: uuid
           type: string
-      required:
-      - location
       type: object
     CampaignListResponse:
       properties:
@@ -355,6 +289,52 @@ components:
       - data
       - meta
       type: object
+    WeeklyShiftSchedule:
+      type: object
+      required:
+      - monday
+      - tuesday
+      - wednesday
+      - thursday
+      - friday
+      - saturday
+      - sunday
+      properties:
+        monday:
+          type: array
+          items:
+            $ref: '#/components/schemas/ShiftTime'
+          description: List of shift times for Monday. Can be empty if no shifts are scheduled.
+        tuesday:
+          type: array
+          items:
+            $ref: '#/components/schemas/ShiftTime'
+          description: List of shift times for Tuesday. Can be empty if no shifts are scheduled.
+        wednesday:
+          type: array
+          items:
+            $ref: '#/components/schemas/ShiftTime'
+          description: List of shift times for Wednesday. Can be empty if no shifts are scheduled.
+        thursday:
+          type: array
+          items:
+            $ref: '#/components/schemas/ShiftTime'
+          description: List of shift times for Thursday. Can be empty if no shifts are scheduled.
+        friday:
+          type: array
+          items:
+            $ref: '#/components/schemas/ShiftTime'
+          description: List of shift times for Friday. Can be empty if no shifts are scheduled.
+        saturday:
+          type: array
+          items:
+            $ref: '#/components/schemas/ShiftTime'
+          description: List of shift times for Saturday. Can be empty if no shifts are scheduled.
+        sunday:
+          type: array
+          items:
+            $ref: '#/components/schemas/ShiftTime'
+          description: List of shift times for Sunday. Can be empty if no shifts are scheduled.
     CallProgressAnalysisParamsRequest:
       type: object
       description: (Optional) Call Progressive Params details. This is used for Progressive 1:N Dialer.
@@ -391,6 +371,156 @@ components:
           type: boolean
           description: (Optional) Determines if CPA should wait for the terminating tone of a voicemail before concluding. amdEnabled must be true when terminatingToneDetect is set to true, default is false.
           example: true
+    ValidCampaignTimes:
+      type: object
+      description: (Optional) Defines the valid operating hours for the campaign based on a weekly schedule and optional date-specific overrides. The campaign will only be active during the specified time windows.
+      required:
+      - timeZone
+      - weeklySchedule
+      properties:
+        timeZone:
+          type: string
+          description: The IANA timezone name (e.g., 'America/New_York') that defines the timezone for all shift times in the schedule. This timezone is used to interpret the start and end times in the weekly schedule and date overrides.
+          example: America/New_York
+        weeklySchedule:
+          $ref: '#/components/schemas/WeeklyShiftSchedule'
+          description: The recurring weekly schedule that defines when the campaign should be active. Each day of the week can have multiple shift time ranges.
+        dateOverrides:
+          type: array
+          items:
+            $ref: '#/components/schemas/DateOverride'
+          description: Optional list of date-specific schedule overrides that take precedence over the weekly schedule for particular dates (e.g., holidays, special events).
+      example:
+        timeZone: America/New_York
+        weeklySchedule:
+          monday:
+          - start: 09:00
+            end: '13:00'
+          - start: '14:00'
+            end: '18:00'
+          tuesday:
+          - start: 09:00
+            end: '17:00'
+          wednesday:
+          - start: '10:00'
+            end: '14:00'
+          thursday:
+          - start: 09:00
+            end: '13:00'
+          - start: '14:00'
+            end: '18:00'
+          friday:
+          - start: 09:00
+            end: '12:00'
+          saturday:
+          - start: '10:00'
+            end: '15:00'
+          sunday: []
+        dateOverrides:
+        - date: '2025-08-15'
+          shiftTimes:
+          - start: '11:00'
+            end: '16:00'
+    CampaignURLResponse:
+      properties:
+        location:
+          description: Returns the url for performing subsequent campaign updates or campaign stop
+          example: https://api.wxcc-<dc>.cisco.com/v1/dialer/campaign/<campaignId>
+          format: url
+          type: string
+      required:
+      - location
+      type: object
+    ShiftTime:
+      type: object
+      required:
+      - start
+      - end
+      properties:
+        start:
+          type: string
+          pattern: ^([0-1][0-9]|2[0-3]):[0-5][0-9]$
+          description: The start time of the shift in 24-hour format (HH:MM). Must be earlier than the end time.
+          example: 09:00
+        end:
+          type: string
+          pattern: ^([0-1][0-9]|2[0-3]):[0-5][0-9]$
+          description: The end time of the shift in 24-hour format (HH:MM). Must be later than the start time.
+          example: '17:00'
+    UpdateCampaignRequest:
+      required:
+      - dialingRate
+      - dialingListFetchURL
+      - outdialANI
+      type: object
+      properties:
+        dialingRate:
+          type: number
+          format: float
+          description: Number of contacts to be dialed out per available Agent. For Progressive 1:1 Dialer, it will support for only 1 contact and for Progressive 1:N Dialer it can support upto 10 contacts to be dialed out per available Agent
+          example: 1
+        campaignName:
+          type: string
+          description: (Optional) Used if different than id, maximum length 64 characters.
+          example: campaign1
+        authToken:
+          type: string
+          description: (Not in use) The token needed by the dialer for querying records.
+          example: Bearer <AuthToken>
+        dialingListFetchURL:
+          type: string
+          description: URL the dialer will use to fetch the list of contacts to dial for the campaign from campaign manager, maximum length 1024 characters.
+          example: campaignMgr/v1/<campaignId>/dialinglist/
+        outdialANI:
+          type: string
+          description: The ANI (E164)  that will be presented to the customer. These must be restricted to the configured outdial Eps in Webex Contact Center, maximum length 50 characters.
+          example: '9784330011'
+        noAnswerRingLimit:
+          type: integer
+          description: (Optional) Number of seconds before a dialed call from the dialer is considered not answered. The range is from 16 to 80, default is 32. This field is not applicable for Direct preview campaigns.
+          example: 32
+        maxDialingRate:
+          type: number
+          format: float
+          description: Caps the maximum dialing rate per agent at this value. The range is from 1.0 to 10.0, default is 1.0.
+          example: 10
+        reservationPercentage:
+          type: integer
+          description: (Not in use) The percentage of agents to reserve within the queue associated with the campaign. The range is from 0 to 100 , default is 100.
+          example: 50
+        previewOfferTimeout:
+          type: integer
+          description: (Required only if previewOfferTimeoutAutoAction is provided) The number of seconds dialer waits for an agent to act on a preview campaign record, before performing the provided previewOfferTimeoutAutoAction. The range is from 0 to 7200 seconds(2 hours) for ACCEPT auto-action, and from 10 to 7200 seconds(2 hours) for other auto-actions. The default value is 600 seconds(10 minutes).
+          example: 300
+        previewOfferTimeoutAutoAction:
+          type: string
+          description: (Required only if previewOfferTimeout is provided) The automatic action to be performed after the previewOfferTimeout duration has elapsed, if agent takes no action on the preview campaign record offered. The action can be "ACCEPT", "SKIP" or "REMOVE". The default action is "SKIP".
+          example: ACCEPT
+        previewActionsDisabled:
+          type: array
+          items:
+            type: string
+          description: (Optional) The list of preview actions to be disabled for the agent when a preview campaign record is offered. The list can be empty if no action should be disabled, otherwise it can be either "SKIP" or "REMOVE" or both. The default is an empty list
+          example: '["SKIP", "REMOVE"]'
+        validCampaignTimes:
+          $ref: '#/components/schemas/ValidCampaignTimes'
+    DateOverride:
+      type: object
+      required:
+      - date
+      - shiftTimes
+      properties:
+        date:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}$
+          description: The specific date for which the shift schedule should be overridden, in YYYY-MM-DD format.
+          example: '2025-08-15'
+        shiftTimes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ShiftTime'
+          minItems: 0
+          description: The list of shift times that apply on this specific date, overriding the weekly schedule. An empty array indicates no shifts are scheduled for this date (e.g., holidays, company closures).
   securitySchemes:
     oauth2:
       flows:
@@ -404,15 +534,6 @@ components:
       description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
       scheme: bearer
       bearerFormat: JWT
-    bearerAuth:
-      type: oauth2
-      description: OAuth 2.0 Bearer token authentication
-      flows:
-        authorizationCode:
-          authorizationUrl: https://webexapis.com/v1/authorize
-          tokenUrl: https://webexapis.com/v1/access_token
-          scopes:
-            spark:applications_token: Create access tokens for Service Apps
     BEARER_TOKEN_FROM_CI:
       type: http
       in: header
@@ -422,6 +543,8 @@ components:
       description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
       scheme: bearer
       bearerFormat: JWT
-x-refined-from:
-- webex-campaign-manager-api-openapi.yml
-- webex-contact-center-openapi.json
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT bearer token authentication. Obtain your token from the Webex Developer Portal.

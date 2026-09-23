@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: Webex Admin Audit Events API
+  title: Webex Admin Admin Audit Events API
   version: 1.0.0
-  description: 'Operations tagged Admin Audit Events across 2 of this provider''s published API definitions: webex-admin-audit-events-api-openapi.yml, webex-admin-openapi.json. Each path carries the servers of the definition it was published in.'
+  description: The Webex Admin APIs provide comprehensive programmatic access to administrative functions for managing Webex organizations, users, licenses, and settings.
   x-provenance:
     method: harvested
     authored_by: Cisco Webex
@@ -11,7 +11,6 @@ info:
     first_party: true
     note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
     provider_published: true
-    derived_view: Per-tag view of the provider's source document. Operations and schemas are the provider's, unmodified; only the partition is ours.
   x-evidence:
   - type: source
     url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-admin.json
@@ -91,7 +90,7 @@ paths:
       description: 'List admin audit events in your organization. Several query parameters are available to filter the response.
 
 
-        Long result sets will be split into [pages](/docs/basics#pagination).
+        Long result sets will be split into pages.
 
 
         **NOTE**: A maximum of one year of audit events can be returned per request.'
@@ -289,6 +288,14 @@ components:
           type: string
           example: MjQ4Njg2OTYtYWMwZC00ODY4LWJkMjEtZGUxZDc4MzhjOTdm
           description: The `personId` of the person who made the change.
+    AuditEventCollectionResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuditEvent'
+          description: An array of audit event objects. See [this article](https://help.webex.com/n3b0w6x/) for details about each event type.
     AdminRolesEnum:
       type: string
       enum:
@@ -303,14 +310,6 @@ components:
           items:
             type: string
           description: An array of audit event categories.
-    AuditEventCollectionResponse:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/AuditEvent'
-          description: An array of audit event objects. See [this article](https://help.webex.com/n3b0w6x/) for details about each event type.
   securitySchemes:
     oauth2:
       flows:
@@ -333,6 +332,3 @@ components:
           tokenUrl: https://webexapis.com/v1/access_token
           scopes:
             spark:applications_token: Create access tokens for Service Apps
-x-refined-from:
-- webex-admin-audit-events-api-openapi.yml
-- webex-admin-openapi.json

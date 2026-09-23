@@ -2,7 +2,8 @@ openapi: 3.2.0
 info:
   title: Webex Reports API
   version: 1.0.0
-  description: 'Operations tagged Reports across 3 of this provider''s published API definitions: webex-admin-openapi.json, webex-cloud-calling-openapi.json, webex-reports-api-openapi.yml. Each path carries the servers of the definition it was published in.'
+  x-refined-note:
+  - x-evidence differs across the merged source definitions and was not carried
   x-provenance:
     method: harvested
     authored_by: Cisco Webex
@@ -11,14 +12,7 @@ info:
     first_party: true
     note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
     provider_published: true
-    derived_view: Per-tag view of webex-admin-openapi.json, the provider's source document. Operations and schemas are the provider's, unmodified; only the partition is ours.
-    derived_from: webex-admin-openapi.json
-    operation_coverage: 4/4
-  x-evidence:
-  - type: source
-    url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-admin.json
-  - type: raw
-    url: https://raw.githubusercontent.com/webex/webex-openapi-specs/main/public-spec/webex-admin.json
+  description: 'Operations tagged Reports across 2 of this provider''s published API definitions: webex-admin-openapi.json, webex-cloud-calling-openapi.json. Each path carries the servers of the definition it was published in.'
 tags:
 - name: Reports
 paths:
@@ -170,7 +164,7 @@ paths:
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Create a Report
       operationId: createaReport
-      description: 'Create a new report. For each `templateId`, there are a set of validation rules that need to be followed. For example, for templates belonging to Webex, the user needs to provide `siteUrl`. These validation rules can be retrieved via the [Report Templates API](/docs/api/v1/report-templates).
+      description: 'Create a new report. For each `templateId`, there are a set of validation rules that need to be followed. For example, for templates belonging to Webex, the user needs to provide `siteUrl`. These validation rules can be retrieved via the Report Templates API.
 
 
         The ''templateId'' parameter is a number. However, it is a limitation of developer.webex.com platform that it is passed as a string when you try to test the API from here.
@@ -274,7 +268,7 @@ paths:
         CSV reports for Webex suite services are only supported for organizations based in the North American region. Organizations based in a different region will return blank CSV files for any Teams reports.
 
 
-        Reports are usually provided in zip format. A Content-header `application/zip` or `application/octet-stream` does indicate the zip     format. There is usually no .zip file extension.'
+        Reports are usually provided in zip format. A Content-header `application/zip` or `application/octet-stream` does indicate the zip format. There is usually no .zip file extension.'
       tags:
       - Reports
       parameters:
@@ -342,6 +336,14 @@ paths:
           type: string
 components:
   schemas:
+    ReportCollectionResponse:
+      type: object
+      properties:
+        Report Attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Report'
+          description: An array of report objects.
     Report:
       type: object
       properties:
@@ -393,14 +395,6 @@ components:
           type: string
           example: https://downloadservicebts.webex.com/api?reportId=Y2lzY29zcGFyazovL3VzL1JFUE9SVC9hZDBkMjA1NzVkYTA0NWE0OGZhZDQ3ZDk3NGFiNDFmMg
           description: The link from which the report can be downloaded.
-    ReportCollectionResponse:
-      type: object
-      properties:
-        Report Attributes:
-          type: array
-          items:
-            $ref: '#/components/schemas/Report'
-          description: An array of report objects.
   securitySchemes:
     oauth2:
       flows:
@@ -426,4 +420,3 @@ components:
 x-refined-from:
 - webex-admin-openapi.json
 - webex-cloud-calling-openapi.json
-- webex-reports-api-openapi.yml

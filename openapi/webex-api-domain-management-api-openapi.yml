@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: Webex API - Domain Management API
+  title: Webex Admin API - Domain Management API
   version: 1.0.0
-  description: 'Operations tagged API - Domain Management across 2 of this provider''s published API definitions: webex-admin-openapi.json, webex-api-domain-management-api-openapi.yml. Each path carries the servers of the definition it was published in.'
+  description: The Webex Admin APIs provide comprehensive programmatic access to administrative functions for managing Webex organizations, users, licenses, and settings.
   x-provenance:
     method: harvested
     authored_by: Cisco Webex
@@ -11,9 +11,6 @@ info:
     first_party: true
     note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
     provider_published: true
-    derived_view: Per-tag view of webex-admin-openapi.json, the provider's source document. Operations and schemas are the provider's, unmodified; only the partition is ours.
-    derived_from: webex-admin-openapi.json
-    operation_coverage: 5/5
   x-evidence:
   - type: source
     url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-admin.json
@@ -275,8 +272,6 @@ paths:
 
         **Note**
 
-        <callout type="warning">
-
 
         There''s an organization-level boolean flag called ''enforceVerifiedDomains''. If this flag is set to false, we won''t put any user in the organization into a transient state when verifying or claiming a domain.
 
@@ -285,8 +280,6 @@ paths:
         This flag defines whether the organization enforces user email verification within the organization. If set to true, all users inside the organization must use one of the verified domains.
 
         This flag is effective only after the admin has verified at least one email domain.
-
-        </callout>
 
 
         **Possible Error:**
@@ -519,53 +512,6 @@ paths:
               $ref: '#/components/schemas/UnclaimDomain'
 components:
   schemas:
-    PostDomainVerificationToken:
-      type: object
-      required:
-      - domain
-      properties:
-        domain:
-          type: string
-          example: cisco.com
-          description: A valid domain name.
-    PostDomainVerification:
-      type: object
-      required:
-      - domain
-      properties:
-        domain:
-          type: string
-          example: cisco.com
-          description: The domain name to be verified.
-        claimDomain:
-          type: boolean
-          description: A boolean to specify whether the domain needs to be claimed. The default value is false. If false, the domain will be verified but not claimed.
-        reserveDomain:
-          type: boolean
-          description: 'For FedRAMP only: If true, add the domain to the FedRAMP reserved domain list. The default value is false.'
-    UnclaimDomain:
-      type: object
-      required:
-      - domain
-      properties:
-        domain:
-          type: string
-          example: test.dc-01.com
-          description: A claimed domain.
-    ClaimDomain:
-      type: object
-      required:
-      - domain
-      - url
-      properties:
-        domain:
-          type: string
-          example: cisco.com
-          description: A list of verified domains for a given organizations.
-        url:
-          type: string
-          example: https://identity.webex.com/organizations/bf732c85-68ca-4867-94e4-937286ad2fd4/v1/domains/ZXhhbXBsZTMuY29t
-          description: Use this location URL for the domain resource. The resource component of the URL will be the base64 encoded domain name.
     PostClaimDomain:
       type: object
       properties:
@@ -581,30 +527,35 @@ components:
         claimDomainOnly:
           type: boolean
           description: Indicate to just claim the domain only without searching/marking external users as transient. The default is false.
-    DomainVerificationToken:
+    ClaimDomain:
       type: object
       required:
       - domain
-      - token
-      - verificationMethod
       - url
       properties:
         domain:
           type: string
           example: cisco.com
-          description: The domain name for which the token is generated.
-        token:
-          type: string
-          example: f5014515-6559-4a30-9d68-0deb028f27b7
-          description: 'A token needs to be added as a TXT record in your domain''s DNS settings. You should add the following string: ''cisco-ci-domain-verification=<token>'' as a TXT record in your DNS settings.'
-        verificationMethod:
-          type: string
-          example: DNS_TXT
-          description: 'Domain verification method: Currently, we only support the DNS_TXT method for domain verification.'
+          description: A list of verified domains for a given organizations.
         url:
           type: string
-          example: https://identity.webex.com/organization/bf732c85-68ca-4867-94e4-937286ad2fd4/v1/actions/DomainVerification/GetToken/invoke
-          description: Use this URL for retrieving an authentication token needed to interact with the Domain Verification API.
+          example: https://identity.webex.com/organizations/bf732c85-68ca-4867-94e4-937286ad2fd4/v1/domains/ZXhhbXBsZTMuY29t
+          description: Use this location URL for the domain resource. The resource component of the URL will be the base64 encoded domain name.
+    PostDomainVerification:
+      type: object
+      required:
+      - domain
+      properties:
+        domain:
+          type: string
+          example: cisco.com
+          description: The domain name to be verified.
+        claimDomain:
+          type: boolean
+          description: A boolean to specify whether the domain needs to be claimed. The default value is false. If false, the domain will be verified but not claimed.
+        reserveDomain:
+          type: boolean
+          description: 'For FedRAMP only: If true, add the domain to the FedRAMP reserved domain list. The default value is false.'
     PostDomainUnverification:
       type: object
       required:
@@ -649,6 +600,30 @@ components:
           type: string
           example: https://identity.webex.com/organization/bf732c85-68ca-4867-94e4-937286ad2fd4/v1/actions/DomainVerification/Verify/invoke
           description: Use this URL for verifying domain ownership and managing the domain lifecycle within the organization.
+    DomainVerificationToken:
+      type: object
+      required:
+      - domain
+      - token
+      - verificationMethod
+      - url
+      properties:
+        domain:
+          type: string
+          example: cisco.com
+          description: The domain name for which the token is generated.
+        token:
+          type: string
+          example: f5014515-6559-4a30-9d68-0deb028f27b7
+          description: 'A token needs to be added as a TXT record in your domain''s DNS settings. You should add the following string: ''cisco-ci-domain-verification=<token>'' as a TXT record in your DNS settings.'
+        verificationMethod:
+          type: string
+          example: DNS_TXT
+          description: 'Domain verification method: Currently, we only support the DNS_TXT method for domain verification.'
+        url:
+          type: string
+          example: https://identity.webex.com/organization/bf732c85-68ca-4867-94e4-937286ad2fd4/v1/actions/DomainVerification/GetToken/invoke
+          description: Use this URL for retrieving an authentication token needed to interact with the Domain Verification API.
     DomainUnverification:
       type: object
       required:
@@ -672,6 +647,24 @@ components:
           type: string
           example: https://identity.webex.com/organization/bf732c85-68ca-4867-94e4-937286ad2fd4/v1/actions/DomainVerification/Unverify/invoke
           description: Use this URL for unverifying domain ownership and managing the domain lifecycle within the organization.
+    UnclaimDomain:
+      type: object
+      required:
+      - domain
+      properties:
+        domain:
+          type: string
+          example: test.dc-01.com
+          description: A claimed domain.
+    PostDomainVerificationToken:
+      type: object
+      required:
+      - domain
+      properties:
+        domain:
+          type: string
+          example: cisco.com
+          description: A valid domain name.
   securitySchemes:
     oauth2:
       flows:
@@ -694,6 +687,3 @@ components:
           tokenUrl: https://webexapis.com/v1/access_token
           scopes:
             spark:applications_token: Create access tokens for Service Apps
-x-refined-from:
-- webex-admin-openapi.json
-- webex-api-domain-management-api-openapi.yml

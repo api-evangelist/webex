@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: Webex Client Call Settings API
+  title: Webex Cloud Calling Client Call Settings API
   version: 1.0.0
-  description: 'Operations tagged Client Call Settings across 2 of this provider''s published API definitions: webex-client-call-settings-api-openapi.yml, webex-cloud-calling-openapi.json. Each path carries the servers of the definition it was published in.'
+  description: The Webex Cloud Calling APIs enable comprehensive management of cloud-based calling services, including user provisioning, device assignment, call routing, feature configuration, and number management.
   x-provenance:
     method: harvested
     authored_by: Cisco Webex
@@ -11,9 +11,6 @@ info:
     first_party: true
     note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
     provider_published: true
-    derived_view: Per-tag view of webex-cloud-calling-openapi.json, the provider's source document. Operations and schemas are the provider's, unmodified; only the partition is ours.
-    derived_from: webex-cloud-calling-openapi.json
-    operation_coverage: 2/2
   x-evidence:
   - type: source
     url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-cloud-calling.json
@@ -74,7 +71,7 @@ paths:
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Get an Organization's MS Teams Settings
       operationId: Get an Organization's MS Teams Settings
-      description: '<div><Callout type="warning">Not supported for Webex for Government (FedRAMP)</Callout></div>
+      description: 'Not supported for Webex for Government (FedRAMP)
 
 
         Get organization MS Teams settings.
@@ -131,7 +128,7 @@ paths:
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Update an Organization's MS Teams Setting
       operationId: Update an Organization's MS Teams Setting
-      description: '<div><Callout type="warning">Not supported for Webex for Government (FedRAMP)</Callout></div>
+      description: 'Not supported for Webex for Government (FedRAMP)
 
 
         Update an MS Teams setting.
@@ -160,6 +157,36 @@ paths:
               $ref: '#/components/schemas/ModifyCustomerMSTeamsSettingsObject'
 components:
   schemas:
+    SettingsObject:
+      type: object
+      required:
+      - settingName
+      - level
+      - value
+      - lastModified
+      properties:
+        settingName:
+          type: string
+          enum:
+          - HIDE_WEBEX_APP
+          - PRESENCE_SYNC
+          description: "Name of the setting retrieved.\n * `HIDE_WEBEX_APP` - Webex will continue to run but its windows will be closed by default. Users can still access Webex from the system tray on Windows or the Menu Bar on Mac.\n * `PRESENCE_SYNC` - Sync presence status between Microsoft Teams and Webex.\n"
+        level:
+          type: string
+          enum:
+          - GLOBAL
+          - ORGANIZATION
+          - GROUP
+          - PEOPLE
+          description: "Level at which the `settingName` has been set.\n * `GLOBAL` - `settingName` configured at the `GLOBAL` `level`.\n * `ORGANIZATION` - `settingName` configured at the `ORGANIZATION` `level`.\n * `GROUP` - `settingName` configured at the `GROUP` `level`.\n * `PEOPLE` - `settingName` configured at the `PEOPLE` `level`.\n"
+        value:
+          type: boolean
+          example: true
+          description: Either `true` or `false` for the respective `settingName` to be retrieved.
+        lastModified:
+          type: string
+          example: '2024-02-24T07:21:23.494198Z'
+          description: The date and time when the respective `settingName` was last updated.
     GetCustomerMSTeamsSettingsObject:
       type: object
       required:
@@ -198,36 +225,6 @@ components:
           type: boolean
           example: true
           description: The boolean value, either `true` or `false`, for the respective `settingName` to be updated.
-    SettingsObject:
-      type: object
-      required:
-      - settingName
-      - level
-      - value
-      - lastModified
-      properties:
-        settingName:
-          type: string
-          enum:
-          - HIDE_WEBEX_APP
-          - PRESENCE_SYNC
-          description: "Name of the setting retrieved.\n * `HIDE_WEBEX_APP` - Webex will continue to run but its windows will be closed by default. Users can still access Webex from the system tray on Windows or the Menu Bar on Mac.\n * `PRESENCE_SYNC` - Sync presence status between Microsoft Teams and Webex.\n"
-        level:
-          type: string
-          enum:
-          - GLOBAL
-          - ORGANIZATION
-          - GROUP
-          - PEOPLE
-          description: "Level at which the `settingName` has been set.\n * `GLOBAL` - `settingName` configured at the `GLOBAL` `level`.\n * `ORGANIZATION` - `settingName` configured at the `ORGANIZATION` `level`.\n * `GROUP` - `settingName` configured at the `GROUP` `level`.\n * `PEOPLE` - `settingName` configured at the `PEOPLE` `level`.\n"
-        value:
-          type: boolean
-          example: true
-          description: Either `true` or `false` for the respective `settingName` to be retrieved.
-        lastModified:
-          type: string
-          example: '2024-02-24T07:21:23.494198Z'
-          description: The date and time when the respective `settingName` was last updated.
   securitySchemes:
     oauth2:
       flows:
@@ -242,14 +239,7 @@ components:
       scheme: bearer
       bearerFormat: JWT
     bearerAuth:
-      type: oauth2
-      description: OAuth 2.0 Bearer token authentication
-      flows:
-        authorizationCode:
-          authorizationUrl: https://webexapis.com/v1/authorize
-          tokenUrl: https://webexapis.com/v1/access_token
-          scopes:
-            spark:applications_token: Create access tokens for Service Apps
-x-refined-from:
-- webex-client-call-settings-api-openapi.yml
-- webex-cloud-calling-openapi.json
+      type: http
+      description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
+      scheme: bearer
+      bearerFormat: JWT

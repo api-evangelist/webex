@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: Webex Call Settings For Me With UserHub Phase3 API
+  title: Webex Cloud Calling Call Settings For Me With UserHub…
   version: 1.0.0
-  description: 'Operations tagged Call Settings For Me With UserHub Phase3 across 2 of this provider''s published API definitions: webex-call-settings-for-me-with-userhub-phase3-api-openapi.yml, webex-cloud-calling-openapi.json. Each path carries the servers of the definition it was published in.'
+  description: The Webex Cloud Calling APIs enable comprehensive management of cloud-based calling services, including user provisioning, device assignment, call routing, feature configuration, and number management.
   x-provenance:
     method: harvested
     authored_by: Cisco Webex
@@ -11,9 +11,6 @@ info:
     first_party: true
     note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
     provider_published: true
-    derived_view: Per-tag view of webex-cloud-calling-openapi.json, the provider's source document. Operations and schemas are the provider's, unmodified; only the partition is ours.
-    derived_from: webex-cloud-calling-openapi.json
-    operation_coverage: 16/16
   x-evidence:
   - type: source
     url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-cloud-calling.json
@@ -405,8 +402,6 @@ paths:
       description: 'Modify Selective Call Reject Criteria Settings for the authenticated user.
 
 
-
-
         Selective Call Reject allows you to create customized rules to reject specific calls for users based on the phone number,identity and the time or day of the call.
 
 
@@ -440,8 +435,6 @@ paths:
       summary: Delete a Selective Call Reject Criteria
       operationId: deleteMySelectiveCallRejectCriteria
       description: 'Delete a Selective Call Reject Criteria for the authenticated user.
-
-
 
 
         Selective Call Reject allows you to create customized rules to reject specific calls for users based on the phone number,identity and the time or day of the call.
@@ -934,80 +927,6 @@ paths:
           description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
 components:
   schemas:
-    SequentialRingSettingsGet:
-      type: object
-      required:
-      - enabled
-      example:
-        enabled: true
-        ringBaseLocationFirstEnabled: false
-        baseLocationNumberOfRings: 3
-        continueIfBaseLocationIsBusyEnabled: true
-        callsToVoicemailEnabled: false
-        phoneNumbers:
-        - phoneNumber: '+19075552859'
-          answerConfirmationRequiredEnabled: false
-          numberOfRings: 3
-        criteria:
-        - id: Y2lzY29zcGFyazovL3VzL0NSSVRFUklBL1oxNzU0MzgzODQzNTA5NzY
-          scheduleName: BusinessHours
-          source: ALL_NUMBERS
-          ringEnabled: true
-      properties:
-        enabled:
-          type: boolean
-          example: true
-          description: '`true` if the sequential ring feature is enabled.'
-        ringBaseLocationFirstEnabled:
-          type: boolean
-          example: false
-          description: When `true`, the user's own devices ring before sequential ring numbers.
-        baseLocationNumberOfRings:
-          type: integer
-          example: 3
-          description: 'Number of rings for the user''s own devices. Minimum: 2, Maximum: 20.'
-        continueIfBaseLocationIsBusyEnabled:
-          type: boolean
-          example: true
-          description: When `true`, sequential ring continues even when the user is unavailable. It controls if we allow trying the sequential ring numbers when either a service for the user such as Do Not Disturb or Call Waiting sends the call to busy processing, or ringBaseLocationFirstEnabled is true but all the user's devices are unreachable.
-        callsToVoicemailEnabled:
-          type: boolean
-          example: true
-          description: 'When `true`, the caller is provided the option to press the # key to end the sequential ring service and send the call to no answer handling such as voicemail.'
-        phoneNumbers:
-          type: array
-          items:
-            $ref: '#/components/schemas/SequentialRingNumber'
-          description: List of phone numbers to ring sequentially.
-        criteria:
-          type: array
-          items:
-            $ref: '#/components/schemas/SequentialRingCriteriaSummary'
-          description: List of criteria specifying conditions when sequential ring is in effect.
-    CallWaitingInfo:
-      type: object
-      required:
-      - enabled
-      properties:
-        enabled:
-          type: boolean
-          example: true
-          description: '`true` if the Call Waiting feature is enabled.'
-    CallsFrom:
-      type: string
-      enum:
-      - ANY_PHONE_NUMBER
-      - SELECT_PHONE_NUMBERS
-      - FORWARDED
-      description: " * `ANY_PHONE_NUMBER` - Criteria apply for any incoming number.\n * `SELECT_PHONE_NUMBERS` - Criteria only apply for selected incoming numbers.\n * `FORWARDED` - Criteria only apply for forwarded incoming numbers.\n"
-    SelectiveRejectCallSettingPatch:
-      type: object
-      required:
-      - enabled
-      properties:
-        enabled:
-          type: boolean
-          description: if `true`, selective reject is enabled.
     ResponseId:
       type: object
       description: Response object that contains the unique identifier for the created or updated criteria.
@@ -1017,6 +936,96 @@ components:
           description: The unique identifier for the criteria.
       example:
         id: Y2lzY29zcGFyazovL3VzL0NSSVRFUklBL2RHVnpkRjltYVd4MFpYST0
+    SequentialRingCriteriaPost:
+      type: object
+      required:
+      - callsFrom
+      - ringEnabled
+      properties:
+        scheduleName:
+          type: string
+          example: Business Vacation
+          description: Name of the location's schedule which determines when the sequential ring is in effect.
+        scheduleType:
+          type: string
+          enum:
+          - holidays
+          - businessHours
+          description: "This indicates the type of schedule.\n * `holidays` - The Schedule is of type `holidays`.\n * `businessHours` - The Schedule is of type `businessHours`.\n"
+        scheduleLevel:
+          type: string
+          enum:
+          - GROUP
+          description: "This indicates the level of the schedule specified by `scheduleName`.\n * `GROUP` - The Schedule specified is of `GROUP` level.\n"
+        callsFrom:
+          type: string
+          enum:
+          - SELECT_PHONE_NUMBERS
+          - ANY_PHONE_NUMBER
+          description: "This indicates if criteria are applicable for calls from any phone number or selected phone numbers.\n * `SELECT_PHONE_NUMBERS` - Sequential ring criteria only apply for selected incoming numbers.\n * `ANY_PHONE_NUMBER` - Sequential ring criteria apply for any incoming number.\n"
+        anonymousCallersEnabled:
+          type: boolean
+          example: true
+          description: When `true` incoming calls from private numbers are allowed. This is only applicable when `callsFrom` is set to `SELECT_PHONE_NUMBERS`.
+        unavailableCallersEnabled:
+          type: boolean
+          example: true
+          description: When `true` incoming calls from unavailable numbers are allowed. This is only applicable when `callsFrom` is set to `SELECT_PHONE_NUMBERS`.
+        phoneNumbers:
+          type: array
+          items:
+            type: string
+            example: +19075552859,+19186663950
+          description: When callsFrom is set to `SELECT_PHONE_NUMBERS`, indicates a list of incoming phone numbers for which the criteria apply.
+        ringEnabled:
+          type: boolean
+          example: true
+          description: When set to `true` sequential ringing is enabled for calls that meet the current criteria. Criteria with `ringEnabled` set to `false` take priority.
+    SelectiveRejectCallCriteria:
+      type: object
+      required:
+      - id
+      - scheduleName
+      - source
+      - rejectEnabled
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0NSSVRFUklBLzg2NTAxZDFlLTg1MWMtNDgwYi1hZmE2LTA5MTU4NzQ3NzdmZQ
+          description: Unique identifier for criteria.
+        scheduleName:
+          type: string
+          example: Business Vacation
+          description: Name of the schedule associated with the criteria.
+        source:
+          type: string
+          enum:
+          - ALL_NUMBERS
+          - SPECIFIC_NUMBERS
+          - FORWARDED
+          description: "Type of the source.\n * `ALL_NUMBERS` - Select to reject calls from Any Phone Number.\n * `SPECIFIC_NUMBERS` - Select to reject calls from Select Phone Numbers.\n * `FORWARDED` - Select to reject calls that have been forwarded.\n"
+        rejectEnabled:
+          type: boolean
+          example: true
+          description: Determines whether selective call reject is applied for calls matching this criteria. If `true`, selective call reject is applied. If `false`, this criteria acts as a 'Don't Reject' rule, preventing call rejections. Criteria with rejectEnabled set to false have precedence over criteria with rejectEnabled set to true.
+    AnonymousCallRejectSettingsGet:
+      type: object
+      required:
+      - enabled
+      properties:
+        enabled:
+          type: boolean
+          example: true
+          description: '`true` if the Anonymous Call Rejection feature is enabled.'
+      example:
+        enabled: true
+    CallsFrom:
+      type: string
+      enum:
+      - ANY_PHONE_NUMBER
+      - SELECT_PHONE_NUMBERS
+      - FORWARDED
+      description: " * `ANY_PHONE_NUMBER` - Criteria apply for any incoming number.\n * `SELECT_PHONE_NUMBERS` - Criteria only apply for selected incoming numbers.\n * `FORWARDED` - Criteria only apply for forwarded incoming numbers.\n"
     SelectiveRejectCallCriteriaGet:
       type: object
       required:
@@ -1056,6 +1065,71 @@ components:
           type: boolean
           example: true
           description: Boolean flag to enable/disable rejection.
+    SequentialRingNumber:
+      type: object
+      required:
+      - answerConfirmationRequiredEnabled
+      - numberOfRings
+      properties:
+        phoneNumber:
+          type: string
+          example: '+442071838750'
+          description: Phone number set as the sequential number.
+        answerConfirmationRequiredEnabled:
+          type: boolean
+          example: true
+          description: When set to `true` the called party is required to press 1 on the keypad to receive the call.
+        numberOfRings:
+          type: number
+          example: 2
+          description: The number of rings to the specified phone number before the call advances to the subsequent number in the sequence or goes to voicemail.
+    CallWaitingPut:
+      type: object
+      required:
+      - enabled
+      properties:
+        enabled:
+          type: boolean
+          example: false
+          description: Enable or disable Call Waiting for the user.
+      example:
+        enabled: false
+    SequentialRingCriteriaSummary:
+      type: object
+      required:
+      - id
+      - scheduleName
+      - source
+      - ringEnabled
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0NSSVRFUklBLzg2NTAxZDFlLTg1MWMtNDgwYi1hZmE2LTA5MTU4NzQ3NzdmZQ
+          description: Unique identifier for criteria.
+        scheduleName:
+          type: string
+          example: BusinessHours
+          description: Name of the schedule which determines when sequential ring is in effect.
+        source:
+          type: string
+          enum:
+          - ALL_NUMBERS
+          - SPECIFIC_NUMBERS
+          example: ALL_NUMBERS
+          description: "Type of the source.\n * `ALL_NUMBERS` - sequential ring applies to calls from any phone number.\n * `SPECIFIC_NUMBERS` - sequential ring applies to calls from specific phone numbers.\n"
+        ringEnabled:
+          type: boolean
+          example: true
+          description: Determines whether sequential ring is applied for calls matching this criteria. If `true`, sequential ring is applied. If `false`, this criteria acts as a 'Don't Ring' rule. Criteria with ringEnabled set to false have precedence over criteria with ringEnabled set to true.
+    CallWaitingInfo:
+      type: object
+      required:
+      - enabled
+      properties:
+        enabled:
+          type: boolean
+          example: true
+          description: '`true` if the Call Waiting feature is enabled.'
     SelectiveRejectCallCriteriaPost:
       type: object
       required:
@@ -1091,6 +1165,15 @@ components:
           type: boolean
           example: true
           description: Boolean flag to enable/disable rejection.
+    AnonymousCallRejectSettingsPatch:
+      type: object
+      required:
+      - enabled
+      properties:
+        enabled:
+          type: boolean
+          example: false
+          description: Indicates whether Anonymous Call Rejection is enabled or not.
     SequentialRingCriteriaPut:
       type: object
       description: Request body for updating sequential ring criteria settings.
@@ -1138,51 +1221,6 @@ components:
           type: boolean
           description: Determines whether sequential ring is applied for calls matching this criteria. If `true`, sequential ring is applied. Criteria with ringEnabled set to false have precedence over criteria with ringEnabled set to true.
           example: false
-    SequentialRingCriteriaPost:
-      type: object
-      required:
-      - callsFrom
-      - ringEnabled
-      properties:
-        scheduleName:
-          type: string
-          example: Business Vacation
-          description: Name of the location's schedule which determines when the sequential ring is in effect.
-        scheduleType:
-          type: string
-          enum:
-          - holidays
-          - businessHours
-          description: "This indicates the type of schedule.\n * `holidays` - The Schedule is of type `holidays`.\n * `businessHours` - The Schedule is of type `businessHours`.\n"
-        scheduleLevel:
-          type: string
-          enum:
-          - GROUP
-          description: "This indicates the level of the schedule specified by `scheduleName`.\n * `GROUP` - The Schedule specified is of `GROUP` level.\n"
-        callsFrom:
-          type: string
-          enum:
-          - SELECT_PHONE_NUMBERS
-          - ANY_PHONE_NUMBER
-          description: "This indicates if criteria are applicable for calls from any phone number or selected phone numbers.\n * `SELECT_PHONE_NUMBERS` - Sequential ring criteria only apply for selected incoming numbers.\n * `ANY_PHONE_NUMBER` - Sequential ring criteria apply for any incoming number.\n"
-        anonymousCallersEnabled:
-          type: boolean
-          example: true
-          description: When `true` incoming calls from private numbers are allowed. This is only applicable when `callsFrom` is set to `SELECT_PHONE_NUMBERS`.
-        unavailableCallersEnabled:
-          type: boolean
-          example: true
-          description: When `true` incoming calls from unavailable numbers are allowed. This is only applicable when `callsFrom` is set to `SELECT_PHONE_NUMBERS`.
-        phoneNumbers:
-          type: array
-          items:
-            type: string
-            example: +19075552859,+19186663950
-          description: When callsFrom is set to `SELECT_PHONE_NUMBERS`, indicates a list of incoming phone numbers for which the criteria apply.
-        ringEnabled:
-          type: boolean
-          example: true
-          description: When set to `true` sequential ringing is enabled for calls that meet the current criteria. Criteria with `ringEnabled` set to `false` take priority.
     SelectiveRejectCallSettingsGet:
       type: object
       required:
@@ -1204,170 +1242,20 @@ components:
           scheduleName: CustomHoliday(Group)
           source: ALL_NUMBERS
           rejectEnabled: true
-    SelectiveRejectCallCriteria:
-      type: object
-      required:
-      - id
-      - scheduleName
-      - source
-      - rejectEnabled
-      properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0NSSVRFUklBLzg2NTAxZDFlLTg1MWMtNDgwYi1hZmE2LTA5MTU4NzQ3NzdmZQ
-          description: Unique identifier for criteria.
-        scheduleName:
-          type: string
-          example: Business Vacation
-          description: Name of the schedule associated with the criteria.
-        source:
-          type: string
-          enum:
-          - ALL_NUMBERS
-          - SPECIFIC_NUMBERS
-          - FORWARDED
-          description: "Type of the source.\n * `ALL_NUMBERS` - Select to reject calls from Any Phone Number.\n * `SPECIFIC_NUMBERS` - Select to reject calls from Select Phone Numbers.\n * `FORWARDED` - Select to reject calls that have been forwarded.\n"
-        rejectEnabled:
-          type: boolean
-          example: true
-          description: Determines whether selective call reject is applied for calls matching this criteria. If `true`, selective call reject is applied. If `false`, this criteria acts as a 'Don't Reject' rule, preventing call rejections. Criteria with rejectEnabled set to false have precedence over criteria with rejectEnabled set to true.
-    SelectiveRejectCallCriteriaPatch:
-      type: object
-      required:
-      - callsFrom
-      - rejectEnabled
-      properties:
-        scheduleName:
-          type: string
-          example: CFS-Criteria-F-2
-          description: Name of the schedule to which the criteria is created.
-        scheduleType:
-          $ref: '#/components/schemas/ScheduleType'
-          description: schedule type.
-        scheduleLevel:
-          $ref: '#/components/schemas/ScheduleLevel'
-          description: schedule level of the criteria.
-        callsFrom:
-          $ref: '#/components/schemas/CallsFrom'
-          description: Reject calls selection.
-        anonymousCallersEnabled:
-          type: boolean
-          example: true
-          description: Boolean flag indicating if calls from custom numbers, private numbers are enabled.
-        unavailableCallersEnabled:
-          type: boolean
-          example: true
-          description: Boolean flag indicating if calls from custom numbers, unavailable numbers are enabled.
-        phoneNumbers:
-          type: array
-          items:
-            type: string
-            example: '["+1986751234","+1986751234"]'
-          description: List of phone numbers. It does not include extensions. In some regions phone numbers are not returned in E.164 format. This will be supported in a future update.
-        rejectEnabled:
-          type: boolean
-          example: true
-          description: Boolean flag to enable/disable rejection.
     ScheduleLevel:
       type: string
       enum:
       - PEOPLE
       - GROUP
       description: " * `PEOPLE` - The schedule level that specifies that criteria is of People level.\n * `GROUP` - The schedule level that specifies that criteria is of Group level.\n"
-    AnonymousCallRejectSettingsGet:
+    SelectiveRejectCallSettingPatch:
       type: object
       required:
       - enabled
       properties:
         enabled:
           type: boolean
-          example: true
-          description: '`true` if the Anonymous Call Rejection feature is enabled.'
-      example:
-        enabled: true
-    SequentialRingCriteriaSummary:
-      type: object
-      required:
-      - id
-      - scheduleName
-      - source
-      - ringEnabled
-      properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0NSSVRFUklBLzg2NTAxZDFlLTg1MWMtNDgwYi1hZmE2LTA5MTU4NzQ3NzdmZQ
-          description: Unique identifier for criteria.
-        scheduleName:
-          type: string
-          example: BusinessHours
-          description: Name of the schedule which determines when sequential ring is in effect.
-        source:
-          type: string
-          enum:
-          - ALL_NUMBERS
-          - SPECIFIC_NUMBERS
-          example: ALL_NUMBERS
-          description: "Type of the source.\n * `ALL_NUMBERS` - sequential ring applies to calls from any phone number.\n * `SPECIFIC_NUMBERS` - sequential ring applies to calls from specific phone numbers.\n"
-        ringEnabled:
-          type: boolean
-          example: true
-          description: Determines whether sequential ring is applied for calls matching this criteria. If `true`, sequential ring is applied. If `false`, this criteria acts as a 'Don't Ring' rule. Criteria with ringEnabled set to false have precedence over criteria with ringEnabled set to true.
-    CallWaitingPut:
-      type: object
-      required:
-      - enabled
-      properties:
-        enabled:
-          type: boolean
-          example: false
-          description: Enable or disable Call Waiting for the user.
-      example:
-        enabled: false
-    ScheduleType:
-      type: string
-      enum:
-      - businessHours
-      - holidays
-      description: " * `businessHours` - The schedule type that specifies the business or working hours during the day.\n * `holidays` - The schedule type that specifies the day when your organization is not open.\n"
-    AnonymousCallRejectSettingsPatch:
-      type: object
-      required:
-      - enabled
-      properties:
-        enabled:
-          type: boolean
-          example: false
-          description: Indicates whether Anonymous Call Rejection is enabled or not.
-    SequentialRingSettingsPut:
-      type: object
-      required:
-      - enabled
-      properties:
-        enabled:
-          type: boolean
-          example: false
-          description: Enable or disable sequential ring for the user.
-        ringBaseLocationFirstEnabled:
-          type: boolean
-          example: true
-          description: When `true`, the user's own devices ring before sequential ring numbers.
-        baseLocationNumberOfRings:
-          type: integer
-          example: 2
-          description: 'Number of rings for the user''s own devices. Minimum: 2, Maximum: 20.'
-        continueIfBaseLocationIsBusyEnabled:
-          type: boolean
-          example: false
-          description: When `true`, sequential ring continues even when the user is unavailable. It controls if we allow trying the sequential ring numbers when either a service for the user such as Do Not Disturb or Call Waiting sends the call to busy processing, or ringBaseLocationFirstEnabled is true but all the user's devices are unreachable.
-        callsToVoicemailEnabled:
-          type: boolean
-          example: true
-          description: 'When `true`, the caller is provided the option to press the # key to end the sequential ring service and send the call to no answer handling such as voicemail.'
-        phoneNumbers:
-          type: array
-          items:
-            $ref: '#/components/schemas/SequentialRingNumber'
-          description: List of phone numbers to ring sequentially. Maximum 5 phone numbers.
+          description: if `true`, selective reject is enabled.
     SequentialRingCriteriaGet:
       type: object
       required:
@@ -1421,24 +1309,129 @@ components:
           type: boolean
           example: true
           description: When set to `true` sequential ringing is enabled for calls that meet the current criteria. Criteria with `ringEnabled` set to `false` take priority.
-    SequentialRingNumber:
+    ScheduleType:
+      type: string
+      enum:
+      - businessHours
+      - holidays
+      description: " * `businessHours` - The schedule type that specifies the business or working hours during the day.\n * `holidays` - The schedule type that specifies the day when your organization is not open.\n"
+    SelectiveRejectCallCriteriaPatch:
       type: object
       required:
-      - answerConfirmationRequiredEnabled
-      - numberOfRings
+      - callsFrom
+      - rejectEnabled
       properties:
-        phoneNumber:
+        scheduleName:
           type: string
-          example: '+442071838750'
-          description: Phone number set as the sequential number.
-        answerConfirmationRequiredEnabled:
+          example: CFS-Criteria-F-2
+          description: Name of the schedule to which the criteria is created.
+        scheduleType:
+          $ref: '#/components/schemas/ScheduleType'
+          description: schedule type.
+        scheduleLevel:
+          $ref: '#/components/schemas/ScheduleLevel'
+          description: schedule level of the criteria.
+        callsFrom:
+          $ref: '#/components/schemas/CallsFrom'
+          description: Reject calls selection.
+        anonymousCallersEnabled:
           type: boolean
           example: true
-          description: When set to `true` the called party is required to press 1 on the keypad to receive the call.
-        numberOfRings:
-          type: number
+          description: Boolean flag indicating if calls from custom numbers, private numbers are enabled.
+        unavailableCallersEnabled:
+          type: boolean
+          example: true
+          description: Boolean flag indicating if calls from custom numbers, unavailable numbers are enabled.
+        phoneNumbers:
+          type: array
+          items:
+            type: string
+            example: '["+1986751234","+1986751234"]'
+          description: List of phone numbers. It does not include extensions. In some regions phone numbers are not returned in E.164 format. This will be supported in a future update.
+        rejectEnabled:
+          type: boolean
+          example: true
+          description: Boolean flag to enable/disable rejection.
+    SequentialRingSettingsGet:
+      type: object
+      required:
+      - enabled
+      example:
+        enabled: true
+        ringBaseLocationFirstEnabled: false
+        baseLocationNumberOfRings: 3
+        continueIfBaseLocationIsBusyEnabled: true
+        callsToVoicemailEnabled: false
+        phoneNumbers:
+        - phoneNumber: '+19075552859'
+          answerConfirmationRequiredEnabled: false
+          numberOfRings: 3
+        criteria:
+        - id: Y2lzY29zcGFyazovL3VzL0NSSVRFUklBL1oxNzU0MzgzODQzNTA5NzY
+          scheduleName: BusinessHours
+          source: ALL_NUMBERS
+          ringEnabled: true
+      properties:
+        enabled:
+          type: boolean
+          example: true
+          description: '`true` if the sequential ring feature is enabled.'
+        ringBaseLocationFirstEnabled:
+          type: boolean
+          example: false
+          description: When `true`, the user's own devices ring before sequential ring numbers.
+        baseLocationNumberOfRings:
+          type: integer
+          example: 3
+          description: 'Number of rings for the user''s own devices. Minimum: 2, Maximum: 20.'
+        continueIfBaseLocationIsBusyEnabled:
+          type: boolean
+          example: true
+          description: When `true`, sequential ring continues even when the user is unavailable. It controls if we allow trying the sequential ring numbers when either a service for the user such as Do Not Disturb or Call Waiting sends the call to busy processing, or ringBaseLocationFirstEnabled is true but all the user's devices are unreachable.
+        callsToVoicemailEnabled:
+          type: boolean
+          example: true
+          description: 'When `true`, the caller is provided the option to press the # key to end the sequential ring service and send the call to no answer handling such as voicemail.'
+        phoneNumbers:
+          type: array
+          items:
+            $ref: '#/components/schemas/SequentialRingNumber'
+          description: List of phone numbers to ring sequentially.
+        criteria:
+          type: array
+          items:
+            $ref: '#/components/schemas/SequentialRingCriteriaSummary'
+          description: List of criteria specifying conditions when sequential ring is in effect.
+    SequentialRingSettingsPut:
+      type: object
+      required:
+      - enabled
+      properties:
+        enabled:
+          type: boolean
+          example: false
+          description: Enable or disable sequential ring for the user.
+        ringBaseLocationFirstEnabled:
+          type: boolean
+          example: true
+          description: When `true`, the user's own devices ring before sequential ring numbers.
+        baseLocationNumberOfRings:
+          type: integer
           example: 2
-          description: The number of rings to the specified phone number before the call advances to the subsequent number in the sequence or goes to voicemail.
+          description: 'Number of rings for the user''s own devices. Minimum: 2, Maximum: 20.'
+        continueIfBaseLocationIsBusyEnabled:
+          type: boolean
+          example: false
+          description: When `true`, sequential ring continues even when the user is unavailable. It controls if we allow trying the sequential ring numbers when either a service for the user such as Do Not Disturb or Call Waiting sends the call to busy processing, or ringBaseLocationFirstEnabled is true but all the user's devices are unreachable.
+        callsToVoicemailEnabled:
+          type: boolean
+          example: true
+          description: 'When `true`, the caller is provided the option to press the # key to end the sequential ring service and send the call to no answer handling such as voicemail.'
+        phoneNumbers:
+          type: array
+          items:
+            $ref: '#/components/schemas/SequentialRingNumber'
+          description: List of phone numbers to ring sequentially. Maximum 5 phone numbers.
   securitySchemes:
     oauth2:
       flows:
@@ -1453,14 +1446,7 @@ components:
       scheme: bearer
       bearerFormat: JWT
     bearerAuth:
-      type: oauth2
-      description: OAuth 2.0 Bearer token authentication
-      flows:
-        authorizationCode:
-          authorizationUrl: https://webexapis.com/v1/authorize
-          tokenUrl: https://webexapis.com/v1/access_token
-          scopes:
-            spark:applications_token: Create access tokens for Service Apps
-x-refined-from:
-- webex-call-settings-for-me-with-userhub-phase3-api-openapi.yml
-- webex-cloud-calling-openapi.json
+      type: http
+      description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
+      scheme: bearer
+      bearerFormat: JWT

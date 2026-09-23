@@ -2,7 +2,7 @@ openapi: 3.2.0
 info:
   title: Webex Cloud Calling Person Call Settings API
   version: 1.0.0
-  description: The Webex Cloud Calling APIs enable comprehensive management of cloud-based calling services, including user provisioning, device assignment, call routing, feature configuration, and number management. These APIs facilitate integration with enterprise directories, automation of telephony workflows, and centralized management of global calling infrastructure. Use cases include automated onboarding, self-service portals, integration with CRM/ERP systems, and real-time monitoring of call quality and usage.
+  description: The Webex Cloud Calling APIs enable comprehensive management of cloud-based calling services, including user provisioning, device assignment, call routing, feature configuration, and number management.
   x-provenance:
     method: harvested
     authored_by: Cisco Webex
@@ -213,6 +213,105 @@ paths:
               $ref: '#/components/schemas/UserMonitoringPatch'
 components:
   schemas:
+    UserMonitoringPatch:
+      type: object
+      properties:
+        enableCallParkNotification:
+          type: boolean
+          example: true
+          description: Call park notification is enabled or disabled.
+        monitoredElements:
+          type: array
+          maxItems: 50
+          items:
+            type: string
+          description: Array of ID strings of monitored elements. Maximum 50 elements.
+    MonitoredElementSpeedDial:
+      type: object
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS80NDVkMzMzMC1mNjE3LTExZWItOWQyZS01NzViODE3ZGE2NmE
+          description: The identifier of the speed dial.
+        displayName:
+          type: string
+          example: John Brown
+          description: The display name of the speed dial.
+        type:
+          type: string
+          enum:
+          - PEOPLE
+          - PLACE
+          - VIRTUAL_LINE
+          description: "The type of the speed dial.\n * `PEOPLE` - Object is a user.\n * `PLACE` - Object is a workspace.\n * `VIRTUAL_LINE` - Object is a virtual line.\n"
+        lineKeyLabel:
+          type: string
+          example: Manager
+          description: Customizable line key label for speed dial.
+        phoneNumber:
+          type: string
+          example: '+19075552859'
+          description: The phone number of the speed dial.
+        location:
+          type: string
+          example: Richardson
+          description: The location name where the speed dial is.
+        locationId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzEyMzQ1
+          description: The ID for the location.
+    MonitoredNumberObject:
+      type: object
+      description: Phone number details of a monitored person, workspace, or virtual line.
+      properties:
+        external:
+          type: string
+          example: '+19845551088'
+          description: External phone number of the monitored person, workspace or virtual line.
+        extension:
+          type: string
+          example: '1088'
+          description: Extension number of the monitored person, workspace or virtual line.
+        routingPrefix:
+          type: string
+          example: '1234'
+          description: Routing prefix of location.
+        esn:
+          type: string
+          example: '12341088'
+          description: Routing prefix + extension of a person or workspace.
+        primary:
+          type: boolean
+          example: true
+          description: Indicates whether phone number is a primary number.
+    PeopleOrPlaceOrVirtualLineType:
+      type: string
+      enum:
+      - PEOPLE
+      - PLACE
+      - VIRTUAL_LINE
+      description: " * `PEOPLE` - Person or list of people.\n * `PLACE` - Workspace that is not assigned to a specific person such as for a shared device in a common area.\n * `VIRTUAL_LINE` - Virtual line or list of virtual lines.\n"
+    MonitoringSettingsGet:
+      type: object
+      description: Monitoring settings for a person including available entries count.
+      required:
+      - callParkNotificationEnabled
+      - availableEntriesCount
+      - monitoredElements
+      properties:
+        callParkNotificationEnabled:
+          type: boolean
+          example: true
+          description: Indicates whether call park notification is enabled.
+        availableEntriesCount:
+          type: integer
+          example: 5
+          description: Indicates additional number of entries that can be stored (more than the number of entries listed).
+        monitoredElements:
+          type: array
+          items:
+            $ref: '#/components/schemas/GetMonitoredElementsObject'
+          description: Settings of monitored elements, which can be a person, place, virtual line, or call park extension.
     GetMonitoredElementsObject:
       type: object
       description: Monitored element details, which can be a member, call park extension, or speed dial.
@@ -309,105 +408,6 @@ components:
         speedDial:
           $ref: '#/components/schemas/MonitoredElementSpeedDial'
           description: Speed dial configured as a monitored element.
-    MonitoredElementSpeedDial:
-      type: object
-      properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS80NDVkMzMzMC1mNjE3LTExZWItOWQyZS01NzViODE3ZGE2NmE
-          description: The identifier of the speed dial.
-        displayName:
-          type: string
-          example: John Brown
-          description: The display name of the speed dial.
-        type:
-          type: string
-          enum:
-          - PEOPLE
-          - PLACE
-          - VIRTUAL_LINE
-          description: "The type of the speed dial.\n * `PEOPLE` - Object is a user.\n * `PLACE` - Object is a workspace.\n * `VIRTUAL_LINE` - Object is a virtual line.\n"
-        lineKeyLabel:
-          type: string
-          example: Manager
-          description: Customizable line key label for speed dial.
-        phoneNumber:
-          type: string
-          example: '+19075552859'
-          description: The phone number of the speed dial.
-        location:
-          type: string
-          example: Richardson
-          description: The location name where the speed dial is.
-        locationId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzEyMzQ1
-          description: The ID for the location.
-    MonitoringSettingsGet:
-      type: object
-      description: Monitoring settings for a person including available entries count.
-      required:
-      - callParkNotificationEnabled
-      - availableEntriesCount
-      - monitoredElements
-      properties:
-        callParkNotificationEnabled:
-          type: boolean
-          example: true
-          description: Indicates whether call park notification is enabled.
-        availableEntriesCount:
-          type: integer
-          example: 5
-          description: Indicates additional number of entries that can be stored (more than the number of entries listed).
-        monitoredElements:
-          type: array
-          items:
-            $ref: '#/components/schemas/GetMonitoredElementsObject'
-          description: Settings of monitored elements, which can be a person, place, virtual line, or call park extension.
-    UserMonitoringPatch:
-      type: object
-      properties:
-        enableCallParkNotification:
-          type: boolean
-          example: true
-          description: Call park notification is enabled or disabled.
-        monitoredElements:
-          type: array
-          maxItems: 50
-          items:
-            type: string
-          description: Array of ID strings of monitored elements. Maximum 50 elements.
-    PeopleOrPlaceOrVirtualLineType:
-      type: string
-      enum:
-      - PEOPLE
-      - PLACE
-      - VIRTUAL_LINE
-      description: " * `PEOPLE` - Person or list of people.\n * `PLACE` - Workspace that is not assigned to a specific person such as for a shared device in a common area.\n * `VIRTUAL_LINE` - Virtual line or list of virtual lines.\n"
-    MonitoredNumberObject:
-      type: object
-      description: Phone number details of a monitored person, workspace, or virtual line.
-      properties:
-        external:
-          type: string
-          example: '+19845551088'
-          description: External phone number of the monitored person, workspace or virtual line.
-        extension:
-          type: string
-          example: '1088'
-          description: Extension number of the monitored person, workspace or virtual line.
-        routingPrefix:
-          type: string
-          example: '1234'
-          description: Routing prefix of location.
-        esn:
-          type: string
-          example: '12341088'
-          description: Routing prefix + extension of a person or workspace.
-        primary:
-          type: boolean
-          example: true
-          description: Indicates whether phone number is a primary number.
   securitySchemes:
     oauth2:
       flows:

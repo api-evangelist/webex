@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: Webex Send Activation Email API
+  title: Webex Admin Send Activation Email API
   version: 1.0.0
-  description: 'Operations tagged Send Activation Email across 2 of this provider''s published API definitions: webex-admin-openapi.json, webex-send-activation-email-api-openapi.yml. Each path carries the servers of the definition it was published in.'
+  description: The Webex Admin APIs provide comprehensive programmatic access to administrative functions for managing Webex organizations, users, licenses, and settings.
   x-provenance:
     method: harvested
     authored_by: Cisco Webex
@@ -11,9 +11,6 @@ info:
     first_party: true
     note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
     provider_published: true
-    derived_view: Per-tag view of webex-admin-openapi.json, the provider's source document. Operations and schemas are the provider's, unmodified; only the partition is ours.
-    derived_from: webex-admin-openapi.json
-    operation_coverage: 3/3
   x-evidence:
   - type: source
     url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-admin.json
@@ -292,26 +289,6 @@ paths:
           default: 50
 components:
   schemas:
-    BulkActivationEmailResendJobCounts:
-      type: object
-      required:
-      - userResendInviteSent
-      - userResendInviteFailed
-      - userResendInviteSkipped
-      - totalUsers
-      properties:
-        userResendInviteSent:
-          type: number
-          description: Count of users sent an invitation.
-        userResendInviteFailed:
-          type: number
-          description: Count of users who failed to receive an invitation.
-        userResendInviteSkipped:
-          type: number
-          description: Count of users who were skipped.
-        totalUsers:
-          type: number
-          description: Total count of users processed.
     StepExecutionStatus:
       type: object
       required:
@@ -341,18 +318,13 @@ components:
         timeElapsed:
           type: string
           description: Time elapsed since the step execution started.
-    ItemObject:
+    ErrorResponseObject:
       type: object
       properties:
-        itemNumber:
-          type: number
-          description: Index of error.
-        trackingId:
-          type: string
-          description: Unique identifier to track the HTTP request.
-        error:
-          $ref: '#/components/schemas/ErrorObject'
-          description: Error details.
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemObject'
     ErrorMessageObject:
       type: object
       properties:
@@ -387,13 +359,6 @@ components:
       - ABANDONED
       - UNKNOWN
       description: " * `COMPLETED` - Step or job has completed.\n * `STARTING` - Step or job is starting.\n * `STARTED` - Step or job is running.\n * `STOPPING` - Step or job is stopping.\n * `FAILED` - Step or job has failed with an error.\n * `ABANDONED` - Step or job has been abandone (manually stopped).\n * `UNKNOWN` - Step or job status is unknown.\n"
-    ErrorResponseObject:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/ItemObject'
     BulkActivationEmailResendJobDetails:
       type: object
       required:
@@ -451,6 +416,38 @@ components:
         allowAdminInviteEmails:
           type: boolean
           description: Indicates if the org allows admin invite emails to be sent.
+    ItemObject:
+      type: object
+      properties:
+        itemNumber:
+          type: number
+          description: Index of error.
+        trackingId:
+          type: string
+          description: Unique identifier to track the HTTP request.
+        error:
+          $ref: '#/components/schemas/ErrorObject'
+          description: Error details.
+    BulkActivationEmailResendJobCounts:
+      type: object
+      required:
+      - userResendInviteSent
+      - userResendInviteFailed
+      - userResendInviteSkipped
+      - totalUsers
+      properties:
+        userResendInviteSent:
+          type: number
+          description: Count of users sent an invitation.
+        userResendInviteFailed:
+          type: number
+          description: Count of users who failed to receive an invitation.
+        userResendInviteSkipped:
+          type: number
+          description: Count of users who were skipped.
+        totalUsers:
+          type: number
+          description: Total count of users processed.
   securitySchemes:
     oauth2:
       flows:
@@ -473,6 +470,3 @@ components:
           tokenUrl: https://webexapis.com/v1/access_token
           scopes:
             spark:applications_token: Create access tokens for Service Apps
-x-refined-from:
-- webex-admin-openapi.json
-- webex-send-activation-email-api-openapi.yml

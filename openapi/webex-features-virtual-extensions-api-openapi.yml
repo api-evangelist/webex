@@ -2,23 +2,15 @@ openapi: 3.2.0
 info:
   title: 'Webex Features: Virtual Extensions API'
   version: 1.0.0
-  description: 'Operations tagged Features: Virtual Extensions across 2 of this provider''s published API definitions: webex-cloud-calling-openapi.json, webex-features-virtual-extensions-api-openapi.yml. Each path carries the servers of the definition it was published in.'
-  x-provenance:
-    method: harvested
-    authored_by: Cisco Webex
-    harvested_by: API Evangelist
-    harvested_on: '2026-08-19'
-    first_party: true
-    note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
-    provider_published: true
-    derived_view: Per-tag view of webex-cloud-calling-openapi.json, the provider's source document. Operations and schemas are the provider's, unmodified; only the partition is ours.
-    derived_from: webex-cloud-calling-openapi.json
-    operation_coverage: 14/15
   x-evidence:
   - type: source
     url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-cloud-calling.json
   - type: raw
     url: https://raw.githubusercontent.com/webex/webex-openapi-specs/main/public-spec/webex-cloud-calling.json
+  x-refined-note:
+  - x-provenance differs across the merged source definitions and was not carried
+  - x-refined-note differs across the merged source definitions and was not carried
+  description: 'Operations tagged Features: Virtual Extensions across 2 of this provider''s published API definitions: webex-cloud-calling-openapi.json, webex-features-virtual-extensions-api-openapi.yml. Each path carries the servers of the definition it was published in.'
 tags:
 - name: 'Features: Virtual Extensions'
 paths:
@@ -170,7 +162,7 @@ paths:
 
         The GET Virtual Extensions API allows administrators to retrieve a list of virtual extensions configured within their organization. Virtual extensions enable users to dial extension numbers that route to external phone numbers, such as those of remote workers or frequently contacted clients.
 
-        This API returns key information including the  extension, associated  phone number (in E.164 format), display name, and the location to which the virtual extension belongs
+        This API returns key information including the extension, associated phone number (in E.164 format), display name, and the location to which the virtual extension belongs
 
         The API supports filtering by various parameters, such as extension number, phone number, and location name. The results can be paginated using the `max` and `start` parameters, and the order of the results can be specified using the `order` parameter.
 
@@ -1213,102 +1205,58 @@ paths:
               $ref: '#/components/schemas/PutVirtualExtensionRangeObject'
 components:
   schemas:
-    PostVirtualExtensionRangeObject:
+    virtualExtensionRangeValidationStatusObject:
       type: object
       required:
-      - name
-      - prefix
+      - errorCode
+      - message
+      - status
       properties:
         name:
           type: string
           example: SalesVirtualExtensionRange
-          description: Name of the virtual extension range. This is a unique name for the virtual extension range.
+          description: Name used for virtual extension range validation.
         prefix:
           type: string
           example: '+1234'
-          description: Prefix used for a virtual extension range. Prefix works in Standard and Enhanced modes. In Standard mode, it must be E.164 and unique. In Enhanced mode, it can be E.164 or non-E.164.
-        patterns:
-          type: array
-          items:
-            type: string
-          description: List of virtual extension patterns. You can add up to 100 patterns at a time. Extension patterns can include one or more right-justified wildcards “X” matching any digit.
-        locationId:
+          description: Prefix used for a virtual extension range validation.
+        pattern:
           type: string
-          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OL2E4Mjg5NzIyLTFiODAtNDFiNy05Njc4LTBlNzdhZThjMTA5OA
-          description: ID of the location to which the virtual extension range is assigned. The location ID is a unique identifier for the location in Webex Calling. This is set only when location level virtual extension range is added.
-    PostValidateExternalPhoneNumberObject:
-      type: object
-      required:
-      - phoneNumbers
-      properties:
-        phoneNumbers:
-          type: array
-          items:
-            type: string
-          description: List of external phone numbers to be validated.
-    GetVirtualExtensionSettingsObject:
-      type: object
-      required:
-      - mode
-      properties:
-        mode:
+          description: Pattern used for a virtual extension range validation.
+        errorCode:
           type: string
-          enum:
-          - STANDARD
-          description: "Mode of the virtual extension. It can be either `STANDARD` or `ENHANCED`.\n\n    + `STANDARD` -  Standard virtual extension mode in which virtual extensions must be associated with a valid E.164 number, but this requires no enhanced signaling support from the PSTN provider.\n    + `ENHANCED` - Enhanced signaling mode: only a few PSTN providers support this special network signaling extension."
-    ValidateVirtualExtensionRangeRequestObject:
+          example: '27850'
+          description: Error code for the virtual extension range validation.
+        message:
+          type: string
+          example: '[Error 27850] Virtual Extension Range already exists with name: SalesVirtualExtensionRange'
+          description: Error message for the virtual extension range validation.
+        status:
+          $ref: '#/components/schemas/VirtualExtensionRangeValidationStatusEnum'
+          description: Virtual extension range validation status.
+    VirtualExtensionPatchRequestObject:
       type: object
       properties:
-        locationId:
+        firstName:
           type: string
-          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OL2E4Mjg5NzIyLTFiODAtNDFiNy05Njc4LTBlNzdhZThjMTA5OA
-          description: ID of the location to which the virtual extension range is assigned. The location ID is a unique identifier for the location in Webex Calling.
-        name:
+          example: John
+          description: First name of the person at the virtual extension.
+        lastName:
           type: string
-          example: SalesVirtualExtensionRange
-          description: Name of the virtual extension range. This is a unique name for the virtual extension range.
-        prefix:
+          example: Smith
+          description: Last name of the person at the virtual extension.
+        displayName:
           type: string
-          example: '+1234'
-          description: Prefix used for a virtual extension range.
-        patterns:
-          type: array
-          items:
-            type: string
-          description: List of virtual extension patterns. The maximum number of patterns supported at a time is 100.
-        rangeId:
+          example: John Smith
+          description: Display name of the person at the virtual extension.
+        phoneNumber:
           type: string
-          example: Y2lzY29zcGFyazovL3VzL1ZJUlRVQUxfRVhURU5TSU9OLzZkNmYwNmVlLTdkNDEtNDQ4Yy05MjgwLWZkM2ZiMDhmOGUyMA
-          description: ID of the virtual extension range. This is mandatory when validating for an existing virtual extension range, not present when validating a new virtual extension range before adding it.
-    GetVirtualExtensionRangeDetailsObject:
-      type: object
-      required:
-      - id
-      - name
-      - prefix
-      - patterns
-      properties:
-        id:
+          example: '+17011558169'
+          description: Directory number of the virtual extension.
+        extension:
           type: string
-          example: Y2lzY29zcGFyazovL3VzL1ZJUlRVQUxfRVhURU5TSU9OX1JBTkdFLzk0OThkMTE0LWMwMGMtNGZkNC1iMTk5LWU4ODQ2N2UwNzVkNw
-          description: ID of the virtual extension range.
-        name:
-          type: string
-          example: SalesVirtualExtensionRange
-          description: Name of the virtual extension range. This is a unique name for the virtual extension range.
-        prefix:
-          type: string
-          example: '+1234'
-          description: Prefix used for a virtual extension range. Prefix works in Standard and Enhanced modes. In Standard mode, it must be E.164 and it must be unique. In Enhanced mode, it can be E.164 or non-E.164.
-        patterns:
-          type: array
-          items:
-            type: string
-          description: List of virtual extension patterns. The maximum number of patterns supported at a time is 100. Extension patterns can include one or more right-justified wildcards “X” matching any digit.
-        locationName:
-          type: string
-          example: Sales
-          description: Name of the location to which the virtual extension range is assigned. This is set only for virtual extension ranges at the location level.
+          example: '9133'
+          description: Extension of the virtual extension.
     PostVirtualExtensionObject:
       type: object
       required:
@@ -1340,6 +1288,117 @@ components:
           type: string
           example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OL2E4Mjg5NzIyLTFiODAtNDFiNy05Njc4LTBlNzdhZThjMTA5OA
           description: ID of the location to which the virtual extension is assigned. The location ID is a unique identifier for the location in Webex Calling.
+    VirtualExtensionRangeValidationStatusEnum:
+      type: string
+      enum:
+      - VALID
+      - DUPLICATE
+      - DUPLICATE_IN_LIST
+      - INVALID
+      - LIMIT_EXCEEDED
+      description: " * `VALID` - Validation is successful.\n * `DUPLICATE` - Duplicate patterns for virtual extension range.\n * `DUPLICATE_IN_LIST` - Duplicate routing number in the pattern list.\n * `INVALID` - Invalid prefix length.\n * `LIMIT_EXCEEDED` - Exceeding pattern limit of 100 in the request.\n"
+    ValidateVirtualExtensionRangeResponseObject:
+      type: object
+      required:
+      - status
+      properties:
+        status:
+          type: string
+          enum:
+          - OK
+          - ERRORS
+          description: "Virtual extension range validation status.\n * `OK` - Validation is successful.\n * `ERRORS` - Validation failed.\n"
+        virtualExtensionRangeValidationStatus:
+          type: array
+          items:
+            $ref: '#/components/schemas/virtualExtensionRangeValidationStatusObject'
+          description: Array of virtual extension range validation status. This is set only when the `status` is `ERRORS`.
+    ValidateVirtualExtensionRangeRequestObject:
+      type: object
+      properties:
+        locationId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OL2E4Mjg5NzIyLTFiODAtNDFiNy05Njc4LTBlNzdhZThjMTA5OA
+          description: ID of the location to which the virtual extension range is assigned. The location ID is a unique identifier for the location in Webex Calling.
+        name:
+          type: string
+          example: SalesVirtualExtensionRange
+          description: Name of the virtual extension range. This is a unique name for the virtual extension range.
+        prefix:
+          type: string
+          example: '+1234'
+          description: Prefix used for a virtual extension range.
+        patterns:
+          type: array
+          items:
+            type: string
+          description: List of virtual extension patterns. The maximum number of patterns supported at a time is 100.
+        rangeId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1ZJUlRVQUxfRVhURU5TSU9OLzZkNmYwNmVlLTdkNDEtNDQ4Yy05MjgwLWZkM2ZiMDhmOGUyMA
+          description: ID of the virtual extension range. This is mandatory when validating for an existing virtual extension range, not present when validating a new virtual extension range before adding it.
+    PostVirtualExtensionRangeObject:
+      type: object
+      required:
+      - name
+      - prefix
+      properties:
+        name:
+          type: string
+          example: SalesVirtualExtensionRange
+          description: Name of the virtual extension range. This is a unique name for the virtual extension range.
+        prefix:
+          type: string
+          example: '+1234'
+          description: Prefix used for a virtual extension range. Prefix works in Standard and Enhanced modes. In Standard mode, it must be E.164 and unique. In Enhanced mode, it can be E.164 or non-E.164.
+        patterns:
+          type: array
+          items:
+            type: string
+          description: List of virtual extension patterns. You can add up to 100 patterns at a time. Extension patterns can include one or more right-justified wildcards “X” matching any digit.
+        locationId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OL2E4Mjg5NzIyLTFiODAtNDFiNy05Njc4LTBlNzdhZThjMTA5OA
+          description: ID of the location to which the virtual extension range is assigned. The location ID is a unique identifier for the location in Webex Calling. This is set only when location level virtual extension range is added.
+    GetVirtualExtensionRangeDetailsObject:
+      type: object
+      required:
+      - id
+      - name
+      - prefix
+      - patterns
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1ZJUlRVQUxfRVhURU5TSU9OX1JBTkdFLzk0OThkMTE0LWMwMGMtNGZkNC1iMTk5LWU4ODQ2N2UwNzVkNw
+          description: ID of the virtual extension range.
+        name:
+          type: string
+          example: SalesVirtualExtensionRange
+          description: Name of the virtual extension range. This is a unique name for the virtual extension range.
+        prefix:
+          type: string
+          example: '+1234'
+          description: Prefix used for a virtual extension range. Prefix works in Standard and Enhanced modes. In Standard mode, it must be E.164 and it must be unique. In Enhanced mode, it can be E.164 or non-E.164.
+        patterns:
+          type: array
+          items:
+            type: string
+          description: List of virtual extension patterns. The maximum number of patterns supported at a time is 100. Extension patterns can include one or more right-justified wildcards “X” matching any digit.
+        locationName:
+          type: string
+          example: Sales
+          description: Name of the location to which the virtual extension range is assigned. This is set only for virtual extension ranges at the location level.
+    VirtualExtensionSettingsPatchRequestObject:
+      type: object
+      required:
+      - mode
+      properties:
+        mode:
+          type: string
+          enum:
+          - STANDARD
+          description: "Mode of the virtual extension. It can be either `STANDARD` or `ENHANCED`.\n\n    + `STANDARD` -  Standard Virtual extension mode in which virtual extensions must be associated with a valid E.164 number, but this requires no enhanced signaling support from the PSTN provider.\n    + `ENHANCED` - Enhanced signaling mode: only a few PSTN providers support this special network signaling extension."
     PutVirtualExtensionRangeObject:
       type: object
       properties:
@@ -1418,83 +1477,6 @@ components:
           type: string
           example: John Smith
           description: Display name of the person at the virtual extension.
-    VirtualExtensionPatchRequestObject:
-      type: object
-      properties:
-        firstName:
-          type: string
-          example: John
-          description: First name of the person at the virtual extension.
-        lastName:
-          type: string
-          example: Smith
-          description: Last name of the person at the virtual extension.
-        displayName:
-          type: string
-          example: John Smith
-          description: Display name of the person at the virtual extension.
-        phoneNumber:
-          type: string
-          example: '+17011558169'
-          description: Directory number of the virtual extension.
-        extension:
-          type: string
-          example: '9133'
-          description: Extension of the virtual extension.
-    virtualExtensionRangeValidationStatusObject:
-      type: object
-      required:
-      - errorCode
-      - message
-      - status
-      properties:
-        name:
-          type: string
-          example: SalesVirtualExtensionRange
-          description: Name used for virtual extension range validation.
-        prefix:
-          type: string
-          example: '+1234'
-          description: Prefix used for a virtual extension range validation.
-        pattern:
-          type: string
-          description: Pattern used for a virtual extension range validation.
-        errorCode:
-          type: string
-          example: '27850'
-          description: Error code for the virtual extension range validation.
-        message:
-          type: string
-          example: '[Error 27850] Virtual Extension Range already exists with name: SalesVirtualExtensionRange'
-          description: Error message for the virtual extension range validation.
-        status:
-          $ref: '#/components/schemas/VirtualExtensionRangeValidationStatusEnum'
-          description: Virtual extension range validation status.
-    VirtualExtensionRangeValidationStatusEnum:
-      type: string
-      enum:
-      - VALID
-      - DUPLICATE
-      - DUPLICATE_IN_LIST
-      - INVALID
-      - LIMIT_EXCEEDED
-      description: " * `VALID` - Validation is successful.\n * `DUPLICATE` - Duplicate patterns for virtual extension range.\n * `DUPLICATE_IN_LIST` - Duplicate routing number in the pattern list.\n * `INVALID` - Invalid prefix length.\n * `LIMIT_EXCEEDED` - Exceeding pattern limit of 100 in the request.\n"
-    ValidateVirtualExtensionRangeResponseObject:
-      type: object
-      required:
-      - status
-      properties:
-        status:
-          type: string
-          enum:
-          - OK
-          - ERRORS
-          description: "Virtual extension range validation status.\n * `OK` - Validation is successful.\n * `ERRORS` - Validation failed.\n"
-        virtualExtensionRangeValidationStatus:
-          type: array
-          items:
-            $ref: '#/components/schemas/virtualExtensionRangeValidationStatusObject'
-          description: Array of virtual extension range validation status. This is set only when the `status` is `ERRORS`.
     GetVirtualExtensionRangeListObject:
       type: object
       required:
@@ -1529,16 +1511,6 @@ components:
           type: string
           example: Sales
           description: Name of the location to which the virtual extension range is assigned. This is set only for virtual extension ranges at the location level
-    VirtualExtensionSettingsPatchRequestObject:
-      type: object
-      required:
-      - mode
-      properties:
-        mode:
-          type: string
-          enum:
-          - STANDARD
-          description: "Mode of the virtual extension. It can be either `STANDARD` or `ENHANCED`.\n\n    + `STANDARD` -  Standard Virtual extension mode in which virtual extensions must be associated with a valid E.164 number, but this requires no enhanced signaling support from the PSTN provider.\n    + `ENHANCED` - Enhanced signaling mode: only a few PSTN providers support this special network signaling extension."
     GetVirtualExtensionListObject:
       type: object
       required:
@@ -1549,6 +1521,26 @@ components:
           items:
             $ref: '#/components/schemas/GetVirtualExtensionObject'
           description: List of virtual extensions.
+    PostValidateExternalPhoneNumberObject:
+      type: object
+      required:
+      - phoneNumbers
+      properties:
+        phoneNumbers:
+          type: array
+          items:
+            type: string
+          description: List of external phone numbers to be validated.
+    GetVirtualExtensionSettingsObject:
+      type: object
+      required:
+      - mode
+      properties:
+        mode:
+          type: string
+          enum:
+          - STANDARD
+          description: "Mode of the virtual extension. It can be either `STANDARD` or `ENHANCED`.\n\n    + `STANDARD` -  Standard virtual extension mode in which virtual extensions must be associated with a valid E.164 number, but this requires no enhanced signaling support from the PSTN provider.\n    + `ENHANCED` - Enhanced signaling mode: only a few PSTN providers support this special network signaling extension."
   securitySchemes:
     oauth2:
       flows:

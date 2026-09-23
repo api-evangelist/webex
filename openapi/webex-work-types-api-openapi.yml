@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: Webex Work Types API
+  title: Webex Contact Center Work Types API
   version: 1.0.0
-  description: 'Operations tagged Work Types across 2 of this provider''s published API definitions: webex-contact-center-openapi.json, webex-work-types-api-openapi.yml. Each path carries the servers of the definition it was published in.'
+  description: The Webex Contact Center APIs allow developers to deeply integrate, configure, and manage cloud-based contact center solutions.
   x-provenance:
     method: harvested
     authored_by: Cisco Webex
@@ -11,9 +11,6 @@ info:
     first_party: true
     note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
     provider_published: true
-    derived_view: Per-tag view of webex-contact-center-openapi.json, the provider's source document. Operations and schemas are the provider's, unmodified; only the partition is ours.
-    derived_from: webex-contact-center-openapi.json
-    operation_coverage: 9/9
   x-evidence:
   - type: source
     url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-contact-center.json
@@ -670,89 +667,6 @@ paths:
       deprecated: false
 components:
   schemas:
-    EntityInfo:
-      type: object
-      properties:
-        id:
-          type: string
-          description: id
-          example: id.
-        name:
-          type: string
-          description: name
-          example: name.
-        additionalAttributes:
-          type: object
-          additionalProperties:
-            type: string
-            description: A map containing additional attributes of entity where both the key and value are Strings.
-            example: '{"key1":"value1","key2":"value2"}'
-          description: A map containing additional attributes of entity where both the key and value are Strings.
-          example:
-            key1: value1
-            key2: value2
-        createdDate:
-          type: string
-        lastModifiedDate:
-          type: string
-        version:
-          type: integer
-          format: int32
-    BulkRequestItemDTOWorkTypeDTO:
-      type: object
-      properties:
-        itemIdentifier:
-          type: integer
-          description: Unique item identifier for a bulk operation.
-          format: int32
-          example: 10
-        item:
-          $ref: '#/components/schemas/WorkTypeDTO'
-        requestAction:
-          type: string
-          description: Identifier for action type. Possible values can be SAVE and DELETE.
-          example: SAVE
-    BulkExportDTOWorkTypeBulkExportDTO:
-      type: object
-      properties:
-        totalResources:
-          type: integer
-          description: Total number of items
-          format: int32
-          example: 100
-        pageNumber:
-          type: integer
-          description: Current page number
-          format: int32
-          example: 0
-        pageSize:
-          type: integer
-          description: Page size for current data set
-          format: int32
-          example: 50
-        rel:
-          type: string
-          description: Indicates whether more pages exist. When 'next' there are more pages available, otherwise 'last'.
-          example: last
-        resources:
-          type: array
-          items:
-            $ref: '#/components/schemas/WorkTypeBulkExportDTO'
-    WorkTypeBulkExportDTO:
-      type: object
-      properties:
-        name:
-          type: string
-          description: A name for the Work Type.
-          example: Idle Code
-        description:
-          type: string
-          description: A description for the Work type code created.
-          example: This is an 'Idle' work type.
-        workTypeCode:
-          type: string
-          description: 'Identifier for the Work Type being created. Can be ''WRAP_UP_CODE'' or ''IDLE_CODE''. '
-          example: IDLE_CODE
     MetaDataReferencesPagingInfo:
       title: MetaDataReferencesPagingInfo
       type: object
@@ -807,70 +721,48 @@ components:
           description: Name of current entity
           example: entity_name
       description: Metadata of response for references with paging information
-    Link:
+    BulkRequestItemDTOWorkTypeDTO:
       type: object
       properties:
-        href:
+        itemIdentifier:
+          type: integer
+          description: Unique item identifier for a bulk operation.
+          format: int32
+          example: 10
+        item:
+          $ref: '#/components/schemas/WorkTypeDTO'
+        requestAction:
           type: string
-        hreflang:
+          description: Identifier for action type. Possible values can be SAVE and DELETE.
+          example: SAVE
+    EntityInfo:
+      type: object
+      properties:
+        id:
           type: string
-        title:
-          type: string
-        type:
-          type: string
-        deprecation:
-          type: string
-        profile:
-          type: string
+          description: id
+          example: id.
         name:
           type: string
-        templated:
-          type: boolean
-    Response:
-      type: object
-      properties:
-        code:
-          type: integer
-          format: int32
-        details:
+          description: name
+          example: name.
+        additionalAttributes:
           type: object
           additionalProperties:
-            type: object
-        links:
-          type: array
-          items:
-            $ref: '#/components/schemas/Link'
-    EntityReferenceInfoDTO:
-      type: object
-      properties:
-        description:
+            type: string
+            description: A map containing additional attributes of entity where both the key and value are Strings.
+            example: '{"key1":"value1","key2":"value2"}'
+          description: A map containing additional attributes of entity where both the key and value are Strings.
+          example:
+            key1: value1
+            key2: value2
+        createdDate:
           type: string
-          description: Description about reference info.
-          example: list of referenced entities
-        meta:
-          $ref: '#/components/schemas/MetaDataReferencesPagingInfo'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/EntityInfo'
-    BulkRequestDTOWorkTypeDTO:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/BulkRequestItemDTOWorkTypeDTO'
-    ApiErrorResponse:
-      description: Response body for an API error.
-      type: object
-      properties:
-        trackingId:
+        lastModifiedDate:
           type: string
-          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
-          example: c1a4fcef-aee2-4dea-8977-29f594760552
-        error:
-          description: An object containing details about the error.
-          $ref: '#/components/schemas/ErrorDetails'
+        version:
+          type: integer
+          format: int32
     BulkResponseItemDTO:
       type: object
       properties:
@@ -915,6 +807,91 @@ components:
         itemIdentifier: 10
         operationType: CREATE
         status: 400
+    ResponseEnvelopeWorkTypeDTO:
+      type: object
+      properties:
+        meta:
+          type: object
+          additionalProperties:
+            type: object
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkTypeDTO'
+    OperationError:
+      description: An error message providing details about the operation failure.
+      type: object
+      properties:
+        description:
+          type: string
+          description: A human readable explanation for the occurrence of an error.
+          example: Incorrect Credentials.
+    WorkTypeBulkExportDTO:
+      type: object
+      properties:
+        name:
+          type: string
+          description: A name for the Work Type.
+          example: Idle Code
+        description:
+          type: string
+          description: A description for the Work type code created.
+          example: This is an 'Idle' work type.
+        workTypeCode:
+          type: string
+          description: 'Identifier for the Work Type being created. Can be ''WRAP_UP_CODE'' or ''IDLE_CODE''. '
+          example: IDLE_CODE
+    Response:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        details:
+          type: object
+          additionalProperties:
+            type: object
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'
+    Link:
+      type: object
+      properties:
+        href:
+          type: string
+        hreflang:
+          type: string
+        title:
+          type: string
+        type:
+          type: string
+        deprecation:
+          type: string
+        profile:
+          type: string
+        name:
+          type: string
+        templated:
+          type: boolean
+    ApiErrorResponse:
+      description: Response body for an API error.
+      type: object
+      properties:
+        trackingId:
+          type: string
+          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
+          example: c1a4fcef-aee2-4dea-8977-29f594760552
+        error:
+          description: An object containing details about the error.
+          $ref: '#/components/schemas/ErrorDetails'
+    BulkResponseDTO:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BulkResponseItemDTO'
     ErrorDetails:
       description: Details of an error.
       type: object
@@ -928,32 +905,6 @@ components:
           description: A message providing details about the error.
           items:
             $ref: '#/components/schemas/OperationError'
-    ResponseEnvelopeWorkTypeDTO:
-      type: object
-      properties:
-        meta:
-          type: object
-          additionalProperties:
-            type: object
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/WorkTypeDTO'
-    BulkResponseDTO:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/BulkResponseItemDTO'
-    OperationError:
-      description: An error message providing details about the operation failure.
-      type: object
-      properties:
-        description:
-          type: string
-          description: A human readable explanation for the occurrence of an error.
-          example: Incorrect Credentials.
     WorkTypeDTO:
       required:
       - active
@@ -1015,6 +966,52 @@ components:
           format: int64
           readOnly: true
           example: 1617536244000
+    BulkExportDTOWorkTypeBulkExportDTO:
+      type: object
+      properties:
+        totalResources:
+          type: integer
+          description: Total number of items
+          format: int32
+          example: 100
+        pageNumber:
+          type: integer
+          description: Current page number
+          format: int32
+          example: 0
+        pageSize:
+          type: integer
+          description: Page size for current data set
+          format: int32
+          example: 50
+        rel:
+          type: string
+          description: Indicates whether more pages exist. When 'next' there are more pages available, otherwise 'last'.
+          example: last
+        resources:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkTypeBulkExportDTO'
+    BulkRequestDTOWorkTypeDTO:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BulkRequestItemDTOWorkTypeDTO'
+    EntityReferenceInfoDTO:
+      type: object
+      properties:
+        description:
+          type: string
+          description: Description about reference info.
+          example: list of referenced entities
+        meta:
+          $ref: '#/components/schemas/MetaDataReferencesPagingInfo'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityInfo'
   securitySchemes:
     oauth2:
       flows:
@@ -1042,6 +1039,3 @@ components:
       scheme: bearer
       bearerFormat: JWT
       description: JWT bearer token authentication. Obtain your token from the Webex Developer Portal.
-x-refined-from:
-- webex-contact-center-openapi.json
-- webex-work-types-api-openapi.yml

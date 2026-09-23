@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: 'Webex Features: Call Recording API'
+  title: 'Webex Cloud Calling Features: Call Recording API'
   version: 1.0.0
-  description: 'Operations tagged Features: Call Recording across 2 of this provider''s published API definitions: webex-cloud-calling-openapi.json, webex-features-call-recording-api-openapi.yml. Each path carries the servers of the definition it was published in.'
+  description: The Webex Cloud Calling APIs enable comprehensive management of cloud-based calling services, including user provisioning, device assignment, call routing, feature configuration, and number management.
   x-provenance:
     method: harvested
     authored_by: Cisco Webex
@@ -11,9 +11,6 @@ info:
     first_party: true
     note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
     provider_published: true
-    derived_view: Per-tag view of webex-cloud-calling-openapi.json, the provider's source document. Operations and schemas are the provider's, unmodified; only the partition is ours.
-    derived_from: webex-cloud-calling-openapi.json
-    operation_coverage: 22/22
   x-evidence:
   - type: source
     url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-cloud-calling.json
@@ -1833,101 +1830,16 @@ paths:
               $ref: '#/components/schemas/ModifyLocationCallRecordingAnnouncementObject'
 components:
   schemas:
-    ItemObject:
-      type: object
-      properties:
-        item:
-          type: string
-          description: Phone number
-        itemNumber:
-          type: number
-          description: Index of error number.
-        trackingId:
-          type: string
-          description: Unique identifier to track the HTTP requests.
-        error:
-          $ref: '#/components/schemas/ErrorObject'
-    GetComplianceAnnouncementObject:
+    CallRecordingJobList:
       type: object
       required:
-      - inboundPSTNCallsEnabled
-      - useOrgSettingsEnabled
-      - outboundPSTNCallsEnabled
-      - outboundPSTNCallsDelayEnabled
-      - delayInSeconds
-      - useOrgLevelAnnouncementEnabled
-      - customComplianceAnnouncement
+      - items
       properties:
-        inboundPSTNCallsEnabled:
-          type: boolean
-          example: true
-          description: Flag to indicate whether the call recording START/STOP announcement is played to an inbound caller.
-        useOrgSettingsEnabled:
-          type: boolean
-          example: true
-          description: Flag to indicate whether to use the customer level compliance announcement default settings.
-        outboundPSTNCallsEnabled:
-          type: boolean
-          description: Flag to indicate whether the call recording START/STOP announcement is played to an outbound caller.
-        outboundPSTNCallsDelayEnabled:
-          type: boolean
-          description: Flag to indicate whether compliance announcement is played after a specified delay in seconds.
-        delayInSeconds:
-          type: number
-          example: 10
-          description: Number of seconds to wait before playing the compliance announcement.
-        useOrgLevelAnnouncementEnabled:
-          type: boolean
-          example: true
-          description: Flag to indicate whether to use the organization level custom compliance announcement. If this flag is set to true, takes the organization's announcement setting. If this flag is set to false, takes the location's custom announcement.
-        customComplianceAnnouncement:
-          type: object
-          description: Custom compliance announcement settings.
-          properties:
-            type:
-              type: string
-              enum:
-              - CUSTOM
-              - DEFAULT
-              example: CUSTOM
-              description: Type of compliance announcement to be played. Type is an enum with supported values CUSTOM | DEFAULT. CUSTOM is used to play a custom announcement file. DEFAULT is used to play the default system announcement file.
-            audioAnnouncementFile:
-              type: object
-              properties:
-                id:
-                  type: string
-                  example: Y2lzY29zcGFyazovL3VzL0FOTk9VTkNFTUVOVC82YTcwZWQ4MS1hZGM5LTQ4OWEtODhjOC0zMWI3ODllODQ1ODU
-                  description: Unique identifier for the custom audio announcement file.
-                fileName:
-                  type: string
-                  example: SampleAnnouncement
-                  description: The original file name of the uploaded custom audio announcement.
-                mediaFileType:
-                  type: string
-                  enum:
-                  - WAV
-                  example: WAV
-                  description: Type of the announcement file. Type is an enum with supported values WAV
-                level:
-                  type: string
-                  enum:
-                  - ORGANIZATION
-                  - LOCATION
-                  description: Announcement audio file level.
-                  example: ORGANIZATION
-                isTextToSpeech:
-                  type: boolean
-                  example: true
-                  description: Indicates if the announcement is created by TTS.
-    CallRecordingVendorPatchResponse:
-      type: object
-      required:
-      - jobId
-      properties:
-        jobId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0pPQl9JRC8yOTQ5ZmRiOC1kODg1LTQxMzAtYjhiNy1jNmJiYmM5ZWQzOTE
-          description: Unique job ID of the call recording job.
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CallRecordingJobStatus'
+          description: List of call recording jobs.
     FailureBehavior:
       type: string
       enum:
@@ -1935,265 +1847,6 @@ components:
       - PROCEED_CALL_WITH_ANNOUNCEMENT
       - END_CALL_WITH_ANNOUNCEMENT
       description: " * `PROCEED_WITH_CALL_NO_ANNOUNCEMENT` - Failure behavior will make sure that the call proceeds without announcement.\n * `PROCEED_CALL_WITH_ANNOUNCEMENT` - Failure behavior will make sure that the call proceeds with an announcement.\n * `END_CALL_WITH_ANNOUNCEMENT` - Failure behavior will make sure that the call ends with an announcement.\n"
-    GetOrgCallRecordingAnnouncementObject:
-      type: object
-      required:
-      - start
-      - stop
-      - pause
-      - resume
-      - failureEndWithCall
-      - failureProceedWithCall
-      properties:
-        start:
-          type: object
-          description: The start announcement settings for this organization.
-          properties:
-            type:
-              type: string
-              enum:
-              - CUSTOM
-              - DEFAULT
-              description: "Type of announcement file to be played.\n * `CUSTOM` - Custom announcement file.\n * `DEFAULT` - Default announcement file.\n"
-            audioAnnouncementFile:
-              type: object
-              description: The custom audio announcement file to be played.
-              properties:
-                id:
-                  type: string
-                  example: Y2lzY29zcGFyazovL3VzL0FOTk9VTkNFTUVOVC9iOTg2MWI3MS1hN2MxLTQxZmUtYjNmZC1lZDNkOTdjYTFjMzQ=
-                  description: Unique identifier for the custom audio announcement file.
-                fileName:
-                  type: string
-                  example: SampleAnnouncement
-                  description: The original file name of the uploaded custom audio announcement.
-                mediaFileType:
-                  type: string
-                  enum:
-                  - WAV
-                  example: WAV
-                  description: Type of the announcement file. Type is an enum with supported values WAV
-                level:
-                  type: string
-                  enum:
-                  - ORGANIZATION
-                  - LOCATION
-                  description: Announcement audio file level.
-                  example: ORGANIZATION
-                isTextToSpeech:
-                  type: boolean
-                  example: true
-                  description: Indicates if the announcement is created by TTS.
-        stop:
-          type: object
-          description: The stop announcement settings for this organization.
-          properties:
-            type:
-              type: string
-              enum:
-              - CUSTOM
-              - DEFAULT
-              description: "Type of announcement file to be played.\n * `CUSTOM` - Custom announcement file.\n * `DEFAULT` - Default announcement file.\n"
-            audioAnnouncementFile:
-              type: object
-              description: The custom audio announcement file to be played.
-              properties:
-                id:
-                  type: string
-                  example: Y2lzY29zcGFyazovL3VzL0FOTk9VTkNFTUVOVC82ZjU0Y2NhNS05ZWY5LTQ3N2EtYThkNi0wY2EyNzU4MTAxM2Y=
-                  description: Unique identifier for the custom audio announcement file.
-                fileName:
-                  type: string
-                  example: SampleAnnouncement
-                  description: The original file name of the uploaded custom audio announcement.
-                mediaFileType:
-                  type: string
-                  enum:
-                  - WAV
-                  example: WAV
-                  description: Type of the announcement file. Type is an enum with supported values WAV
-                level:
-                  type: string
-                  enum:
-                  - ORGANIZATION
-                  - LOCATION
-                  description: Announcement audio file level.
-                  example: ORGANIZATION
-                isTextToSpeech:
-                  type: boolean
-                  example: true
-                  description: Indicates if the announcement is created by TTS.
-        pause:
-          type: object
-          description: The pause announcement settings for this organization.
-          properties:
-            type:
-              type: string
-              enum:
-              - CUSTOM
-              - DEFAULT
-              description: "Type of announcement file to be played.\n * `CUSTOM` - Custom announcement file.\n * `DEFAULT` - Default announcement file.\n"
-            audioAnnouncementFile:
-              type: object
-              description: The custom audio announcement file to be played.
-              properties:
-                id:
-                  type: string
-                  example: Y2lzY29zcGFyazovL3VzL0FOTk9VTkNFTUVOVC82M2NiYTMwOS05NjQ2LTQzMjUtOTZlNC02N2ZmYWVlZjNiOWI=
-                  description: Unique identifier for the custom audio announcement file.
-                fileName:
-                  type: string
-                  example: SampleAnnouncement
-                  description: The original file name of the uploaded custom audio announcement.
-                mediaFileType:
-                  type: string
-                  enum:
-                  - WAV
-                  example: WAV
-                  description: Type of the announcement file. Type is an enum with supported values WAV
-                level:
-                  type: string
-                  enum:
-                  - ORGANIZATION
-                  - LOCATION
-                  description: Announcement audio file level.
-                  example: ORGANIZATION
-                isTextToSpeech:
-                  type: boolean
-                  example: true
-                  description: Indicates if the announcement is created by TTS.
-        resume:
-          type: object
-          description: The resume announcement settings for this organization.
-          properties:
-            type:
-              type: string
-              enum:
-              - CUSTOM
-              - DEFAULT
-              description: "Type of announcement file to be played.\n * `CUSTOM` - Custom announcement file.\n * `DEFAULT` - Default announcement file.\n"
-            audioAnnouncementFile:
-              type: object
-              description: The custom audio announcement file to be played.
-              properties:
-                id:
-                  type: string
-                  example: Y2lzY29zcGFyazovL3VzL0FOTk9VTkNFTUVOVC8xM2NlNzBkYS00NDkwLTQ2OWItOTg4YS1mYjA0MzExNmQ3ZTU=
-                  description: Unique identifier for the custom audio announcement file.
-                fileName:
-                  type: string
-                  example: SampleAnnouncement
-                  description: The original file name of the uploaded custom audio announcement.
-                mediaFileType:
-                  type: string
-                  enum:
-                  - WAV
-                  example: WAV
-                  description: Type of the announcement file. Type is an enum with supported values WAV
-                level:
-                  type: string
-                  enum:
-                  - ORGANIZATION
-                  - LOCATION
-                  description: Announcement audio file level.
-                  example: ORGANIZATION
-                isTextToSpeech:
-                  type: boolean
-                  example: true
-                  description: Indicates if the announcement is created by TTS.
-        failureProceedWithCall:
-          type: object
-          description: The failure proceed with call announcement settings for this organization.
-          properties:
-            type:
-              type: string
-              enum:
-              - CUSTOM
-              - DEFAULT
-              description: "Type of announcement file to be played.\n * `CUSTOM` - Custom announcement file.\n * `DEFAULT` - Default announcement file.\n"
-            audioAnnouncementFile:
-              type: object
-              description: The custom audio announcement file to be played.
-              properties:
-                id:
-                  type: string
-                  example: Y2lzY29zcGFyazovL3VzL0FOTk9VTkNFTUVOVC80ZjU0Y2NhNS05ZWY5LTQ3N2EtYThkNi0wY2EyNzU4MTAxM2Y=
-                  description: Unique identifier for the custom audio announcement file.
-                fileName:
-                  type: string
-                  example: SampleAnnouncement
-                  description: The original file name of the uploaded custom audio announcement.
-                mediaFileType:
-                  type: string
-                  enum:
-                  - WAV
-                  example: WAV
-                  description: Type of the announcement file. Type is an enum with supported values WAV
-                level:
-                  type: string
-                  enum:
-                  - ORGANIZATION
-                  - LOCATION
-                  description: Announcement audio file level.
-                  example: ORGANIZATION
-                isTextToSpeech:
-                  type: boolean
-                  example: true
-                  description: Indicates if the announcement is created by TTS.
-        failureEndWithCall:
-          type: object
-          description: The failure end with call announcement settings for this organization.
-          properties:
-            type:
-              type: string
-              enum:
-              - CUSTOM
-              - DEFAULT
-              description: "Type of announcement file to be played.\n * `CUSTOM` - Custom announcement file.\n * `DEFAULT` - Default announcement file.\n"
-            audioAnnouncementFile:
-              type: object
-              description: The custom audio announcement file to be played.
-              properties:
-                id:
-                  type: string
-                  example: Y2lzY29zcGFyazovL3VzL0FOTk9VTkNFTUVOVC9mZTU4YTE1ZS1kNzMwLTQ4ZGYtYWU4Ny1jNjc5YjM3YmQ4Mzk=
-                  description: Unique identifier for the custom audio announcement file.
-                fileName:
-                  type: string
-                  example: SampleAnnouncement
-                  description: The original file name of the uploaded custom audio announcement.
-                mediaFileType:
-                  type: string
-                  enum:
-                  - WAV
-                  example: WAV
-                  description: Type of the announcement file. Type is an enum with supported values WAV
-                level:
-                  type: string
-                  enum:
-                  - ORGANIZATION
-                  - LOCATION
-                  description: Announcement audio file level.
-                  example: ORGANIZATION
-                isTextToSpeech:
-                  type: boolean
-                  example: true
-                  description: Indicates if the announcement is created by TTS.
-    CallRecordingVendorUsersResponse:
-      type: object
-      required:
-      - vendorId
-      - members
-      properties:
-        vendorId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1JFQ09SRElOR19WRU5ET1IvMGE0MjY3NTQtYTQ3MC00YzJkLThiYTAtZmJjNjc3M2E4YTdj
-          description: Call recording vendor ID.
-        members:
-          type: array
-          items:
-            $ref: '#/components/schemas/Members'
-          description: Contains member details
     ModifyOrgCallRecordingAnnouncementObject:
       type: object
       properties:
@@ -2281,53 +1934,6 @@ components:
               type: string
               example: Y2lzY29zcGFyazovL3VzL0FOTk9VTkNFTUVOVC82YTcwZWQ4MS1hZGM5LTQ4OWEtODhjOC0zMWI3ODllODQ1ODU
               description: Unique identifier for the custom audio announcement file.
-    GetCallRecordingTermsOfServiceObject:
-      type: object
-      required:
-      - vendorId
-      - vendorName
-      - termsOfServiceEnabled
-      - termsOfServiceUrl
-      properties:
-        vendorId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1JFQ09SRElOR19WRU5ET1IvNTNkYzRjODctODQwOC00ODgyLTk1NzAtZGNhMmJjZGI5Mjgw
-          description: A unique identifier for the vendor.
-        vendorName:
-          type: string
-          example: Dubber
-          description: A unique name for the vendor.
-        termsOfServiceEnabled:
-          type: boolean
-          example: true
-          description: Whether or not the call recording terms of service are enabled.
-        termsOfServiceUrl:
-          type: string
-          example: https://www.dubber.net/terms
-          description: 'Url where can be found terms of service for the vendor.
-
-
-            **NOTE**: This is expected to be empty for webex recording platform.'
-    CallRecordingJobList:
-      type: object
-      required:
-      - items
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/CallRecordingJobStatus'
-          description: List of call recording jobs.
-    CallRecordingRegionsResponse:
-      type: object
-      required:
-      - regions
-      properties:
-        regions:
-          type: array
-          items:
-            $ref: '#/components/schemas/Regions'
-          description: Contains region details.
     CallRecordingLocationVendorsResponse:
       type: object
       required:
@@ -2388,465 +1994,6 @@ components:
           description: Type of location level failure behavior.
           allOf:
           - $ref: '#/components/schemas/FailureBehavior'
-    CountObject:
-      type: object
-      required:
-      - totalMoves
-      - moved
-      - failed
-      - pending
-      - skipped
-      properties:
-        totalMoves:
-          type: number
-          example: 100
-          description: Total number of user moves requested.
-        moved:
-          type: number
-          example: 50
-          description: Total number of user moves completed successfully.
-        failed:
-          type: number
-          example: 50
-          description: Total number of user moves that were completed with failures.
-        pending:
-          type: number
-          example: 50
-          description: Total number of user moves that were pending with number orders.
-        skipped:
-          type: number
-          example: 50
-          description: Total number of user moves that were skipped.
-    CallRecordingVendorsList:
-      type: object
-      required:
-      - vendorId
-      - vendorName
-      - vendors
-      - failureBehavior
-      properties:
-        vendorId:
-          type: string
-          description: Unique identifier of the vendor.
-        vendorName:
-          type: string
-          description: Name of the vendor.
-        vendors:
-          description: List of call recording vendors
-          allOf:
-          - $ref: '#/components/schemas/CallRecordingVendors'
-        storageRegion:
-          type: string
-          description: Call recording storage region. Only applicable for Webex as a vendor and isn't used for other vendors.
-        failureBehavior:
-          description: Call recording failure behavior.
-          allOf:
-          - $ref: '#/components/schemas/FailureBehavior'
-    CallRecordingVendor:
-      type: object
-      required:
-      - id
-      - name
-      - description
-      - migrateUserCreationEnabled
-      - loginUrl
-      - termsOfServiceUrl
-      properties:
-        id:
-          type: string
-          description: Unique identifier of the vendor.
-        name:
-          type: string
-          description: Name of the vendor.
-        description:
-          type: string
-          description: Description of the vendor.
-        migrateUserCreationEnabled:
-          type: boolean
-          description: Represents whether user creation is integrated for this vendor. When user creation is integrated, a call recording account in the vendor's system is automatically created when a user is created or added.
-        loginUrl:
-          type: string
-          description: Vendor login page to access user call recordings.
-        termsOfServiceUrl:
-          type: string
-          description: Vendor terms of service URL.
-    CallRecordingJobStatus:
-      type: object
-      required:
-      - id
-      - trackingId
-      - sourceUserId
-      - sourceCustomerId
-      - targetCustomerId
-      - instanceId
-      - latestExecutionStatus
-      - vendorId
-      - counts
-      properties:
-        name:
-          type: string
-          example: managecallrecordingprovider
-          description: Name of the job.
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0pPQl9JRC8wNjZkOTQzNC1kODEyLTQzODItODVhMC00MjBlOTFlODg3ZTY
-          description: Unique identifier of the job.
-        trackingId:
-          type: string
-          example: ADMINBATCHCLIENT_a02c7b0c-4d28-4e98-b47b-0a135a4b287f_0
-          description: Unique identifier to track the flow of HTTP requests.
-        sourceUserId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9jODA2NzZhZC0yNjRlLTRmMWMtYmIwYS1jMWZiNmQ0ODlmZTI
-          description: Unique identifier of the user who has run the job.
-        sourceCustomerId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi8zNDEyODExZi0xMWI4LTQ2YTAtYWExNS1lZmEwMjRjODI5ODM
-          description: Unique identifier of the customer who has run the job.
-        targetCustomerId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi8zNDEyODExZi0xMWI4LTQ2YTAtYWExNS1lZmEwMjRjODI5ODM
-          description: Unique identifier of the customer for which the job was run.
-        instanceId:
-          type: number
-          example: 637210
-          description: Unique identifier to identify the instance of the job.
-        jobExecutionStatus:
-          type: array
-          items:
-            $ref: '#/components/schemas/JobExecutionStatusObject'
-          description: Displays the most recent step's execution status. Contains execution statuses of all the steps involved in the execution of the job.
-        latestExecutionStatus:
-          description: Most recent status of the job at the time of invocation.
-          allOf:
-          - $ref: '#/components/schemas/LatestExecutionStatus'
-        locationId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzlmZTFmZDllLTlkM2QtNDUxZi04MDEwLTMwY2U1ZjRlNTYyNQ
-          description: Unique identifier of a location.
-        vendorId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1JFQ09SRElOR19WRU5ET1IvZmYzNzMzOTYtMGVmMC00N2NiLTk5NzEtNzg0MDI5YzZjMTQ3
-          description: Unique identifier of a vendor.
-        counts:
-          description: Job statistics.
-          allOf:
-          - $ref: '#/components/schemas/CountObject'
-    UserLicenseType:
-      type: string
-      enum:
-      - BASIC_USER
-      - PROFESSIONAL_USER
-      - WORKSPACE
-      - PROFESSIONAL_WORKSPACE
-      - VIRTUAL_PROFILE
-      description: " * `BASIC_USER` - License type is webex calling standard user.\n * `PROFESSIONAL_USER` - License type is webex calling professional user.\n * `WORKSPACE` - License type is webex calling common area workspace.\n * `PROFESSIONAL_WORKSPACE` - License type is webex calling professional workspace.\n * `VIRTUAL_PROFILE` - License type is webex calling virtual profile.\n"
-    MemberType:
-      type: string
-      enum:
-      - PEOPLE
-      - PLACE
-      description: " * `PEOPLE` - Indicates the associated member is a person.\n * `PLACE` - Indicates the associated member is a workspace.\n"
-    ModifyComplianceAnnouncementObject:
-      type: object
-      properties:
-        inboundPSTNCallsEnabled:
-          type: boolean
-          example: true
-          description: Flag to indicate whether the Call Recording START/STOP announcement is played to an inbound caller.
-        useOrgSettingsEnabled:
-          type: boolean
-          example: true
-          description: Flag to indicate whether to use the customer level compliance announcement default settings.
-        outboundPSTNCallsEnabled:
-          type: boolean
-          description: Flag to indicate whether the Call Recording START/STOP announcement is played to an outbound caller.
-        outboundPSTNCallsDelayEnabled:
-          type: boolean
-          description: Flag to indicate whether compliance announcement is played after a specified delay in seconds.
-        delayInSeconds:
-          type: number
-          example: 10
-          description: Number of seconds to wait before playing the compliance announcement.
-        useOrgLevelAnnouncementEnabled:
-          type: boolean
-          example: true
-          description: Flag to indicate whether to use the organization level custom compliance announcement. If this flag is set to true, takes the organization's announcement setting. If this flag is set to false, takes the location's custom announcement.
-        customComplianceAnnouncement:
-          type: object
-          description: Custom compliance announcement settings.
-          properties:
-            type:
-              type: string
-              enum:
-              - CUSTOM
-              - DEFAULT
-              example: CUSTOM
-              description: Type of compliance announcement to be played. Type is an enum with supported values CUSTOM | DEFAULT. CUSTOM is used to play a custom announcement file. DEFAULT is used to play the default system announcement file.
-            audioAnnouncementFileId:
-              type: string
-              example: Y2lzY29zcGFyazovL3VzL0FOTk9VTkNFTUVOVC82YTcwZWQ4MS1hZGM5LTQ4OWEtODhjOC0zMWI3ODllODQ1ODU
-              description: Unique identifier for the custom audio announcement file.
-    JobExecutionStatusObject:
-      type: object
-      required:
-      - id
-      - lastUpdated
-      - statusMessage
-      - createdTime
-      - timeElapsed
-      properties:
-        id:
-          type: number
-          example: 735206
-          description: Unique identifier that identifies each instance of the job.
-        startTime:
-          type: string
-          example: '2023-05-30T13:04:00.469Z'
-          description: The date and time with seconds, the job has started in UTC format.
-        endTime:
-          type: string
-          example: '2023-05-30T13:04:03.245Z'
-          description: The date and time with seconds, the job has ended in UTC format.
-        lastUpdated:
-          type: string
-          example: '2023-05-30T13:04:03.574Z'
-          description: The date and time with seconds, the job has last updated in UTC format post one of the step execution completion.
-        statusMessage:
-          type: string
-          enum:
-          - STARTING
-          - STARTED
-          - COMPLETED
-          - FAILED
-          - UNKNOWN
-          - ABANDONED
-          description: "Displays status for overall steps that are part of the job.\n * `STARTING` - Job has started.\n * `STARTED` - Job is in progress.\n * `COMPLETED` - Job has completed.\n * `FAILED` - Job has failed.\n * `UNKNOWN` - Job status is unknown.\n * `ABANDONED` - Job has been abandoned (manually stopped).\n"
-        exitCode:
-          type: string
-          enum:
-          - UNKNOWN
-          - COMPLETED
-          - FAILED
-          - STOPPED
-          - COMPLETED_WITH_ERRORS
-          - COMPLETED_WITH_PENDING_ORDERS
-          description: "Exit Code for a job.\n * `UNKNOWN` - Job is in progress.\n * `COMPLETED` - Job has completed successfully.\n * `FAILED` - Job has failed.\n * `STOPPED` - Job has been stopped.\n * `COMPLETED_WITH_ERRORS` - Job has completed with errors.\n * `COMPLETED_WITH_PENDING_ORDERS` - Job has completed with pending number orders.\n"
-        createdTime:
-          type: string
-          example: '2023-05-30T13:04:00.457Z'
-          description: The date and time with seconds, the job has created in UTC format.
-        timeElapsed:
-          type: string
-          example: PT2.752S
-          description: Time lapsed in seconds since the job execution started.
-        stepExecutionStatuses:
-          type: array
-          items:
-            $ref: '#/components/schemas/stepExecutionStatusesObject'
-          description: Status of each step within a job.
-    ErrorResponseObject:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/ItemObject'
-    stepExecutionStatusesObject:
-      type: object
-      required:
-      - id
-      - lastUpdated
-      - statusMessage
-      - name
-      - timeElapsed
-      properties:
-        id:
-          type: number
-          example: 3624681
-          description: Unique identifier that identifies each step in a job.
-        startTime:
-          type: string
-          example: '2023-05-30T13:04:00.469Z'
-          description: The date and time with seconds, the step execution has started in UTC format.
-        endTime:
-          type: string
-          example: '2023-05-30T13:04:03.245Z'
-          description: The date and time with seconds, the step execution has ended in UTC format.
-        lastUpdated:
-          type: string
-          example: '2023-05-30T13:04:03.574Z'
-          description: The date and time with seconds, the step has last updated in UTC format.
-        statusMessage:
-          type: string
-          enum:
-          - STARTING
-          - STARTED
-          - COMPLETED
-          - FAILED
-          - UNKNOWN
-          - ABANDONED
-          description: "Displays status for a step.\n * `STARTING` - Job has started.\n * `STARTED` - Job is in progress.\n * `COMPLETED` - Job has completed.\n * `FAILED` - Job has failed.\n * `UNKNOWN` - Job status is unknown.\n * `ABANDONED` - Job has been abandoned (manually stopped).\n"
-        exitCode:
-          type: string
-          enum:
-          - UNKNOWN
-          - COMPLETED
-          - FAILED
-          - STOPPED
-          - COMPLETED_WITH_ERRORS
-          - COMPLETED_WITH_PENDING_ORDERS
-          description: "Exit Code for a step.\n * `UNKNOWN` - Job is in progress.\n * `COMPLETED` - Job has completed successfully.\n * `FAILED` - Job has failed.\n * `STOPPED` - Job has been stopped.\n * `COMPLETED_WITH_ERRORS` - Job has completed with errors.\n * `COMPLETED_WITH_PENDING_ORDERS` - Job has completed with pending number orders.\n"
-        name:
-          type: string
-          example: moveusersvalidateAndMove
-          description: Step name.
-        timeElapsed:
-          type: string
-          example: PT2.752S
-          description: Time lapsed in seconds since the job execution started.
-    ModifyCallRecordingTermsOfServiceObject:
-      type: object
-      required:
-      - termsOfServiceEnabled
-      properties:
-        termsOfServiceEnabled:
-          type: boolean
-          example: true
-          description: Whether or not the call recording terms of service are enabled.
-    CallRecordingVendors:
-      type: object
-      required:
-      - items
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/CallRecordingVendor'
-          description: List of call recording vendors.
-    ModifyCallRecordingSettingsObject:
-      type: object
-      required:
-      - enabled
-      properties:
-        enabled:
-          type: boolean
-          example: true
-          description: Whether or not the call recording is enabled.
-    ModifyOrgComplianceAnnouncementObject:
-      type: object
-      properties:
-        inboundPSTNCallsEnabled:
-          type: boolean
-          example: true
-          description: Flag to indicate whether the call recording START/STOP announcement is played to an inbound caller.
-        outboundPSTNCallsEnabled:
-          type: boolean
-          description: Flag to indicate whether the call recording START/STOP announcement is played to an outbound caller.
-        outboundPSTNCallsDelayEnabled:
-          type: boolean
-          description: Flag to indicate whether compliance announcement is played after a specified delay in seconds.
-        delayInSeconds:
-          type: number
-          example: 10
-          description: Number of seconds to wait before playing the compliance announcement.
-        useCustomAnnouncementEnabled:
-          type: boolean
-          example: true
-          description: Flag to indicate whether to use the custom compliance announcement. If true it uses the organization's custom compliance announcement file, and if false default compliance announcement used.
-        audioAnnouncementFileId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0FOTk9VTkNFTUVOVC82YTcwZWQ4MS1hZGM5LTQ4OWEtODhjOC0zMWI3ODllODQ1ODU
-          description: Unique identifier for the custom audio announcement file.
-    GetCallRecordingObject:
-      type: object
-      required:
-      - organization
-      - enabled
-      - vendorId
-      - vendorName
-      - termsOfServiceUrl
-      properties:
-        organization:
-          type: object
-          required:
-          - id
-          - name
-          properties:
-            id:
-              type: string
-              example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi9lNTEzMTg1Zi01YTJmLTQ0OTUtYjM1Yi03MDY3YmY3Y2U0OGU
-              description: A unique identifier for the organization.
-            name:
-              type: string
-              example: Alaska Cisco Organization
-              description: A unique name for the organization.
-          description: Details of the organization.
-        enabled:
-          type: boolean
-          example: true
-          description: Whether or not the call recording is enabled.
-        vendorId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1JFQ09SRElOR19WRU5ET1IvNTNkYzRjODctODQwOC00ODgyLTk1NzAtZGNhMmJjZGI5Mjgw
-          description: A unique identifier for the vendor.
-        vendorName:
-          type: string
-          example: Dubber
-          description: A unique name for the vendor.
-        termsOfServiceUrl:
-          type: string
-          example: https://www.dubber.net/terms
-          description: 'Url where can be found terms of service for the vendor.
-
-
-            **NOTE**: This is expected to be empty for webex recording platform.'
-    LatestExecutionStatus:
-      type: string
-      enum:
-      - STARTING
-      - STARTED
-      - COMPLETED
-      - FAILED
-      description: " * `STARTING` - Job has started.\n * `STARTED` - Job is in progress.\n * `COMPLETED` - Job has been completed.\n * `FAILED` - Job has failed.\n"
-    CallRecordingVendorsPatchRequest:
-      type: object
-      properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1JFQ09SRElOR19WRU5ET1IvMGE0MjY3NTQtYTQ3MC00YzJkLThiYTAtZmJjNjc3M2E4YTdj
-          description: Unique identifier of the call recording vendor.
-        orgDefaultEnabled:
-          type: boolean
-          example: true
-          description: Vendor is enabled by default.
-        failureBehavior:
-          description: Type of failure behavior.
-          allOf:
-          - $ref: '#/components/schemas/FailureBehavior'
-        orgFailureBehaviorEnabled:
-          type: boolean
-          example: true
-          description: Failure behavior is enabled.
-    Regions:
-      type: object
-      required:
-      - code
-      - name
-      - defaultEnabled
-      properties:
-        code:
-          type: string
-          example: US
-          description: Two character region code.
-        name:
-          type: string
-          example: United States
-          description: Name of the region.
-        defaultEnabled:
-          type: boolean
-          example: false
-          description: Enabled by default.
     Vendor:
       type: object
       required:
@@ -2881,120 +2028,34 @@ components:
           type: string
           example: https://www.dubber.net/terms
           description: URL to vendor's terms of service.
-    ModifyLocationCallRecordingAnnouncementObject:
+    ModifyCallRecordingSettingsObject:
       type: object
+      required:
+      - enabled
       properties:
-        useOrgLevelAnnouncementEnabled:
+        enabled:
           type: boolean
           example: true
-          description: Flag to indicate whether to use the organization level call recording announcement settings. If the flag is set to true, indicates that the callRecordingAnnouncementSelection setting is inherited from the organization-level configuration. If the flag is set to false, indicates that the callRecordingAnnouncementSelection setting is customized at the location level.
-        start:
-          type: object
-          description: The start announcement settings for this location.
-          properties:
-            type:
-              type: string
-              enum:
-              - CUSTOM
-              - DEFAULT
-              description: "Type of announcement file to be played.\n * `CUSTOM` - Custom announcement file.\n * `DEFAULT` - Default announcement file.\n"
-            audioAnnouncementFileId:
-              type: string
-              example: Y2lzY29zcGFyazovL3VzL0FOTk9VTkNFTUVOVC9iOTg2MWI3MS1hN2MxLTQxZmUtYjNmZC1lZDNkOTdjYTFjMzQ=
-              description: Unique identifier for the custom audio announcement file.
-        stop:
-          type: object
-          description: The stop announcement settings for this location.
-          properties:
-            type:
-              type: string
-              enum:
-              - CUSTOM
-              - DEFAULT
-              description: "Type of announcement file to be played.\n * `CUSTOM` - Custom announcement file.\n * `DEFAULT` - Default announcement file.\n"
-            audioAnnouncementFileId:
-              type: string
-              example: Y2lzY29zcGFyazovL3VzL0FOTk9VTkNFTUVOVC82ZjU0Y2NhNS05ZWY5LTQ3N2EtYThkNi0wY2EyNzU4MTAxM2Y=
-              description: Unique identifier for the custom audio announcement file.
-        pause:
-          type: object
-          description: The pause announcement settings for this location.
-          properties:
-            type:
-              type: string
-              enum:
-              - CUSTOM
-              - DEFAULT
-              description: "Type of announcement file to be played.\n * `CUSTOM` - Custom announcement file.\n * `DEFAULT` - Default announcement file.\n"
-            audioAnnouncementFileId:
-              type: string
-              example: Y2lzY29zcGFyazovL3VzL0FOTk9VTkNFTUVOVC82M2NiYTMwOS05NjQ2LTQzMjUtOTZlNC02N2ZmYWVlZjNiOWI=
-              description: Unique identifier for the custom audio announcement file.
-        resume:
-          type: object
-          description: The resume announcement settings for this location.
-          properties:
-            type:
-              type: string
-              enum:
-              - CUSTOM
-              - DEFAULT
-              description: "Type of announcement file to be played.\n * `CUSTOM` - Custom announcement file.\n * `DEFAULT` - Default announcement file.\n"
-            audioAnnouncementFileId:
-              type: string
-              example: Y2lzY29zcGFyazovL3VzL0FOTk9VTkNFTUVOVC8xM2NlNzBkYS00NDkwLTQ2OWItOTg4YS1mYjA0MzExNmQ3ZTU=
-              description: Unique identifier for the custom audio announcement file.
-        failureEndWithCall:
-          type: object
-          description: The failure end with call announcement settings for this location.
-          properties:
-            type:
-              type: string
-              enum:
-              - CUSTOM
-              - DEFAULT
-              description: "Type of announcement file to be played.\n * `CUSTOM` - Custom announcement file.\n * `DEFAULT` - Default announcement file.\n"
-            audioAnnouncementFileId:
-              type: string
-              example: Y2lzY29zcGFyazovL3VzL0FOTk9VTkNFTUVOVC9mZTU4YTE1ZS1kNzMwLTQ4ZGYtYWU4Ny1jNjc5YjM3YmQ4Mzk=
-              description: Unique identifier for the custom audio announcement file.
-        failureProceedWithCall:
-          type: object
-          description: The failure proceed with call announcement settings for this location.
-          properties:
-            type:
-              type: string
-              enum:
-              - CUSTOM
-              - DEFAULT
-              description: "Type of announcement file to be played.\n * `CUSTOM` - Custom announcement file.\n * `DEFAULT` - Default announcement file.\n"
-            audioAnnouncementFileId:
-              type: string
-              example: Y2lzY29zcGFyazovL3VzL0FOTk9VTkNFTUVOVC80ZjU0Y2NhNS05ZWY5LTQ3N2EtYThkNi0wY2EyNzU4MTAxM2Y=
-              description: Unique identifier for the custom audio announcement file.
-    ErrorMessageObject:
+          description: Whether or not the call recording is enabled.
+    CallRecordingVendorsPatchRequest:
       type: object
       properties:
-        description:
+        id:
           type: string
-          description: Error message.
-        code:
-          type: string
-          description: Internal error code.
-        locationId:
-          type: string
-          description: Error messages describing the location ID in which the error occurs. For a move operation, this is the target location ID.
-    ErrorObject:
-      type: object
-      properties:
-        key:
-          type: string
-          description: HTTP error code.
-        message:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorMessageObject'
-          description: Message string with further error information.
+          example: Y2lzY29zcGFyazovL3VzL1JFQ09SRElOR19WRU5ET1IvMGE0MjY3NTQtYTQ3MC00YzJkLThiYTAtZmJjNjc3M2E4YTdj
+          description: Unique identifier of the call recording vendor.
+        orgDefaultEnabled:
+          type: boolean
+          example: true
+          description: Vendor is enabled by default.
+        failureBehavior:
+          description: Type of failure behavior.
+          allOf:
+          - $ref: '#/components/schemas/FailureBehavior'
+        orgFailureBehaviorEnabled:
+          type: boolean
+          example: true
+          description: Failure behavior is enabled.
     GetOrgComplianceAnnouncementObject:
       type: object
       required:
@@ -3064,6 +2125,159 @@ components:
           description: Call recording failure behavior.
           allOf:
           - $ref: '#/components/schemas/FailureBehavior'
+    GetComplianceAnnouncementObject:
+      type: object
+      required:
+      - inboundPSTNCallsEnabled
+      - useOrgSettingsEnabled
+      - outboundPSTNCallsEnabled
+      - outboundPSTNCallsDelayEnabled
+      - delayInSeconds
+      - useOrgLevelAnnouncementEnabled
+      - customComplianceAnnouncement
+      properties:
+        inboundPSTNCallsEnabled:
+          type: boolean
+          example: true
+          description: Flag to indicate whether the call recording START/STOP announcement is played to an inbound caller.
+        useOrgSettingsEnabled:
+          type: boolean
+          example: true
+          description: Flag to indicate whether to use the customer level compliance announcement default settings.
+        outboundPSTNCallsEnabled:
+          type: boolean
+          description: Flag to indicate whether the call recording START/STOP announcement is played to an outbound caller.
+        outboundPSTNCallsDelayEnabled:
+          type: boolean
+          description: Flag to indicate whether compliance announcement is played after a specified delay in seconds.
+        delayInSeconds:
+          type: number
+          example: 10
+          description: Number of seconds to wait before playing the compliance announcement.
+        useOrgLevelAnnouncementEnabled:
+          type: boolean
+          example: true
+          description: Flag to indicate whether to use the organization level custom compliance announcement. If this flag is set to true, takes the organization's announcement setting. If this flag is set to false, takes the location's custom announcement.
+        customComplianceAnnouncement:
+          type: object
+          description: Custom compliance announcement settings.
+          properties:
+            type:
+              type: string
+              enum:
+              - CUSTOM
+              - DEFAULT
+              example: CUSTOM
+              description: Type of compliance announcement to be played. Type is an enum with supported values CUSTOM | DEFAULT. CUSTOM is used to play a custom announcement file. DEFAULT is used to play the default system announcement file.
+            audioAnnouncementFile:
+              type: object
+              properties:
+                id:
+                  type: string
+                  example: Y2lzY29zcGFyazovL3VzL0FOTk9VTkNFTUVOVC82YTcwZWQ4MS1hZGM5LTQ4OWEtODhjOC0zMWI3ODllODQ1ODU
+                  description: Unique identifier for the custom audio announcement file.
+                fileName:
+                  type: string
+                  example: SampleAnnouncement
+                  description: The original file name of the uploaded custom audio announcement.
+                mediaFileType:
+                  type: string
+                  enum:
+                  - WAV
+                  example: WAV
+                  description: Type of the announcement file. Type is an enum with supported values WAV
+                level:
+                  type: string
+                  enum:
+                  - ORGANIZATION
+                  - LOCATION
+                  description: Announcement audio file level.
+                  example: ORGANIZATION
+                isTextToSpeech:
+                  type: boolean
+                  example: true
+                  description: Indicates if the announcement is created by TTS.
+    Members:
+      type: object
+      required:
+      - id
+      - type
+      - licenseType
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VybjpURUFNOnVzLXdlc3QtMl9yL1BMQUNFL2U2OTczZDgyLWM1NTUtNDMwOC05NGU3LWI3ZWU2MjczY2YyMg
+          description: Unique identifier of the member.
+        lastName:
+          type: string
+          example: jones
+          description: Last name of the member.
+        firstName:
+          type: string
+          example: Vickor
+          description: First name of the member.
+        type:
+          description: Type of the member.
+          allOf:
+          - $ref: '#/components/schemas/MemberType'
+        licenseType:
+          description: License type of the member.
+          allOf:
+          - $ref: '#/components/schemas/UserLicenseType'
+    Regions:
+      type: object
+      required:
+      - code
+      - name
+      - defaultEnabled
+      properties:
+        code:
+          type: string
+          example: US
+          description: Two character region code.
+        name:
+          type: string
+          example: United States
+          description: Name of the region.
+        defaultEnabled:
+          type: boolean
+          example: false
+          description: Enabled by default.
+    ErrorMessageObject:
+      type: object
+      properties:
+        description:
+          type: string
+          description: Error message.
+        code:
+          type: string
+          description: Internal error code.
+        locationId:
+          type: string
+          description: Error messages describing the location ID in which the error occurs. For a move operation, this is the target location ID.
+    UserLicenseType:
+      type: string
+      enum:
+      - BASIC_USER
+      - PROFESSIONAL_USER
+      - WORKSPACE
+      - PROFESSIONAL_WORKSPACE
+      - VIRTUAL_PROFILE
+      description: " * `BASIC_USER` - License type is webex calling standard user.\n * `PROFESSIONAL_USER` - License type is webex calling professional user.\n * `WORKSPACE` - License type is webex calling common area workspace.\n * `PROFESSIONAL_WORKSPACE` - License type is webex calling professional workspace.\n * `VIRTUAL_PROFILE` - License type is webex calling virtual profile.\n"
+    ItemObject:
+      type: object
+      properties:
+        item:
+          type: string
+          description: Phone number
+        itemNumber:
+          type: number
+          description: Index of error number.
+        trackingId:
+          type: string
+          description: Unique identifier to track the HTTP requests.
+        error:
+          $ref: '#/components/schemas/ErrorObject'
     GetLocationCallRecordingAnnouncementObject:
       type: object
       required:
@@ -3313,33 +2527,816 @@ components:
                   type: boolean
                   example: true
                   description: Indicates if the announcement is created by TTS.
-    Members:
+    CallRecordingRegionsResponse:
+      type: object
+      required:
+      - regions
+      properties:
+        regions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Regions'
+          description: Contains region details.
+    CountObject:
+      type: object
+      required:
+      - totalMoves
+      - moved
+      - failed
+      - pending
+      - skipped
+      properties:
+        totalMoves:
+          type: number
+          example: 100
+          description: Total number of user moves requested.
+        moved:
+          type: number
+          example: 50
+          description: Total number of user moves completed successfully.
+        failed:
+          type: number
+          example: 50
+          description: Total number of user moves that were completed with failures.
+        pending:
+          type: number
+          example: 50
+          description: Total number of user moves that were pending with number orders.
+        skipped:
+          type: number
+          example: 50
+          description: Total number of user moves that were skipped.
+    CallRecordingJobStatus:
       type: object
       required:
       - id
-      - type
-      - licenseType
+      - trackingId
+      - sourceUserId
+      - sourceCustomerId
+      - targetCustomerId
+      - instanceId
+      - latestExecutionStatus
+      - vendorId
+      - counts
+      properties:
+        name:
+          type: string
+          example: managecallrecordingprovider
+          description: Name of the job.
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0pPQl9JRC8wNjZkOTQzNC1kODEyLTQzODItODVhMC00MjBlOTFlODg3ZTY
+          description: Unique identifier of the job.
+        trackingId:
+          type: string
+          example: ADMINBATCHCLIENT_a02c7b0c-4d28-4e98-b47b-0a135a4b287f_0
+          description: Unique identifier to track the flow of HTTP requests.
+        sourceUserId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9jODA2NzZhZC0yNjRlLTRmMWMtYmIwYS1jMWZiNmQ0ODlmZTI
+          description: Unique identifier of the user who has run the job.
+        sourceCustomerId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi8zNDEyODExZi0xMWI4LTQ2YTAtYWExNS1lZmEwMjRjODI5ODM
+          description: Unique identifier of the customer who has run the job.
+        targetCustomerId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi8zNDEyODExZi0xMWI4LTQ2YTAtYWExNS1lZmEwMjRjODI5ODM
+          description: Unique identifier of the customer for which the job was run.
+        instanceId:
+          type: number
+          example: 637210
+          description: Unique identifier to identify the instance of the job.
+        jobExecutionStatus:
+          type: array
+          items:
+            $ref: '#/components/schemas/JobExecutionStatusObject'
+          description: Displays the most recent step's execution status. Contains execution statuses of all the steps involved in the execution of the job.
+        latestExecutionStatus:
+          description: Most recent status of the job at the time of invocation.
+          allOf:
+          - $ref: '#/components/schemas/LatestExecutionStatus'
+        locationId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzlmZTFmZDllLTlkM2QtNDUxZi04MDEwLTMwY2U1ZjRlNTYyNQ
+          description: Unique identifier of a location.
+        vendorId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1JFQ09SRElOR19WRU5ET1IvZmYzNzMzOTYtMGVmMC00N2NiLTk5NzEtNzg0MDI5YzZjMTQ3
+          description: Unique identifier of a vendor.
+        counts:
+          description: Job statistics.
+          allOf:
+          - $ref: '#/components/schemas/CountObject'
+    ModifyOrgComplianceAnnouncementObject:
+      type: object
+      properties:
+        inboundPSTNCallsEnabled:
+          type: boolean
+          example: true
+          description: Flag to indicate whether the call recording START/STOP announcement is played to an inbound caller.
+        outboundPSTNCallsEnabled:
+          type: boolean
+          description: Flag to indicate whether the call recording START/STOP announcement is played to an outbound caller.
+        outboundPSTNCallsDelayEnabled:
+          type: boolean
+          description: Flag to indicate whether compliance announcement is played after a specified delay in seconds.
+        delayInSeconds:
+          type: number
+          example: 10
+          description: Number of seconds to wait before playing the compliance announcement.
+        useCustomAnnouncementEnabled:
+          type: boolean
+          example: true
+          description: Flag to indicate whether to use the custom compliance announcement. If true it uses the organization's custom compliance announcement file, and if false default compliance announcement used.
+        audioAnnouncementFileId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0FOTk9VTkNFTUVOVC82YTcwZWQ4MS1hZGM5LTQ4OWEtODhjOC0zMWI3ODllODQ1ODU
+          description: Unique identifier for the custom audio announcement file.
+    ModifyCallRecordingTermsOfServiceObject:
+      type: object
+      required:
+      - termsOfServiceEnabled
+      properties:
+        termsOfServiceEnabled:
+          type: boolean
+          example: true
+          description: Whether or not the call recording terms of service are enabled.
+    ErrorObject:
+      type: object
+      properties:
+        key:
+          type: string
+          description: HTTP error code.
+        message:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorMessageObject'
+          description: Message string with further error information.
+    CallRecordingVendorsList:
+      type: object
+      required:
+      - vendorId
+      - vendorName
+      - vendors
+      - failureBehavior
+      properties:
+        vendorId:
+          type: string
+          description: Unique identifier of the vendor.
+        vendorName:
+          type: string
+          description: Name of the vendor.
+        vendors:
+          description: List of call recording vendors
+          allOf:
+          - $ref: '#/components/schemas/CallRecordingVendors'
+        storageRegion:
+          type: string
+          description: Call recording storage region. Only applicable for Webex as a vendor and isn't used for other vendors.
+        failureBehavior:
+          description: Call recording failure behavior.
+          allOf:
+          - $ref: '#/components/schemas/FailureBehavior'
+    CallRecordingVendor:
+      type: object
+      required:
+      - id
+      - name
+      - description
+      - migrateUserCreationEnabled
+      - loginUrl
+      - termsOfServiceUrl
       properties:
         id:
           type: string
-          example: Y2lzY29zcGFyazovL3VybjpURUFNOnVzLXdlc3QtMl9yL1BMQUNFL2U2OTczZDgyLWM1NTUtNDMwOC05NGU3LWI3ZWU2MjczY2YyMg
-          description: Unique identifier of the member.
-        lastName:
+          description: Unique identifier of the vendor.
+        name:
           type: string
-          example: jones
-          description: Last name of the member.
-        firstName:
+          description: Name of the vendor.
+        description:
           type: string
-          example: Vickor
-          description: First name of the member.
-        type:
-          description: Type of the member.
-          allOf:
-          - $ref: '#/components/schemas/MemberType'
-        licenseType:
-          description: License type of the member.
-          allOf:
-          - $ref: '#/components/schemas/UserLicenseType'
+          description: Description of the vendor.
+        migrateUserCreationEnabled:
+          type: boolean
+          description: Represents whether user creation is integrated for this vendor. When user creation is integrated, a call recording account in the vendor's system is automatically created when a user is created or added.
+        loginUrl:
+          type: string
+          description: Vendor login page to access user call recordings.
+        termsOfServiceUrl:
+          type: string
+          description: Vendor terms of service URL.
+    GetOrgCallRecordingAnnouncementObject:
+      type: object
+      required:
+      - start
+      - stop
+      - pause
+      - resume
+      - failureEndWithCall
+      - failureProceedWithCall
+      properties:
+        start:
+          type: object
+          description: The start announcement settings for this organization.
+          properties:
+            type:
+              type: string
+              enum:
+              - CUSTOM
+              - DEFAULT
+              description: "Type of announcement file to be played.\n * `CUSTOM` - Custom announcement file.\n * `DEFAULT` - Default announcement file.\n"
+            audioAnnouncementFile:
+              type: object
+              description: The custom audio announcement file to be played.
+              properties:
+                id:
+                  type: string
+                  example: Y2lzY29zcGFyazovL3VzL0FOTk9VTkNFTUVOVC9iOTg2MWI3MS1hN2MxLTQxZmUtYjNmZC1lZDNkOTdjYTFjMzQ=
+                  description: Unique identifier for the custom audio announcement file.
+                fileName:
+                  type: string
+                  example: SampleAnnouncement
+                  description: The original file name of the uploaded custom audio announcement.
+                mediaFileType:
+                  type: string
+                  enum:
+                  - WAV
+                  example: WAV
+                  description: Type of the announcement file. Type is an enum with supported values WAV
+                level:
+                  type: string
+                  enum:
+                  - ORGANIZATION
+                  - LOCATION
+                  description: Announcement audio file level.
+                  example: ORGANIZATION
+                isTextToSpeech:
+                  type: boolean
+                  example: true
+                  description: Indicates if the announcement is created by TTS.
+        stop:
+          type: object
+          description: The stop announcement settings for this organization.
+          properties:
+            type:
+              type: string
+              enum:
+              - CUSTOM
+              - DEFAULT
+              description: "Type of announcement file to be played.\n * `CUSTOM` - Custom announcement file.\n * `DEFAULT` - Default announcement file.\n"
+            audioAnnouncementFile:
+              type: object
+              description: The custom audio announcement file to be played.
+              properties:
+                id:
+                  type: string
+                  example: Y2lzY29zcGFyazovL3VzL0FOTk9VTkNFTUVOVC82ZjU0Y2NhNS05ZWY5LTQ3N2EtYThkNi0wY2EyNzU4MTAxM2Y=
+                  description: Unique identifier for the custom audio announcement file.
+                fileName:
+                  type: string
+                  example: SampleAnnouncement
+                  description: The original file name of the uploaded custom audio announcement.
+                mediaFileType:
+                  type: string
+                  enum:
+                  - WAV
+                  example: WAV
+                  description: Type of the announcement file. Type is an enum with supported values WAV
+                level:
+                  type: string
+                  enum:
+                  - ORGANIZATION
+                  - LOCATION
+                  description: Announcement audio file level.
+                  example: ORGANIZATION
+                isTextToSpeech:
+                  type: boolean
+                  example: true
+                  description: Indicates if the announcement is created by TTS.
+        pause:
+          type: object
+          description: The pause announcement settings for this organization.
+          properties:
+            type:
+              type: string
+              enum:
+              - CUSTOM
+              - DEFAULT
+              description: "Type of announcement file to be played.\n * `CUSTOM` - Custom announcement file.\n * `DEFAULT` - Default announcement file.\n"
+            audioAnnouncementFile:
+              type: object
+              description: The custom audio announcement file to be played.
+              properties:
+                id:
+                  type: string
+                  example: Y2lzY29zcGFyazovL3VzL0FOTk9VTkNFTUVOVC82M2NiYTMwOS05NjQ2LTQzMjUtOTZlNC02N2ZmYWVlZjNiOWI=
+                  description: Unique identifier for the custom audio announcement file.
+                fileName:
+                  type: string
+                  example: SampleAnnouncement
+                  description: The original file name of the uploaded custom audio announcement.
+                mediaFileType:
+                  type: string
+                  enum:
+                  - WAV
+                  example: WAV
+                  description: Type of the announcement file. Type is an enum with supported values WAV
+                level:
+                  type: string
+                  enum:
+                  - ORGANIZATION
+                  - LOCATION
+                  description: Announcement audio file level.
+                  example: ORGANIZATION
+                isTextToSpeech:
+                  type: boolean
+                  example: true
+                  description: Indicates if the announcement is created by TTS.
+        resume:
+          type: object
+          description: The resume announcement settings for this organization.
+          properties:
+            type:
+              type: string
+              enum:
+              - CUSTOM
+              - DEFAULT
+              description: "Type of announcement file to be played.\n * `CUSTOM` - Custom announcement file.\n * `DEFAULT` - Default announcement file.\n"
+            audioAnnouncementFile:
+              type: object
+              description: The custom audio announcement file to be played.
+              properties:
+                id:
+                  type: string
+                  example: Y2lzY29zcGFyazovL3VzL0FOTk9VTkNFTUVOVC8xM2NlNzBkYS00NDkwLTQ2OWItOTg4YS1mYjA0MzExNmQ3ZTU=
+                  description: Unique identifier for the custom audio announcement file.
+                fileName:
+                  type: string
+                  example: SampleAnnouncement
+                  description: The original file name of the uploaded custom audio announcement.
+                mediaFileType:
+                  type: string
+                  enum:
+                  - WAV
+                  example: WAV
+                  description: Type of the announcement file. Type is an enum with supported values WAV
+                level:
+                  type: string
+                  enum:
+                  - ORGANIZATION
+                  - LOCATION
+                  description: Announcement audio file level.
+                  example: ORGANIZATION
+                isTextToSpeech:
+                  type: boolean
+                  example: true
+                  description: Indicates if the announcement is created by TTS.
+        failureProceedWithCall:
+          type: object
+          description: The failure proceed with call announcement settings for this organization.
+          properties:
+            type:
+              type: string
+              enum:
+              - CUSTOM
+              - DEFAULT
+              description: "Type of announcement file to be played.\n * `CUSTOM` - Custom announcement file.\n * `DEFAULT` - Default announcement file.\n"
+            audioAnnouncementFile:
+              type: object
+              description: The custom audio announcement file to be played.
+              properties:
+                id:
+                  type: string
+                  example: Y2lzY29zcGFyazovL3VzL0FOTk9VTkNFTUVOVC80ZjU0Y2NhNS05ZWY5LTQ3N2EtYThkNi0wY2EyNzU4MTAxM2Y=
+                  description: Unique identifier for the custom audio announcement file.
+                fileName:
+                  type: string
+                  example: SampleAnnouncement
+                  description: The original file name of the uploaded custom audio announcement.
+                mediaFileType:
+                  type: string
+                  enum:
+                  - WAV
+                  example: WAV
+                  description: Type of the announcement file. Type is an enum with supported values WAV
+                level:
+                  type: string
+                  enum:
+                  - ORGANIZATION
+                  - LOCATION
+                  description: Announcement audio file level.
+                  example: ORGANIZATION
+                isTextToSpeech:
+                  type: boolean
+                  example: true
+                  description: Indicates if the announcement is created by TTS.
+        failureEndWithCall:
+          type: object
+          description: The failure end with call announcement settings for this organization.
+          properties:
+            type:
+              type: string
+              enum:
+              - CUSTOM
+              - DEFAULT
+              description: "Type of announcement file to be played.\n * `CUSTOM` - Custom announcement file.\n * `DEFAULT` - Default announcement file.\n"
+            audioAnnouncementFile:
+              type: object
+              description: The custom audio announcement file to be played.
+              properties:
+                id:
+                  type: string
+                  example: Y2lzY29zcGFyazovL3VzL0FOTk9VTkNFTUVOVC9mZTU4YTE1ZS1kNzMwLTQ4ZGYtYWU4Ny1jNjc5YjM3YmQ4Mzk=
+                  description: Unique identifier for the custom audio announcement file.
+                fileName:
+                  type: string
+                  example: SampleAnnouncement
+                  description: The original file name of the uploaded custom audio announcement.
+                mediaFileType:
+                  type: string
+                  enum:
+                  - WAV
+                  example: WAV
+                  description: Type of the announcement file. Type is an enum with supported values WAV
+                level:
+                  type: string
+                  enum:
+                  - ORGANIZATION
+                  - LOCATION
+                  description: Announcement audio file level.
+                  example: ORGANIZATION
+                isTextToSpeech:
+                  type: boolean
+                  example: true
+                  description: Indicates if the announcement is created by TTS.
+    stepExecutionStatusesObject:
+      type: object
+      required:
+      - id
+      - lastUpdated
+      - statusMessage
+      - name
+      - timeElapsed
+      properties:
+        id:
+          type: number
+          example: 3624681
+          description: Unique identifier that identifies each step in a job.
+        startTime:
+          type: string
+          example: '2023-05-30T13:04:00.469Z'
+          description: The date and time with seconds, the step execution has started in UTC format.
+        endTime:
+          type: string
+          example: '2023-05-30T13:04:03.245Z'
+          description: The date and time with seconds, the step execution has ended in UTC format.
+        lastUpdated:
+          type: string
+          example: '2023-05-30T13:04:03.574Z'
+          description: The date and time with seconds, the step has last updated in UTC format.
+        statusMessage:
+          type: string
+          enum:
+          - STARTING
+          - STARTED
+          - COMPLETED
+          - FAILED
+          - UNKNOWN
+          - ABANDONED
+          description: "Displays status for a step.\n * `STARTING` - Job has started.\n * `STARTED` - Job is in progress.\n * `COMPLETED` - Job has completed.\n * `FAILED` - Job has failed.\n * `UNKNOWN` - Job status is unknown.\n * `ABANDONED` - Job has been abandoned (manually stopped).\n"
+        exitCode:
+          type: string
+          enum:
+          - UNKNOWN
+          - COMPLETED
+          - FAILED
+          - STOPPED
+          - COMPLETED_WITH_ERRORS
+          - COMPLETED_WITH_PENDING_ORDERS
+          description: "Exit Code for a step.\n * `UNKNOWN` - Job is in progress.\n * `COMPLETED` - Job has completed successfully.\n * `FAILED` - Job has failed.\n * `STOPPED` - Job has been stopped.\n * `COMPLETED_WITH_ERRORS` - Job has completed with errors.\n * `COMPLETED_WITH_PENDING_ORDERS` - Job has completed with pending number orders.\n"
+        name:
+          type: string
+          example: moveusersvalidateAndMove
+          description: Step name.
+        timeElapsed:
+          type: string
+          example: PT2.752S
+          description: Time lapsed in seconds since the job execution started.
+    CallRecordingVendors:
+      type: object
+      required:
+      - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CallRecordingVendor'
+          description: List of call recording vendors.
+    GetCallRecordingObject:
+      type: object
+      required:
+      - organization
+      - enabled
+      - vendorId
+      - vendorName
+      - termsOfServiceUrl
+      properties:
+        organization:
+          type: object
+          required:
+          - id
+          - name
+          properties:
+            id:
+              type: string
+              example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi9lNTEzMTg1Zi01YTJmLTQ0OTUtYjM1Yi03MDY3YmY3Y2U0OGU
+              description: A unique identifier for the organization.
+            name:
+              type: string
+              example: Alaska Cisco Organization
+              description: A unique name for the organization.
+          description: Details of the organization.
+        enabled:
+          type: boolean
+          example: true
+          description: Whether or not the call recording is enabled.
+        vendorId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1JFQ09SRElOR19WRU5ET1IvNTNkYzRjODctODQwOC00ODgyLTk1NzAtZGNhMmJjZGI5Mjgw
+          description: A unique identifier for the vendor.
+        vendorName:
+          type: string
+          example: Dubber
+          description: A unique name for the vendor.
+        termsOfServiceUrl:
+          type: string
+          example: https://www.dubber.net/terms
+          description: 'Url where can be found terms of service for the vendor.
+
+
+            **NOTE**: This is expected to be empty for webex recording platform.'
+    CallRecordingVendorPatchResponse:
+      type: object
+      required:
+      - jobId
+      properties:
+        jobId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0pPQl9JRC8yOTQ5ZmRiOC1kODg1LTQxMzAtYjhiNy1jNmJiYmM5ZWQzOTE
+          description: Unique job ID of the call recording job.
+    JobExecutionStatusObject:
+      type: object
+      required:
+      - id
+      - lastUpdated
+      - statusMessage
+      - createdTime
+      - timeElapsed
+      properties:
+        id:
+          type: number
+          example: 735206
+          description: Unique identifier that identifies each instance of the job.
+        startTime:
+          type: string
+          example: '2023-05-30T13:04:00.469Z'
+          description: The date and time with seconds, the job has started in UTC format.
+        endTime:
+          type: string
+          example: '2023-05-30T13:04:03.245Z'
+          description: The date and time with seconds, the job has ended in UTC format.
+        lastUpdated:
+          type: string
+          example: '2023-05-30T13:04:03.574Z'
+          description: The date and time with seconds, the job has last updated in UTC format post one of the step execution completion.
+        statusMessage:
+          type: string
+          enum:
+          - STARTING
+          - STARTED
+          - COMPLETED
+          - FAILED
+          - UNKNOWN
+          - ABANDONED
+          description: "Displays status for overall steps that are part of the job.\n * `STARTING` - Job has started.\n * `STARTED` - Job is in progress.\n * `COMPLETED` - Job has completed.\n * `FAILED` - Job has failed.\n * `UNKNOWN` - Job status is unknown.\n * `ABANDONED` - Job has been abandoned (manually stopped).\n"
+        exitCode:
+          type: string
+          enum:
+          - UNKNOWN
+          - COMPLETED
+          - FAILED
+          - STOPPED
+          - COMPLETED_WITH_ERRORS
+          - COMPLETED_WITH_PENDING_ORDERS
+          description: "Exit Code for a job.\n * `UNKNOWN` - Job is in progress.\n * `COMPLETED` - Job has completed successfully.\n * `FAILED` - Job has failed.\n * `STOPPED` - Job has been stopped.\n * `COMPLETED_WITH_ERRORS` - Job has completed with errors.\n * `COMPLETED_WITH_PENDING_ORDERS` - Job has completed with pending number orders.\n"
+        createdTime:
+          type: string
+          example: '2023-05-30T13:04:00.457Z'
+          description: The date and time with seconds, the job has created in UTC format.
+        timeElapsed:
+          type: string
+          example: PT2.752S
+          description: Time lapsed in seconds since the job execution started.
+        stepExecutionStatuses:
+          type: array
+          items:
+            $ref: '#/components/schemas/stepExecutionStatusesObject'
+          description: Status of each step within a job.
+    ErrorResponseObject:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemObject'
+    ModifyLocationCallRecordingAnnouncementObject:
+      type: object
+      properties:
+        useOrgLevelAnnouncementEnabled:
+          type: boolean
+          example: true
+          description: Flag to indicate whether to use the organization level call recording announcement settings. If the flag is set to true, indicates that the callRecordingAnnouncementSelection setting is inherited from the organization-level configuration. If the flag is set to false, indicates that the callRecordingAnnouncementSelection setting is customized at the location level.
+        start:
+          type: object
+          description: The start announcement settings for this location.
+          properties:
+            type:
+              type: string
+              enum:
+              - CUSTOM
+              - DEFAULT
+              description: "Type of announcement file to be played.\n * `CUSTOM` - Custom announcement file.\n * `DEFAULT` - Default announcement file.\n"
+            audioAnnouncementFileId:
+              type: string
+              example: Y2lzY29zcGFyazovL3VzL0FOTk9VTkNFTUVOVC9iOTg2MWI3MS1hN2MxLTQxZmUtYjNmZC1lZDNkOTdjYTFjMzQ=
+              description: Unique identifier for the custom audio announcement file.
+        stop:
+          type: object
+          description: The stop announcement settings for this location.
+          properties:
+            type:
+              type: string
+              enum:
+              - CUSTOM
+              - DEFAULT
+              description: "Type of announcement file to be played.\n * `CUSTOM` - Custom announcement file.\n * `DEFAULT` - Default announcement file.\n"
+            audioAnnouncementFileId:
+              type: string
+              example: Y2lzY29zcGFyazovL3VzL0FOTk9VTkNFTUVOVC82ZjU0Y2NhNS05ZWY5LTQ3N2EtYThkNi0wY2EyNzU4MTAxM2Y=
+              description: Unique identifier for the custom audio announcement file.
+        pause:
+          type: object
+          description: The pause announcement settings for this location.
+          properties:
+            type:
+              type: string
+              enum:
+              - CUSTOM
+              - DEFAULT
+              description: "Type of announcement file to be played.\n * `CUSTOM` - Custom announcement file.\n * `DEFAULT` - Default announcement file.\n"
+            audioAnnouncementFileId:
+              type: string
+              example: Y2lzY29zcGFyazovL3VzL0FOTk9VTkNFTUVOVC82M2NiYTMwOS05NjQ2LTQzMjUtOTZlNC02N2ZmYWVlZjNiOWI=
+              description: Unique identifier for the custom audio announcement file.
+        resume:
+          type: object
+          description: The resume announcement settings for this location.
+          properties:
+            type:
+              type: string
+              enum:
+              - CUSTOM
+              - DEFAULT
+              description: "Type of announcement file to be played.\n * `CUSTOM` - Custom announcement file.\n * `DEFAULT` - Default announcement file.\n"
+            audioAnnouncementFileId:
+              type: string
+              example: Y2lzY29zcGFyazovL3VzL0FOTk9VTkNFTUVOVC8xM2NlNzBkYS00NDkwLTQ2OWItOTg4YS1mYjA0MzExNmQ3ZTU=
+              description: Unique identifier for the custom audio announcement file.
+        failureEndWithCall:
+          type: object
+          description: The failure end with call announcement settings for this location.
+          properties:
+            type:
+              type: string
+              enum:
+              - CUSTOM
+              - DEFAULT
+              description: "Type of announcement file to be played.\n * `CUSTOM` - Custom announcement file.\n * `DEFAULT` - Default announcement file.\n"
+            audioAnnouncementFileId:
+              type: string
+              example: Y2lzY29zcGFyazovL3VzL0FOTk9VTkNFTUVOVC9mZTU4YTE1ZS1kNzMwLTQ4ZGYtYWU4Ny1jNjc5YjM3YmQ4Mzk=
+              description: Unique identifier for the custom audio announcement file.
+        failureProceedWithCall:
+          type: object
+          description: The failure proceed with call announcement settings for this location.
+          properties:
+            type:
+              type: string
+              enum:
+              - CUSTOM
+              - DEFAULT
+              description: "Type of announcement file to be played.\n * `CUSTOM` - Custom announcement file.\n * `DEFAULT` - Default announcement file.\n"
+            audioAnnouncementFileId:
+              type: string
+              example: Y2lzY29zcGFyazovL3VzL0FOTk9VTkNFTUVOVC80ZjU0Y2NhNS05ZWY5LTQ3N2EtYThkNi0wY2EyNzU4MTAxM2Y=
+              description: Unique identifier for the custom audio announcement file.
+    ModifyComplianceAnnouncementObject:
+      type: object
+      properties:
+        inboundPSTNCallsEnabled:
+          type: boolean
+          example: true
+          description: Flag to indicate whether the Call Recording START/STOP announcement is played to an inbound caller.
+        useOrgSettingsEnabled:
+          type: boolean
+          example: true
+          description: Flag to indicate whether to use the customer level compliance announcement default settings.
+        outboundPSTNCallsEnabled:
+          type: boolean
+          description: Flag to indicate whether the Call Recording START/STOP announcement is played to an outbound caller.
+        outboundPSTNCallsDelayEnabled:
+          type: boolean
+          description: Flag to indicate whether compliance announcement is played after a specified delay in seconds.
+        delayInSeconds:
+          type: number
+          example: 10
+          description: Number of seconds to wait before playing the compliance announcement.
+        useOrgLevelAnnouncementEnabled:
+          type: boolean
+          example: true
+          description: Flag to indicate whether to use the organization level custom compliance announcement. If this flag is set to true, takes the organization's announcement setting. If this flag is set to false, takes the location's custom announcement.
+        customComplianceAnnouncement:
+          type: object
+          description: Custom compliance announcement settings.
+          properties:
+            type:
+              type: string
+              enum:
+              - CUSTOM
+              - DEFAULT
+              example: CUSTOM
+              description: Type of compliance announcement to be played. Type is an enum with supported values CUSTOM | DEFAULT. CUSTOM is used to play a custom announcement file. DEFAULT is used to play the default system announcement file.
+            audioAnnouncementFileId:
+              type: string
+              example: Y2lzY29zcGFyazovL3VzL0FOTk9VTkNFTUVOVC82YTcwZWQ4MS1hZGM5LTQ4OWEtODhjOC0zMWI3ODllODQ1ODU
+              description: Unique identifier for the custom audio announcement file.
+    GetCallRecordingTermsOfServiceObject:
+      type: object
+      required:
+      - vendorId
+      - vendorName
+      - termsOfServiceEnabled
+      - termsOfServiceUrl
+      properties:
+        vendorId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1JFQ09SRElOR19WRU5ET1IvNTNkYzRjODctODQwOC00ODgyLTk1NzAtZGNhMmJjZGI5Mjgw
+          description: A unique identifier for the vendor.
+        vendorName:
+          type: string
+          example: Dubber
+          description: A unique name for the vendor.
+        termsOfServiceEnabled:
+          type: boolean
+          example: true
+          description: Whether or not the call recording terms of service are enabled.
+        termsOfServiceUrl:
+          type: string
+          example: https://www.dubber.net/terms
+          description: 'Url where can be found terms of service for the vendor.
+
+
+            **NOTE**: This is expected to be empty for webex recording platform.'
+    CallRecordingVendorUsersResponse:
+      type: object
+      required:
+      - vendorId
+      - members
+      properties:
+        vendorId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1JFQ09SRElOR19WRU5ET1IvMGE0MjY3NTQtYTQ3MC00YzJkLThiYTAtZmJjNjc3M2E4YTdj
+          description: Call recording vendor ID.
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/Members'
+          description: Contains member details
+    MemberType:
+      type: string
+      enum:
+      - PEOPLE
+      - PLACE
+      description: " * `PEOPLE` - Indicates the associated member is a person.\n * `PLACE` - Indicates the associated member is a workspace.\n"
+    LatestExecutionStatus:
+      type: string
+      enum:
+      - STARTING
+      - STARTED
+      - COMPLETED
+      - FAILED
+      description: " * `STARTING` - Job has started.\n * `STARTED` - Job is in progress.\n * `COMPLETED` - Job has been completed.\n * `FAILED` - Job has failed.\n"
   securitySchemes:
     oauth2:
       flows:
@@ -3358,6 +3355,3 @@ components:
       description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
       scheme: bearer
       bearerFormat: JWT
-x-refined-from:
-- webex-cloud-calling-openapi.json
-- webex-features-call-recording-api-openapi.yml

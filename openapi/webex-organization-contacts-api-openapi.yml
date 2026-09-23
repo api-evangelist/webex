@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: Webex Organization Contacts API
+  title: Webex Admin Organization Contacts API
   version: 1.0.0
-  description: 'Operations tagged Organization Contacts across 2 of this provider''s published API definitions: webex-admin-openapi.json, webex-organization-contacts-api-openapi.yml. Each path carries the servers of the definition it was published in.'
+  description: The Webex Admin APIs provide comprehensive programmatic access to administrative functions for managing Webex organizations, users, licenses, and settings.
   x-provenance:
     method: harvested
     authored_by: Cisco Webex
@@ -11,9 +11,6 @@ info:
     first_party: true
     note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
     provider_published: true
-    derived_view: Per-tag view of webex-admin-openapi.json, the provider's source document. Operations and schemas are the provider's, unmodified; only the partition is ours.
-    derived_from: webex-admin-openapi.json
-    operation_coverage: 7/7
   x-evidence:
   - type: source
     url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-admin.json
@@ -626,7 +623,7 @@ paths:
         `groupIds` is a comma separated list group IDs. Results are filtered based on those group IDs.
 
 
-        Long result sets will be split into [pages](/docs/basics#pagination).'
+        Long result sets will be split into pages.'
       tags:
       - Organization Contacts
       parameters:
@@ -997,36 +994,25 @@ components:
             type: string
             example: 9ac175bf-0249-4287-8fb3-e320e525fcf6
           description: Groups associated with the contact.
-    BulkCreateResponse:
+    SearchResponse:
       type: object
       properties:
-        contacts:
+        result:
           type: array
           items:
             $ref: '#/components/schemas/ContactResponse'
-          description: Array of contact successfully created.
-        failedContacts:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: string
-                example: '2'
-                description: Bulk ID of the contact object that failed creation.
-              errorCode:
-                type: number
-                example: 403
-                description: HTTP Response code for the contact creation failure.
-              errorMessage:
-                type: string
-                example: Source null is not supported by organization, only sources [CH] are allowed
-                description: Error message for the contact creation failure.
-          description: Array of contacts that failed creation.
-        orgId:
-          type: string
-          example: 36818b6f-ef07-43d1-b76f-ced79ab2e3e7
-          description: Organization ID in which the contacts were created.
+          description: An array of contact objects.
+        start:
+          type: number
+          description: Start at the zero-based offset in the list of matching contacts.
+        limit:
+          type: number
+          example: 1000
+          description: Limit the number of contacts returned to this maximum count.
+        total:
+          type: number
+          example: 1
+          description: Total number of contacts returned in search results.
     UpdateContact:
       type: object
       required:
@@ -1189,17 +1175,6 @@ components:
             type: string
             example: 9ac175bf-0249-4287-8fb3-e320e525fcf6
           description: Groups associated with the contact.
-    Meta:
-      type: object
-      properties:
-        created:
-          type: string
-          example: '2022-04-29T13:06:26.831Z'
-          description: The date and time the contact was created.
-        lastModified:
-          type: string
-          example: '2022-05-29T13:06:26.831Z'
-          description: The date and time the contact was last changed.
     BulkCreate:
       type: object
       required:
@@ -1364,25 +1339,52 @@ components:
                       description: A Boolean value indicating the IMS account status.
                 description: Instant messaging addresses for the user.
           description: Contains a list of contacts to be created/updated.
-    SearchResponse:
+    BulkDelete:
+      type: object
+      required:
+      - schemas
+      - objectIds
+      properties:
+        schemas:
+          type: string
+          example: urn:cisco:codev:identity:contact:core:1.0
+          description: '"urn:cisco:codev:identity:contact:core:1.0".'
+        objectIds:
+          type: array
+          items:
+            type: string
+            example: 8a5fac49-2c5f-4773-aec7-02db0e3a9d72
+          description: List of UUIDs for the contacts.
+    BulkCreateResponse:
       type: object
       properties:
-        result:
+        contacts:
           type: array
           items:
             $ref: '#/components/schemas/ContactResponse'
-          description: An array of contact objects.
-        start:
-          type: number
-          description: Start at the zero-based offset in the list of matching contacts.
-        limit:
-          type: number
-          example: 1000
-          description: Limit the number of contacts returned to this maximum count.
-        total:
-          type: number
-          example: 1
-          description: Total number of contacts returned in search results.
+          description: Array of contact successfully created.
+        failedContacts:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                example: '2'
+                description: Bulk ID of the contact object that failed creation.
+              errorCode:
+                type: number
+                example: 403
+                description: HTTP Response code for the contact creation failure.
+              errorMessage:
+                type: string
+                example: Source null is not supported by organization, only sources [CH] are allowed
+                description: Error message for the contact creation failure.
+          description: Array of contacts that failed creation.
+        orgId:
+          type: string
+          example: 36818b6f-ef07-43d1-b76f-ced79ab2e3e7
+          description: Organization ID in which the contacts were created.
     ContactResponse:
       type: object
       required:
@@ -1572,22 +1574,17 @@ components:
             type: string
             example: 9ac175bf-0249-4287-8fb3-e320e525fcf6
           description: Groups associated with the contact.
-    BulkDelete:
+    Meta:
       type: object
-      required:
-      - schemas
-      - objectIds
       properties:
-        schemas:
+        created:
           type: string
-          example: urn:cisco:codev:identity:contact:core:1.0
-          description: '"urn:cisco:codev:identity:contact:core:1.0".'
-        objectIds:
-          type: array
-          items:
-            type: string
-            example: 8a5fac49-2c5f-4773-aec7-02db0e3a9d72
-          description: List of UUIDs for the contacts.
+          example: '2022-04-29T13:06:26.831Z'
+          description: The date and time the contact was created.
+        lastModified:
+          type: string
+          example: '2022-05-29T13:06:26.831Z'
+          description: The date and time the contact was last changed.
   securitySchemes:
     oauth2:
       flows:
@@ -1610,6 +1607,3 @@ components:
           tokenUrl: https://webexapis.com/v1/access_token
           scopes:
             spark:applications_token: Create access tokens for Service Apps
-x-refined-from:
-- webex-admin-openapi.json
-- webex-organization-contacts-api-openapi.yml

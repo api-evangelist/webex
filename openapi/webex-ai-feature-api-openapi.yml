@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: Webex AI Feature API
+  title: Webex Contact Center AI Feature API
   version: 1.0.0
-  description: 'Operations tagged AI Feature across 2 of this provider''s published API definitions: webex-ai-feature-api-openapi.yml, webex-contact-center-openapi.json. Each path carries the servers of the definition it was published in.'
+  description: The Webex Contact Center APIs allow developers to deeply integrate, configure, and manage cloud-based contact center solutions.
   x-provenance:
     method: harvested
     authored_by: Cisco Webex
@@ -11,9 +11,6 @@ info:
     first_party: true
     note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
     provider_published: true
-    derived_view: Per-tag view of webex-contact-center-openapi.json, the provider's source document. Operations and schemas are the provider's, unmodified; only the partition is ours.
-    derived_from: webex-contact-center-openapi.json
-    operation_coverage: 8/8
   x-evidence:
   - type: source
     url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-contact-center.json
@@ -1043,47 +1040,24 @@ paths:
                     references: []
 components:
   schemas:
-    AgentWellbeingDTO:
+    PredictedWaitTimeDTO:
       type: object
-      description: This is applicable/available only when AI Assistant add-on offer/license is added to the organization.
+      description: AI wait time feature configuration
       properties:
         enable:
           type: boolean
-          description: Used to toggle the state of the AI feature sub feature  configuration from active to inactive and vice-versa. Mandatory for create/update operation. If the value is missing in response, the consumer should assume a value as false.
+          description: Used to toggle the state of the Predicted Wait Time  configuration from active to inactive and vice-versa. Mandatory for create/update operation.
           example: true
-        agentInclusionType:
+        queuesInclusionType:
           type: string
-          description: Provides information whether all or specific agents are selected for Agent Wellbeing. If the value is missing in response, the consumer should assume a value as ALL.
+          description: Provides information whether all or specific queues are selected for Predicted Wait Time.
           enum:
           - ALL
           - SPECIFIC
           example: ALL
-        wellnessBreakReminders:
-          type: string
-          description: Provides information whether Wellness break reminders are enabled or disabled. If the value is missing in response, the consumer should assume a value as DISABLED.
-          enum:
-          - DISABLED
-          - ENABLED
-          example: DISABLED
       required:
-      - agentInclusionType
       - enable
-    PersonalizedAIRoutingDTO:
-      type: object
-      properties:
-        enable:
-          type: boolean
-          description: Used to toggle the state of the Personalized AI Routing  configuration from active to inactive and vice-versa. Mandatory for create/update operation.
-          example: true
-        cjdsWorkspaceId:
-          type: string
-          description: Id of the CJDS workspace id to be used for model training.
-          example: true
-        cjdsProfileTemplateId:
-          type: string
-          description: Id of the CJDS Profile template to be used for model training.
-          example: true
-    RealtimeTranscriptsDTO:
+    AiAutoCSATDTO:
       type: object
       description: This is applicable/available when either AI Assistant/AI Quality Management add-on offer/license is added to the organization.
       properties:
@@ -1091,86 +1065,61 @@ components:
           type: boolean
           description: Used to toggle the state of the AI feature sub feature  configuration from active to inactive and vice-versa. Mandatory for create/update operation. If the value is missing in response, the consumer should assume a value as false.
           example: true
-        agentInclusionType:
-          type: string
-          deprecated: true
-          description: Provides information whether all or specific agents are selected for realtime transcripts.
-          enum:
-          - ALL
-          - SPECIFIC
-          example: ALL
         queuesInclusionType:
           type: string
-          description: Provides information whether all or specific queues are selected for Real time transcription. If the value is missing in response, the consumer should assume a value as ALL.
+          description: Provides information whether all or specific queues are selected for Auto CSAT. If the value is missing in response, the consumer should assume a value as ALL.
           enum:
           - ALL
           - SPECIFIC
           example: ALL
+        selectedGlobalVariableId:
+          type: string
+          description: Selected Global Variable ID for Auto CSAT. If the value is missing in response, the consumer should assume a value as null.
+          example: af9eecc5-0472-4549-9a83-2afdae0d4ba0
+        surveyDataSource:
+          type: string
+          description: Survey Data Source Type for Auto CSAT. If the value is missing in response, the consumer should assume a value as EXPERIENCE_MANAGEMENT.
+          enum:
+          - EXPERIENCE_MANAGEMENT
+          - GLOBAL_VARIABLE
+          example: EXPERIENCE_MANAGEMENT
       required:
       - enable
-    SuggestedResponsesDTO:
+    OperationError:
+      description: An error message providing details about the operation failure.
+      type: object
+      properties:
+        description:
+          type: string
+          description: A human readable explanation for the occurrence of an error.
+          example: Incorrect Credentials.
+    AiGeneratedSummariesDTO:
       type: object
       description: This is applicable/available only when AI Assistant add-on offer/license is added to the organization.
       properties:
-        enable:
+        callDropSummariesEnabled:
           type: boolean
-          description: Used to toggle the state of the AI feature sub feature  configuration from active to inactive and vice-versa. Mandatory for create/update operation. If the value is missing in response, the consumer should assume a value as false.
+          description: Used to toggle the enable/disable call drop summaries for Generated Summaries configuration. Mandatory for create/update operation. If the value is missing in response, the consumer should assume a value as false.
           example: true
-      required:
-      - enable
-    EvaluationsAnalyticsDTO:
-      type: object
-      description: This is applicable/available only when AI Quality Management add-on offer/license is added to the organization.
-      properties:
-        enable:
+        virtualAgentTransferSummariesEnabled:
           type: boolean
-          description: Used to toggle the state of the Evaluations and Analytics  configuration from active to inactive and vice-versa. Mandatory for create/update operation. If the value is missing in response, the consumer should assume a value as false.
+          description: Used to toggle the enable/disable virtual agent transfer summaries for Generated Summaries configuration. Mandatory for create/update operation. If the value is missing in response, the consumer should assume a value as false.
           example: true
-      required:
-      - enable
-    AutoCSATQuestionDTO:
-      type: object
-      properties:
-        organizationId:
+        consultTransferSummariesEnabled:
+          type: boolean
+          description: Used to toggle the enable/disable mid call consult/transfer summaries in Generated Summaries configuration. Mandatory for create/update operation. If the value is missing in response, the consumer should assume a value as false.
+          example: true
+        wrapUpSummariesEnabled:
+          type: boolean
+          description: Used to toggle the enable/disable post call summaries in Generated Summaries configuration. Mandatory for create/update operation. If the value is missing in response, the consumer should assume a value as false.
+          example: true
+        queuesInclusionType:
           type: string
-          format: uuid
-          description: ID of the contact center organization. This field is required for all bulk save operations.
-          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
-          maxLength: 36
-          minLength: 32
-          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
-        id:
-          type: string
-          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
-          example: 93912f11-6017-404b-bf14-5331890b1797
-        version:
-          type: integer
-          format: int32
-          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
-          example: 1
-        questionId:
-          type: string
-          description: Question ID that is mapped for Auto CSAT configuration
-          example: 93912f11-6017-404b-bf14-5331890b1797
-          minLength: 1
-        questionnaireId:
-          type: string
-          description: Questionnaire ID corresponding to the Question ID that is mapped for Auto CSAT configuration
-          example: 93912f11-6017-404b-bf14-5331890b1797
-          minLength: 1
-        createdTime:
-          type: integer
-          format: int64
-          description: This is the created time of the entity.
-          example: 123456789
-        lastUpdatedTime:
-          type: integer
-          format: int64
-          description: This is the updated time of the entity.
-          example: 123456789
-      required:
-      - questionId
-      - questionnaireId
+          description: Provides information whether all or specific queues are selected for Generated Summaries resource. If the value is missing in response, the consumer should assume a value as ALL.
+          enum:
+          - ALL
+          - SPECIFIC
+          example: ALL
     AiFeatureDTO:
       type: object
       example:
@@ -1248,23 +1197,6 @@ components:
           format: int64
           description: This is the updated time of the entity.
           example: 123456789
-    PredictedWaitTimeDTO:
-      type: object
-      description: AI wait time feature configuration
-      properties:
-        enable:
-          type: boolean
-          description: Used to toggle the state of the Predicted Wait Time  configuration from active to inactive and vice-versa. Mandatory for create/update operation.
-          example: true
-        queuesInclusionType:
-          type: string
-          description: Provides information whether all or specific queues are selected for Predicted Wait Time.
-          enum:
-          - ALL
-          - SPECIFIC
-          example: ALL
-      required:
-      - enable
     BulkRequestDTOAutoCSATQuestionDTO:
       type: object
       properties:
@@ -1273,6 +1205,139 @@ components:
           description: List of items in the bulk request.
           items:
             $ref: '#/components/schemas/BulkRequestItemDTOAutoCSATQuestionDTO'
+    ErrorDetails:
+      description: Details of an error.
+      type: object
+      properties:
+        key:
+          type: string
+          description: An application defined error code.
+          example: '401'
+        message:
+          type: array
+          description: A message providing details about the error.
+          items:
+            $ref: '#/components/schemas/OperationError'
+    BulkResponseDTO:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BulkResponseItemDTO'
+    MetaDataWithPagingInfo:
+      type: object
+      description: Metadata of response with paging information
+      properties:
+        orgid:
+          type: string
+          format: uuid
+          description: Organization ID.
+          example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+          maxLength: 36
+          minLength: 32
+          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
+        page:
+          type: integer
+          format: int32
+          description: Current page number.
+          example: 1
+        pageSize:
+          type: integer
+          format: int32
+          description: Page size for current data set.
+          example: 100
+        totalPages:
+          type: integer
+          format: int32
+          description: Number of pages.
+          example: 1
+        totalRecords:
+          type: integer
+          format: int32
+          description: Total number of items.
+          example: 1000
+        links:
+          type: object
+          description: Map of pagination links with `self`, `next`, `prev`, `last`, and `first`.
+          example:
+            next: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=2&pageSize=10
+            last: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=3&pageSize=10
+            prev: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=0&pageSize=10
+            self: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=1&pageSize=10
+            first: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=0&pageSize=10
+      title: MetaDataWithPagingInfo
+    RealtimeTranscriptsDTO:
+      type: object
+      description: This is applicable/available when either AI Assistant/AI Quality Management add-on offer/license is added to the organization.
+      properties:
+        enable:
+          type: boolean
+          description: Used to toggle the state of the AI feature sub feature  configuration from active to inactive and vice-versa. Mandatory for create/update operation. If the value is missing in response, the consumer should assume a value as false.
+          example: true
+        agentInclusionType:
+          type: string
+          deprecated: true
+          description: Provides information whether all or specific agents are selected for realtime transcripts.
+          enum:
+          - ALL
+          - SPECIFIC
+          example: ALL
+        queuesInclusionType:
+          type: string
+          description: Provides information whether all or specific queues are selected for Real time transcription. If the value is missing in response, the consumer should assume a value as ALL.
+          enum:
+          - ALL
+          - SPECIFIC
+          example: ALL
+      required:
+      - enable
+    AgentWellbeingDTO:
+      type: object
+      description: This is applicable/available only when AI Assistant add-on offer/license is added to the organization.
+      properties:
+        enable:
+          type: boolean
+          description: Used to toggle the state of the AI feature sub feature  configuration from active to inactive and vice-versa. Mandatory for create/update operation. If the value is missing in response, the consumer should assume a value as false.
+          example: true
+        agentInclusionType:
+          type: string
+          description: Provides information whether all or specific agents are selected for Agent Wellbeing. If the value is missing in response, the consumer should assume a value as ALL.
+          enum:
+          - ALL
+          - SPECIFIC
+          example: ALL
+        wellnessBreakReminders:
+          type: string
+          description: Provides information whether Wellness break reminders are enabled or disabled. If the value is missing in response, the consumer should assume a value as DISABLED.
+          enum:
+          - DISABLED
+          - ENABLED
+          example: DISABLED
+      required:
+      - agentInclusionType
+      - enable
+    SuggestedResponsesDTO:
+      type: object
+      description: This is applicable/available only when AI Assistant add-on offer/license is added to the organization.
+      properties:
+        enable:
+          type: boolean
+          description: Used to toggle the state of the AI feature sub feature  configuration from active to inactive and vice-versa. Mandatory for create/update operation. If the value is missing in response, the consumer should assume a value as false.
+          example: true
+      required:
+      - enable
+    ApiErrorResponse:
+      description: Response body for an API error.
+      type: object
+      properties:
+        trackingId:
+          type: string
+          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
+          example: c1a4fcef-aee2-4dea-8977-29f594760552
+        error:
+          description: An object containing details about the error.
+          $ref: '#/components/schemas/ErrorDetails'
     ResponseEnvelopeAutoCSATQuestionDTO:
       type: object
       properties:
@@ -1283,6 +1348,116 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AutoCSATQuestionDTO'
+    AutoCSATQuestionDTO:
+      type: object
+      properties:
+        organizationId:
+          type: string
+          format: uuid
+          description: ID of the contact center organization. This field is required for all bulk save operations.
+          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+          maxLength: 36
+          minLength: 32
+          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
+        id:
+          type: string
+          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
+          example: 93912f11-6017-404b-bf14-5331890b1797
+        version:
+          type: integer
+          format: int32
+          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
+          example: 1
+        questionId:
+          type: string
+          description: Question ID that is mapped for Auto CSAT configuration
+          example: 93912f11-6017-404b-bf14-5331890b1797
+          minLength: 1
+        questionnaireId:
+          type: string
+          description: Questionnaire ID corresponding to the Question ID that is mapped for Auto CSAT configuration
+          example: 93912f11-6017-404b-bf14-5331890b1797
+          minLength: 1
+        createdTime:
+          type: integer
+          format: int64
+          description: This is the created time of the entity.
+          example: 123456789
+        lastUpdatedTime:
+          type: integer
+          format: int64
+          description: This is the updated time of the entity.
+          example: 123456789
+      required:
+      - questionId
+      - questionnaireId
+    EvaluationsAnalyticsDTO:
+      type: object
+      description: This is applicable/available only when AI Quality Management add-on offer/license is added to the organization.
+      properties:
+        enable:
+          type: boolean
+          description: Used to toggle the state of the Evaluations and Analytics  configuration from active to inactive and vice-versa. Mandatory for create/update operation. If the value is missing in response, the consumer should assume a value as false.
+          example: true
+      required:
+      - enable
+    BulkRequestItemDTOAutoCSATQuestionDTO:
+      type: object
+      description: List of items in the bulk request.
+      properties:
+        itemIdentifier:
+          type: integer
+          format: int32
+          description: Unique item identifier for a bulk operation.
+          example: 10
+        item:
+          $ref: '#/components/schemas/AutoCSATQuestionDTO'
+        requestAction:
+          type: string
+          description: Identifier for action type. Possible values are `SAVE` and `DELETE`.
+          example: SAVE
+    PersonalizedAIRoutingDTO:
+      type: object
+      properties:
+        enable:
+          type: boolean
+          description: Used to toggle the state of the Personalized AI Routing  configuration from active to inactive and vice-versa. Mandatory for create/update operation.
+          example: true
+        cjdsWorkspaceId:
+          type: string
+          description: Id of the CJDS workspace id to be used for model training.
+          example: true
+        cjdsProfileTemplateId:
+          type: string
+          description: Id of the CJDS Profile template to be used for model training.
+          example: true
+    SentimentAnalysisDTO:
+      type: object
+      description: This is applicable/available when either AI Assistant/AI Quality Management add-on offer/license is added to the organization.
+      properties:
+        enable:
+          type: boolean
+          description: Used to toggle the state of the Sentiment Analysis  configuration from active to inactive and vice-versa. Mandatory for create/update operation. If the value is missing in response, the consumer should assume a value as false.
+          example: true
+        queuesInclusionType:
+          type: string
+          description: Provides information whether all or specific queues are selected for Sentiment Analysis. If the value is missing in response, the consumer should assume a value as ALL.
+          enum:
+          - ALL
+          - SPECIFIC
+          example: ALL
+      required:
+      - enable
+    CoachingInsightsDTO:
+      type: object
+      description: This is applicable/available only when AI Quality Management add-on offer/license is added to the organization.
+      properties:
+        enable:
+          type: boolean
+          description: Used to toggle the state of the Coaching Insights  configuration from active to inactive and vice-versa. Mandatory for create/update operation. If the value is missing in response, the consumer should assume a value as false.
+          example: true
+      required:
+      - enable
     BulkResponseItemDTO:
       type: object
       properties:
@@ -1327,184 +1502,6 @@ components:
         itemIdentifier: 10
         operationType: CREATE
         status: 400
-    BulkRequestItemDTOAutoCSATQuestionDTO:
-      type: object
-      description: List of items in the bulk request.
-      properties:
-        itemIdentifier:
-          type: integer
-          format: int32
-          description: Unique item identifier for a bulk operation.
-          example: 10
-        item:
-          $ref: '#/components/schemas/AutoCSATQuestionDTO'
-        requestAction:
-          type: string
-          description: Identifier for action type. Possible values are `SAVE` and `DELETE`.
-          example: SAVE
-    CoachingInsightsDTO:
-      type: object
-      description: This is applicable/available only when AI Quality Management add-on offer/license is added to the organization.
-      properties:
-        enable:
-          type: boolean
-          description: Used to toggle the state of the Coaching Insights  configuration from active to inactive and vice-versa. Mandatory for create/update operation. If the value is missing in response, the consumer should assume a value as false.
-          example: true
-      required:
-      - enable
-    AiGeneratedSummariesDTO:
-      type: object
-      description: This is applicable/available only when AI Assistant add-on offer/license is added to the organization.
-      properties:
-        callDropSummariesEnabled:
-          type: boolean
-          description: Used to toggle the enable/disable call drop summaries for Generated Summaries configuration. Mandatory for create/update operation. If the value is missing in response, the consumer should assume a value as false.
-          example: true
-        virtualAgentTransferSummariesEnabled:
-          type: boolean
-          description: Used to toggle the enable/disable virtual agent transfer summaries for Generated Summaries configuration. Mandatory for create/update operation. If the value is missing in response, the consumer should assume a value as false.
-          example: true
-        consultTransferSummariesEnabled:
-          type: boolean
-          description: Used to toggle the enable/disable mid call consult/transfer summaries in Generated Summaries configuration. Mandatory for create/update operation. If the value is missing in response, the consumer should assume a value as false.
-          example: true
-        wrapUpSummariesEnabled:
-          type: boolean
-          description: Used to toggle the enable/disable post call summaries in Generated Summaries configuration. Mandatory for create/update operation. If the value is missing in response, the consumer should assume a value as false.
-          example: true
-        queuesInclusionType:
-          type: string
-          description: Provides information whether all or specific queues are selected for Generated Summaries resource. If the value is missing in response, the consumer should assume a value as ALL.
-          enum:
-          - ALL
-          - SPECIFIC
-          example: ALL
-    ErrorDetails:
-      description: Details of an error.
-      type: object
-      properties:
-        key:
-          type: string
-          description: An application defined error code.
-          example: '401'
-        message:
-          type: array
-          description: A message providing details about the error.
-          items:
-            $ref: '#/components/schemas/OperationError'
-    BulkResponseDTO:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/BulkResponseItemDTO'
-    AiAutoCSATDTO:
-      type: object
-      description: This is applicable/available when either AI Assistant/AI Quality Management add-on offer/license is added to the organization.
-      properties:
-        enable:
-          type: boolean
-          description: Used to toggle the state of the AI feature sub feature  configuration from active to inactive and vice-versa. Mandatory for create/update operation. If the value is missing in response, the consumer should assume a value as false.
-          example: true
-        queuesInclusionType:
-          type: string
-          description: Provides information whether all or specific queues are selected for Auto CSAT. If the value is missing in response, the consumer should assume a value as ALL.
-          enum:
-          - ALL
-          - SPECIFIC
-          example: ALL
-        selectedGlobalVariableId:
-          type: string
-          description: Selected Global Variable ID for Auto CSAT. If the value is missing in response, the consumer should assume a value as null.
-          example: af9eecc5-0472-4549-9a83-2afdae0d4ba0
-        surveyDataSource:
-          type: string
-          description: Survey Data Source Type for Auto CSAT. If the value is missing in response, the consumer should assume a value as EXPERIENCE_MANAGEMENT.
-          enum:
-          - EXPERIENCE_MANAGEMENT
-          - GLOBAL_VARIABLE
-          example: EXPERIENCE_MANAGEMENT
-      required:
-      - enable
-    MetaDataWithPagingInfo:
-      type: object
-      description: Metadata of response with paging information
-      properties:
-        orgid:
-          type: string
-          format: uuid
-          description: Organization ID.
-          example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
-          maxLength: 36
-          minLength: 32
-          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
-        page:
-          type: integer
-          format: int32
-          description: Current page number.
-          example: 1
-        pageSize:
-          type: integer
-          format: int32
-          description: Page size for current data set.
-          example: 100
-        totalPages:
-          type: integer
-          format: int32
-          description: Number of pages.
-          example: 1
-        totalRecords:
-          type: integer
-          format: int32
-          description: Total number of items.
-          example: 1000
-        links:
-          type: object
-          description: Map of pagination links with `self`, `next`, `prev`, `last`, and `first`.
-          example:
-            next: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=2&pageSize=10
-            last: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=3&pageSize=10
-            prev: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=0&pageSize=10
-            self: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=1&pageSize=10
-            first: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=0&pageSize=10
-      title: MetaDataWithPagingInfo
-    SentimentAnalysisDTO:
-      type: object
-      description: This is applicable/available when either AI Assistant/AI Quality Management add-on offer/license is added to the organization.
-      properties:
-        enable:
-          type: boolean
-          description: Used to toggle the state of the Sentiment Analysis  configuration from active to inactive and vice-versa. Mandatory for create/update operation. If the value is missing in response, the consumer should assume a value as false.
-          example: true
-        queuesInclusionType:
-          type: string
-          description: Provides information whether all or specific queues are selected for Sentiment Analysis. If the value is missing in response, the consumer should assume a value as ALL.
-          enum:
-          - ALL
-          - SPECIFIC
-          example: ALL
-      required:
-      - enable
-    ApiErrorResponse:
-      description: Response body for an API error.
-      type: object
-      properties:
-        trackingId:
-          type: string
-          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
-          example: c1a4fcef-aee2-4dea-8977-29f594760552
-        error:
-          description: An object containing details about the error.
-          $ref: '#/components/schemas/ErrorDetails'
-    OperationError:
-      description: An error message providing details about the operation failure.
-      type: object
-      properties:
-        description:
-          type: string
-          description: A human readable explanation for the occurrence of an error.
-          example: Incorrect Credentials.
   securitySchemes:
     oauth2:
       flows:
@@ -1518,15 +1515,6 @@ components:
       description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
       scheme: bearer
       bearerFormat: JWT
-    bearerAuth:
-      type: oauth2
-      description: OAuth 2.0 Bearer token authentication
-      flows:
-        authorizationCode:
-          authorizationUrl: https://webexapis.com/v1/authorize
-          tokenUrl: https://webexapis.com/v1/access_token
-          scopes:
-            spark:applications_token: Create access tokens for Service Apps
     BEARER_TOKEN_FROM_CI:
       type: http
       in: header
@@ -1536,6 +1524,8 @@ components:
       description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
       scheme: bearer
       bearerFormat: JWT
-x-refined-from:
-- webex-ai-feature-api-openapi.yml
-- webex-contact-center-openapi.json
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT bearer token authentication. Obtain your token from the Webex Developer Portal.

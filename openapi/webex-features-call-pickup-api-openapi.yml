@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: 'Webex Features:  Call Pickup API'
+  title: 'Webex Cloud Calling Features: Call Pickup API'
   version: 1.0.0
-  description: 'Operations tagged Features:  Call Pickup across 2 of this provider''s published API definitions: webex-cloud-calling-openapi.json, webex-features-call-pickup-api-openapi.yml. Each path carries the servers of the definition it was published in.'
+  description: The Webex Cloud Calling APIs enable comprehensive management of cloud-based calling services, including user provisioning, device assignment, call routing, feature configuration, and number management.
   x-provenance:
     method: harvested
     authored_by: Cisco Webex
@@ -11,9 +11,6 @@ info:
     first_party: true
     note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
     provider_published: true
-    derived_view: Per-tag view of webex-cloud-calling-openapi.json, the provider's source document. Operations and schemas are the provider's, unmodified; only the partition is ours.
-    derived_from: webex-cloud-calling-openapi.json
-    operation_coverage: 6/6
   x-evidence:
   - type: source
     url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-cloud-calling.json
@@ -650,56 +647,6 @@ paths:
           type: string
 components:
   schemas:
-    PostCallPickupObject:
-      type: object
-      required:
-      - name
-      properties:
-        name:
-          type: string
-          example: North Alaska-Group
-          description: Unique name for the call pickup. The maximum length is 80.
-        notificationType:
-          type: string
-          enum:
-          - NONE
-          - AUDIO_ONLY
-          - VISUAL_ONLY
-          - AUDIO_AND_VISUAL
-          description: "Type of the notification when an incoming call is unanswered. The call pickup group notifies all of its members. Default: NONE.\n * `NONE` - Notification is not sent to any member of the call pickup group.\n * `AUDIO_ONLY` - When the notificationDelayTimerSeconds number of seconds has elapsed, play an audio notification for each call pickup group member.\n * `VISUAL_ONLY` - When the notificationDelayTimerSeconds number of seconds has elapsed, provide a visual notification to every call pickup group member.\n * `AUDIO_AND_VISUAL` - When the `notificationDelayTimerSeconds` number of seconds has elapsed, provide an audio and visual notification to every call pickup group member.\n"
-        notificationDelayTimerSeconds:
-          type: number
-          example: 6
-          description: 'After the number of seconds given by the `notificationDelayTimerSeconds` has elapsed, notify every member of the call pickup group when an incoming call goes unanswered. The `notificationType` field specifies the notification method. Default: 6.'
-        agents:
-          type: array
-          items:
-            type: string
-          description: An Array of ID strings of people, workspaces and virtual lines that are added to call pickup.
-    ListCallPickupObject:
-      type: object
-      required:
-      - name
-      - id
-      - locationName
-      - locationId
-      properties:
-        name:
-          type: string
-          example: North Alaska-Group
-          description: Unique name for the call pickup. The maximum length is 80.
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0NBTExfUElDS1VQL1kyRnNiRkJwWTJ0MWNERT0
-          description: A unique identifier for the call pickup.
-        locationName:
-          type: string
-          example: Alaska
-          description: Name of the location for call pickup.
-        locationId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzEyMzQ1
-          description: ID of the location for call pickup.
     GetPersonPlaceVirtualLineCallPickupObject:
       type: object
       required:
@@ -739,17 +686,30 @@ components:
           items:
             $ref: '#/components/schemas/GetUserNumberItemObject'
           description: List of phone numbers of a person, workspace or virtual line.
-    GetUserNumberItemObject:
+    ListCallPickupObject:
       type: object
+      required:
+      - name
+      - id
+      - locationName
+      - locationId
       properties:
-        external:
+        name:
           type: string
-          example: '+19075552859'
-          description: Phone number of a person, workspace or virtual line.
-        extension:
+          example: North Alaska-Group
+          description: Unique name for the call pickup. The maximum length is 80.
+        id:
           type: string
-          example: '8080'
-          description: Extension of a person, workspace or virtual line.
+          example: Y2lzY29zcGFyazovL3VzL0NBTExfUElDS1VQL1kyRnNiRkJwWTJ0MWNERT0
+          description: A unique identifier for the call pickup.
+        locationName:
+          type: string
+          example: Alaska
+          description: Name of the location for call pickup.
+        locationId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzEyMzQ1
+          description: ID of the location for call pickup.
     ModifyCallPickupObject:
       type: object
       properties:
@@ -774,6 +734,43 @@ components:
           items:
             type: string
           description: An array of people, workspace, and virtual lines IDs, that are added to call pickup.
+    PostCallPickupObject:
+      type: object
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          example: North Alaska-Group
+          description: Unique name for the call pickup. The maximum length is 80.
+        notificationType:
+          type: string
+          enum:
+          - NONE
+          - AUDIO_ONLY
+          - VISUAL_ONLY
+          - AUDIO_AND_VISUAL
+          description: "Type of the notification when an incoming call is unanswered. The call pickup group notifies all of its members. Default: NONE.\n * `NONE` - Notification is not sent to any member of the call pickup group.\n * `AUDIO_ONLY` - When the notificationDelayTimerSeconds number of seconds has elapsed, play an audio notification for each call pickup group member.\n * `VISUAL_ONLY` - When the notificationDelayTimerSeconds number of seconds has elapsed, provide a visual notification to every call pickup group member.\n * `AUDIO_AND_VISUAL` - When the `notificationDelayTimerSeconds` number of seconds has elapsed, provide an audio and visual notification to every call pickup group member.\n"
+        notificationDelayTimerSeconds:
+          type: number
+          example: 6
+          description: 'After the number of seconds given by the `notificationDelayTimerSeconds` has elapsed, notify every member of the call pickup group when an incoming call goes unanswered. The `notificationType` field specifies the notification method. Default: 6.'
+        agents:
+          type: array
+          items:
+            type: string
+          description: An Array of ID strings of people, workspaces and virtual lines that are added to call pickup.
+    GetUserNumberItemObject:
+      type: object
+      properties:
+        external:
+          type: string
+          example: '+19075552859'
+          description: Phone number of a person, workspace or virtual line.
+        extension:
+          type: string
+          example: '8080'
+          description: Extension of a person, workspace or virtual line.
     GetCallPickupObject:
       type: object
       required:
@@ -823,6 +820,3 @@ components:
       description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
       scheme: bearer
       bearerFormat: JWT
-x-refined-from:
-- webex-cloud-calling-openapi.json
-- webex-features-call-pickup-api-openapi.yml

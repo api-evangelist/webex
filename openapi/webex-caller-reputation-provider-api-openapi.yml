@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: Webex Caller Reputation Provider API
+  title: Webex Cloud Calling Caller Reputation Provider API
   version: 1.0.0
-  description: 'Operations tagged Caller Reputation Provider across 2 of this provider''s published API definitions: webex-caller-reputation-provider-api-openapi.yml, webex-cloud-calling-openapi.json. Each path carries the servers of the definition it was published in.'
+  description: The Webex Cloud Calling APIs enable comprehensive management of cloud-based calling services, including user provisioning, device assignment, call routing, feature configuration, and number management.
   x-provenance:
     method: harvested
     authored_by: Cisco Webex
@@ -11,9 +11,6 @@ info:
     first_party: true
     note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
     provider_published: true
-    derived_view: Per-tag view of webex-cloud-calling-openapi.json, the provider's source document. Operations and schemas are the provider's, unmodified; only the partition is ours.
-    derived_from: webex-cloud-calling-openapi.json
-    operation_coverage: 5/5
   x-evidence:
   - type: source
     url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-cloud-calling.json
@@ -315,45 +312,6 @@ paths:
           type: string
 components:
   schemas:
-    CallerReputationProviderSettingsUpdate:
-      type: object
-      properties:
-        enabled:
-          type: boolean
-          description: Indicates if the caller reputation provider service is enabled. when set to true, all other fields are required except clientSecret.
-          example: true
-        id:
-          type: string
-          description: Unique identifier for the reputation provider.
-          example: provider-123
-        name:
-          type: string
-          description: Name of the reputation provider.
-          example: Acme Reputation Provider
-        clientId:
-          type: string
-          description: Client ID used for integration with the reputation provider.
-          example: client-456
-        clientSecret:
-          type: string
-          description: Client secret used for integration with the reputation provider.
-          example: secret-789
-        callBlockScoreThreshold:
-          type: string
-          description: Score threshold for blocking calls.
-          example: '0.7'
-        callAllowScoreThreshold:
-          type: string
-          description: Score threshold for allowing calls.
-          example: '0.3'
-      example:
-        enabled: true
-        id: provider-123
-        name: Acme Reputation Provider
-        clientId: client-456
-        clientSecret: secret-789
-        callBlockScoreThreshold: '0.7'
-        callAllowScoreThreshold: '0.3'
     CallerReputationProviderSettings:
       type: object
       properties:
@@ -388,6 +346,62 @@ components:
         enabled: true
         callBlockScoreThreshold: '0.7'
         callAllowScoreThreshold: '0.3'
+    CallerReputationProviderUnlockRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the reputation provider.
+          example: provider-123
+      required:
+      - id
+      example:
+        id: provider-123
+    CallerReputationProviderStatus:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the reputation provider.
+          example: provider-123
+        status:
+          $ref: '#/components/schemas/CallerReputationProviderStatusEnum'
+      required:
+      - id
+      - status
+      example:
+        id: provider-123
+        status: CONNECTED
+    CallerReputationProviderProvider:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the provider.
+          example: provider-123
+        enabled:
+          type: boolean
+          description: Indicates if the provider is enabled.
+          example: true
+        name:
+          type: string
+          description: Name of the provider.
+          example: Acme Reputation Provider
+        regions:
+          type: array
+          items:
+            $ref: '#/components/schemas/CallerReputationProviderRegion'
+          description: List of regions for the provider.
+      example:
+        id: provider-123
+        enabled: true
+        name: Acme Reputation Provider
+        regions:
+        - id: region-1
+          name: US East
+          type: primary
+          visible: true
+          environmentType: production
     CallerReputationProviderRegion:
       type: object
       properties:
@@ -429,21 +443,45 @@ components:
       - PROVIDER_DISABLED
       description: "Status of the caller reputation provider integration.\n\n * `NOT_CONNECTED` - Provider is not connected.\n * `CONNECTING` - Provider is in the process of connecting.\n * `CONNECTED` - Provider is connected.\n * `ACTIVE` - Provider is active and operational.\n * `EXPIRED` - Provider's session or token has expired.\n * `AUTH_FAILED` - Authentication with the provider failed.\n * `PROVIDER_DISABLED` - Provider is disabled.\n"
       example: CONNECTED
-    CallerReputationProviderStatus:
+    CallerReputationProviderSettingsUpdate:
       type: object
       properties:
+        enabled:
+          type: boolean
+          description: Indicates if the caller reputation provider service is enabled. when set to true, all other fields are required except clientSecret.
+          example: true
         id:
           type: string
           description: Unique identifier for the reputation provider.
           example: provider-123
-        status:
-          $ref: '#/components/schemas/CallerReputationProviderStatusEnum'
-      required:
-      - id
-      - status
+        name:
+          type: string
+          description: Name of the reputation provider.
+          example: Acme Reputation Provider
+        clientId:
+          type: string
+          description: Client ID used for integration with the reputation provider.
+          example: client-456
+        clientSecret:
+          type: string
+          description: Client secret used for integration with the reputation provider.
+          example: secret-789
+        callBlockScoreThreshold:
+          type: string
+          description: Score threshold for blocking calls.
+          example: '0.7'
+        callAllowScoreThreshold:
+          type: string
+          description: Score threshold for allowing calls.
+          example: '0.3'
       example:
+        enabled: true
         id: provider-123
-        status: CONNECTED
+        name: Acme Reputation Provider
+        clientId: client-456
+        clientSecret: secret-789
+        callBlockScoreThreshold: '0.7'
+        callAllowScoreThreshold: '0.3'
     CallerReputationProviderProvidersResponse:
       type: object
       properties:
@@ -463,47 +501,6 @@ components:
             type: primary
             visible: true
             environmentType: production
-    CallerReputationProviderProvider:
-      type: object
-      properties:
-        id:
-          type: string
-          description: Unique identifier for the provider.
-          example: provider-123
-        enabled:
-          type: boolean
-          description: Indicates if the provider is enabled.
-          example: true
-        name:
-          type: string
-          description: Name of the provider.
-          example: Acme Reputation Provider
-        regions:
-          type: array
-          items:
-            $ref: '#/components/schemas/CallerReputationProviderRegion'
-          description: List of regions for the provider.
-      example:
-        id: provider-123
-        enabled: true
-        name: Acme Reputation Provider
-        regions:
-        - id: region-1
-          name: US East
-          type: primary
-          visible: true
-          environmentType: production
-    CallerReputationProviderUnlockRequest:
-      type: object
-      properties:
-        id:
-          type: string
-          description: Unique identifier for the reputation provider.
-          example: provider-123
-      required:
-      - id
-      example:
-        id: provider-123
   securitySchemes:
     oauth2:
       flows:
@@ -518,14 +515,7 @@ components:
       scheme: bearer
       bearerFormat: JWT
     bearerAuth:
-      type: oauth2
-      description: OAuth 2.0 Bearer token authentication
-      flows:
-        authorizationCode:
-          authorizationUrl: https://webexapis.com/v1/authorize
-          tokenUrl: https://webexapis.com/v1/access_token
-          scopes:
-            spark:applications_token: Create access tokens for Service Apps
-x-refined-from:
-- webex-caller-reputation-provider-api-openapi.yml
-- webex-cloud-calling-openapi.json
+      type: http
+      description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
+      scheme: bearer
+      bearerFormat: JWT
