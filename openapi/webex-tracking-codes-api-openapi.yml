@@ -110,7 +110,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: List Tracking Codes
-      operationId: List Tracking Codes
+      operationId: ListTrackingCodes
       description: 'Lists tracking codes on a site by an admin user.
 
 
@@ -127,6 +127,8 @@ paths:
         example: example.webex.com
         schema:
           type: string
+      x-operation-id-source: normalized
+      x-operation-id-original: List Tracking Codes
     post:
       responses:
         '200':
@@ -213,7 +215,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Create a Tracking Code
-      operationId: Create a Tracking Code
+      operationId: CreateATrackingCode
       description: 'Create a new tracking code by an admin user.
 
 
@@ -267,6 +269,8 @@ paths:
                 type: notUsed
             schema:
               $ref: '#/components/schemas/CreateOrUpdateTrackingCodeObject'
+      x-operation-id-source: normalized
+      x-operation-id-original: Create a Tracking Code
   /admin/meeting/config/trackingCodes/{trackingCodeId}:
     get:
       responses:
@@ -334,7 +338,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Get a Tracking Code
-      operationId: Get a Tracking Code
+      operationId: GetATrackingCode
       description: 'Retrieves details for a tracking code by an admin user.
 
 
@@ -358,6 +362,8 @@ paths:
         example: example.webex.com
         schema:
           type: string
+      x-operation-id-source: normalized
+      x-operation-id-original: Get a Tracking Code
     put:
       responses:
         '200':
@@ -444,7 +450,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Update a Tracking Code
-      operationId: Update a Tracking Code
+      operationId: UpdateATrackingCode
       description: 'Updates details for a tracking code by an admin user.
 
 
@@ -498,6 +504,8 @@ paths:
                 type: notUsed
             schema:
               $ref: '#/components/schemas/CreateOrUpdateTrackingCodeObject'
+      x-operation-id-source: normalized
+      x-operation-id-original: Update a Tracking Code
     delete:
       responses:
         '204':
@@ -537,7 +545,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Delete a Tracking Code
-      operationId: Delete a Tracking Code
+      operationId: DeleteATrackingCode
       description: 'Deletes a tracking code by an admin user.
 
 
@@ -562,6 +570,8 @@ paths:
         example: example.webex.com
         schema:
           type: string
+      x-operation-id-source: normalized
+      x-operation-id-original: Delete a Tracking Code
   /admin/meeting/userconfig/trackingCodes:
     get:
       responses:
@@ -616,7 +626,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Get User Tracking Codes
-      operationId: Get User Tracking Codes
+      operationId: GetUserTrackingCodes
       description: 'Lists user''s tracking codes by an admin user.
 
 
@@ -655,6 +665,8 @@ paths:
         schema:
           type: string
         example: john.andersen@example.com
+      x-operation-id-source: normalized
+      x-operation-id-original: Get User Tracking Codes
     put:
       responses:
         '200':
@@ -728,7 +740,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Update User Tracking Codes
-      operationId: Update User Tracking Codes
+      operationId: UpdateUserTrackingCodes
       description: 'Updates tracking codes for a specified user by an admin user.
 
 
@@ -759,8 +771,63 @@ paths:
                 value: Part-time
             schema:
               $ref: '#/components/schemas/UpdateTrackingCodeForUserObject'
+      x-operation-id-source: normalized
+      x-operation-id-original: Update User Tracking Codes
 components:
   schemas:
+    GetTrackingCodeItemForUserObject:
+      type: object
+      required:
+      - id
+      - name
+      - value
+      properties:
+        id:
+          type: string
+          example: '1'
+          description: Unique identifier for tracking code.
+        name:
+          type: string
+          example: Department
+          description: Name for tracking code.
+        value:
+          type: string
+          description: Value for tracking code.
+    UpdateTrackingCodeItemForUserObject:
+      type: object
+      required:
+      - name
+      - value
+      properties:
+        name:
+          type: string
+          example: Department
+          description: Name for tracking code. The name cannot be empty and the maximum size is 120 characters.
+        value:
+          type: string
+          description: Value for tracking code. `value` cannot be empty and the maximum size is 120 characters.
+    GetTrackingCodeForUserObject:
+      type: object
+      required:
+      - siteUrl
+      properties:
+        siteUrl:
+          type: string
+          example: example.webex.com
+          description: Site URL for the tracking code.
+        personId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8xOGJiOWNjMC0zMWM2LTQ3MzYtYmE4OC0wMDk5ZmQzNDNmODE
+          description: Unique identifier for the user.
+        email:
+          type: string
+          example: john.andersen@example.com
+          description: Email address for the user.
+        trackingCodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/GetTrackingCodeItemForUserObject'
+          description: Tracking code information.
     GetTrackingCodeObject:
       type: object
       required:
@@ -810,48 +877,26 @@ components:
           items:
             $ref: '#/components/schemas/ScheduleStartCodeObject'
           description: Specify how tracking codes are used for each service on the meeting scheduler or meeting start pages.
-    GetTrackingCodeItemForUserObject:
+    GetTrackingCodesObject:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/GetTrackingCodeObject'
+          description: Tracking codes information.
+    OptionsForTrackingCodeObject:
       type: object
       required:
-      - id
-      - name
       - value
+      - defaultValue
       properties:
-        id:
-          type: string
-          example: '1'
-          description: Unique identifier for tracking code.
-        name:
-          type: string
-          example: Department
-          description: Name for tracking code.
         value:
           type: string
-          description: Value for tracking code.
-    ScheduleStartCodeObject:
-      type: object
-      required:
-      - service
-      - type
-      properties:
-        service:
-          type: string
-          enum:
-          - All
-          - MeetingCenter
-          - EventCenter
-          - TrainingCenter
-          - SupportCenter
-          description: "Service for schedule or sign up pages\n * `All` - Tracking codes apply to all services.\n * `MeetingCenter` - Users can set tracking codes when scheduling a meeting.\n * `EventCenter` - Users can set tracking codes when scheduling an event.\n * `TrainingCenter` - Users can set tracking codes when scheduling a training session.\n * `SupportCenter` - Users can set tracking codes when scheduling a support meeting.\n"
-        type:
-          type: string
-          enum:
-          - optional
-          - required
-          - adminSet
-          - notUsed
-          - notApplicable
-          description: "Type for meeting scheduler or meeting start pages.\n * `optional` - Available to be chosen but not compulsory.\n * `required` - Officially compulsory.\n * `adminSet` - The value is set by admin. This value only applies when `hostProfileCode` is `adminSet`.\n * `notUsed` - The value cannot be used.\n * `notApplicable` - This value only applies to the service of `All`. When the type of `All` for a tracking code is `notApplicable`, there are different types for different services. For example, `required` for `MeetingCenter`, `optional` for `EventCenter` and `notUsed` for others.\n"
+          description: The value of a tracking code option. `value` cannot be empty and the maximum size is 120 characters.
+        defaultValue:
+          type: boolean
+          description: Whether or not the option is the default option of a tracking code.
     CreateOrUpdateTrackingCodeObject:
       type: object
       required:
@@ -896,73 +941,30 @@ components:
           items:
             $ref: '#/components/schemas/ScheduleStartCodeObject'
           description: Specify how tracking codes are used for each service on the meeting scheduler or meeting start pages. The maximum size of `scheduleStartCodes` is 5.
-    OptionsForCreateOrUpdateTrackingCodeObject:
+    ScheduleStartCodeObject:
       type: object
       required:
-      - value
-      - defaultValue
+      - service
+      - type
       properties:
-        value:
+        service:
           type: string
-          description: The value of a tracking code option. `value` cannot be empty and the maximum size is 120 characters.
-        defaultValue:
-          type: boolean
-          description: Whether or not the option is the default option of a tracking code.
-    OptionsForTrackingCodeObject:
-      type: object
-      required:
-      - value
-      - defaultValue
-      properties:
-        value:
+          enum:
+          - All
+          - MeetingCenter
+          - EventCenter
+          - TrainingCenter
+          - SupportCenter
+          description: "Service for schedule or sign up pages\n * `All` - Tracking codes apply to all services.\n * `MeetingCenter` - Users can set tracking codes when scheduling a meeting.\n * `EventCenter` - Users can set tracking codes when scheduling an event.\n * `TrainingCenter` - Users can set tracking codes when scheduling a training session.\n * `SupportCenter` - Users can set tracking codes when scheduling a support meeting.\n"
+        type:
           type: string
-          description: The value of a tracking code option. `value` cannot be empty and the maximum size is 120 characters.
-        defaultValue:
-          type: boolean
-          description: Whether or not the option is the default option of a tracking code.
-    UpdateTrackingCodeItemForUserObject:
-      type: object
-      required:
-      - name
-      - value
-      properties:
-        name:
-          type: string
-          example: Department
-          description: Name for tracking code. The name cannot be empty and the maximum size is 120 characters.
-        value:
-          type: string
-          description: Value for tracking code. `value` cannot be empty and the maximum size is 120 characters.
-    GetTrackingCodesObject:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/GetTrackingCodeObject'
-          description: Tracking codes information.
-    GetTrackingCodeForUserObject:
-      type: object
-      required:
-      - siteUrl
-      properties:
-        siteUrl:
-          type: string
-          example: example.webex.com
-          description: Site URL for the tracking code.
-        personId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8xOGJiOWNjMC0zMWM2LTQ3MzYtYmE4OC0wMDk5ZmQzNDNmODE
-          description: Unique identifier for the user.
-        email:
-          type: string
-          example: john.andersen@example.com
-          description: Email address for the user.
-        trackingCodes:
-          type: array
-          items:
-            $ref: '#/components/schemas/GetTrackingCodeItemForUserObject'
-          description: Tracking code information.
+          enum:
+          - optional
+          - required
+          - adminSet
+          - notUsed
+          - notApplicable
+          description: "Type for meeting scheduler or meeting start pages.\n * `optional` - Available to be chosen but not compulsory.\n * `required` - Officially compulsory.\n * `adminSet` - The value is set by admin. This value only applies when `hostProfileCode` is `adminSet`.\n * `notUsed` - The value cannot be used.\n * `notApplicable` - This value only applies to the service of `All`. When the type of `All` for a tracking code is `notApplicable`, there are different types for different services. For example, `required` for `MeetingCenter`, `optional` for `EventCenter` and `notUsed` for others.\n"
     UpdateTrackingCodeForUserObject:
       type: object
       required:
@@ -985,6 +987,18 @@ components:
           items:
             $ref: '#/components/schemas/UpdateTrackingCodeItemForUserObject'
           description: Tracking code information for updates.
+    OptionsForCreateOrUpdateTrackingCodeObject:
+      type: object
+      required:
+      - value
+      - defaultValue
+      properties:
+        value:
+          type: string
+          description: The value of a tracking code option. `value` cannot be empty and the maximum size is 120 characters.
+        defaultValue:
+          type: boolean
+          description: Whether or not the option is the default option of a tracking code.
   securitySchemes:
     oauth2:
       flows:

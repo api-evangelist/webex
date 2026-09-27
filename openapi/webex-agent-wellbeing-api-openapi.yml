@@ -497,6 +497,30 @@ paths:
       deprecated: true
 components:
   schemas:
+    ErrorDetails:
+      description: Details of an error.
+      type: object
+      properties:
+        key:
+          type: string
+          description: An application defined error code.
+          example: '401'
+        message:
+          type: array
+          description: A message providing details about the error.
+          items:
+            $ref: '#/components/schemas/OperationError'
+    ApiErrorResponse:
+      description: Response body for an API error.
+      type: object
+      properties:
+        trackingId:
+          type: string
+          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
+          example: c1a4fcef-aee2-4dea-8977-29f594760552
+        error:
+          description: An object containing details about the error.
+          $ref: '#/components/schemas/ErrorDetails'
     AgentBurnoutDTO:
       type: object
       properties:
@@ -548,6 +572,14 @@ components:
       required:
       - agentInclusionType
       - enabled
+    OperationError:
+      description: An error message providing details about the operation failure.
+      type: object
+      properties:
+        description:
+          type: string
+          description: A human readable explanation for the occurrence of an error.
+          example: Incorrect Credentials.
     ActionResponse:
       type: object
       properties:
@@ -593,107 +625,6 @@ components:
           type: string
           description: The unique tracking ID for this request.
           example: fb53f6d1-5535-4ac8-b081-53834e17d6f5
-    OperationError:
-      description: An error message providing details about the operation failure.
-      type: object
-      properties:
-        description:
-          type: string
-          description: A human readable explanation for the occurrence of an error.
-          example: Incorrect Credentials.
-    ActionRequest:
-      type: object
-      properties:
-        interactionId:
-          type: string
-          description: A unique identifier for each interaction or contact within the contact center.
-          example: fb53f6d1-5535-4ac8-b081-53834e17d6f5
-        agentId:
-          type: string
-          description: The identifier for the agent whose burnout index has been calculated.
-          example: fb53f6d1-5535-4ac8-b081-53834e17d6f5
-        clientId:
-          type: string
-          description: The name of the client initiating the action related to the agent burnout index. The name is limited to a maximum of 20 characters.
-          example: Acme
-        actionType:
-          type: string
-          description: Specifies the type of action initiated based on the agent burnout index
-          example: Break Played, Supervisor Notified, etc.
-        actionDateType:
-          type: object
-          description: The Epoch timestamp indicating the precise time at which the action was executed.
-          example: 1617536244000
-    ApiErrorResponse:
-      description: Response body for an API error.
-      type: object
-      properties:
-        trackingId:
-          type: string
-          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
-          example: c1a4fcef-aee2-4dea-8977-29f594760552
-        error:
-          description: An object containing details about the error.
-          $ref: '#/components/schemas/ErrorDetails'
-    ErrorDetails:
-      description: Details of an error.
-      type: object
-      properties:
-        key:
-          type: string
-          description: An application defined error code.
-          example: '401'
-        message:
-          type: array
-          description: A message providing details about the error.
-          items:
-            $ref: '#/components/schemas/OperationError'
-    SubscriptionRequest:
-      required:
-      - destinationUrl
-      - eventTypes
-      - name
-      type: object
-      properties:
-        name:
-          maxLength: 64
-          minLength: 4
-          type: string
-          description: Client-defined string naming the subscription.
-          example: My Integration's Subscription
-        description:
-          maxLength: 1024
-          minLength: 0
-          type: string
-          description: Client-defined string describing the subscription.
-          example: The subscription my integration uses to synchronize with WxCC
-        eventTypes:
-          maxItems: 32
-          minItems: 1
-          type: array
-          description: Types of events to which the subscription will listen.
-          example:
-          - agent:login
-          - agent:logout
-          items:
-            type: string
-        destinationUrl:
-          pattern: ^(https?)://.*$
-          type: string
-          description: URL to which webhooks will be posted. Must be HTTPS on an IANA-listed top-level domain name (e.g. .com) with a path (at least /). No query parameters, userinfo, non-443 ports, or fragments allowed. We do not treat this field as sensitive data, so do not use secrets in this URL such as tokens or API keys.
-          format: uri
-          example: https://www.cisco.com/
-        secret:
-          maxLength: 256
-          minLength: 32
-          type: string
-          description: Secret string used to sign payloads sent to the destination URL.
-          example: my-32-plus-character-long-secret
-        orgId:
-          type: string
-          description: Organization ID to be used for this operation. If unspecified, the Organization ID is inferred from the token. The token must have permission to interact with the organization.
-          format: uuid
-          example: 97cdbf45-ebe2-4687-8341-44d5c7abf101
     SubscriptionResponse:
       required:
       - createdBy
@@ -765,6 +696,75 @@ components:
           description: Email address of the user who updated the subscription most recently.
           format: email
           example: example@example.com
+    SubscriptionRequest:
+      required:
+      - destinationUrl
+      - eventTypes
+      - name
+      type: object
+      properties:
+        name:
+          maxLength: 64
+          minLength: 4
+          type: string
+          description: Client-defined string naming the subscription.
+          example: My Integration's Subscription
+        description:
+          maxLength: 1024
+          minLength: 0
+          type: string
+          description: Client-defined string describing the subscription.
+          example: The subscription my integration uses to synchronize with WxCC
+        eventTypes:
+          maxItems: 32
+          minItems: 1
+          type: array
+          description: Types of events to which the subscription will listen.
+          example:
+          - agent:login
+          - agent:logout
+          items:
+            type: string
+        destinationUrl:
+          pattern: ^(https?)://.*$
+          type: string
+          description: URL to which webhooks will be posted. Must be HTTPS on an IANA-listed top-level domain name (e.g. .com) with a path (at least /). No query parameters, userinfo, non-443 ports, or fragments allowed. We do not treat this field as sensitive data, so do not use secrets in this URL such as tokens or API keys.
+          format: uri
+          example: https://www.cisco.com/
+        secret:
+          maxLength: 256
+          minLength: 32
+          type: string
+          description: Secret string used to sign payloads sent to the destination URL.
+          example: my-32-plus-character-long-secret
+        orgId:
+          type: string
+          description: Organization ID to be used for this operation. If unspecified, the Organization ID is inferred from the token. The token must have permission to interact with the organization.
+          format: uuid
+          example: 97cdbf45-ebe2-4687-8341-44d5c7abf101
+    ActionRequest:
+      type: object
+      properties:
+        interactionId:
+          type: string
+          description: A unique identifier for each interaction or contact within the contact center.
+          example: fb53f6d1-5535-4ac8-b081-53834e17d6f5
+        agentId:
+          type: string
+          description: The identifier for the agent whose burnout index has been calculated.
+          example: fb53f6d1-5535-4ac8-b081-53834e17d6f5
+        clientId:
+          type: string
+          description: The name of the client initiating the action related to the agent burnout index. The name is limited to a maximum of 20 characters.
+          example: Acme
+        actionType:
+          type: string
+          description: Specifies the type of action initiated based on the agent burnout index
+          example: Break Played, Supervisor Notified, etc.
+        actionDateType:
+          type: object
+          description: The Epoch timestamp indicating the precise time at which the action was executed.
+          example: 1617536244000
     MetaDataWithPagingInfo:
       type: object
       description: Metadata of response with paging information

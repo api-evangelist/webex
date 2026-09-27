@@ -78,7 +78,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: List Site Session Types
-      operationId: List Site Session Types
+      operationId: ListSiteSessionTypes
       description: List session types for a specific site.
       tags:
       - Session Types
@@ -89,6 +89,8 @@ paths:
         example: example.webex.com
         schema:
           type: string
+      x-operation-id-source: normalized
+      x-operation-id-original: List Site Session Types
   /admin/meeting/userconfig/sessionTypes:
     get:
       responses:
@@ -150,7 +152,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: List User Session Type
-      operationId: List User Session Type
+      operationId: ListUserSessionType
       description: List session types for a specific user.
       tags:
       - Session Types
@@ -174,6 +176,8 @@ paths:
         schema:
           type: string
         example: '`john.andersen@example.com` (string, optional) - The email of the user.'
+      x-operation-id-source: normalized
+      x-operation-id-original: List User Session Type
     put:
       responses:
         '200':
@@ -227,7 +231,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Update User Session Types
-      operationId: Update User Session Types
+      operationId: UpdateUserSessionTypes
       description: 'Assign session types to specific users.
 
 
@@ -240,8 +244,30 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UpdateUserSessionType'
+      x-operation-id-source: normalized
+      x-operation-id-original: Update User Session Types
 components:
   schemas:
+    UserSessionTypes:
+      type: object
+      properties:
+        personId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8yNWJiZjgzMS01YmU5LTRjMjUtYjRiMC05YjU5MmM4YTA4NmI
+          description: A unique identifier for the user.
+        email:
+          type: string
+          example: john.andersen@example.com
+          description: The email of the user.
+        siteUrl:
+          type: string
+          example: example.webex.com
+          description: Site URL for the user.
+        sessionTypes:
+          type: array
+          items:
+            $ref: '#/components/schemas/SessionType'
+          description: All session types are supported by the user on the site.
     SiteSessionType:
       type: object
       properties:
@@ -257,6 +283,31 @@ components:
           type: string
           example: example.webex.com
           description: Site URL for the session type.
+        name:
+          type: string
+          example: Pro Meeting
+          description: The name of the session type.
+        type:
+          type: string
+          enum:
+          - meeting
+          - webinar
+          - privateMeeting
+          - EventCenter
+          - SupportCenter
+          - TrainCenter
+          description: "The meeting type of meeting that you can create with the session type.\n * `meeting` - Meeting Center.\n * `webinar` - Webinar meeting.\n * `privateMeeting` - Private meeting.\n * `EventCenter` - Event Center.\n * `SupportCenter` - Support Center.\n * `TrainCenter` - Training Center.\n"
+    SessionType:
+      type: object
+      properties:
+        id:
+          type: string
+          example: '3'
+          description: The ID of the session type.
+        shortName:
+          type: string
+          example: PRO
+          description: The short name of the session type.
         name:
           type: string
           example: Pro Meeting
@@ -297,51 +348,6 @@ components:
           - '3'
           - '9'
           description: An array of the session type ID.
-    SessionType:
-      type: object
-      properties:
-        id:
-          type: string
-          example: '3'
-          description: The ID of the session type.
-        shortName:
-          type: string
-          example: PRO
-          description: The short name of the session type.
-        name:
-          type: string
-          example: Pro Meeting
-          description: The name of the session type.
-        type:
-          type: string
-          enum:
-          - meeting
-          - webinar
-          - privateMeeting
-          - EventCenter
-          - SupportCenter
-          - TrainCenter
-          description: "The meeting type of meeting that you can create with the session type.\n * `meeting` - Meeting Center.\n * `webinar` - Webinar meeting.\n * `privateMeeting` - Private meeting.\n * `EventCenter` - Event Center.\n * `SupportCenter` - Support Center.\n * `TrainCenter` - Training Center.\n"
-    UserSessionTypes:
-      type: object
-      properties:
-        personId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8yNWJiZjgzMS01YmU5LTRjMjUtYjRiMC05YjU5MmM4YTA4NmI
-          description: A unique identifier for the user.
-        email:
-          type: string
-          example: john.andersen@example.com
-          description: The email of the user.
-        siteUrl:
-          type: string
-          example: example.webex.com
-          description: Site URL for the user.
-        sessionTypes:
-          type: array
-          items:
-            $ref: '#/components/schemas/SessionType'
-          description: All session types are supported by the user on the site.
   securitySchemes:
     oauth2:
       flows:

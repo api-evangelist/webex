@@ -66,7 +66,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Workspace Metrics
-      operationId: Workspace Metrics
+      operationId: WorkspaceMetrics
       description: 'Get metric data for the specified workspace and metric name, optionally aggregated over a specified time period.
 
 
@@ -158,6 +158,8 @@ paths:
           enum:
           - newestFirst
           - oldestFirst
+      x-operation-id-source: normalized
+      x-operation-id-original: Workspace Metrics
   /workspaceDurationMetrics:
     get:
       responses:
@@ -210,7 +212,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Workspace Duration Metrics
-      operationId: Workspace Duration Metrics
+      operationId: WorkspaceDurationMetrics
       description: 'Get metrics for how much time a workspace has been in the state given by the `measurement` parameter.
 
 
@@ -271,55 +273,10 @@ paths:
         example: '2020-10-31T16:00:00.532Z'
         schema:
           type: string
+      x-operation-id-source: normalized
+      x-operation-id-original: Workspace Duration Metrics
 components:
   schemas:
-    WorkspaceDurationMetricsResponse:
-      type: object
-      required:
-      - workspaceId
-      properties:
-        workspaceId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE
-        aggregation:
-          type: string
-          enum:
-          - hourly
-          - daily
-        measurement:
-          type: string
-          enum:
-          - timeUsed
-          - timeBooked
-        from:
-          type: string
-          example: '2020-10-21T13:33:37.789Z'
-        to:
-          type: string
-          example: '2020-10-31T16:00:00.532Z'
-        unit:
-          type: string
-          example: minutes
-          description: The time unit.
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/DurationMetric'
-    DurationMetric:
-      type: object
-      properties:
-        start:
-          type: string
-          example: '2021-10-21T12:00:00Z'
-          description: Timestamp indicating the start of the aggregation bucket (ISO 8601).
-        end:
-          type: string
-          example: '2021-10-21T13:00:00Z'
-          description: Timestamp indicating the end of the aggregation bucket (ISO 8601).
-        duration:
-          type: number
-          example: 13
-          description: The time duration (in a given state) in the bucket.
     WorkspaceMetricsResponse:
       type: object
       required:
@@ -365,6 +322,53 @@ components:
           type: array
           items: {}
           description: The structure of the elements will depend on whether or not aggregated data was requested
+    DurationMetric:
+      type: object
+      properties:
+        start:
+          type: string
+          example: '2021-10-21T12:00:00Z'
+          description: Timestamp indicating the start of the aggregation bucket (ISO 8601).
+        end:
+          type: string
+          example: '2021-10-21T13:00:00Z'
+          description: Timestamp indicating the end of the aggregation bucket (ISO 8601).
+        duration:
+          type: number
+          example: 13
+          description: The time duration (in a given state) in the bucket.
+    WorkspaceDurationMetricsResponse:
+      type: object
+      required:
+      - workspaceId
+      properties:
+        workspaceId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE
+        aggregation:
+          type: string
+          enum:
+          - hourly
+          - daily
+        measurement:
+          type: string
+          enum:
+          - timeUsed
+          - timeBooked
+        from:
+          type: string
+          example: '2020-10-21T13:33:37.789Z'
+        to:
+          type: string
+          example: '2020-10-31T16:00:00.532Z'
+        unit:
+          type: string
+          example: minutes
+          description: The time unit.
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/DurationMetric'
   securitySchemes:
     oauth2:
       flows:

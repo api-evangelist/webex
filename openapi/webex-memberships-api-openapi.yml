@@ -76,7 +76,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: List Memberships
-      operationId: List Memberships
+      operationId: ListMemberships
       description: 'Lists all room memberships. By default, lists memberships for rooms to which the authenticated user belongs.
 
 
@@ -124,6 +124,8 @@ paths:
         schema:
           type: number
           default: 100
+      x-operation-id-source: normalized
+      x-operation-id-original: List Memberships
     post:
       responses:
         '200':
@@ -176,7 +178,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Create a Membership
-      operationId: Create a Membership
+      operationId: CreateAMembership
       description: Add someone to a room by Person ID or email address, optionally making them a moderator. Compliance Officers cannot add people to empty (team) spaces.
       tags:
       - Memberships
@@ -210,6 +212,8 @@ paths:
                   type: boolean
                   example: true
                   description: Whether or not the participant is a room moderator.
+      x-operation-id-source: normalized
+      x-operation-id-original: Create a Membership
   /memberships/{membershipId}:
     get:
       responses:
@@ -263,7 +267,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Get Membership Details
-      operationId: Get Membership Details
+      operationId: GetMembershipDetails
       description: 'Get details for a membership by ID.
 
 
@@ -278,6 +282,8 @@ paths:
         example: Y2lzY29zcGFyazovL3VzL01FTUJFUlNISVAvMGQwYzkxYjYtY2U2MC00NzI1LWI2ZDAtMzQ1NWQ1ZDExZWYzOmNkZTFkZDQwLTJmMGQtMTFlNS1iYTljLTdiNjU1NmQyMjA3Yg
         schema:
           type: string
+      x-operation-id-source: normalized
+      x-operation-id-original: Get Membership Details
     put:
       responses:
         '200':
@@ -330,7 +336,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Update a Membership
-      operationId: Update a Membership
+      operationId: UpdateAMembership
       description: 'Updates properties for a membership by ID.
 
 
@@ -364,6 +370,8 @@ paths:
                 isRoomHidden:
                   type: boolean
                   description: When set to true, hides direct spaces in the teams client. Any new message will make the room visible again.
+      x-operation-id-source: normalized
+      x-operation-id-original: Update a Membership
     delete:
       responses:
         '204':
@@ -401,7 +409,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Delete a Membership
-      operationId: Delete a Membership
+      operationId: DeleteAMembership
       description: 'Deletes a membership by ID.
 
 
@@ -419,8 +427,17 @@ paths:
         example: Y2lzY29zcGFyazovL3VzL01FTUJFUlNISVAvMGQwYzkxYjYtY2U2MC00NzI1LWI2ZDAtMzQ1NWQ1ZDExZWYzOmNkZTFkZDQwLTJmMGQtMTFlNS1iYTljLTdiNjU1NmQyMjA3Yg
         schema:
           type: string
+      x-operation-id-source: normalized
+      x-operation-id-original: Delete a Membership
 components:
   schemas:
+    MembershipCollectionResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Membership'
     Membership:
       type: object
       properties:
@@ -468,13 +485,6 @@ components:
           type: string
           example: '2015-10-18T14:26:16.203Z'
           description: The date and time when the membership was created.
-    MembershipCollectionResponse:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/Membership'
   securitySchemes:
     oauth2:
       flows:

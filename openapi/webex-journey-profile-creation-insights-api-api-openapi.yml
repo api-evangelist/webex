@@ -848,6 +848,35 @@ paths:
       - bearerAuth: []
 components:
   schemas:
+    ProfileGetResponse:
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/BaseMetaResponseEnvelope'
+        data:
+          type: array
+          description: Data part of the response
+          items:
+            $ref: '#/components/schemas/TemplateResponseModel'
+    WidgetAttributesRequestModel:
+      type: object
+      properties:
+        type:
+          type: string
+          description: type
+          example: table
+      description: Create or Update WidgetAttributes
+      example:
+        type: table
+    JourneyEventStreamModel:
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/JourneyEventStreamMetaDataModel'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/JourneyCloudEventModel'
     ProgressiveProfileViewModel:
       required:
       - organizationId
@@ -888,229 +917,6 @@ components:
           description: TimeStamp
           example: 9ab65fdfcae0e10f
       description: Create Or Update Progressive Profile View
-    CreateOrUpdateTemplateModel:
-      required:
-      - attributes
-      - name
-      type: object
-      properties:
-        name:
-          type: string
-          description: Template Name
-          example: sample-template
-        attributes:
-          type: array
-          items:
-            $ref: '#/components/schemas/ProfileViewAttributeRequestModel'
-      description: Create Or Update Template
-    ApiError500:
-      required:
-      - trackingId
-      type: object
-      properties:
-        status:
-          type: string
-          description: Http Status Description
-          example: 500 INTERNAL_SERVER_ERROR
-          enum:
-          - 100 CONTINUE
-          - 101 SWITCHING_PROTOCOLS
-          - 102 PROCESSING
-          - 103 EARLY_HINTS
-          - 103 CHECKPOINT
-          - 200 OK
-          - 201 CREATED
-          - 202 ACCEPTED
-          - 203 NON_AUTHORITATIVE_INFORMATION
-          - 204 NO_CONTENT
-          - 205 RESET_CONTENT
-          - 206 PARTIAL_CONTENT
-          - 207 MULTI_STATUS
-          - 208 ALREADY_REPORTED
-          - 226 IM_USED
-          - 300 MULTIPLE_CHOICES
-          - 301 MOVED_PERMANENTLY
-          - 302 FOUND
-          - 302 MOVED_TEMPORARILY
-          - 303 SEE_OTHER
-          - 304 NOT_MODIFIED
-          - 305 USE_PROXY
-          - 307 TEMPORARY_REDIRECT
-          - 308 PERMANENT_REDIRECT
-          - 400 BAD_REQUEST
-          - 401 UNAUTHORIZED
-          - 402 PAYMENT_REQUIRED
-          - 403 FORBIDDEN
-          - 404 NOT_FOUND
-          - 405 METHOD_NOT_ALLOWED
-          - 406 NOT_ACCEPTABLE
-          - 407 PROXY_AUTHENTICATION_REQUIRED
-          - 408 REQUEST_TIMEOUT
-          - 409 CONFLICT
-          - 410 GONE
-          - 411 LENGTH_REQUIRED
-          - 412 PRECONDITION_FAILED
-          - 413 PAYLOAD_TOO_LARGE
-          - 413 REQUEST_ENTITY_TOO_LARGE
-          - 414 URI_TOO_LONG
-          - 414 REQUEST_URI_TOO_LONG
-          - 415 UNSUPPORTED_MEDIA_TYPE
-          - 416 REQUESTED_RANGE_NOT_SATISFIABLE
-          - 417 EXPECTATION_FAILED
-          - 418 I_AM_A_TEAPOT
-          - 419 INSUFFICIENT_SPACE_ON_RESOURCE
-          - 420 METHOD_FAILURE
-          - 421 DESTINATION_LOCKED
-          - 422 UNPROCESSABLE_ENTITY
-          - 423 LOCKED
-          - 424 FAILED_DEPENDENCY
-          - 425 TOO_EARLY
-          - 426 UPGRADE_REQUIRED
-          - 428 PRECONDITION_REQUIRED
-          - 429 TOO_MANY_REQUESTS
-          - 431 REQUEST_HEADER_FIELDS_TOO_LARGE
-          - 451 UNAVAILABLE_FOR_LEGAL_REASONS
-          - 500 INTERNAL_SERVER_ERROR
-          - 501 NOT_IMPLEMENTED
-          - 502 BAD_GATEWAY
-          - 503 SERVICE_UNAVAILABLE
-          - 504 GATEWAY_TIMEOUT
-          - 505 HTTP_VERSION_NOT_SUPPORTED
-          - 506 VARIANT_ALSO_NEGOTIATES
-          - 507 INSUFFICIENT_STORAGE
-          - 508 LOOP_DETECTED
-          - 509 BANDWIDTH_LIMIT_EXCEEDED
-          - 510 NOT_EXTENDED
-          - 511 NETWORK_AUTHENTICATION_REQUIRED
-        message:
-          type: string
-          description: Error Message
-          example: Internal server error
-        errors:
-          type: array
-          description: Internal server error
-          example:
-          - 'Internal server error '
-          items:
-            type: string
-        timestamp:
-          type: string
-          description: Occurred timestamp
-          format: date-time
-          example: '2023-03-27T20:59:32.376Z'
-        trackingId:
-          type: string
-          description: Unique ID by which a request can be debugged. Please provide if opening a support case.
-          example: 76cd71d0e678a8bb
-    ApiError404:
-      required:
-      - trackingId
-      type: object
-      properties:
-        status:
-          type: string
-          description: Http Status Description
-          example: 404 NOT_FOUND
-          enum:
-          - 100 CONTINUE
-          - 101 SWITCHING_PROTOCOLS
-          - 102 PROCESSING
-          - 103 EARLY_HINTS
-          - 103 CHECKPOINT
-          - 200 OK
-          - 201 CREATED
-          - 202 ACCEPTED
-          - 203 NON_AUTHORITATIVE_INFORMATION
-          - 204 NO_CONTENT
-          - 205 RESET_CONTENT
-          - 206 PARTIAL_CONTENT
-          - 207 MULTI_STATUS
-          - 208 ALREADY_REPORTED
-          - 226 IM_USED
-          - 300 MULTIPLE_CHOICES
-          - 301 MOVED_PERMANENTLY
-          - 302 FOUND
-          - 302 MOVED_TEMPORARILY
-          - 303 SEE_OTHER
-          - 304 NOT_MODIFIED
-          - 305 USE_PROXY
-          - 307 TEMPORARY_REDIRECT
-          - 308 PERMANENT_REDIRECT
-          - 400 BAD_REQUEST
-          - 401 UNAUTHORIZED
-          - 402 PAYMENT_REQUIRED
-          - 403 FORBIDDEN
-          - 404 NOT_FOUND
-          - 405 METHOD_NOT_ALLOWED
-          - 406 NOT_ACCEPTABLE
-          - 407 PROXY_AUTHENTICATION_REQUIRED
-          - 408 REQUEST_TIMEOUT
-          - 409 CONFLICT
-          - 410 GONE
-          - 411 LENGTH_REQUIRED
-          - 412 PRECONDITION_FAILED
-          - 413 PAYLOAD_TOO_LARGE
-          - 413 REQUEST_ENTITY_TOO_LARGE
-          - 414 URI_TOO_LONG
-          - 414 REQUEST_URI_TOO_LONG
-          - 415 UNSUPPORTED_MEDIA_TYPE
-          - 416 REQUESTED_RANGE_NOT_SATISFIABLE
-          - 417 EXPECTATION_FAILED
-          - 418 I_AM_A_TEAPOT
-          - 419 INSUFFICIENT_SPACE_ON_RESOURCE
-          - 420 METHOD_FAILURE
-          - 421 DESTINATION_LOCKED
-          - 422 UNPROCESSABLE_ENTITY
-          - 423 LOCKED
-          - 424 FAILED_DEPENDENCY
-          - 425 TOO_EARLY
-          - 426 UPGRADE_REQUIRED
-          - 428 PRECONDITION_REQUIRED
-          - 429 TOO_MANY_REQUESTS
-          - 431 REQUEST_HEADER_FIELDS_TOO_LARGE
-          - 451 UNAVAILABLE_FOR_LEGAL_REASONS
-          - 500 INTERNAL_SERVER_ERROR
-          - 501 NOT_IMPLEMENTED
-          - 502 BAD_GATEWAY
-          - 503 SERVICE_UNAVAILABLE
-          - 504 GATEWAY_TIMEOUT
-          - 505 HTTP_VERSION_NOT_SUPPORTED
-          - 506 VARIANT_ALSO_NEGOTIATES
-          - 507 INSUFFICIENT_STORAGE
-          - 508 LOOP_DETECTED
-          - 509 BANDWIDTH_LIMIT_EXCEEDED
-          - 510 NOT_EXTENDED
-          - 511 NETWORK_AUTHENTICATION_REQUIRED
-        message:
-          type: string
-          description: Error Message
-          example: Resource not found
-        errors:
-          type: array
-          description: Resource Already Found
-          example:
-          - Id 3249892348-sdfjsdhf-345hdsf-345345 Not Found
-          items:
-            type: string
-        timestamp:
-          type: string
-          description: Occurred timestamp
-          format: date-time
-          example: '2023-03-27T20:59:32.376Z'
-        trackingId:
-          type: string
-          description: Unique ID by which a request can be debugged. Please provide if opening a support case.
-          example: 76cd71d0e678a8bb
-    WidgetAttributesResponseModel:
-      type: object
-      properties:
-        type:
-          type: string
-          description: type
-          example: table
-      description: ' WidgetAttributes'
-      example:
-        type: table
     ApiError429:
       required:
       - trackingId
@@ -1210,22 +1016,6 @@ components:
           type: string
           description: Unique ID by which a request can be debugged. Please provide if opening a support case.
           example: 76cd71d0e678a8bb
-    ProfileResponse:
-      type: object
-      properties:
-        meta:
-          $ref: '#/components/schemas/BaseMetaResponseEnvelope'
-        data:
-          $ref: '#/components/schemas/TemplateResponseModel'
-    ProgressiveProfileViewStreamModel:
-      type: object
-      properties:
-        meta:
-          $ref: '#/components/schemas/ProgressiveProfileViewMetaDataModel'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/ProgressiveProfileViewModel'
     ApiError400:
       required:
       - trackingId
@@ -1325,15 +1115,187 @@ components:
           type: string
           description: Unique ID by which a request can be debugged. Please provide if opening a support case.
           example: 76cd71d0e678a8bb
-    JourneyEventStreamModel:
+    ProgressiveProfileViewStreamModel:
       type: object
       properties:
         meta:
-          $ref: '#/components/schemas/JourneyEventStreamMetaDataModel'
+          $ref: '#/components/schemas/ProgressiveProfileViewMetaDataModel'
         data:
           type: array
           items:
-            $ref: '#/components/schemas/JourneyCloudEventModel'
+            $ref: '#/components/schemas/ProgressiveProfileViewModel'
+    JourneyActionTriggerHistory:
+      required:
+      - actionId
+      - doNotDisturbPeriod
+      - triggeredAt
+      type: object
+      properties:
+        actionId:
+          type: string
+          description: Action Id
+          example: 3489032dsfhsdf34
+        triggeredAt:
+          type: string
+          description: Triggered Date
+          format: date-time
+          example: '2022-10-18T04:21:34.124Z'
+        doNotDisturbPeriod:
+          type: string
+          description: Do Not Disturb Period
+          example: '10'
+    Rules:
+      type: object
+      description: Configuration details of the Rules
+      properties:
+        logic:
+          type: string
+          description: logic
+          example: OR
+        args:
+          type: array
+          description: Arguments
+          example:
+          - item buy,price,integer,Sum GT 100
+          - item buy,sku,integer,Count GT 5
+          items:
+            type: string
+    TemplateResponseModel:
+      type: object
+      properties:
+        createdAt:
+          type: string
+          description: Created Timestamp
+          example: '2022-10-18T04:21:34.124Z'
+        createdBy:
+          type: string
+          description: Created By
+          example: 1eb65fdf-9643-417f-9974-ad72cae0e10f
+        updatedAt:
+          type: string
+          description: Updated Timestamp
+          example: '2022-10-18T04:21:34.124Z'
+        updatedBy:
+          type: string
+          description: Updated By
+          example: 1eb65fdf-9643-417f-9974-ad72cae0e10f
+        id:
+          type: string
+          description: Profile View Template Id
+          example: 638505f32332c8200dac025e
+        name:
+          type: string
+          description: Template Name
+          example: sample-template
+        workspaceId:
+          type: string
+          description: Workspace Id
+          example: Customer-Journey-Widget
+        organizationId:
+          type: string
+          description: Organization Id
+          example: Demo Assure
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProfileViewAttributeResponseModel'
+      description: Template Response Model
+    RulesDocument:
+      type: object
+      properties:
+        type:
+          type: string
+          description: type
+          example: nested
+        childrenRules:
+          type: object
+          properties:
+            type:
+              type: string
+              description: type
+              example: nested
+          description: childrenRules
+          discriminator:
+            propertyName: type
+      description: Configuration details of the Rules based on which the Action will be triggered
+      example:
+        logic: OR
+        args:
+        - item buy,price,integer,Sum GT 100
+        - item buy,sku,integer,Count GT 5
+      discriminator:
+        propertyName: type
+    ProfileViewAttributeRequestModel:
+      required:
+      - aggregationMode
+      - displayName
+      - event
+      - limit
+      - lookBackDurationType
+      - lookBackPeriod
+      - metaData
+      - metaDataType
+      - verbose
+      - version
+      type: object
+      properties:
+        displayName:
+          type: string
+          description: displayName
+          example: Name
+        version:
+          type: string
+          description: version
+          example: '1.1'
+        event:
+          type: string
+          description: event
+          example: task:new
+        metaDataType:
+          type: string
+          description: metaDataType
+          example: string
+        metaData:
+          type: string
+          description: metaData
+          example: origin
+        limit:
+          minimum: 0
+          type: integer
+          description: limit
+          format: int32
+          example: 30
+        lookBackDurationType:
+          type: string
+          description: lookBackDurationType
+          example: days
+        lookBackPeriod:
+          minimum: 1
+          type: integer
+          description: lookBackPeriod
+          format: int32
+          example: 10
+        aggregationMode:
+          type: string
+          description: aggregationMode
+          example: Count
+        verbose:
+          type: boolean
+          description: verbose
+          example: true
+        widgetAttributes:
+          $ref: '#/components/schemas/WidgetAttributesRequestModel'
+        rules:
+          $ref: '#/components/schemas/Rules'
+      description: Create or Update Attribute of a ProfileViewTemplate
+    ProfileViewSystemMetadata:
+      type: object
+      properties:
+        journeyActionTriggerHistories:
+          type: array
+          items:
+            $ref: '#/components/schemas/JourneyActionTriggerHistory'
+      description: ProfileViewSystemMetdata
     JourneyEventStreamMetaDataModel:
       type: object
       properties:
@@ -1354,16 +1316,345 @@ components:
           type: string
           description: identity
           example: ram@cisco.com
-    WidgetAttributesRequestModel:
+    CreateOrUpdateTemplateModel:
+      required:
+      - attributes
+      - name
+      type: object
+      properties:
+        name:
+          type: string
+          description: Template Name
+          example: sample-template
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProfileViewAttributeRequestModel'
+      description: Create Or Update Template
+    WidgetAttributesResponseModel:
       type: object
       properties:
         type:
           type: string
           description: type
           example: table
-      description: Create or Update WidgetAttributes
+      description: ' WidgetAttributes'
       example:
         type: table
+    ApiError500:
+      required:
+      - trackingId
+      type: object
+      properties:
+        status:
+          type: string
+          description: Http Status Description
+          example: 500 INTERNAL_SERVER_ERROR
+          enum:
+          - 100 CONTINUE
+          - 101 SWITCHING_PROTOCOLS
+          - 102 PROCESSING
+          - 103 EARLY_HINTS
+          - 103 CHECKPOINT
+          - 200 OK
+          - 201 CREATED
+          - 202 ACCEPTED
+          - 203 NON_AUTHORITATIVE_INFORMATION
+          - 204 NO_CONTENT
+          - 205 RESET_CONTENT
+          - 206 PARTIAL_CONTENT
+          - 207 MULTI_STATUS
+          - 208 ALREADY_REPORTED
+          - 226 IM_USED
+          - 300 MULTIPLE_CHOICES
+          - 301 MOVED_PERMANENTLY
+          - 302 FOUND
+          - 302 MOVED_TEMPORARILY
+          - 303 SEE_OTHER
+          - 304 NOT_MODIFIED
+          - 305 USE_PROXY
+          - 307 TEMPORARY_REDIRECT
+          - 308 PERMANENT_REDIRECT
+          - 400 BAD_REQUEST
+          - 401 UNAUTHORIZED
+          - 402 PAYMENT_REQUIRED
+          - 403 FORBIDDEN
+          - 404 NOT_FOUND
+          - 405 METHOD_NOT_ALLOWED
+          - 406 NOT_ACCEPTABLE
+          - 407 PROXY_AUTHENTICATION_REQUIRED
+          - 408 REQUEST_TIMEOUT
+          - 409 CONFLICT
+          - 410 GONE
+          - 411 LENGTH_REQUIRED
+          - 412 PRECONDITION_FAILED
+          - 413 PAYLOAD_TOO_LARGE
+          - 413 REQUEST_ENTITY_TOO_LARGE
+          - 414 URI_TOO_LONG
+          - 414 REQUEST_URI_TOO_LONG
+          - 415 UNSUPPORTED_MEDIA_TYPE
+          - 416 REQUESTED_RANGE_NOT_SATISFIABLE
+          - 417 EXPECTATION_FAILED
+          - 418 I_AM_A_TEAPOT
+          - 419 INSUFFICIENT_SPACE_ON_RESOURCE
+          - 420 METHOD_FAILURE
+          - 421 DESTINATION_LOCKED
+          - 422 UNPROCESSABLE_ENTITY
+          - 423 LOCKED
+          - 424 FAILED_DEPENDENCY
+          - 425 TOO_EARLY
+          - 426 UPGRADE_REQUIRED
+          - 428 PRECONDITION_REQUIRED
+          - 429 TOO_MANY_REQUESTS
+          - 431 REQUEST_HEADER_FIELDS_TOO_LARGE
+          - 451 UNAVAILABLE_FOR_LEGAL_REASONS
+          - 500 INTERNAL_SERVER_ERROR
+          - 501 NOT_IMPLEMENTED
+          - 502 BAD_GATEWAY
+          - 503 SERVICE_UNAVAILABLE
+          - 504 GATEWAY_TIMEOUT
+          - 505 HTTP_VERSION_NOT_SUPPORTED
+          - 506 VARIANT_ALSO_NEGOTIATES
+          - 507 INSUFFICIENT_STORAGE
+          - 508 LOOP_DETECTED
+          - 509 BANDWIDTH_LIMIT_EXCEEDED
+          - 510 NOT_EXTENDED
+          - 511 NETWORK_AUTHENTICATION_REQUIRED
+        message:
+          type: string
+          description: Error Message
+          example: Internal server error
+        errors:
+          type: array
+          description: Internal server error
+          example:
+          - 'Internal server error '
+          items:
+            type: string
+        timestamp:
+          type: string
+          description: Occurred timestamp
+          format: date-time
+          example: '2023-03-27T20:59:32.376Z'
+        trackingId:
+          type: string
+          description: Unique ID by which a request can be debugged. Please provide if opening a support case.
+          example: 76cd71d0e678a8bb
+    ProfileResponse:
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/BaseMetaResponseEnvelope'
+        data:
+          $ref: '#/components/schemas/TemplateResponseModel'
+    ApiError404:
+      required:
+      - trackingId
+      type: object
+      properties:
+        status:
+          type: string
+          description: Http Status Description
+          example: 404 NOT_FOUND
+          enum:
+          - 100 CONTINUE
+          - 101 SWITCHING_PROTOCOLS
+          - 102 PROCESSING
+          - 103 EARLY_HINTS
+          - 103 CHECKPOINT
+          - 200 OK
+          - 201 CREATED
+          - 202 ACCEPTED
+          - 203 NON_AUTHORITATIVE_INFORMATION
+          - 204 NO_CONTENT
+          - 205 RESET_CONTENT
+          - 206 PARTIAL_CONTENT
+          - 207 MULTI_STATUS
+          - 208 ALREADY_REPORTED
+          - 226 IM_USED
+          - 300 MULTIPLE_CHOICES
+          - 301 MOVED_PERMANENTLY
+          - 302 FOUND
+          - 302 MOVED_TEMPORARILY
+          - 303 SEE_OTHER
+          - 304 NOT_MODIFIED
+          - 305 USE_PROXY
+          - 307 TEMPORARY_REDIRECT
+          - 308 PERMANENT_REDIRECT
+          - 400 BAD_REQUEST
+          - 401 UNAUTHORIZED
+          - 402 PAYMENT_REQUIRED
+          - 403 FORBIDDEN
+          - 404 NOT_FOUND
+          - 405 METHOD_NOT_ALLOWED
+          - 406 NOT_ACCEPTABLE
+          - 407 PROXY_AUTHENTICATION_REQUIRED
+          - 408 REQUEST_TIMEOUT
+          - 409 CONFLICT
+          - 410 GONE
+          - 411 LENGTH_REQUIRED
+          - 412 PRECONDITION_FAILED
+          - 413 PAYLOAD_TOO_LARGE
+          - 413 REQUEST_ENTITY_TOO_LARGE
+          - 414 URI_TOO_LONG
+          - 414 REQUEST_URI_TOO_LONG
+          - 415 UNSUPPORTED_MEDIA_TYPE
+          - 416 REQUESTED_RANGE_NOT_SATISFIABLE
+          - 417 EXPECTATION_FAILED
+          - 418 I_AM_A_TEAPOT
+          - 419 INSUFFICIENT_SPACE_ON_RESOURCE
+          - 420 METHOD_FAILURE
+          - 421 DESTINATION_LOCKED
+          - 422 UNPROCESSABLE_ENTITY
+          - 423 LOCKED
+          - 424 FAILED_DEPENDENCY
+          - 425 TOO_EARLY
+          - 426 UPGRADE_REQUIRED
+          - 428 PRECONDITION_REQUIRED
+          - 429 TOO_MANY_REQUESTS
+          - 431 REQUEST_HEADER_FIELDS_TOO_LARGE
+          - 451 UNAVAILABLE_FOR_LEGAL_REASONS
+          - 500 INTERNAL_SERVER_ERROR
+          - 501 NOT_IMPLEMENTED
+          - 502 BAD_GATEWAY
+          - 503 SERVICE_UNAVAILABLE
+          - 504 GATEWAY_TIMEOUT
+          - 505 HTTP_VERSION_NOT_SUPPORTED
+          - 506 VARIANT_ALSO_NEGOTIATES
+          - 507 INSUFFICIENT_STORAGE
+          - 508 LOOP_DETECTED
+          - 509 BANDWIDTH_LIMIT_EXCEEDED
+          - 510 NOT_EXTENDED
+          - 511 NETWORK_AUTHENTICATION_REQUIRED
+        message:
+          type: string
+          description: Error Message
+          example: Resource not found
+        errors:
+          type: array
+          description: Resource Already Found
+          example:
+          - Id 3249892348-sdfjsdhf-345hdsf-345345 Not Found
+          items:
+            type: string
+        timestamp:
+          type: string
+          description: Occurred timestamp
+          format: date-time
+          example: '2023-03-27T20:59:32.376Z'
+        trackingId:
+          type: string
+          description: Unique ID by which a request can be debugged. Please provide if opening a support case.
+          example: 76cd71d0e678a8bb
+    BaseMetaResponseEnvelope:
+      type: object
+      properties:
+        organizationId:
+          type: string
+          description: Organization ID
+          example: 1eb65fdf-9643-417f-9974-ad72cae0e10f
+      description: Meta information of the response
+      example:
+        organizationId: 1eb65fdf-9643-417f-9974-ad72cae0e10f
+    ApiError409:
+      required:
+      - trackingId
+      type: object
+      properties:
+        status:
+          type: string
+          description: Http Status Description
+          example: 409 CONFLICT
+          enum:
+          - 100 CONTINUE
+          - 101 SWITCHING_PROTOCOLS
+          - 102 PROCESSING
+          - 103 EARLY_HINTS
+          - 103 CHECKPOINT
+          - 200 OK
+          - 201 CREATED
+          - 202 ACCEPTED
+          - 203 NON_AUTHORITATIVE_INFORMATION
+          - 204 NO_CONTENT
+          - 205 RESET_CONTENT
+          - 206 PARTIAL_CONTENT
+          - 207 MULTI_STATUS
+          - 208 ALREADY_REPORTED
+          - 226 IM_USED
+          - 300 MULTIPLE_CHOICES
+          - 301 MOVED_PERMANENTLY
+          - 302 FOUND
+          - 302 MOVED_TEMPORARILY
+          - 303 SEE_OTHER
+          - 304 NOT_MODIFIED
+          - 305 USE_PROXY
+          - 307 TEMPORARY_REDIRECT
+          - 308 PERMANENT_REDIRECT
+          - 400 BAD_REQUEST
+          - 401 UNAUTHORIZED
+          - 402 PAYMENT_REQUIRED
+          - 403 FORBIDDEN
+          - 404 NOT_FOUND
+          - 405 METHOD_NOT_ALLOWED
+          - 406 NOT_ACCEPTABLE
+          - 407 PROXY_AUTHENTICATION_REQUIRED
+          - 408 REQUEST_TIMEOUT
+          - 409 CONFLICT
+          - 410 GONE
+          - 411 LENGTH_REQUIRED
+          - 412 PRECONDITION_FAILED
+          - 413 PAYLOAD_TOO_LARGE
+          - 413 REQUEST_ENTITY_TOO_LARGE
+          - 414 URI_TOO_LONG
+          - 414 REQUEST_URI_TOO_LONG
+          - 415 UNSUPPORTED_MEDIA_TYPE
+          - 416 REQUESTED_RANGE_NOT_SATISFIABLE
+          - 417 EXPECTATION_FAILED
+          - 418 I_AM_A_TEAPOT
+          - 419 INSUFFICIENT_SPACE_ON_RESOURCE
+          - 420 METHOD_FAILURE
+          - 421 DESTINATION_LOCKED
+          - 422 UNPROCESSABLE_ENTITY
+          - 423 LOCKED
+          - 424 FAILED_DEPENDENCY
+          - 425 TOO_EARLY
+          - 426 UPGRADE_REQUIRED
+          - 428 PRECONDITION_REQUIRED
+          - 429 TOO_MANY_REQUESTS
+          - 431 REQUEST_HEADER_FIELDS_TOO_LARGE
+          - 451 UNAVAILABLE_FOR_LEGAL_REASONS
+          - 500 INTERNAL_SERVER_ERROR
+          - 501 NOT_IMPLEMENTED
+          - 502 BAD_GATEWAY
+          - 503 SERVICE_UNAVAILABLE
+          - 504 GATEWAY_TIMEOUT
+          - 505 HTTP_VERSION_NOT_SUPPORTED
+          - 506 VARIANT_ALSO_NEGOTIATES
+          - 507 INSUFFICIENT_STORAGE
+          - 508 LOOP_DETECTED
+          - 509 BANDWIDTH_LIMIT_EXCEEDED
+          - 510 NOT_EXTENDED
+          - 511 NETWORK_AUTHENTICATION_REQUIRED
+        message:
+          type: string
+          description: Error Message
+          example: Resource Already Exists
+        errors:
+          type: array
+          description: Resource Already Exists
+          example:
+          - Id 3249892348-sdfjsdhf-345hdsf-345345 already exists
+          items:
+            type: string
+        timestamp:
+          type: string
+          description: Occurred timestamp
+          format: date-time
+          example: '2023-03-27T20:59:32.376Z'
+        trackingId:
+          type: string
+          description: Unique ID by which a request can be debugged. Please provide if opening a support case.
+          example: 76cd71d0e678a8bb
     eventData:
       type: object
       properties:
@@ -1392,26 +1683,6 @@ components:
           description: createdTime
           example: '1645819554383'
       description: Event Data
-    JourneyActionTriggerHistory:
-      required:
-      - actionId
-      - doNotDisturbPeriod
-      - triggeredAt
-      type: object
-      properties:
-        actionId:
-          type: string
-          description: Action Id
-          example: 3489032dsfhsdf34
-        triggeredAt:
-          type: string
-          description: Triggered Date
-          format: date-time
-          example: '2022-10-18T04:21:34.124Z'
-        doNotDisturbPeriod:
-          type: string
-          description: Do Not Disturb Period
-          example: '10'
     JourneyCloudEventModel:
       required:
       - data
@@ -1513,179 +1784,25 @@ components:
         rules:
           $ref: '#/components/schemas/RulesDocument'
       description: Attributes under an ProfileViewTemplate
-    ApiError409:
-      required:
-      - trackingId
+    ProgressiveProfileViewMetaDataModel:
       type: object
       properties:
-        status:
-          type: string
-          description: Http Status Description
-          example: 409 CONFLICT
-          enum:
-          - 100 CONTINUE
-          - 101 SWITCHING_PROTOCOLS
-          - 102 PROCESSING
-          - 103 EARLY_HINTS
-          - 103 CHECKPOINT
-          - 200 OK
-          - 201 CREATED
-          - 202 ACCEPTED
-          - 203 NON_AUTHORITATIVE_INFORMATION
-          - 204 NO_CONTENT
-          - 205 RESET_CONTENT
-          - 206 PARTIAL_CONTENT
-          - 207 MULTI_STATUS
-          - 208 ALREADY_REPORTED
-          - 226 IM_USED
-          - 300 MULTIPLE_CHOICES
-          - 301 MOVED_PERMANENTLY
-          - 302 FOUND
-          - 302 MOVED_TEMPORARILY
-          - 303 SEE_OTHER
-          - 304 NOT_MODIFIED
-          - 305 USE_PROXY
-          - 307 TEMPORARY_REDIRECT
-          - 308 PERMANENT_REDIRECT
-          - 400 BAD_REQUEST
-          - 401 UNAUTHORIZED
-          - 402 PAYMENT_REQUIRED
-          - 403 FORBIDDEN
-          - 404 NOT_FOUND
-          - 405 METHOD_NOT_ALLOWED
-          - 406 NOT_ACCEPTABLE
-          - 407 PROXY_AUTHENTICATION_REQUIRED
-          - 408 REQUEST_TIMEOUT
-          - 409 CONFLICT
-          - 410 GONE
-          - 411 LENGTH_REQUIRED
-          - 412 PRECONDITION_FAILED
-          - 413 PAYLOAD_TOO_LARGE
-          - 413 REQUEST_ENTITY_TOO_LARGE
-          - 414 URI_TOO_LONG
-          - 414 REQUEST_URI_TOO_LONG
-          - 415 UNSUPPORTED_MEDIA_TYPE
-          - 416 REQUESTED_RANGE_NOT_SATISFIABLE
-          - 417 EXPECTATION_FAILED
-          - 418 I_AM_A_TEAPOT
-          - 419 INSUFFICIENT_SPACE_ON_RESOURCE
-          - 420 METHOD_FAILURE
-          - 421 DESTINATION_LOCKED
-          - 422 UNPROCESSABLE_ENTITY
-          - 423 LOCKED
-          - 424 FAILED_DEPENDENCY
-          - 425 TOO_EARLY
-          - 426 UPGRADE_REQUIRED
-          - 428 PRECONDITION_REQUIRED
-          - 429 TOO_MANY_REQUESTS
-          - 431 REQUEST_HEADER_FIELDS_TOO_LARGE
-          - 451 UNAVAILABLE_FOR_LEGAL_REASONS
-          - 500 INTERNAL_SERVER_ERROR
-          - 501 NOT_IMPLEMENTED
-          - 502 BAD_GATEWAY
-          - 503 SERVICE_UNAVAILABLE
-          - 504 GATEWAY_TIMEOUT
-          - 505 HTTP_VERSION_NOT_SUPPORTED
-          - 506 VARIANT_ALSO_NEGOTIATES
-          - 507 INSUFFICIENT_STORAGE
-          - 508 LOOP_DETECTED
-          - 509 BANDWIDTH_LIMIT_EXCEEDED
-          - 510 NOT_EXTENDED
-          - 511 NETWORK_AUTHENTICATION_REQUIRED
-        message:
-          type: string
-          description: Error Message
-          example: Resource Already Exists
-        errors:
-          type: array
-          description: Resource Already Exists
-          example:
-          - Id 3249892348-sdfjsdhf-345hdsf-345345 already exists
-          items:
-            type: string
-        timestamp:
-          type: string
-          description: Occurred timestamp
-          format: date-time
-          example: '2023-03-27T20:59:32.376Z'
-        trackingId:
-          type: string
-          description: Unique ID by which a request can be debugged. Please provide if opening a support case.
-          example: 76cd71d0e678a8bb
-    ProfileViewSystemMetadata:
-      type: object
-      properties:
-        journeyActionTriggerHistories:
-          type: array
-          items:
-            $ref: '#/components/schemas/JourneyActionTriggerHistory'
-      description: ProfileViewSystemMetdata
-    ProfileGetResponse:
-      type: object
-      properties:
-        meta:
-          $ref: '#/components/schemas/BaseMetaResponseEnvelope'
-        data:
-          type: array
-          description: Data part of the response
-          items:
-            $ref: '#/components/schemas/TemplateResponseModel'
-    Rules:
-      type: object
-      description: Configuration details of the Rules
-      properties:
-        logic:
-          type: string
-          description: logic
-          example: OR
-        args:
-          type: array
-          description: Arguments
-          example:
-          - item buy,price,integer,Sum GT 100
-          - item buy,sku,integer,Count GT 5
-          items:
-            type: string
-    TemplateResponseModel:
-      type: object
-      properties:
-        createdAt:
-          type: string
-          description: Created Timestamp
-          example: '2022-10-18T04:21:34.124Z'
-        createdBy:
-          type: string
-          description: Created By
-          example: 1eb65fdf-9643-417f-9974-ad72cae0e10f
-        updatedAt:
-          type: string
-          description: Updated Timestamp
-          example: '2022-10-18T04:21:34.124Z'
-        updatedBy:
-          type: string
-          description: Updated By
-          example: 1eb65fdf-9643-417f-9974-ad72cae0e10f
-        id:
-          type: string
-          description: Profile View Template Id
-          example: 638505f32332c8200dac025e
-        name:
-          type: string
-          description: Template Name
-          example: sample-template
-        workspaceId:
-          type: string
-          description: Workspace Id
-          example: Customer-Journey-Widget
         organizationId:
           type: string
-          description: Organization Id
-          example: Demo Assure
-        attributes:
-          type: array
-          items:
-            $ref: '#/components/schemas/ProfileViewAttributeResponseModel'
-      description: Template Response Model
+          description: Organization ID
+          example: 1eb65fdf-9643-417f-9974-ad72cae0e10f
+        workspaceId:
+          type: string
+          description: Workspace ID
+          example: ad72cae0e10f-417f-9974-417f-ad72cae0e10f
+        personId:
+          type: string
+          description: personId
+          example: 642f1c56276e305287405167
+        templateId:
+          type: string
+          description: templateId
+          example: 922f1c56276e305287405162
     ProgressiveProfileViewAttributes:
       type: object
       properties:
@@ -1706,123 +1823,6 @@ components:
           - testEvent
           items:
             type: string
-    ProfileViewAttributeRequestModel:
-      required:
-      - aggregationMode
-      - displayName
-      - event
-      - limit
-      - lookBackDurationType
-      - lookBackPeriod
-      - metaData
-      - metaDataType
-      - verbose
-      - version
-      type: object
-      properties:
-        displayName:
-          type: string
-          description: displayName
-          example: Name
-        version:
-          type: string
-          description: version
-          example: '1.1'
-        event:
-          type: string
-          description: event
-          example: task:new
-        metaDataType:
-          type: string
-          description: metaDataType
-          example: string
-        metaData:
-          type: string
-          description: metaData
-          example: origin
-        limit:
-          minimum: 0
-          type: integer
-          description: limit
-          format: int32
-          example: 30
-        lookBackDurationType:
-          type: string
-          description: lookBackDurationType
-          example: days
-        lookBackPeriod:
-          minimum: 1
-          type: integer
-          description: lookBackPeriod
-          format: int32
-          example: 10
-        aggregationMode:
-          type: string
-          description: aggregationMode
-          example: Count
-        verbose:
-          type: boolean
-          description: verbose
-          example: true
-        widgetAttributes:
-          $ref: '#/components/schemas/WidgetAttributesRequestModel'
-        rules:
-          $ref: '#/components/schemas/Rules'
-      description: Create or Update Attribute of a ProfileViewTemplate
-    BaseMetaResponseEnvelope:
-      type: object
-      properties:
-        organizationId:
-          type: string
-          description: Organization ID
-          example: 1eb65fdf-9643-417f-9974-ad72cae0e10f
-      description: Meta information of the response
-      example:
-        organizationId: 1eb65fdf-9643-417f-9974-ad72cae0e10f
-    RulesDocument:
-      type: object
-      properties:
-        type:
-          type: string
-          description: type
-          example: nested
-        childrenRules:
-          type: object
-          properties:
-            type:
-              type: string
-              description: type
-              example: nested
-          description: childrenRules
-          discriminator:
-            propertyName: type
-      description: Configuration details of the Rules based on which the Action will be triggered
-      example:
-        logic: OR
-        args:
-        - item buy,price,integer,Sum GT 100
-        - item buy,sku,integer,Count GT 5
-      discriminator:
-        propertyName: type
-    ProgressiveProfileViewMetaDataModel:
-      type: object
-      properties:
-        organizationId:
-          type: string
-          description: Organization ID
-          example: 1eb65fdf-9643-417f-9974-ad72cae0e10f
-        workspaceId:
-          type: string
-          description: Workspace ID
-          example: ad72cae0e10f-417f-9974-417f-ad72cae0e10f
-        personId:
-          type: string
-          description: personId
-          example: 642f1c56276e305287405167
-        templateId:
-          type: string
-          description: templateId
-          example: 922f1c56276e305287405162
   securitySchemes:
     oauth2:
       flows:

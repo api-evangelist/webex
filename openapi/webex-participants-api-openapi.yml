@@ -100,7 +100,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: List Meeting Participants
-      operationId: List Meeting Participants
+      operationId: ListMeetingParticipants
       description: 'List all participants in an in-progress meeting or an ended meeting. The `meetingId` parameter is required, which is the unique identifier for the meeting.
 
 
@@ -195,6 +195,8 @@ paths:
         schema:
           type: string
         example: UTC
+      x-operation-id-source: normalized
+      x-operation-id-original: List Meeting Participants
   /meetingParticipants/query:
     post:
       responses:
@@ -276,7 +278,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Query Meeting Participants with Email
-      operationId: Query Meeting Participants with Email
+      operationId: QueryMeetingParticipantsWithEmail
       description: 'Query participants in a live meeting, or after the meeting, using participant''s email. The `meetingId` parameter is the unique identifier for the meeting and is required.
 
 
@@ -361,6 +363,8 @@ paths:
                   type: string
                   example: '2022-10-30T09:30:00'
                   description: The time participants join a meeting before the specified date and time (exclusive) in any [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant format. If `joinTimeTo` is not specified, it equals `joinTimeFrom` plus 7 days. The interval between `joinTimeFrom` and `joinTimeTo` must be within 90 days.
+      x-operation-id-source: normalized
+      x-operation-id-original: Query Meeting Participants with Email
   /meetingParticipants/{participantId}:
     get:
       responses:
@@ -436,7 +440,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Get Meeting Participant Details
-      operationId: Get Meeting Participant Details
+      operationId: GetMeetingParticipantDetails
       description: 'Get a meeting participant details of a live or post meeting. The `participantId` is required to identify the meeting and the participant.
 
 
@@ -457,6 +461,8 @@ paths:
         example: john.andersen@example.com
         schema:
           type: string
+      x-operation-id-source: normalized
+      x-operation-id-original: Get Meeting Participant Details
     put:
       responses:
         '200':
@@ -518,7 +524,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Update a Participant
-      operationId: Update a Participant
+      operationId: UpdateAParticipant
       description: 'Mute, un-mute, expel, or admit a participant in a live meeting. The `participantId` is required to identify the meeting and the participant.
 
 
@@ -561,6 +567,8 @@ paths:
                 expel:
                   type: boolean
                   description: If `true` the participant is expelled from the meeting.
+      x-operation-id-source: normalized
+      x-operation-id-original: Update a Participant
   /meetingParticipants/admit:
     post:
       responses:
@@ -599,7 +607,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Admit Participants
-      operationId: Admit Participants
+      operationId: AdmitParticipants
       description: 'Admit multiple participants to a meeting in progress.
 
 
@@ -619,6 +627,8 @@ paths:
               - participantId: 560d7b784f5143e3be2fc3064a5c4999_I_204252993233618782_23e16d67-17f3-3ef1-b830-f33d17c0233d
             schema:
               $ref: '#/components/schemas/AdmitParticipantsObject'
+      x-operation-id-source: normalized
+      x-operation-id-original: Admit Participants
   /meetingParticipants/callout:
     post:
       responses:
@@ -669,7 +679,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Call Out a SIP Participant
-      operationId: Call Out a SIP Participant
+      operationId: CallOutASIPParticipant
       description: 'Initiate a call to a SIP participant to join a meeting.
 
 
@@ -694,6 +704,8 @@ paths:
               displayName: Brenda DX80
             schema:
               $ref: '#/components/schemas/CalloutRequest'
+      x-operation-id-source: normalized
+      x-operation-id-original: Call Out a SIP Participant
   /meetingParticipants/cancelCallout:
     post:
       responses:
@@ -732,7 +744,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Cancel Calling Out a SIP Participant
-      operationId: Cancel Calling Out a SIP Participant
+      operationId: CancelCallingOutASIPParticipant
       description: 'Cancel the call to a SIP participant before the ringing on the invited SIP device stops. The ringing on the invited SIP device stops in 30 seconds if there is no response.
 
 
@@ -750,19 +762,128 @@ paths:
               participantId: d8c3347d7ec04242ba9b856184b334ac_I_630641605678082408_57514861-50f7-3f5b-864f-ce0e308bf653
             schema:
               $ref: '#/components/schemas/CancelCalloutRequest'
+      x-operation-id-source: normalized
+      x-operation-id-original: Cancel Calling Out a SIP Participant
 components:
   schemas:
-    AdmitParticipant:
+    BreakoutSessionAttended:
       type: object
+      properties:
+        id:
+          type: string
+          example: c84ba778-2f46-4dc6-9459-398694732d70
+          description: Unique identifier for the breakout session the participant attended.
+        name:
+          type: string
+          example: Breakout session 1
+          description: Name of the breakout session the participant attended.
+        joinedTime:
+          type: string
+          example: '2022-10-25T09:05:00Z'
+          description: The time the participant joined the breakout session.
+        leftTime:
+          type: string
+          example: '2022-10-25T09:10:00Z'
+          description: The time the participant left the breakout session.
+    Participant:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 560d7b784f5143e3be2fc3064a5c4999_3c2e2338-e950-43bf-b588-573773ee43d1
+          description: The ID that identifies the meeting and the participant.
+        orgId:
+          type: string
+          example: 1eb65fdf-9643-417f-9974-ad72cae0e10f
+          description: The ID that identifies the organization. It only applies to participants of ongoing meetings.
+        host:
+          type: boolean
+          example: true
+          description: Whether or not the participant is the host of the meeting.
+        coHost:
+          type: boolean
+          description: Whether or not the participant has host privilege in the meeting.
+        spaceModerator:
+          type: boolean
+          description: Whether or not the participant is the team space moderator. This field returns only if the meeting is associated with a Webex space.
+        email:
+          type: string
+          example: joeDoe@cisco.com
+          description: The email address of the participant.
+        displayName:
+          type: string
+          example: Joe Doe
+          description: The name of the participant.
+        invitee:
+          type: boolean
+          description: Whether or not the participant is invited to the meeting.
+        muted:
+          type: boolean
+          description: Whether or not the participant's audio is muted.
+        meetingStartTime:
+          type: string
+          example: '2020-10-02T17:31:00Z'
+          description: The time the meeting started.
+        video:
+          type: string
+          enum:
+          - 'on'
+          - 'off'
+          description: "The status of the participant's video.\n * `on` - The video is turned on.\n * `off` - The video is turned off.\n"
+        state:
+          type: string
+          enum:
+          - lobby
+          - end
+          - joined
+          - breakoutSession
+          description: "The status of the participant in the meeting. The value of `state` is `breakoutSession` which is only returned when the meeting is in progress and the breakout session is enabled.\n * `lobby` - The participant is waiting in the meeting lobby.\n * `end` - The participant has left the meeting.\n * `joined` - The participant has joined the meeting and is in the main session.\n * `breakoutSession` - The participant has joined a breakout session.\n"
+        breakoutSessionId:
+          type: string
+          example: 2e373567-465b-8530-a18a-7025e1871d40
+          description: The ID of the breakout session including the participant.
+        joinedTime:
+          type: string
+          example: '2022-10-25T09:00:00Z'
+          description: The time the participant joined the meeting. If the field is non-existent or shows `1970-01-01T00:00:00.000Z` the meeting may be still ongoing and the `joinedTime` will be filled in after the meeting ended. If you need real-time join events, please refer to the webhooks guide.
+        leftTime:
+          type: string
+          example: '2022-10-25T09:30:00Z'
+          description: The time the participant left the meeting. If the field is non-existent or shows `1970-01-01T00:00:00.000Z` the meeting may be still ongoing and the `leftTime` will be filled in after the meeting ended. If you need real-time left events, please refer to the webhooks guide.
+        siteUrl:
+          type: string
+          example: example.webex.com
+          description: The site URL.
+        meetingId:
+          type: string
+          example: 3a688f62840346e8b87dde2b50703511_I_197977258267247872
+          description: A unique identifier for the meeting which the participant belongs to.
+        hostEmail:
+          type: string
+          example: janeDoe@cisco.com
+          description: The email address of the host.
+        devices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Device'
+        breakoutSessionsAttended:
+          type: array
+          items:
+            $ref: '#/components/schemas/BreakoutSessionAttended'
+          description: The breakout sessions attended by the participant. Only applies to ended meeting instances.
+        sourceId:
+          type: string
+          example: cisco
+          description: The source ID of the participant. The `sourceId` is from the [Create Invitation Sources](/docs/api/v1/meetings/create-invitation-sources) API.
+    CancelCalloutRequest:
+      type: object
+      required:
+      - participantId
       properties:
         participantId:
           type: string
-          example: 560d7b784f5143e3be2fc3064a5c4999_I_204252993233618782_23e16d67-17f3-3ef1-b830-f33d17c0232e
-          description: The ID that identifies the meeting participant.
-        breakoutSessionId:
-          type: string
-          example: 23e16d67-17f3-3ef1-b830-f33d17c0232e
-          description: The breakout session ID that identifies which breakout session to admit the participant into. Admit into the main session if the value is empty.
+          example: d8c3347d7ec04242ba9b856184b334ac_I_630641605678082408_57514861-50f7-3f5b-864f-ce0e308bf653
+          description: ID of the SIP participant on whom the callout is to be cancelled. It can be retrieved from the response of the "Call Out a SIP Participant" API.
     Device:
       type: object
       properties:
@@ -866,37 +987,50 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/InProgressDevice'
-    CalloutRequest:
+    InProgressDevice:
       type: object
-      required:
-      - address
-      - displayName
       properties:
-        meetingId:
+        correlationId:
           type: string
-          example: d8c3347d7ec04242ba9b856184b334ac
-          description: Unique identifier of the meeting to which the SIP participant is to be called out. Either `meetingId` or `meetingNumber` must be specified.
-        meetingNumber:
+          example: 8ccced6c-b812-4dff-a5dd-4c5c28f8d47d
+          description: An internal ID that is associated with each join.
+        deviceType:
           type: string
-          example: '79100342367'
-          description: Number of the meeting to which the SIP participant is to be called out. Either `meetingId` or `meetingNumber` must be specified.
-        address:
-          type: string
-          example: SIP:9053523155@examplezone.cisco.com
-          description: SIP address of the invited SIP participant.
-        addressType:
+          example: mac
+          description: The type of device.
+        audioType:
           type: string
           enum:
-          - sipAddress
-          description: "Type of the `address`. The default value is `sipAddress`.\n * `sipAddress` - SIP address.\n"
-        invitationCorrelationId:
+          - pstn
+          - voip
+          - inactive
+          description: "The audio type that the participant is using.\n * `pstn` - `PSTN`\n * `voip` - `VoIP`\n * `inactive` - The participant is not connected to audio.\n"
+        joinedTime:
           type: string
-          example: 871ab255-64e6-4cd2-a5af-d33953898356
-          description: An internal ID that is associated with the call-out invitation. Only UUIDs with hyphens are supported. The letters in the UUID must be in lowercase. A random UUID will be generated automatically if not specified.
-        displayName:
+          example: '2019-04-23T17:31:00.000Z'
+          description: The time the device joined the meeting. If the field is non-existent or shows `1970-01-01T00:00:00.000Z` the meeting may be still ongoing and the `joinedTime` will be filled in after the meeting ended. If you need real-time joined events, please refer to the webhooks guide.
+        leftTime:
           type: string
-          example: Brenda DX80
-          description: The display name of the invited SIP participant. The maximum length is 32 characters.
+          example: '2019-04-23T17:32:00.000Z'
+          description: The time the device left the meeting, `leftTime` is the exact moment when a specific device left the meeting. If the field is non-existent or shows `1970-01-01T00:00:00.000Z` the meeting may be still ongoing and the `leftTime` will be filled in after the meeting ended. If you need real-time left events, please refer to the webhooks guide.
+    AdmitParticipantsObject:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdmitParticipant'
+    AdmitParticipant:
+      type: object
+      properties:
+        participantId:
+          type: string
+          example: 560d7b784f5143e3be2fc3064a5c4999_I_204252993233618782_23e16d67-17f3-3ef1-b830-f33d17c0232e
+          description: The ID that identifies the meeting participant.
+        breakoutSessionId:
+          type: string
+          example: 23e16d67-17f3-3ef1-b830-f33d17c0232e
+          description: The breakout session ID that identifies which breakout session to admit the participant into. Admit into the main session if the value is empty.
     CalloutResponse:
       type: object
       properties:
@@ -934,157 +1068,37 @@ components:
           enum:
           - pending
           description: "The state of the invited SIP participant.\n * `pending` - The invited SIP participant is waiting for approval. Participants in the `pending` state will not be listed by the \"List Meeting Participants\" API.\n"
-    CancelCalloutRequest:
+    CalloutRequest:
       type: object
       required:
-      - participantId
+      - address
+      - displayName
       properties:
-        participantId:
-          type: string
-          example: d8c3347d7ec04242ba9b856184b334ac_I_630641605678082408_57514861-50f7-3f5b-864f-ce0e308bf653
-          description: ID of the SIP participant on whom the callout is to be cancelled. It can be retrieved from the response of the "Call Out a SIP Participant" API.
-    Participant:
-      type: object
-      properties:
-        id:
-          type: string
-          example: 560d7b784f5143e3be2fc3064a5c4999_3c2e2338-e950-43bf-b588-573773ee43d1
-          description: The ID that identifies the meeting and the participant.
-        orgId:
-          type: string
-          example: 1eb65fdf-9643-417f-9974-ad72cae0e10f
-          description: The ID that identifies the organization. It only applies to participants of ongoing meetings.
-        host:
-          type: boolean
-          example: true
-          description: Whether or not the participant is the host of the meeting.
-        coHost:
-          type: boolean
-          description: Whether or not the participant has host privilege in the meeting.
-        spaceModerator:
-          type: boolean
-          description: Whether or not the participant is the team space moderator. This field returns only if the meeting is associated with a Webex space.
-        email:
-          type: string
-          example: joeDoe@cisco.com
-          description: The email address of the participant.
-        displayName:
-          type: string
-          example: Joe Doe
-          description: The name of the participant.
-        invitee:
-          type: boolean
-          description: Whether or not the participant is invited to the meeting.
-        muted:
-          type: boolean
-          description: Whether or not the participant's audio is muted.
-        meetingStartTime:
-          type: string
-          example: '2020-10-02T17:31:00Z'
-          description: The time the meeting started.
-        video:
-          type: string
-          enum:
-          - 'on'
-          - 'off'
-          description: "The status of the participant's video.\n * `on` - The video is turned on.\n * `off` - The video is turned off.\n"
-        state:
-          type: string
-          enum:
-          - lobby
-          - end
-          - joined
-          - breakoutSession
-          description: "The status of the participant in the meeting. The value of `state` is `breakoutSession` which is only returned when the meeting is in progress and the breakout session is enabled.\n * `lobby` - The participant is waiting in the meeting lobby.\n * `end` - The participant has left the meeting.\n * `joined` - The participant has joined the meeting and is in the main session.\n * `breakoutSession` - The participant has joined a breakout session.\n"
-        breakoutSessionId:
-          type: string
-          example: 2e373567-465b-8530-a18a-7025e1871d40
-          description: The ID of the breakout session including the participant.
-        joinedTime:
-          type: string
-          example: '2022-10-25T09:00:00Z'
-          description: The time the participant joined the meeting. If the field is non-existent or shows `1970-01-01T00:00:00.000Z` the meeting may be still ongoing and the `joinedTime` will be filled in after the meeting ended. If you need real-time join events, please refer to the webhooks guide.
-        leftTime:
-          type: string
-          example: '2022-10-25T09:30:00Z'
-          description: The time the participant left the meeting. If the field is non-existent or shows `1970-01-01T00:00:00.000Z` the meeting may be still ongoing and the `leftTime` will be filled in after the meeting ended. If you need real-time left events, please refer to the webhooks guide.
-        siteUrl:
-          type: string
-          example: example.webex.com
-          description: The site URL.
         meetingId:
           type: string
-          example: 3a688f62840346e8b87dde2b50703511_I_197977258267247872
-          description: A unique identifier for the meeting which the participant belongs to.
-        hostEmail:
+          example: d8c3347d7ec04242ba9b856184b334ac
+          description: Unique identifier of the meeting to which the SIP participant is to be called out. Either `meetingId` or `meetingNumber` must be specified.
+        meetingNumber:
           type: string
-          example: janeDoe@cisco.com
-          description: The email address of the host.
-        devices:
-          type: array
-          items:
-            $ref: '#/components/schemas/Device'
-        breakoutSessionsAttended:
-          type: array
-          items:
-            $ref: '#/components/schemas/BreakoutSessionAttended'
-          description: The breakout sessions attended by the participant. Only applies to ended meeting instances.
-        sourceId:
+          example: '79100342367'
+          description: Number of the meeting to which the SIP participant is to be called out. Either `meetingId` or `meetingNumber` must be specified.
+        address:
           type: string
-          example: cisco
-          description: The source ID of the participant. The `sourceId` is from the [Create Invitation Sources](/docs/api/v1/meetings/create-invitation-sources) API.
-    AdmitParticipantsObject:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/AdmitParticipant'
-    BreakoutSessionAttended:
-      type: object
-      properties:
-        id:
-          type: string
-          example: c84ba778-2f46-4dc6-9459-398694732d70
-          description: Unique identifier for the breakout session the participant attended.
-        name:
-          type: string
-          example: Breakout session 1
-          description: Name of the breakout session the participant attended.
-        joinedTime:
-          type: string
-          example: '2022-10-25T09:05:00Z'
-          description: The time the participant joined the breakout session.
-        leftTime:
-          type: string
-          example: '2022-10-25T09:10:00Z'
-          description: The time the participant left the breakout session.
-    InProgressDevice:
-      type: object
-      properties:
-        correlationId:
-          type: string
-          example: 8ccced6c-b812-4dff-a5dd-4c5c28f8d47d
-          description: An internal ID that is associated with each join.
-        deviceType:
-          type: string
-          example: mac
-          description: The type of device.
-        audioType:
+          example: SIP:9053523155@examplezone.cisco.com
+          description: SIP address of the invited SIP participant.
+        addressType:
           type: string
           enum:
-          - pstn
-          - voip
-          - inactive
-          description: "The audio type that the participant is using.\n * `pstn` - `PSTN`\n * `voip` - `VoIP`\n * `inactive` - The participant is not connected to audio.\n"
-        joinedTime:
+          - sipAddress
+          description: "Type of the `address`. The default value is `sipAddress`.\n * `sipAddress` - SIP address.\n"
+        invitationCorrelationId:
           type: string
-          example: '2019-04-23T17:31:00.000Z'
-          description: The time the device joined the meeting. If the field is non-existent or shows `1970-01-01T00:00:00.000Z` the meeting may be still ongoing and the `joinedTime` will be filled in after the meeting ended. If you need real-time joined events, please refer to the webhooks guide.
-        leftTime:
+          example: 871ab255-64e6-4cd2-a5af-d33953898356
+          description: An internal ID that is associated with the call-out invitation. Only UUIDs with hyphens are supported. The letters in the UUID must be in lowercase. A random UUID will be generated automatically if not specified.
+        displayName:
           type: string
-          example: '2019-04-23T17:32:00.000Z'
-          description: The time the device left the meeting, `leftTime` is the exact moment when a specific device left the meeting. If the field is non-existent or shows `1970-01-01T00:00:00.000Z` the meeting may be still ongoing and the `leftTime` will be filled in after the meeting ended. If you need real-time left events, please refer to the webhooks guide.
+          example: Brenda DX80
+          description: The display name of the invited SIP participant. The maximum length is 32 characters.
   securitySchemes:
     oauth2:
       flows:

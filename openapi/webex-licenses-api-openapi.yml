@@ -425,6 +425,143 @@ paths:
               $ref: '#/components/schemas/PatchUserLicenses'
 components:
   schemas:
+    UserLicensesResponse:
+      type: object
+      properties:
+        orgId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE
+          description: The ID of the organization to which this user belongs.
+        personId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9mNWIzNjE4Ny1jOGRkLTQ3MjctOGIyZi1mOWM0NDdmMjkwNDY
+          description: A unique identifier for the user.
+        email:
+          type: string
+          example: john.andersen@example.com
+          description: The email address of this user.
+        licenses:
+          type: array
+          items:
+            type: string
+            example: Y2lzY29zcGFyazovL3VzL0xJQ0VOU0UvOTZhYmMyYWEtM2RjYy0xMWU1LWExNTItZmUzNDgxOWNkYzlh,Y2lzY29zcGFyazovL3VzL0xJQ0VOU0UvOTZhYmMyYWEtM2RjYy0xMWU1LWIyNjMtMGY0NTkyYWRlZmFi,Y2lzY29zcGFyazovL3VzL0xJQ0VOU0UvOTZhYmMyYWEtM2RjYy0xMWU1LTIzNDItMGY0NTU2YWRlZXJm
+          description: An array of license strings that are assigned to this user.
+        siteUrls:
+          type: array
+          items:
+            $ref: '#/components/schemas/SiteResponse'
+          description: An array of `siteUrls` and their `accountType` that are assigned to this user.
+        pendingLicenses:
+          type: array
+          items:
+            type: string
+            example: Y2lzY29zcGFyazovL3VzL0xJQ0VOU0UvOTZhYmMyYWEtM2RjYy0xMWU1LWExNTItZmUzNDgxOWNkYWJj,Y2lzY29zcGFyazovL3VzL0xJQ0VOU0UvOTZhYmMyYWEtM2RjYy0xMWU1LWExNTItZmUzNDgxOWFiY2Rl
+          description: An array of license strings that are in pending state. This is only applicable to users outside the organization.
+        pendingSiteUrls:
+          type: array
+          items:
+            $ref: '#/components/schemas/SiteResponse'
+          description: An array of `siteUrls` and their `accountType` that are in pending state. This is only applicable to users outside the organization.
+    LicenseError:
+      allOf:
+      - $ref: '#/components/schemas/ErrorResponse'
+      example:
+        message: License assignment failed
+        errors:
+        - errorCode: 400112
+          description: 'Changing a user''s Webex Calling license from Professional to Standard is not allowed. The following license(s) could not be applied as requested: {licenses}'
+        trackingId: NA_88b8b4ce-6338-4d3a-8d6c-22b37e62354f
+    PatchUserLicenses:
+      type: object
+      properties:
+        email:
+          type: string
+          example: john.andersen@example.com
+          description: Email address of the user.
+        personId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9mNWIzNjE4Ny1jOGRkLTQ3MjctOGIyZi1mOWM0NDdmMjkwNDY
+          description: A unique identifier for the user.
+        orgId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE
+          description: The ID of the organization to which the licenses and siteUrls belong. If not specified, the organization ID from the OAuth token is used.
+        licenses:
+          type: array
+          items:
+            $ref: '#/components/schemas/LicenseRequest'
+          description: An array of licenses to be assigned to the user.
+        siteUrls:
+          type: array
+          items:
+            $ref: '#/components/schemas/SiteUrlsRequest'
+          description: An array of siteUrls to be assigned to the user.
+    SiteResponse:
+      type: object
+      properties:
+        siteUrl:
+          type: string
+          example: mysite.webex.com
+          description: '`siteUrl` assigned to the user.'
+        accountType:
+          type: string
+          enum:
+          - attendee
+          - host
+          description: "Account Type of the site.\n * `attendee` - Attendee account on the site.\n * `host` - Host account on the site.\n"
+    LicenseRequest:
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0xJQ0VOU0UvOTZhYmMyYWEtM2RjYy0xMWU1LWExNTItZmUzNDgxOWNkYzlh
+          description: A unique identifier for the license.
+        operation:
+          type: string
+          enum:
+          - remove
+          - add
+          description: "Operation type. The default operation is `add` if no operation is specified.\n * `remove` - Remove the license from the user\n * `add` - Assign the license to the user\n"
+        properties:
+          $ref: '#/components/schemas/LicenseProperties'
+    LicenseProperties:
+      type: object
+      properties:
+        locationId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzYzNzE1
+          description: The ID of the location for this user. Applicable to Webex Calling license.
+        phoneNumber:
+          type: string
+          example: '14085267209'
+          description: Work phone number for the user. Applicable to Webex Calling license.
+        extension:
+          type: string
+          example: '133'
+          description: Webex Calling extension of the user. Applicable to Webex Calling license.
+    SiteUrlsRequest:
+      type: object
+      required:
+      - siteUrl
+      - accountType
+      properties:
+        siteUrl:
+          type: string
+          example: mysite.webex.com
+          description: Attendee access on the site.
+        accountType:
+          type: string
+          enum:
+          - attendee
+          description: "Account type. Only `attendee` type is supported. For host account, remove attendee and assign the license on that site.\n * `attendee` - Attendee role on the siteUrl\n"
+        operation:
+          type: string
+          enum:
+          - remove
+          - add
+          description: "Operation type. The default operation is `add` if no operation is specified.\n * `remove` - Remove the attendee role from the user.\n * `add` - Add the attendee role to the user.\n"
     Users:
       type: object
       properties:
@@ -446,13 +583,47 @@ components:
           type: string
           example: john.andersen@example.com
           description: Email address of the user.
-    LicenseCollectionResponse:
+    License:
       type: object
       properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/License'
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0xJQ0VOU0UvOTZhYmMyYWEtM2RjYy0xMWU1LWExNTItZmUzNDgxOWNkYzlh
+          description: A unique identifier for the license.
+        name:
+          type: string
+          example: Meeting - Webex Meeting Center
+          description: Name of the licensed feature.
+        totalUnits:
+          type: number
+          example: 50
+          description: Total number of license units allocated.
+        consumedUnits:
+          type: number
+          example: 5
+          description: Total number of license units consumed.
+        consumedByUsers:
+          type: number
+          example: 5
+          description: Total number of license units consumed by users.
+        consumedByWorkspaces:
+          type: number
+          description: Total number of license units consumed by workspaces.
+        subscriptionId:
+          type: string
+          example: Sub-hydraOct26a
+          description: The subscription ID associated with this license. This ID is used in other systems, such as Webex Control Hub.
+        siteUrl:
+          type: string
+          example: site1-example.webex.com
+          description: The Webex Meetings site associated with this license.
+        siteType:
+          type: string
+          enum:
+          - Control Hub managed site
+          - Linked site
+          - Site Admin managed site
+          description: "The type of site associated with this license.\n * `Control Hub managed site` - The site is managed by Webex Control Hub.\n * `Linked site` - The site is a linked site.\n * `Site Admin managed site` - The site is managed by Site Administration.\n"
     ErrorResponse:
       type: object
       properties:
@@ -467,32 +638,13 @@ components:
         trackingId:
           type: string
           description: A unique identifier to help with debugging.
-    LicenseRequest:
+    LicenseCollectionResponse:
       type: object
-      required:
-      - id
       properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0xJQ0VOU0UvOTZhYmMyYWEtM2RjYy0xMWU1LWExNTItZmUzNDgxOWNkYzlh
-          description: A unique identifier for the license.
-        operation:
-          type: string
-          enum:
-          - remove
-          - add
-          description: "Operation type. The default operation is `add` if no operation is specified.\n * `remove` - Remove the license from the user\n * `add` - Assign the license to the user\n"
-        properties:
-          $ref: '#/components/schemas/LicenseProperties'
-    LicenseError:
-      allOf:
-      - $ref: '#/components/schemas/ErrorResponse'
-      example:
-        message: License assignment failed
-        errors:
-        - errorCode: 400112
-          description: 'Changing a user''s Webex Calling license from Professional to Standard is not allowed. The following license(s) could not be applied as requested: {licenses}'
-        trackingId: NA_88b8b4ce-6338-4d3a-8d6c-22b37e62354f
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/License'
     LicensewithUsers:
       type: object
       properties:
@@ -539,43 +691,6 @@ components:
           items:
             $ref: '#/components/schemas/Users'
           description: A list of users to whom the license is assigned to.
-    UserLicensesResponse:
-      type: object
-      properties:
-        orgId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE
-          description: The ID of the organization to which this user belongs.
-        personId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9mNWIzNjE4Ny1jOGRkLTQ3MjctOGIyZi1mOWM0NDdmMjkwNDY
-          description: A unique identifier for the user.
-        email:
-          type: string
-          example: john.andersen@example.com
-          description: The email address of this user.
-        licenses:
-          type: array
-          items:
-            type: string
-            example: Y2lzY29zcGFyazovL3VzL0xJQ0VOU0UvOTZhYmMyYWEtM2RjYy0xMWU1LWExNTItZmUzNDgxOWNkYzlh,Y2lzY29zcGFyazovL3VzL0xJQ0VOU0UvOTZhYmMyYWEtM2RjYy0xMWU1LWIyNjMtMGY0NTkyYWRlZmFi,Y2lzY29zcGFyazovL3VzL0xJQ0VOU0UvOTZhYmMyYWEtM2RjYy0xMWU1LTIzNDItMGY0NTU2YWRlZXJm
-          description: An array of license strings that are assigned to this user.
-        siteUrls:
-          type: array
-          items:
-            $ref: '#/components/schemas/SiteResponse'
-          description: An array of `siteUrls` and their `accountType` that are assigned to this user.
-        pendingLicenses:
-          type: array
-          items:
-            type: string
-            example: Y2lzY29zcGFyazovL3VzL0xJQ0VOU0UvOTZhYmMyYWEtM2RjYy0xMWU1LWExNTItZmUzNDgxOWNkYWJj,Y2lzY29zcGFyazovL3VzL0xJQ0VOU0UvOTZhYmMyYWEtM2RjYy0xMWU1LWExNTItZmUzNDgxOWFiY2Rl
-          description: An array of license strings that are in pending state. This is only applicable to users outside the organization.
-        pendingSiteUrls:
-          type: array
-          items:
-            $ref: '#/components/schemas/SiteResponse'
-          description: An array of `siteUrls` and their `accountType` that are in pending state. This is only applicable to users outside the organization.
     ErrorDetail:
       type: object
       properties:
@@ -634,121 +749,6 @@ components:
             * 700005: Free teams messaging mandatory for teams meeting license. The following license(s) could not be applied as requested: {licenses}
 
             * 700006: Screen Share {licenses} is implicitly assigned and cannot be removed'
-    License:
-      type: object
-      properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0xJQ0VOU0UvOTZhYmMyYWEtM2RjYy0xMWU1LWExNTItZmUzNDgxOWNkYzlh
-          description: A unique identifier for the license.
-        name:
-          type: string
-          example: Meeting - Webex Meeting Center
-          description: Name of the licensed feature.
-        totalUnits:
-          type: number
-          example: 50
-          description: Total number of license units allocated.
-        consumedUnits:
-          type: number
-          example: 5
-          description: Total number of license units consumed.
-        consumedByUsers:
-          type: number
-          example: 5
-          description: Total number of license units consumed by users.
-        consumedByWorkspaces:
-          type: number
-          description: Total number of license units consumed by workspaces.
-        subscriptionId:
-          type: string
-          example: Sub-hydraOct26a
-          description: The subscription ID associated with this license. This ID is used in other systems, such as Webex Control Hub.
-        siteUrl:
-          type: string
-          example: site1-example.webex.com
-          description: The Webex Meetings site associated with this license.
-        siteType:
-          type: string
-          enum:
-          - Control Hub managed site
-          - Linked site
-          - Site Admin managed site
-          description: "The type of site associated with this license.\n * `Control Hub managed site` - The site is managed by Webex Control Hub.\n * `Linked site` - The site is a linked site.\n * `Site Admin managed site` - The site is managed by Site Administration.\n"
-    LicenseProperties:
-      type: object
-      properties:
-        locationId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzYzNzE1
-          description: The ID of the location for this user. Applicable to Webex Calling license.
-        phoneNumber:
-          type: string
-          example: '14085267209'
-          description: Work phone number for the user. Applicable to Webex Calling license.
-        extension:
-          type: string
-          example: '133'
-          description: Webex Calling extension of the user. Applicable to Webex Calling license.
-    SiteUrlsRequest:
-      type: object
-      required:
-      - siteUrl
-      - accountType
-      properties:
-        siteUrl:
-          type: string
-          example: mysite.webex.com
-          description: Attendee access on the site.
-        accountType:
-          type: string
-          enum:
-          - attendee
-          description: "Account type. Only `attendee` type is supported. For host account, remove attendee and assign the license on that site.\n * `attendee` - Attendee role on the siteUrl\n"
-        operation:
-          type: string
-          enum:
-          - remove
-          - add
-          description: "Operation type. The default operation is `add` if no operation is specified.\n * `remove` - Remove the attendee role from the user.\n * `add` - Add the attendee role to the user.\n"
-    SiteResponse:
-      type: object
-      properties:
-        siteUrl:
-          type: string
-          example: mysite.webex.com
-          description: '`siteUrl` assigned to the user.'
-        accountType:
-          type: string
-          enum:
-          - attendee
-          - host
-          description: "Account Type of the site.\n * `attendee` - Attendee account on the site.\n * `host` - Host account on the site.\n"
-    PatchUserLicenses:
-      type: object
-      properties:
-        email:
-          type: string
-          example: john.andersen@example.com
-          description: Email address of the user.
-        personId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9mNWIzNjE4Ny1jOGRkLTQ3MjctOGIyZi1mOWM0NDdmMjkwNDY
-          description: A unique identifier for the user.
-        orgId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE
-          description: The ID of the organization to which the licenses and siteUrls belong. If not specified, the organization ID from the OAuth token is used.
-        licenses:
-          type: array
-          items:
-            $ref: '#/components/schemas/LicenseRequest'
-          description: An array of licenses to be assigned to the user.
-        siteUrls:
-          type: array
-          items:
-            $ref: '#/components/schemas/SiteUrlsRequest'
-          description: An array of siteUrls to be assigned to the user.
   securitySchemes:
     oauth2:
       flows:

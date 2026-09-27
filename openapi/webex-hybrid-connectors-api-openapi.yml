@@ -77,7 +77,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: List Hybrid Connectors
-      operationId: List Hybrid Connectors
+      operationId: ListHybridConnectors
       description: 'List hybrid connectors for an organization. If no `orgId` is specified, the default is the organization of the authenticated user.
 
 
@@ -91,6 +91,8 @@ paths:
         example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE
         schema:
           type: string
+      x-operation-id-source: normalized
+      x-operation-id-original: List Hybrid Connectors
   /hybrid/connectors/{connectorId}:
     get:
       responses:
@@ -148,7 +150,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Get Hybrid Connector Details
-      operationId: Get Hybrid Connector Details
+      operationId: GetHybridConnectorDetails
       description: 'Shows details for a hybrid connector, by ID.
 
 
@@ -163,8 +165,69 @@ paths:
         example: Y2lZY76123
         schema:
           type: string
+      x-operation-id-source: normalized
+      x-operation-id-original: Get Hybrid Connector Details
 components:
   schemas:
+    ConnectorType:
+      type: string
+      enum:
+      - expresswayManagement
+      - calendar
+      - call
+      - message
+      - expresswayServiceability
+      - ecpServiceability
+      - videoMesh
+      - dataSecurity
+      - care
+      - careManagement
+    Alarm:
+      type: object
+      properties:
+        id:
+          type: string
+          example: Y2lZY76123af234bbYY
+          description: A unique identifier for the alarm.
+        created:
+          type: string
+          example: '2017-09-15T15:53:00Z'
+          description: The date and time the alarm was raised.
+        severity:
+          $ref: '#/components/schemas/AlarmSeverity'
+          description: 'The severity level of the alarm:
+
+
+            - `critical`
+
+
+            - `error`
+
+
+            - `warning`
+
+
+            - `alert`'
+        title:
+          type: string
+          example: Something is wrong
+          description: The title of the alarm.
+        description:
+          type: string
+          example: More detail about something being wrong
+          description: A description of the alarm.
+        hybridConnectorId:
+          type: string
+          example: Y2lZY76123af234bb
+          description: The ID of the connector the alarm is raised on.
+    ConnectorCollection:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Connector'
+          description: An array of hybrid connector objects.
     AlarmSeverity:
       type: string
       enum:
@@ -172,6 +235,13 @@ components:
       - warning
       - alert
       - error
+    ConnectorStatus:
+      type: string
+      enum:
+      - operational
+      - impaired
+      - outage
+      - maintenanceMode
     Connector:
       type: object
       properties:
@@ -222,72 +292,6 @@ components:
           items:
             $ref: '#/components/schemas/Alarm'
           description: A list of alarms raised on the connector.
-    ConnectorStatus:
-      type: string
-      enum:
-      - operational
-      - impaired
-      - outage
-      - maintenanceMode
-    Alarm:
-      type: object
-      properties:
-        id:
-          type: string
-          example: Y2lZY76123af234bbYY
-          description: A unique identifier for the alarm.
-        created:
-          type: string
-          example: '2017-09-15T15:53:00Z'
-          description: The date and time the alarm was raised.
-        severity:
-          $ref: '#/components/schemas/AlarmSeverity'
-          description: 'The severity level of the alarm:
-
-
-            - `critical`
-
-
-            - `error`
-
-
-            - `warning`
-
-
-            - `alert`'
-        title:
-          type: string
-          example: Something is wrong
-          description: The title of the alarm.
-        description:
-          type: string
-          example: More detail about something being wrong
-          description: A description of the alarm.
-        hybridConnectorId:
-          type: string
-          example: Y2lZY76123af234bb
-          description: The ID of the connector the alarm is raised on.
-    ConnectorType:
-      type: string
-      enum:
-      - expresswayManagement
-      - calendar
-      - call
-      - message
-      - expresswayServiceability
-      - ecpServiceability
-      - videoMesh
-      - dataSecurity
-      - care
-      - careManagement
-    ConnectorCollection:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/Connector'
-          description: An array of hybrid connector objects.
   securitySchemes:
     oauth2:
       flows:

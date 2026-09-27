@@ -4236,34 +4236,54 @@ paths:
                     references: []
 components:
   schemas:
-    PaginationLinks:
+    ReassignAgentsRequestDTO:
+      type: object
+      description: Reassign Agents Request schema.
+      properties:
+        add:
+          type: array
+          description: List of Add.
+          items:
+            type: string
+            description: Add item.
+          uniqueItems: true
+        remove:
+          type: array
+          description: List of Remove.
+          items:
+            type: string
+            description: Remove item.
+          uniqueItems: true
+    EntityReferenceInfoDTO:
       type: object
       properties:
-        self:
+        description:
           type: string
-          description: Link to the current page.
-          example: /v1/callbacks/organization/${orgId}/scheduled-callback?page=1&pageSize=10
-        first:
-          type: string
-          description: Link to the first page.
-          example: /v1/callbacks/organization/${orgId}/scheduled-callback?page=0&pageSize=10
-        last:
-          type: string
-          description: Link to the last page.
-          example: /v1/callbacks/organization/${orgId}/scheduled-callback?page=4&pageSize=10
-        next:
-          type: string
-          description: Link to the next page.
-          example: /v1/callbacks/organization/${orgId}/scheduled-callback?page=2&pageSize=10
-        prev:
-          type: string
-          description: Link to the previous page.
-          example: /v1/callbacks/organization/${orgId}/scheduled-callback?page=0&pageSize=10
-      required:
-      - self
-    MetaDataPagedInfo:
+          description: Description about reference info.
+          example: list of referenced entities
+        meta:
+          $ref: '#/components/schemas/MetaDataReferencesPagingInfo'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityInfo'
+    CSQGroupedAssistantSkillRequestDTO:
       type: object
-      description: Pagination metadata for paged API responses
+      description: Request payload for fetching queue mapping summary grouped by Assistant Skill
+      properties:
+        assistantSkillIds:
+          type: array
+          description: List of AssistantSkill ids to fetch. If property is unspecified or set to null, then all assistantSkillIds mapped will be returned.
+          example:
+          - f53c8b54-46ca-43f6-ba05-08426a46e23d
+          - a53c8b54-46ca-43f6-ba05-08426a46e23f
+          items:
+            type: string
+            description: Assistant Skill Id.
+          uniqueItems: true
+    MetaDataPagedCSQ:
+      type: object
+      description: Meta Data Paged CSQ schema.
       properties:
         orgid:
           type: string
@@ -4296,34 +4316,108 @@ components:
             type: string
             description: Links additional property.
           description: Pagination links for navigating between result pages.
-    OperationError:
-      description: An error message providing details about the operation failure.
+        actualSummariesInclusionCount:
+          type: integer
+          format: int64
+          description: Indicates the actual number of queues included for AI assistant-generated summaries in a given organization, including queues that are access-restricted for the user requesting the data.
+          example: 100
+    ResponseEnvelopeRoutingBasedQueueDTO:
       type: object
+      description: Response Envelope Routing Based Queue schema.
       properties:
-        description:
-          type: string
-          description: A human readable explanation for the occurrence of an error.
-          example: Incorrect Credentials.
-    ErrorDetails:
-      description: Details of an error.
-      type: object
-      properties:
-        key:
-          type: string
-          description: An application defined error code.
-          example: '401'
-        message:
+        meta:
+          type: object
+          additionalProperties:
+            description: Meta additional property.
+          description: Additional properties for Meta.
+        data:
           type: array
-          description: A message providing details about the error.
+          description: List of Data.
           items:
-            $ref: '#/components/schemas/OperationError'
-    BulkResponseDTO:
+            $ref: '#/components/schemas/RoutingBasedQueueDTO'
+            description: Data item.
+    AgentGroupDTO:
+      type: object
+      description: Agent Group schema.
+      properties:
+        teamId:
+          type: string
+          description: ID of a team
+          example: 93912f11-6017-404b-bf14-5331890b1797
+    BulkResponseItemDTO:
       type: object
       properties:
-        items:
+        itemIdentifier:
+          type: integer
+          description: Unique item identifier for a bulk operation.
+          format: int32
+          example: 10
+        status:
+          type: integer
+          description: Indicates the error status code.
+          format: int32
+          example: 400
+        operationType:
+          type: string
+          description: The kind of operation desired of an entity.
+          example: CREATE
+          enum:
+          - CREATE
+          - UPDATE
+          - DELETE
+          - GET
+        href:
+          type: string
+          description: The resource URI of an entity.
+          example: /api/organization/6705c69d-4585-42ad-bfc3-79cc485dfb15/team/7b26d174-0016-4682-9858-65918e05f85
+        apiError:
+          $ref: '#/components/schemas/ApiErrorResponse'
+      example:
+        apiError:
+          error:
+            key: '400'
+            message:
+            - description: 'siteId: not found for given orgId.'
+              entity: string
+              references:
+              - id: string
+                name: string
+            reason: dependency exists
+          trackingId: ccconfig_c1a4fcef-aee2-4dea-8977-29f594760552
+        href: /api/organization/6705c69d-4585-42ad-bfc3-79cc485dfb15/team/7b26d174-0016-4682-9858-65918e05f85
+        itemIdentifier: 10
+        operationType: CREATE
+        status: 400
+    ManuallyAssignableQueuesRequest:
+      type: object
+      description: Request payload used to fetch contact service queues that are eligible for manual contact assignment for the specified agent and team.
+      example:
+        agentId: 660e0a5a-8230-47d7-ae98-047fb180e1ff
+        teamId: 76cf35bc-12df-49ef-88e1-c86226d8a645
+      properties:
+        agentId:
+          type: string
+          format: uuid
+          description: Unique identifier of the agent (CI user ID) for whom manually assignable queues should be retrieved.
+          example: 660e0a5a-8230-47d7-ae98-047fb180e1ff
+        teamId:
+          type: string
+          format: uuid
+          description: Unique identifier of the team that the agent belongs to. Used to scope the queues that the agent can be manually assigned contacts from.
+          example: 76cf35bc-12df-49ef-88e1-c86226d8a645
+    ResponseMetaEnvelopeContactServiceQueueDTOMetaDataPagedInfo:
+      type: object
+      description: Response Meta Envelope Contact Service Queue Meta Data Paged Info schema.
+      properties:
+        meta:
+          $ref: '#/components/schemas/MetaDataPagedInfo'
+          description: Metadata about response.
+        data:
           type: array
+          description: List of items matching the entity type.
           items:
-            $ref: '#/components/schemas/BulkResponseItemDTO'
+            $ref: '#/components/schemas/ContactServiceQueueDTO'
+            description: Data item.
     RoutingBasedQueueDTO:
       type: object
       description: Lightweight representation of a contact service queue that an agent (user) is associated with through a particular routing pattern. Returned by the team-based, agent-based and skill-based by-user-id lookups; the `routingPattern` field indicates how the agent reaches this queue (for example, TEAM_BASED, AGENT_BASED, or SKILLS_BASED).
@@ -4368,94 +4462,144 @@ components:
           format: int64
           description: This is the updated time of the entity.
           example: 123456789
-    CSQGroupedAssistantSkillResponseDTO:
+    SkillBasedCSQDTO:
       type: object
-      description: Queue mapping summary per Assistant Skill
-      properties:
-        assistantSkillId:
-          type: string
-          description: ID of Assistant Skill in AI Studio
-          example: af9eecc5-0472-4549-9a83-2afdae0d4ba0
-        associatedQueueCount:
-          type: integer
-          format: int64
-          description: Number of queues mapped to this Assistant Skill ID
-        lastAssistantSkillUpdatedTime:
-          type: integer
-          format: int64
-          description: Last updated time Assistant Skill mapping i.e. timestamp corresponding to most recently added queue mapping
-    ResponseEnvelopeRoutingBasedQueueDTO:
-      type: object
-      description: Response Envelope Routing Based Queue schema.
-      properties:
-        meta:
-          type: object
-          additionalProperties:
-            description: Meta additional property.
-          description: Additional properties for Meta.
-        data:
-          type: array
-          description: List of Data.
-          items:
-            $ref: '#/components/schemas/RoutingBasedQueueDTO'
-            description: Data item.
-    ResponseEnvelopeCSQGroupedAssistantSkillResponseDTO:
-      type: object
-      description: Response Envelope CSQGrouped Assistant Skill Response schema.
-      properties:
-        meta:
-          type: object
-          additionalProperties:
-            description: Meta additional property.
-          description: Additional properties for Meta.
-        data:
-          type: array
-          description: List of Data.
-          items:
-            $ref: '#/components/schemas/CSQGroupedAssistantSkillResponseDTO'
-            description: Data item.
-    FieldRequestBody:
-      type: object
-      description: Request payload identifying the entity references that should be removed from contact service queues. The `references` map contains key/value pairs where the key is the referenced entity type (for example, `team`, `site`, `agent`, `skillProfile`) and the value is the unique identifier of that entity. All matching references will be detached from any contact service queue in the target organization.
+      description: Contact service queue projection enriched with skill-based routing metadata. Returned by the skill-profile lookup endpoints (`/contact-service-queue/by-skill-profile-id/{id}` and `/contact-service-queue/internal/by-skill-profile-id/{id}`). Extends MappedCSQDTO with the score and match flags computed while evaluating the queue's skill requirements against the caller's skill profile and dynamic skills.
       example:
-        references:
-          team: 76cf35bc-12df-49ef-88e1-c86226d8a645
-          skillProfile: af9eecc5-0472-4549-9a83-2afdae0d4ba0
+        id: 26e2df70-0f77-41b8-8e8f-1d76e92c9638
+        name: SupportQueue
+        channelType: TELEPHONY
+        skillScore: 85
+        qsrType: PROFICIENCY
+        dynamicSkillScore: 70
+        skillProfileSkillsMatch: true
+        dynamicSkillsMatch: true
       properties:
-        references:
-          type: object
-          additionalProperties:
-            type: string
-            description: References additional property.
-          description: Map of entity type to entity identifier whose references must be removed from contact service queues. The key is the referenced entity type (e.g. `team`, `site`, `agent`, `skillProfile`) and the value is its UUID.
-          example:
-            team: 76cf35bc-12df-49ef-88e1-c86226d8a645
-    SkillBasedQueueRequestDTO:
-      type: object
-      description: Request payload used to look up skill-based contact service queues. Supply skillProfileId together with either a userId (to scope by a specific agent) or a list of dynamicSkills (to scope by dynamic skill values). For endpoints that filter by userId, omit dynamicSkills; for endpoints that filter by dynamic skills, omit userId.
-      example:
-        skillProfileId: af9eecc5-0472-4549-9a83-2afdae0d4ba0
-        userId: 660e0a5a-8230-47d7-ae98-047fb180e1ff
-        dynamicSkills:
-        - skillId: f53c8b54-46ca-43f6-ba05-08426a46e23d
-          proficiencyValue: 7
-      properties:
-        skillProfileId:
+        organizationId:
           type: string
           format: uuid
-          description: Unique identifier of the skill profile to look up queues for.
-          example: af9eecc5-0472-4549-9a83-2afdae0d4ba0
-        dynamicSkills:
-          type: array
-          description: Dynamic skill values used to further narrow down the matching skill-based queues. Used by the dynamic-skills lookup endpoint.
-          items:
-            $ref: '#/components/schemas/DynamicSkillDTO'
-            description: Dynamic Skill.
-        userId:
+          description: ID of the contact center organization. This field is required for all bulk save operations.
+          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+          maxLength: 36
+          minLength: 32
+          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
+        id:
           type: string
           format: uuid
-          description: Unique identifier of the user (agent) whose skill-based queues should be retrieved. Used by the user-and-skill-profile lookup endpoint.
-          example: 660e0a5a-8230-47d7-ae98-047fb180e1ff
+          description: Unique identifier of the contact service queue.
+          example: 26e2df70-0f77-41b8-8e8f-1d76e92c9638
+        version:
+          type: integer
+          format: int32
+          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
+          example: 1
+        channelType:
+          type: string
+          description: Channel type of the contact service queue (for example, `TELEPHONY`, `CHAT`, `EMAIL`, `SOCIAL`).
+          example: TELEPHONY
+        name:
+          type: string
+          description: Display name of the contact service queue.
+          example: SupportQueue
+        skillScore:
+          type: integer
+          format: int32
+          description: Aggregated score (0-100) of how well the queue's static skill requirements match the caller's skill profile. Higher is a better match.
+          example: 85
+        qsrType:
+          type: string
+          description: 'Type of queue skill requirement evaluated. Typical values: `PROFICIENCY`, `TEXT`, `BOOLEAN`, `ENUM`.'
+          example: PROFICIENCY
+        dynamicSkillScore:
+          type: integer
+          format: int32
+          description: Aggregated score (0-100) of how well the queue's dynamic skill requirements match the caller's supplied dynamic skill values.
+          example: 70
+        skillProfileSkillsMatch:
+          type: boolean
+          description: '`true` if every static skill requirement defined on the queue is satisfied by the caller''s skill profile.'
+          example: true
+        dynamicSkillsMatch:
+          type: boolean
+          description: '`true` if every dynamic skill requirement defined on the queue is satisfied by the caller''s dynamic skill values.'
+          example: true
+        createdTime:
+          type: integer
+          format: int64
+          description: This is the created time of the entity.
+          example: 123456789
+        lastUpdatedTime:
+          type: integer
+          format: int64
+          description: This is the updated time of the entity.
+          example: 123456789
+    MappedCSQDTO:
+      type: object
+      description: Lightweight contact service queue projection returned by queue-mapping lookup endpoints (by team ID, by CI user ID, by skill profile ID, by manually assignable queues). Contains only the minimum fields required to identify a queue and its channel type.
+      example:
+        id: 26e2df70-0f77-41b8-8e8f-1d76e92c9638
+        name: SupportQueue
+        channelType: TELEPHONY
+      properties:
+        organizationId:
+          type: string
+          format: uuid
+          description: ID of the contact center organization. This field is required for all bulk save operations.
+          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+          maxLength: 36
+          minLength: 32
+          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier of the contact service queue.
+          example: 26e2df70-0f77-41b8-8e8f-1d76e92c9638
+        version:
+          type: integer
+          format: int32
+          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
+          example: 1
+        channelType:
+          type: string
+          description: Channel type of the contact service queue (for example, `TELEPHONY`, `CHAT`, `EMAIL`, `SOCIAL`).
+          example: TELEPHONY
+        name:
+          type: string
+          description: Display name of the contact service queue.
+          example: SupportQueue
+        createdTime:
+          type: integer
+          format: int64
+          description: This is the created time of the entity.
+          example: 123456789
+        lastUpdatedTime:
+          type: integer
+          format: int64
+          description: This is the updated time of the entity.
+          example: 123456789
+    QueuePersonalizedAIRoutingDTO:
+      type: object
+      description: Queue-level Personalized AI Routing configuration. Enables intelligent agent routing based on AI/ML predictions.
+      properties:
+        aiRoutingMode:
+          type: string
+          default: NONE
+          description: 'AI Routing mode. Valid transitions: NONE → EVALUATION; EVALUATION → ACTIVE or NONE; ACTIVE → NONE. NONE: AI routing disabled (default). EVALUATION: Shadow mode - AI predictions are generated but not used for routing (for testing/validation). ACTIVE: AI routing enabled - contacts are routed based on AI predictions.'
+          enum:
+          - NONE
+          - EVALUATION
+          - ACTIVE
+          example: EVALUATION
+        aiRoutingKPIId:
+          type: string
+          description: AI Routing KPI ID - the performance metric used by AI to optimize routing decisions. This should reference a valid KPI configured in the AI routing system. Required when aiRoutingMode is EVALUATION or ACTIVE.
+          example: 63beec53-8a61-489f-afc6-bb03c8c73834
+        evaluationModeStartTime:
+          type: integer
+          format: int64
+          description: Timestamp (epoch milliseconds) when EVALUATION mode was activated. Automatically set by the system when transitioning from NONE to EVALUATION. Used to track evaluation duration and readiness for ACTIVE mode transition.
+          example: 1730269619000
+          readOnly: true
     ContactServiceQueueDTOList:
       type: object
       description: Contact Service Queue schema.
@@ -4742,9 +4886,57 @@ components:
           format: int64
           description: This is the updated time of the entity.
           example: 123456789
-    ResponseEnvelopeMappedCSQDTO:
+    BulkRequestItemDTOContactServiceQueueDTO:
       type: object
-      description: Response Envelope Mapped CSQ schema.
+      description: List of items in the bulk request.
+      properties:
+        itemIdentifier:
+          type: integer
+          format: int32
+          description: Unique item identifier for a bulk operation.
+          example: 10
+        item:
+          $ref: '#/components/schemas/ContactServiceQueueDTO'
+          description: Item.
+        requestAction:
+          type: string
+          description: Identifier for action type. Possible values are `SAVE` and `DELETE`.
+          example: SAVE
+    FieldRequestBody:
+      type: object
+      description: Request payload identifying the entity references that should be removed from contact service queues. The `references` map contains key/value pairs where the key is the referenced entity type (for example, `team`, `site`, `agent`, `skillProfile`) and the value is the unique identifier of that entity. All matching references will be detached from any contact service queue in the target organization.
+      example:
+        references:
+          team: 76cf35bc-12df-49ef-88e1-c86226d8a645
+          skillProfile: af9eecc5-0472-4549-9a83-2afdae0d4ba0
+      properties:
+        references:
+          type: object
+          additionalProperties:
+            type: string
+            description: References additional property.
+          description: Map of entity type to entity identifier whose references must be removed from contact service queues. The key is the referenced entity type (e.g. `team`, `site`, `agent`, `skillProfile`) and the value is its UUID.
+          example:
+            team: 76cf35bc-12df-49ef-88e1-c86226d8a645
+    CSQGroupedAssistantSkillResponseDTO:
+      type: object
+      description: Queue mapping summary per Assistant Skill
+      properties:
+        assistantSkillId:
+          type: string
+          description: ID of Assistant Skill in AI Studio
+          example: af9eecc5-0472-4549-9a83-2afdae0d4ba0
+        associatedQueueCount:
+          type: integer
+          format: int64
+          description: Number of queues mapped to this Assistant Skill ID
+        lastAssistantSkillUpdatedTime:
+          type: integer
+          format: int64
+          description: Last updated time Assistant Skill mapping i.e. timestamp corresponding to most recently added queue mapping
+    ResponseEnvelopeSkillBasedCSQDTO:
+      type: object
+      description: Response Envelope Skill Based CSQ schema.
       properties:
         meta:
           type: object
@@ -4755,59 +4947,27 @@ components:
           type: array
           description: List of Data.
           items:
-            $ref: '#/components/schemas/MappedCSQDTO'
+            $ref: '#/components/schemas/SkillBasedCSQDTO'
             description: Data item.
-    MetaDataPagedCSQ:
-      type: object
-      description: Meta Data Paged CSQ schema.
-      properties:
-        orgid:
-          type: string
-          description: ID of the contact center organization. This field is required for all bulk save operations.
-          example: af9eecc5-0472-4549-9a83-2afdae0d4ba0
-        page:
-          type: integer
-          format: int32
-          description: Current page number.
-          example: 1
-        pageSize:
-          type: integer
-          format: int32
-          description: Page size for current data set.
-          example: 20
-        totalPages:
-          type: integer
-          format: int32
-          description: Number of pages.
-          example: 5
-        totalRecords:
-          type: integer
-          format: int64
-          description: Total number of items.
-          example: 100
-        links:
-          type: object
-          $ref: '#/components/schemas/PaginationLinks'
-          additionalProperties:
-            type: string
-            description: Links additional property.
-          description: Pagination links for navigating between result pages.
-        actualSummariesInclusionCount:
-          type: integer
-          format: int64
-          description: Indicates the actual number of queues included for AI assistant-generated summaries in a given organization, including queues that are access-restricted for the user requesting the data.
-          example: 100
-    ApiErrorResponse:
-      description: Response body for an API error.
+    Link:
       type: object
       properties:
-        trackingId:
+        href:
           type: string
-          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
-          example: c1a4fcef-aee2-4dea-8977-29f594760552
-        error:
-          description: An object containing details about the error.
-          $ref: '#/components/schemas/ErrorDetails'
+        hreflang:
+          type: string
+        title:
+          type: string
+        type:
+          type: string
+        deprecation:
+          type: string
+        profile:
+          type: string
+        name:
+          type: string
+        templated:
+          type: boolean
     AssistantSkillMappingDTO:
       type: object
       description: Assistant skill related properties associated with the queue. This is applicable/available only when AI Assistant add-on offer/license is added to the organization.
@@ -4822,47 +4982,6 @@ components:
           description: Time(in epoch milliseconds) when assistant skill mapping was last updated.  If the value is missing in response, the consumer should assume a value as null.
           example: 1617536244000
           readOnly: true
-    PauseTimeoutDTO:
-      type: object
-      description: Pause timeout configuration. Required when enabled is true.
-      properties:
-        days:
-          type: integer
-          format: int32
-          description: Number of days for pause timeout. Channel-specific maximum is enforced at the service layer based on configured limits.
-          example: 14
-          minimum: 0
-        hours:
-          type: integer
-          format: int32
-          description: Number of hours for pause timeout (0-23)
-          example: 12
-          maximum: 23
-          minimum: 0
-        minutes:
-          type: integer
-          format: int32
-          description: Number of minutes for pause timeout (0-59)
-          example: 45
-          maximum: 59
-          minimum: 0
-    ManuallyAssignableQueuesRequest:
-      type: object
-      description: Request payload used to fetch contact service queues that are eligible for manual contact assignment for the specified agent and team.
-      example:
-        agentId: 660e0a5a-8230-47d7-ae98-047fb180e1ff
-        teamId: 76cf35bc-12df-49ef-88e1-c86226d8a645
-      properties:
-        agentId:
-          type: string
-          format: uuid
-          description: Unique identifier of the agent (CI user ID) for whom manually assignable queues should be retrieved.
-          example: 660e0a5a-8230-47d7-ae98-047fb180e1ff
-        teamId:
-          type: string
-          format: uuid
-          description: Unique identifier of the team that the agent belongs to. Used to scope the queues that the agent can be manually assigned contacts from.
-          example: 76cf35bc-12df-49ef-88e1-c86226d8a645
     QueuePauseAndResumeDTO:
       type: object
       description: Pause and resume configuration for EMAIL and SOCIAL channels only
@@ -4874,58 +4993,77 @@ components:
         pauseTimeout:
           $ref: '#/components/schemas/PauseTimeoutDTO'
           description: Pause timeout configuration. Required when enabled is true.
-    MappedCSQDTO:
+    DynamicSkillDTO:
       type: object
-      description: Lightweight contact service queue projection returned by queue-mapping lookup endpoints (by team ID, by CI user ID, by skill profile ID, by manually assignable queues). Contains only the minimum fields required to identify a queue and its channel type.
-      example:
-        id: 26e2df70-0f77-41b8-8e8f-1d76e92c9638
-        name: SupportQueue
-        channelType: TELEPHONY
+      description: Data transfer object representing a dynamic skill assignment with its value
       properties:
-        organizationId:
+        skillId:
           type: string
-          format: uuid
-          description: ID of the contact center organization. This field is required for all bulk save operations.
+          description: The unique identifier of the dynamic skill
           example: f53c8b54-46ca-43f6-ba05-08426a46e23d
-          maxLength: 36
-          minLength: 32
-          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
-        id:
+        textValue:
           type: string
-          format: uuid
-          description: Unique identifier of the contact service queue.
-          example: 26e2df70-0f77-41b8-8e8f-1d76e92c9638
-        version:
+          description: Text value for text-type dynamic skills
+          example: Sample text skill value
+        booleanValue:
+          type: boolean
+          description: Boolean value for boolean-type dynamic skills
+          example: true
+        proficiencyValue:
           type: integer
           format: int32
-          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
-          example: 1
-        channelType:
-          type: string
-          description: Channel type of the contact service queue (for example, `TELEPHONY`, `CHAT`, `EMAIL`, `SOCIAL`).
-          example: TELEPHONY
-        name:
-          type: string
-          description: Display name of the contact service queue.
-          example: SupportQueue
-        createdTime:
-          type: integer
-          format: int64
-          description: This is the created time of the entity.
-          example: 123456789
-        lastUpdatedTime:
-          type: integer
-          format: int64
-          description: This is the updated time of the entity.
-          example: 123456789
-    AgentGroupDTO:
+          description: 'Proficiency value for proficiency-type dynamic skills (range: 0-10)'
+          example: 7
+        enumSkillValues:
+          type: array
+          description: Set of enumerated skill values for enum-type dynamic skills
+          example:
+          - SKILL_VALUE_1
+          - SKILL_VALUE_2
+          items:
+            type: string
+            description: Enum Skill Value.
+          uniqueItems: true
+    ApiErrorResponse:
+      description: Response body for an API error.
       type: object
-      description: Agent Group schema.
       properties:
-        teamId:
+        trackingId:
           type: string
-          description: ID of a team
-          example: 93912f11-6017-404b-bf14-5331890b1797
+          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
+          example: c1a4fcef-aee2-4dea-8977-29f594760552
+        error:
+          description: An object containing details about the error.
+          $ref: '#/components/schemas/ErrorDetails'
+    CallDistributionGroupDTO:
+      type: object
+      description: Call Distribution Group schema.
+      properties:
+        agentGroups:
+          type: array
+          description: List of Agent Groups.
+          items:
+            $ref: '#/components/schemas/AgentGroupDTO'
+            description: Agent Group.
+          uniqueItems: true
+        order:
+          type: integer
+          format: int32
+          description: The order of this call distribution group.
+          example: 1
+        duration:
+          type: integer
+          format: int32
+          default: 0
+          description: (Optional)The duration in seconds after which a contact in queue will be distributed to this group.
+          example: 2
+    BulkResponseDTO:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BulkResponseItemDTO'
     MetaDataReferencesPagingInfo:
       title: MetaDataReferencesPagingInfo
       type: object
@@ -4980,6 +5118,47 @@ components:
           description: Name of current entity
           example: entity_name
       description: Metadata of response for references with paging information
+    SkillBasedQueueRequestDTO:
+      type: object
+      description: Request payload used to look up skill-based contact service queues. Supply skillProfileId together with either a userId (to scope by a specific agent) or a list of dynamicSkills (to scope by dynamic skill values). For endpoints that filter by userId, omit dynamicSkills; for endpoints that filter by dynamic skills, omit userId.
+      example:
+        skillProfileId: af9eecc5-0472-4549-9a83-2afdae0d4ba0
+        userId: 660e0a5a-8230-47d7-ae98-047fb180e1ff
+        dynamicSkills:
+        - skillId: f53c8b54-46ca-43f6-ba05-08426a46e23d
+          proficiencyValue: 7
+      properties:
+        skillProfileId:
+          type: string
+          format: uuid
+          description: Unique identifier of the skill profile to look up queues for.
+          example: af9eecc5-0472-4549-9a83-2afdae0d4ba0
+        dynamicSkills:
+          type: array
+          description: Dynamic skill values used to further narrow down the matching skill-based queues. Used by the dynamic-skills lookup endpoint.
+          items:
+            $ref: '#/components/schemas/DynamicSkillDTO'
+            description: Dynamic Skill.
+        userId:
+          type: string
+          format: uuid
+          description: Unique identifier of the user (agent) whose skill-based queues should be retrieved. Used by the user-and-skill-profile lookup endpoint.
+          example: 660e0a5a-8230-47d7-ae98-047fb180e1ff
+    ResponseEnvelopeMappedCSQDTO:
+      type: object
+      description: Response Envelope Mapped CSQ schema.
+      properties:
+        meta:
+          type: object
+          additionalProperties:
+            description: Meta additional property.
+          description: Additional properties for Meta.
+        data:
+          type: array
+          description: List of Data.
+          items:
+            $ref: '#/components/schemas/MappedCSQDTO'
+            description: Data item.
     EntityInfo:
       type: object
       properties:
@@ -5008,187 +5187,20 @@ components:
         version:
           type: integer
           format: int32
-    QueuePersonalizedAIRoutingDTO:
+    QueueAgentsDTO:
       type: object
-      description: Queue-level Personalized AI Routing configuration. Enables intelligent agent routing based on AI/ML predictions.
+      description: Queue Agents schema.
       properties:
-        aiRoutingMode:
-          type: string
-          default: NONE
-          description: 'AI Routing mode. Valid transitions: NONE → EVALUATION; EVALUATION → ACTIVE or NONE; ACTIVE → NONE. NONE: AI routing disabled (default). EVALUATION: Shadow mode - AI predictions are generated but not used for routing (for testing/validation). ACTIVE: AI routing enabled - contacts are routed based on AI predictions.'
-          enum:
-          - NONE
-          - EVALUATION
-          - ACTIVE
-          example: EVALUATION
-        aiRoutingKPIId:
-          type: string
-          description: AI Routing KPI ID - the performance metric used by AI to optimize routing decisions. This should reference a valid KPI configured in the AI routing system. Required when aiRoutingMode is EVALUATION or ACTIVE.
-          example: 63beec53-8a61-489f-afc6-bb03c8c73834
-        evaluationModeStartTime:
-          type: integer
-          format: int64
-          description: Timestamp (epoch milliseconds) when EVALUATION mode was activated. Automatically set by the system when transitioning from NONE to EVALUATION. Used to track evaluation duration and readiness for ACTIVE mode transition.
-          example: 1730269619000
-          readOnly: true
-    Link:
-      type: object
-      properties:
-        href:
-          type: string
-        hreflang:
-          type: string
-        title:
-          type: string
-        type:
-          type: string
-        deprecation:
-          type: string
-        profile:
-          type: string
-        name:
-          type: string
-        templated:
-          type: boolean
-    SkillBasedCSQDTO:
-      type: object
-      description: Contact service queue projection enriched with skill-based routing metadata. Returned by the skill-profile lookup endpoints (`/contact-service-queue/by-skill-profile-id/{id}` and `/contact-service-queue/internal/by-skill-profile-id/{id}`). Extends MappedCSQDTO with the score and match flags computed while evaluating the queue's skill requirements against the caller's skill profile and dynamic skills.
-      example:
-        id: 26e2df70-0f77-41b8-8e8f-1d76e92c9638
-        name: SupportQueue
-        channelType: TELEPHONY
-        skillScore: 85
-        qsrType: PROFICIENCY
-        dynamicSkillScore: 70
-        skillProfileSkillsMatch: true
-        dynamicSkillsMatch: true
-      properties:
-        organizationId:
-          type: string
-          format: uuid
-          description: ID of the contact center organization. This field is required for all bulk save operations.
-          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
-          maxLength: 36
-          minLength: 32
-          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
         id:
           type: string
-          format: uuid
-          description: Unique identifier of the contact service queue.
-          example: 26e2df70-0f77-41b8-8e8f-1d76e92c9638
-        version:
-          type: integer
-          format: int32
-          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
-          example: 1
-        channelType:
+          description: Id of an agent in WxCC
+          example: b0503c7f-d13c-4d74-9eb5-64f3c818b8c7
+        ciUserId:
           type: string
-          description: Channel type of the contact service queue (for example, `TELEPHONY`, `CHAT`, `EMAIL`, `SOCIAL`).
-          example: TELEPHONY
-        name:
-          type: string
-          description: Display name of the contact service queue.
-          example: SupportQueue
-        skillScore:
-          type: integer
-          format: int32
-          description: Aggregated score (0-100) of how well the queue's static skill requirements match the caller's skill profile. Higher is a better match.
-          example: 85
-        qsrType:
-          type: string
-          description: 'Type of queue skill requirement evaluated. Typical values: `PROFICIENCY`, `TEXT`, `BOOLEAN`, `ENUM`.'
-          example: PROFICIENCY
-        dynamicSkillScore:
-          type: integer
-          format: int32
-          description: Aggregated score (0-100) of how well the queue's dynamic skill requirements match the caller's supplied dynamic skill values.
-          example: 70
-        skillProfileSkillsMatch:
-          type: boolean
-          description: '`true` if every static skill requirement defined on the queue is satisfied by the caller''s skill profile.'
-          example: true
-        dynamicSkillsMatch:
-          type: boolean
-          description: '`true` if every dynamic skill requirement defined on the queue is satisfied by the caller''s dynamic skill values.'
-          example: true
-        createdTime:
-          type: integer
-          format: int64
-          description: This is the created time of the entity.
-          example: 123456789
-        lastUpdatedTime:
-          type: integer
-          format: int64
-          description: This is the updated time of the entity.
-          example: 123456789
-    DynamicSkillDTO:
-      type: object
-      description: Data transfer object representing a dynamic skill assignment with its value
-      properties:
-        skillId:
-          type: string
-          description: The unique identifier of the dynamic skill
-          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
-        textValue:
-          type: string
-          description: Text value for text-type dynamic skills
-          example: Sample text skill value
-        booleanValue:
-          type: boolean
-          description: Boolean value for boolean-type dynamic skills
-          example: true
-        proficiencyValue:
-          type: integer
-          format: int32
-          description: 'Proficiency value for proficiency-type dynamic skills (range: 0-10)'
-          example: 7
-        enumSkillValues:
-          type: array
-          description: Set of enumerated skill values for enum-type dynamic skills
-          example:
-          - SKILL_VALUE_1
-          - SKILL_VALUE_2
-          items:
-            type: string
-            description: Enum Skill Value.
-          uniqueItems: true
-    CSQGroupedAssistantSkillRequestDTO:
-      type: object
-      description: Request payload for fetching queue mapping summary grouped by Assistant Skill
-      properties:
-        assistantSkillIds:
-          type: array
-          description: List of AssistantSkill ids to fetch. If property is unspecified or set to null, then all assistantSkillIds mapped will be returned.
-          example:
-          - f53c8b54-46ca-43f6-ba05-08426a46e23d
-          - a53c8b54-46ca-43f6-ba05-08426a46e23f
-          items:
-            type: string
-            description: Assistant Skill Id.
-          uniqueItems: true
-    BulkRequestDTOContactServiceQueueDTO:
-      type: object
-      description: Bulk Request Contact Service Queue schema.
-      properties:
-        items:
-          type: array
-          description: List of items in the bulk request.
-          items:
-            $ref: '#/components/schemas/BulkRequestItemDTOContactServiceQueueDTO'
-            description: Item.
-    EntityReferenceInfoDTO:
-      type: object
-      properties:
-        description:
-          type: string
-          description: Description about reference info.
-          example: list of referenced entities
-        meta:
-          $ref: '#/components/schemas/MetaDataReferencesPagingInfo'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/EntityInfo'
+          description: Id of an agent in Common Identity
+          example: c71876ae-ddfa-4049-9a1b-298535152578
+      required:
+      - id
     QueueSkillRequirementDTO:
       type: object
       description: Skill requirement for the queue
@@ -5273,50 +5285,27 @@ components:
       - condition
       - skillId
       - skillValue
-    BulkResponseItemDTO:
+    OperationError:
+      description: An error message providing details about the operation failure.
       type: object
       properties:
-        itemIdentifier:
-          type: integer
-          description: Unique item identifier for a bulk operation.
-          format: int32
-          example: 10
-        status:
-          type: integer
-          description: Indicates the error status code.
-          format: int32
-          example: 400
-        operationType:
+        description:
           type: string
-          description: The kind of operation desired of an entity.
-          example: CREATE
-          enum:
-          - CREATE
-          - UPDATE
-          - DELETE
-          - GET
-        href:
+          description: A human readable explanation for the occurrence of an error.
+          example: Incorrect Credentials.
+    ErrorDetails:
+      description: Details of an error.
+      type: object
+      properties:
+        key:
           type: string
-          description: The resource URI of an entity.
-          example: /api/organization/6705c69d-4585-42ad-bfc3-79cc485dfb15/team/7b26d174-0016-4682-9858-65918e05f85
-        apiError:
-          $ref: '#/components/schemas/ApiErrorResponse'
-      example:
-        apiError:
-          error:
-            key: '400'
-            message:
-            - description: 'siteId: not found for given orgId.'
-              entity: string
-              references:
-              - id: string
-                name: string
-            reason: dependency exists
-          trackingId: ccconfig_c1a4fcef-aee2-4dea-8977-29f594760552
-        href: /api/organization/6705c69d-4585-42ad-bfc3-79cc485dfb15/team/7b26d174-0016-4682-9858-65918e05f85
-        itemIdentifier: 10
-        operationType: CREATE
-        status: 400
+          description: An application defined error code.
+          example: '401'
+        message:
+          type: array
+          description: A message providing details about the error.
+          items:
+            $ref: '#/components/schemas/OperationError'
     ContactServiceQueueDTO:
       type: object
       description: Contact Service Queue schema.
@@ -5638,22 +5627,31 @@ components:
       - queueType
       - routingType
       - serviceLevelThreshold
-    BulkRequestItemDTOContactServiceQueueDTO:
+    ResponseEnvelopeCSQGroupedAssistantSkillResponseDTO:
       type: object
-      description: List of items in the bulk request.
+      description: Response Envelope CSQGrouped Assistant Skill Response schema.
       properties:
-        itemIdentifier:
-          type: integer
-          format: int32
-          description: Unique item identifier for a bulk operation.
-          example: 10
-        item:
-          $ref: '#/components/schemas/ContactServiceQueueDTO'
-          description: Item.
-        requestAction:
-          type: string
-          description: Identifier for action type. Possible values are `SAVE` and `DELETE`.
-          example: SAVE
+        meta:
+          type: object
+          additionalProperties:
+            description: Meta additional property.
+          description: Additional properties for Meta.
+        data:
+          type: array
+          description: List of Data.
+          items:
+            $ref: '#/components/schemas/CSQGroupedAssistantSkillResponseDTO'
+            description: Data item.
+    BulkRequestDTOContactServiceQueueDTO:
+      type: object
+      description: Bulk Request Contact Service Queue schema.
+      properties:
+        items:
+          type: array
+          description: List of items in the bulk request.
+          items:
+            $ref: '#/components/schemas/BulkRequestItemDTOContactServiceQueueDTO'
+            description: Item.
     Response:
       type: object
       properties:
@@ -5668,63 +5666,155 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Link'
-    QueueAgentsDTO:
+    MetaDataPagedInfo:
       type: object
-      description: Queue Agents schema.
+      description: Pagination metadata for paged API responses
       properties:
+        orgid:
+          type: string
+          description: ID of the contact center organization. This field is required for all bulk save operations.
+          example: af9eecc5-0472-4549-9a83-2afdae0d4ba0
+        page:
+          type: integer
+          format: int32
+          description: Current page number.
+          example: 1
+        pageSize:
+          type: integer
+          format: int32
+          description: Page size for current data set.
+          example: 20
+        totalPages:
+          type: integer
+          format: int32
+          description: Number of pages.
+          example: 5
+        totalRecords:
+          type: integer
+          format: int64
+          description: Total number of items.
+          example: 100
+        links:
+          type: object
+          $ref: '#/components/schemas/PaginationLinks'
+          additionalProperties:
+            type: string
+            description: Links additional property.
+          description: Pagination links for navigating between result pages.
+    PauseTimeoutDTO:
+      type: object
+      description: Pause timeout configuration. Required when enabled is true.
+      properties:
+        days:
+          type: integer
+          format: int32
+          description: Number of days for pause timeout. Channel-specific maximum is enforced at the service layer based on configured limits.
+          example: 14
+          minimum: 0
+        hours:
+          type: integer
+          format: int32
+          description: Number of hours for pause timeout (0-23)
+          example: 12
+          maximum: 23
+          minimum: 0
+        minutes:
+          type: integer
+          format: int32
+          description: Number of minutes for pause timeout (0-59)
+          example: 45
+          maximum: 59
+          minimum: 0
+    PaginationLinks:
+      type: object
+      properties:
+        self:
+          type: string
+          description: Link to the current page.
+          example: /v1/callbacks/organization/${orgId}/scheduled-callback?page=1&pageSize=10
+        first:
+          type: string
+          description: Link to the first page.
+          example: /v1/callbacks/organization/${orgId}/scheduled-callback?page=0&pageSize=10
+        last:
+          type: string
+          description: Link to the last page.
+          example: /v1/callbacks/organization/${orgId}/scheduled-callback?page=4&pageSize=10
+        next:
+          type: string
+          description: Link to the next page.
+          example: /v1/callbacks/organization/${orgId}/scheduled-callback?page=2&pageSize=10
+        prev:
+          type: string
+          description: Link to the previous page.
+          example: /v1/callbacks/organization/${orgId}/scheduled-callback?page=0&pageSize=10
+      required:
+      - self
+    AgentGroupDTO_2:
+      type: object
+      properties:
+        teamId:
+          type: string
+          description: ID of a team
+          example: 93912f11-6017-404b-bf14-5331890b1797
+    SkillBasedCSQDTO_2:
+      type: object
+      description: Skill-based Contact Service Queue data transfer object.
+      properties:
+        organizationId:
+          type: string
+          format: uuid
+          description: ID of the contact center organization. This field is required for all bulk save operations.
+          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+          maxLength: 36
+          minLength: 32
+          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
         id:
           type: string
-          description: Id of an agent in WxCC
-          example: b0503c7f-d13c-4d74-9eb5-64f3c818b8c7
-        ciUserId:
+          description: ID of this contact center resource.
+        version:
+          type: integer
+          format: int32
+          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
+          example: 1
+        channelType:
           type: string
-          description: Id of an agent in Common Identity
-          example: c71876ae-ddfa-4049-9a1b-298535152578
-      required:
-      - id
-    ResponseEnvelopeSkillBasedCSQDTO:
+          description: The channel type of the queue.
+        name:
+          type: string
+          description: Name of the Contact Service Queue.
+        skillScore:
+          type: integer
+          format: int32
+          description: The skill score for matching this queue.
+        qsrType:
+          type: string
+          description: The queue skill requirement type.
+        dynamicSkillScore:
+          type: integer
+          format: int32
+          description: The dynamic skill score for matching this queue.
+        skillProfileSkillsMatch:
+          type: boolean
+          description: Indicates whether the skill profile skills match.
+        dynamicSkillsMatch:
+          type: boolean
+          description: Indicates whether the dynamic skills match.
+        createdTime:
+          type: integer
+          format: int64
+          description: This is the created time of the entity.
+        lastUpdatedTime:
+          type: integer
+          format: int64
+          description: This is the updated time of the entity.
+    CallDistributionGroupDTO_2:
       type: object
-      description: Response Envelope Skill Based CSQ schema.
-      properties:
-        meta:
-          type: object
-          additionalProperties:
-            description: Meta additional property.
-          description: Additional properties for Meta.
-        data:
-          type: array
-          description: List of Data.
-          items:
-            $ref: '#/components/schemas/SkillBasedCSQDTO'
-            description: Data item.
-    ReassignAgentsRequestDTO:
-      type: object
-      description: Reassign Agents Request schema.
-      properties:
-        add:
-          type: array
-          description: List of Add.
-          items:
-            type: string
-            description: Add item.
-          uniqueItems: true
-        remove:
-          type: array
-          description: List of Remove.
-          items:
-            type: string
-            description: Remove item.
-          uniqueItems: true
-    CallDistributionGroupDTO:
-      type: object
-      description: Call Distribution Group schema.
       properties:
         agentGroups:
           type: array
-          description: List of Agent Groups.
           items:
-            $ref: '#/components/schemas/AgentGroupDTO'
-            description: Agent Group.
+            $ref: '#/components/schemas/AgentGroupDTO_2'
           uniqueItems: true
         order:
           type: integer
@@ -5737,32 +5827,88 @@ components:
           default: 0
           description: (Optional)The duration in seconds after which a contact in queue will be distributed to this group.
           example: 2
-    ResponseMetaEnvelopeContactServiceQueueDTOMetaDataPagedInfo:
+    QueueSkillRequirementDTO_2:
       type: object
-      description: Response Meta Envelope Contact Service Queue Meta Data Paged Info schema.
+      description: Skill requirement for the queue
       properties:
-        meta:
-          $ref: '#/components/schemas/MetaDataPagedInfo'
-          description: Metadata about response.
-        data:
-          type: array
-          description: List of items matching the entity type.
-          items:
-            $ref: '#/components/schemas/ContactServiceQueueDTO'
-            description: Data item.
-    AssistantSkillMappingDTO_2:
-      type: object
-      properties:
-        assistantSkillId:
+        organizationId:
           type: string
-          description: Id of an Assistant Skill mapped to the Contact Service Queue
+          format: uuid
+          description: ID of the contact center organization. This field is required for all bulk save operations.
+          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+          maxLength: 36
+          minLength: 32
+          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
+        id:
+          type: string
+          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
+          example: 93912f11-6017-404b-bf14-5331890b1797
+        version:
+          type: integer
+          format: int32
+          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
+          example: 1
+        skillId:
+          type: string
+          description: Skill ID reference
           example: af9eecc5-0472-4549-9a83-2afdae0d4ba0
-        assistantSkillUpdatedTime:
+          minLength: 1
+        skillName:
+          type: string
+          description: Indicates the name of the skill. Once created, name cannot be modified.
+          example: German Speaking
+        skillType:
+          type: string
+          description: 'This can be of the following types
+
+
+            PROFICIENCY: id = 0
+
+
+            BOOLEAN: id = 1
+
+
+            TEXT: id = 2
+
+
+            ENUM: id = 3
+
+
+            Once created, skillType cannot be modified.
+
+            '
+          example: BOOLEAN
+        condition:
+          type: string
+          description: Indicates a value that represents a skill the agent has.
+          example: IS_NOT
+        skillValue:
+          type: string
+          description: A short textual description that represents a skill the agent has.
+          example: Credit card SME
+          minLength: 1
+        weight:
+          type: integer
+          format: int32
+          description: Weight for proficiency skill requirement
+          example: 100
+          maximum: 1000
+        dynamicSkill:
+          type: boolean
+          description: Indicates whether the skill is a dynamic skill or not. Default value is false.
+          example: false
+        createdTime:
           type: integer
           format: int64
-          description: Time(in epoch milliseconds) when assistant skill mapping was last updated.
-          example: 1617536244000
-          readOnly: true
+          description: This is the created time of the entity.
+        lastUpdatedTime:
+          type: integer
+          format: int64
+          description: This is the updated time of the entity.
+      required:
+      - condition
+      - skillId
+      - skillValue
     MappedCSQDTO_2:
       type: object
       description: Mapped Contact Service Queue data transfer object.
@@ -5797,58 +5943,42 @@ components:
           type: integer
           format: int64
           description: This is the updated time of the entity.
-    BulkExportDTOContactServiceQueueBulkExportDTO:
+    AssistantSkillMappingDTO_2:
       type: object
-      description: Bulk export Dto
-      example:
-        totalResources: 100
-        pageNumber: 0
-        pageSize: 50
-        rel: last
-        resources: []
       properties:
-        totalResources:
-          type: integer
-          format: int32
-          description: Total number of items.
-          example: 100
-        pageNumber:
-          type: integer
-          format: int32
-          description: Current page number.
-          example: 0
-        pageSize:
-          type: integer
-          format: int32
-          description: Page size for current data set.
-          example: 50
-        rel:
+        assistantSkillId:
           type: string
-          description: Indicates whether more pages exist. When 'next' there are more pages available, otherwise 'last'.
-          example: last
-        resources:
-          type: array
-          description: Indicate the page resources
-          items:
-            $ref: '#/components/schemas/ContactServiceQueueBulkExportDTO'
-    CallDistributionGroupBulkExportDTO:
+          description: Id of an Assistant Skill mapped to the Contact Service Queue
+          example: af9eecc5-0472-4549-9a83-2afdae0d4ba0
+        assistantSkillUpdatedTime:
+          type: integer
+          format: int64
+          description: Time(in epoch milliseconds) when assistant skill mapping was last updated.
+          example: 1617536244000
+          readOnly: true
+    ResponseEnvelopeMappedCSQDTO_2:
       type: object
-      description: Call distribution group data for bulk export.
+      description: Response envelope containing mapped Contact Service Queue data.
       properties:
-        agentGroups:
+        meta:
+          type: object
+          description: Metadata about the response.
+          additionalProperties: {}
+        data:
           type: array
-          description: The agent groups in this call distribution group.
+          description: List of mapped Contact Service Queue items.
           items:
-            $ref: '#/components/schemas/AgentGroupsBulkExportDTO'
-          uniqueItems: true
-        order:
-          type: integer
-          format: int32
-          description: The order of this call distribution group.
-        duration:
-          type: integer
-          format: int32
-          description: The duration in seconds after which a contact in queue will be distributed to this group.
+            $ref: '#/components/schemas/MappedCSQDTO_2'
+    AgentGroupsBulkExportDTO:
+      type: object
+      description: Agent group data for bulk export.
+      properties:
+        teamName:
+          type: string
+          description: The name of the team in this agent group.
+        siteName:
+          type: string
+          description: The name of the site associated with this agent group.
     ContactServiceQueueDTO_2:
       type: object
       properties:
@@ -6157,6 +6287,53 @@ components:
       - queueType
       - routingType
       - serviceLevelThreshold
+    BulkExportDTOContactServiceQueueBulkExportDTO:
+      type: object
+      description: Bulk export Dto
+      example:
+        totalResources: 100
+        pageNumber: 0
+        pageSize: 50
+        rel: last
+        resources: []
+      properties:
+        totalResources:
+          type: integer
+          format: int32
+          description: Total number of items.
+          example: 100
+        pageNumber:
+          type: integer
+          format: int32
+          description: Current page number.
+          example: 0
+        pageSize:
+          type: integer
+          format: int32
+          description: Page size for current data set.
+          example: 50
+        rel:
+          type: string
+          description: Indicates whether more pages exist. When 'next' there are more pages available, otherwise 'last'.
+          example: last
+        resources:
+          type: array
+          description: Indicate the page resources
+          items:
+            $ref: '#/components/schemas/ContactServiceQueueBulkExportDTO'
+    ResponseEnvelopeSkillBasedCSQDTO_2:
+      type: object
+      description: Response envelope containing skill-based Contact Service Queue data.
+      properties:
+        meta:
+          type: object
+          description: Metadata about the response.
+          additionalProperties: {}
+        data:
+          type: array
+          description: List of skill-based Contact Service Queue items.
+          items:
+            $ref: '#/components/schemas/SkillBasedCSQDTO_2'
     ContactServiceQueueBulkExportDTO:
       type: object
       description: DTO for bulk export of Contact Service Queue data.
@@ -6278,25 +6455,6 @@ components:
         assistantSkill:
           $ref: '#/components/schemas/AssistantSkillMappingDTO_2'
           description: The assistant skill mapping for this queue.
-    CallDistributionGroupDTO_2:
-      type: object
-      properties:
-        agentGroups:
-          type: array
-          items:
-            $ref: '#/components/schemas/AgentGroupDTO_2'
-          uniqueItems: true
-        order:
-          type: integer
-          format: int32
-          description: The order of this call distribution group.
-          example: 1
-        duration:
-          type: integer
-          format: int32
-          default: 0
-          description: (Optional)The duration in seconds after which a contact in queue will be distributed to this group.
-          example: 2
     QueueAgentsDTO_2:
       type: object
       properties:
@@ -6310,182 +6468,24 @@ components:
           example: c71876ae-ddfa-4049-9a1b-298535152578
       required:
       - id
-    SkillBasedCSQDTO_2:
+    CallDistributionGroupBulkExportDTO:
       type: object
-      description: Skill-based Contact Service Queue data transfer object.
+      description: Call distribution group data for bulk export.
       properties:
-        organizationId:
-          type: string
-          format: uuid
-          description: ID of the contact center organization. This field is required for all bulk save operations.
-          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
-          maxLength: 36
-          minLength: 32
-          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
-        id:
-          type: string
-          description: ID of this contact center resource.
-        version:
-          type: integer
-          format: int32
-          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
-          example: 1
-        channelType:
-          type: string
-          description: The channel type of the queue.
-        name:
-          type: string
-          description: Name of the Contact Service Queue.
-        skillScore:
-          type: integer
-          format: int32
-          description: The skill score for matching this queue.
-        qsrType:
-          type: string
-          description: The queue skill requirement type.
-        dynamicSkillScore:
-          type: integer
-          format: int32
-          description: The dynamic skill score for matching this queue.
-        skillProfileSkillsMatch:
-          type: boolean
-          description: Indicates whether the skill profile skills match.
-        dynamicSkillsMatch:
-          type: boolean
-          description: Indicates whether the dynamic skills match.
-        createdTime:
-          type: integer
-          format: int64
-          description: This is the created time of the entity.
-        lastUpdatedTime:
-          type: integer
-          format: int64
-          description: This is the updated time of the entity.
-    AgentGroupsBulkExportDTO:
-      type: object
-      description: Agent group data for bulk export.
-      properties:
-        teamName:
-          type: string
-          description: The name of the team in this agent group.
-        siteName:
-          type: string
-          description: The name of the site associated with this agent group.
-    ResponseEnvelopeMappedCSQDTO_2:
-      type: object
-      description: Response envelope containing mapped Contact Service Queue data.
-      properties:
-        meta:
-          type: object
-          description: Metadata about the response.
-          additionalProperties: {}
-        data:
+        agentGroups:
           type: array
-          description: List of mapped Contact Service Queue items.
+          description: The agent groups in this call distribution group.
           items:
-            $ref: '#/components/schemas/MappedCSQDTO_2'
-    AgentGroupDTO_2:
-      type: object
-      properties:
-        teamId:
-          type: string
-          description: ID of a team
-          example: 93912f11-6017-404b-bf14-5331890b1797
-    ResponseEnvelopeSkillBasedCSQDTO_2:
-      type: object
-      description: Response envelope containing skill-based Contact Service Queue data.
-      properties:
-        meta:
-          type: object
-          description: Metadata about the response.
-          additionalProperties: {}
-        data:
-          type: array
-          description: List of skill-based Contact Service Queue items.
-          items:
-            $ref: '#/components/schemas/SkillBasedCSQDTO_2'
-    QueueSkillRequirementDTO_2:
-      type: object
-      description: Skill requirement for the queue
-      properties:
-        organizationId:
-          type: string
-          format: uuid
-          description: ID of the contact center organization. This field is required for all bulk save operations.
-          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
-          maxLength: 36
-          minLength: 32
-          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
-        id:
-          type: string
-          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
-          example: 93912f11-6017-404b-bf14-5331890b1797
-        version:
+            $ref: '#/components/schemas/AgentGroupsBulkExportDTO'
+          uniqueItems: true
+        order:
           type: integer
           format: int32
-          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
-          example: 1
-        skillId:
-          type: string
-          description: Skill ID reference
-          example: af9eecc5-0472-4549-9a83-2afdae0d4ba0
-          minLength: 1
-        skillName:
-          type: string
-          description: Indicates the name of the skill. Once created, name cannot be modified.
-          example: German Speaking
-        skillType:
-          type: string
-          description: 'This can be of the following types
-
-
-            PROFICIENCY: id = 0
-
-
-            BOOLEAN: id = 1
-
-
-            TEXT: id = 2
-
-
-            ENUM: id = 3
-
-
-            Once created, skillType cannot be modified.
-
-            '
-          example: BOOLEAN
-        condition:
-          type: string
-          description: Indicates a value that represents a skill the agent has.
-          example: IS_NOT
-        skillValue:
-          type: string
-          description: A short textual description that represents a skill the agent has.
-          example: Credit card SME
-          minLength: 1
-        weight:
+          description: The order of this call distribution group.
+        duration:
           type: integer
           format: int32
-          description: Weight for proficiency skill requirement
-          example: 100
-          maximum: 1000
-        dynamicSkill:
-          type: boolean
-          description: Indicates whether the skill is a dynamic skill or not. Default value is false.
-          example: false
-        createdTime:
-          type: integer
-          format: int64
-          description: This is the created time of the entity.
-        lastUpdatedTime:
-          type: integer
-          format: int64
-          description: This is the updated time of the entity.
-      required:
-      - condition
-      - skillId
-      - skillValue
+          description: The duration in seconds after which a contact in queue will be distributed to this group.
   securitySchemes:
     oauth2:
       flows:

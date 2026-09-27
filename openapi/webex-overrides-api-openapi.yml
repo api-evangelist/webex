@@ -1132,60 +1132,19 @@ paths:
       deprecated: false
 components:
   schemas:
-    RecurrenceDTO:
+    EntityReferenceInfoDTO:
       type: object
       properties:
-        interval:
-          type: integer
-          format: int32
-          minimum: 1
-        occurrenceInTheMonth:
+        description:
           type: string
-          enum:
-          - FIRST
-          - SECOND
-          - THIRD
-          - FOURTH
-          - LAST
-        daysOfWeek:
+          description: Description about reference info.
+          example: list of referenced entities
+        meta:
+          $ref: '#/components/schemas/MetaDataReferencesPagingInfo'
+        data:
           type: array
           items:
-            type: string
-            enum:
-            - SUN
-            - MON
-            - TUE
-            - WED
-            - THU
-            - FRI
-            - SAT
-          maxItems: 7
-          minItems: 0
-        specificDayOfMonth:
-          type: integer
-          format: int32
-          maximum: 31
-          minimum: 1
-        specificMonth:
-          type: string
-          enum:
-          - JAN
-          - FEB
-          - MAR
-          - APR
-          - MAY
-          - JUN
-          - JUL
-          - AUG
-          - SEP
-          - OCT
-          - NOV
-          - DEC
-        endDate:
-          type: string
-          pattern: ^\d{4}-\d{2}-\d{2}$
-      required:
-      - interval
+            $ref: '#/components/schemas/EntityInfo'
     OverrideDTO:
       type: object
       properties:
@@ -1213,6 +1172,54 @@ components:
       required:
       - name
       - workingHours
+    ErrorDetails:
+      description: Details of an error.
+      type: object
+      properties:
+        key:
+          type: string
+          description: An application defined error code.
+          example: '401'
+        message:
+          type: array
+          description: A message providing details about the error.
+          items:
+            $ref: '#/components/schemas/OperationError'
+    ApiErrorResponse:
+      description: Response body for an API error.
+      type: object
+      properties:
+        trackingId:
+          type: string
+          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
+          example: c1a4fcef-aee2-4dea-8977-29f594760552
+        error:
+          description: An object containing details about the error.
+          $ref: '#/components/schemas/ErrorDetails'
+    BulkRequestDTOOverridesDTO:
+      type: object
+      description: Bulk request payload containing overrides items.
+      properties:
+        items:
+          type: array
+          description: List of items in the bulk request.
+          items:
+            $ref: '#/components/schemas/BulkRequestItemDTOOverridesDTO'
+    BulkResponseDTO:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BulkResponseItemDTO'
+    OperationError:
+      description: An error message providing details about the operation failure.
+      type: object
+      properties:
+        description:
+          type: string
+          description: A human readable explanation for the occurrence of an error.
+          example: Incorrect Credentials.
     MetaDataReferencesPagingInfo:
       title: MetaDataReferencesPagingInfo
       type: object
@@ -1267,111 +1274,60 @@ components:
           description: Name of current entity
           example: entity_name
       description: Metadata of response for references with paging information
-    ResponseEnvelopeOverridesDTO:
+    RecurrenceDTO:
       type: object
       properties:
-        meta:
-          type: object
-          additionalProperties: {}
-        data:
+        interval:
+          type: integer
+          format: int32
+          minimum: 1
+        occurrenceInTheMonth:
+          type: string
+          enum:
+          - FIRST
+          - SECOND
+          - THIRD
+          - FOURTH
+          - LAST
+        daysOfWeek:
           type: array
           items:
-            $ref: '#/components/schemas/OverridesDTO'
-    EntityInfo:
-      type: object
-      properties:
-        id:
-          type: string
-          description: id
-          example: id.
-        name:
-          type: string
-          description: name
-          example: name.
-        additionalAttributes:
-          type: object
-          additionalProperties:
             type: string
-            description: A map containing additional attributes of entity where both the key and value are Strings.
-            example: '{"key1":"value1","key2":"value2"}'
-          description: A map containing additional attributes of entity where both the key and value are Strings.
-          example:
-            key1: value1
-            key2: value2
-        createdDate:
-          type: string
-        lastModifiedDate:
-          type: string
-        version:
+            enum:
+            - SUN
+            - MON
+            - TUE
+            - WED
+            - THU
+            - FRI
+            - SAT
+          maxItems: 7
+          minItems: 0
+        specificDayOfMonth:
           type: integer
           format: int32
-    BulkResponseItemDTO:
-      type: object
-      properties:
-        itemIdentifier:
-          type: integer
-          description: Unique item identifier for a bulk operation.
-          format: int32
-          example: 10
-        status:
-          type: integer
-          description: Indicates the error status code.
-          format: int32
-          example: 400
-        operationType:
+          maximum: 31
+          minimum: 1
+        specificMonth:
           type: string
-          description: The kind of operation desired of an entity.
-          example: CREATE
           enum:
-          - CREATE
-          - UPDATE
-          - DELETE
-          - GET
-        href:
+          - JAN
+          - FEB
+          - MAR
+          - APR
+          - MAY
+          - JUN
+          - JUL
+          - AUG
+          - SEP
+          - OCT
+          - NOV
+          - DEC
+        endDate:
           type: string
-          description: The resource URI of an entity.
-          example: /api/organization/6705c69d-4585-42ad-bfc3-79cc485dfb15/team/7b26d174-0016-4682-9858-65918e05f85
-        apiError:
-          $ref: '#/components/schemas/ApiErrorResponse'
-      example:
-        apiError:
-          error:
-            key: '400'
-            message:
-            - description: 'siteId: not found for given orgId.'
-              entity: string
-              references:
-              - id: string
-                name: string
-            reason: dependency exists
-          trackingId: ccconfig_c1a4fcef-aee2-4dea-8977-29f594760552
-        href: /api/organization/6705c69d-4585-42ad-bfc3-79cc485dfb15/team/7b26d174-0016-4682-9858-65918e05f85
-        itemIdentifier: 10
-        operationType: CREATE
-        status: 400
-    OperationError:
-      description: An error message providing details about the operation failure.
-      type: object
-      properties:
-        description:
-          type: string
-          description: A human readable explanation for the occurrence of an error.
-          example: Incorrect Credentials.
-    BulkRequestItemDTOOverridesDTO:
-      type: object
-      description: List of items in the bulk request.
-      properties:
-        itemIdentifier:
-          type: integer
-          format: int32
-          description: Unique item identifier for a bulk operation.
-          example: 10
-        item:
-          $ref: '#/components/schemas/OverridesDTO'
-        requestAction:
-          type: string
-          description: Identifier for action type. Possible values are `SAVE` and `DELETE`.
-          example: SAVE
+          pattern: ^\d{4}-\d{2}-\d{2}$
+      required:
+      - interval
     OverridesDTO:
       type: object
       properties:
@@ -1452,37 +1408,93 @@ components:
       - name
       - overrides
       - timezone
-    ApiErrorResponse:
-      description: Response body for an API error.
+    BulkResponseItemDTO:
       type: object
       properties:
-        trackingId:
+        itemIdentifier:
+          type: integer
+          description: Unique item identifier for a bulk operation.
+          format: int32
+          example: 10
+        status:
+          type: integer
+          description: Indicates the error status code.
+          format: int32
+          example: 400
+        operationType:
           type: string
-          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
-          example: c1a4fcef-aee2-4dea-8977-29f594760552
-        error:
-          description: An object containing details about the error.
-          $ref: '#/components/schemas/ErrorDetails'
-    BulkResponseDTO:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/BulkResponseItemDTO'
-    ErrorDetails:
-      description: Details of an error.
-      type: object
-      properties:
-        key:
+          description: The kind of operation desired of an entity.
+          example: CREATE
+          enum:
+          - CREATE
+          - UPDATE
+          - DELETE
+          - GET
+        href:
           type: string
-          description: An application defined error code.
-          example: '401'
-        message:
-          type: array
-          description: A message providing details about the error.
-          items:
-            $ref: '#/components/schemas/OperationError'
+          description: The resource URI of an entity.
+          example: /api/organization/6705c69d-4585-42ad-bfc3-79cc485dfb15/team/7b26d174-0016-4682-9858-65918e05f85
+        apiError:
+          $ref: '#/components/schemas/ApiErrorResponse'
+      example:
+        apiError:
+          error:
+            key: '400'
+            message:
+            - description: 'siteId: not found for given orgId.'
+              entity: string
+              references:
+              - id: string
+                name: string
+            reason: dependency exists
+          trackingId: ccconfig_c1a4fcef-aee2-4dea-8977-29f594760552
+        href: /api/organization/6705c69d-4585-42ad-bfc3-79cc485dfb15/team/7b26d174-0016-4682-9858-65918e05f85
+        itemIdentifier: 10
+        operationType: CREATE
+        status: 400
+    EntityInfo:
+      type: object
+      properties:
+        id:
+          type: string
+          description: id
+          example: id.
+        name:
+          type: string
+          description: name
+          example: name.
+        additionalAttributes:
+          type: object
+          additionalProperties:
+            type: string
+            description: A map containing additional attributes of entity where both the key and value are Strings.
+            example: '{"key1":"value1","key2":"value2"}'
+          description: A map containing additional attributes of entity where both the key and value are Strings.
+          example:
+            key1: value1
+            key2: value2
+        createdDate:
+          type: string
+        lastModifiedDate:
+          type: string
+        version:
+          type: integer
+          format: int32
+    BulkRequestItemDTOOverridesDTO:
+      type: object
+      description: List of items in the bulk request.
+      properties:
+        itemIdentifier:
+          type: integer
+          format: int32
+          description: Unique item identifier for a bulk operation.
+          example: 10
+        item:
+          $ref: '#/components/schemas/OverridesDTO'
+        requestAction:
+          type: string
+          description: Identifier for action type. Possible values are `SAVE` and `DELETE`.
+          example: SAVE
     OverridesDTOList:
       type: object
       description: Summary details of an overrides resource.
@@ -1538,28 +1550,16 @@ components:
           format: int64
           description: This is the updated time of the entity.
           example: 123456789
-    BulkRequestDTOOverridesDTO:
-      type: object
-      description: Bulk request payload containing overrides items.
-      properties:
-        items:
-          type: array
-          description: List of items in the bulk request.
-          items:
-            $ref: '#/components/schemas/BulkRequestItemDTOOverridesDTO'
-    EntityReferenceInfoDTO:
+    ResponseEnvelopeOverridesDTO:
       type: object
       properties:
-        description:
-          type: string
-          description: Description about reference info.
-          example: list of referenced entities
         meta:
-          $ref: '#/components/schemas/MetaDataReferencesPagingInfo'
+          type: object
+          additionalProperties: {}
         data:
           type: array
           items:
-            $ref: '#/components/schemas/EntityInfo'
+            $ref: '#/components/schemas/OverridesDTO'
   securitySchemes:
     oauth2:
       flows:

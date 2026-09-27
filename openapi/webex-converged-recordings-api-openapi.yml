@@ -1242,30 +1242,6 @@ paths:
               $ref: '#/components/schemas/BulkPurgeRecordingObject'
 components:
   schemas:
-    ReassignRecordingObject:
-      type: object
-      description: Reassign Recording details
-      required:
-      - reassignOwnerEmail
-      properties:
-        ownerEmail:
-          type: string
-          example: john.andersen@example.com
-          description: Recording owner email.
-        ownerID:
-          type: string
-          example: 3c6aa94c-e1f9-4f10-579f-e5582de5374f
-          description: Recording owner ID. Can be a user, a virtual line, or a workspace.
-        recordingIds:
-          type: array
-          items:
-            type: string
-            example: 81bb582c-e93e-40aa-abf6-962b620f6db4,81bb582c-e93e-40aa-abf6-962b620f6db5
-          description: List of recording identifiers to be reassigned.
-        reassignOwnerEmail:
-          type: string
-          example: brenda.song@example.com
-          description: New owner of the recordings.
     DeleteRecordingObject:
       type: object
       description: Delete Recording details
@@ -1278,23 +1254,6 @@ components:
           type: string
           example: Maintain data privacy
           description: Compliance Officer's explanation for deleting a recording. The comment can be a maximum of 255 characters long.
-    BulkSoftDeleteRecordingObject:
-      description: Bulk Soft Delete Recording details
-      type: object
-      properties:
-        trashAll:
-          type: boolean
-          description: If not specified or `false`, moves the recordings specified by `recordingIds` to the recycle bin. If `true`, moves all recordings owned by the caller in case of `user`, and all recordings owned by `ownerEmail` in case of `administrator` to the recycle bin.
-        ownerEmail:
-          type: string
-          example: john.andersen@example.com
-          description: Email address for the recording owner. This parameter is only used if `trashAll` is set to `true` and the user or application calling the API has the required administrator scope `spark-admin:recordings_write`. The administrator may specify the email of a user from an org they manage and the API will move all the recordings of that user into the recycle bin.
-        recordingIds:
-          type: array
-          items:
-            type: string
-            example: 81bb582c-e93e-40aa-abf6-962b620f6db4, 81bb582c-e93e-40aa-abf6-962b620f6db5
-          description: Recording IDs for moving recordings to the recycle bin in batch.
     RecordingObjectWithDirectDownloadLinks:
       type: object
       description: Recording details by ID
@@ -1409,42 +1368,23 @@ components:
               type: string
               description: Call ID for which recording was done.
           description: Fields relevant to each service Type.
-    BulkRestoreRecordingObject:
+    BulkSoftDeleteRecordingObject:
+      description: Bulk Soft Delete Recording details
       type: object
-      description: Bulk Restore Recording details
       properties:
-        restoreAll:
+        trashAll:
           type: boolean
-          example: false
-          description: If not specified or `false`, restores the recordings specified by `recordingIds` from the recycle bin. If `true`, restores all recordings owned by the caller in case of `user`, and all recordings owned by `ownerEmail` in case of `administrator` from the recycle bin.
+          description: If not specified or `false`, moves the recordings specified by `recordingIds` to the recycle bin. If `true`, moves all recordings owned by the caller in case of `user`, and all recordings owned by `ownerEmail` in case of `administrator` to the recycle bin.
         ownerEmail:
           type: string
           example: john.andersen@example.com
-          description: Email address for the recording owner. This parameter is only used if `restoreAll` is set to `true` and the user or application calling the API has the required administrator scope `spark-admin:recordings_write`. The administrator may specify the email of a user from an org they manage and the API will restore all the recordings of that user from the recycle bin.
+          description: Email address for the recording owner. This parameter is only used if `trashAll` is set to `true` and the user or application calling the API has the required administrator scope `spark-admin:recordings_write`. The administrator may specify the email of a user from an org they manage and the API will move all the recordings of that user into the recycle bin.
         recordingIds:
           type: array
           items:
             type: string
             example: 81bb582c-e93e-40aa-abf6-962b620f6db4, 81bb582c-e93e-40aa-abf6-962b620f6db5
-          description: Recording IDs for restoring recordings from the recycle bin in batch.
-    BulkPurgeRecordingObject:
-      type: object
-      description: Bulk Purge Recording details
-      properties:
-        purgeAll:
-          type: boolean
-          example: false
-          description: If not specified or `false`, purges the recordings specified by `recordingIds` from the recycle bin. If `true`, purges all recordings owned by the caller in case of `user`, and all recordings owned by `ownerEmail` in case of `administrator` from the recycle bin.
-        ownerEmail:
-          type: string
-          example: john.andersen@example.com
-          description: Email address for the recording owner. This parameter is only used if `purgeAll` is set to `true` and the user or application calling the API has the required administrator scope `spark-admin:recordings_write`. The administrator may specify the email of a user from an org they manage and the API will purge all the recordings of that user from the recycle bin.
-        recordingIds:
-          type: array
-          items:
-            type: string
-            example: 81bb582c-e93e-40aa-abf6-962b620f6db4, 81bb582c-e93e-40aa-abf6-962b620f6db5
-          description: Recording IDs for purging recordings from the recycle bin in batch.
+          description: Recording IDs for moving recordings to the recycle bin in batch.
     RecordingObject:
       type: object
       description: Recording details
@@ -1536,6 +1476,66 @@ components:
               type: string
               description: Call ID for which recording was done.
           description: Fields relevant to each service Type.
+    BulkRestoreRecordingObject:
+      type: object
+      description: Bulk Restore Recording details
+      properties:
+        restoreAll:
+          type: boolean
+          example: false
+          description: If not specified or `false`, restores the recordings specified by `recordingIds` from the recycle bin. If `true`, restores all recordings owned by the caller in case of `user`, and all recordings owned by `ownerEmail` in case of `administrator` from the recycle bin.
+        ownerEmail:
+          type: string
+          example: john.andersen@example.com
+          description: Email address for the recording owner. This parameter is only used if `restoreAll` is set to `true` and the user or application calling the API has the required administrator scope `spark-admin:recordings_write`. The administrator may specify the email of a user from an org they manage and the API will restore all the recordings of that user from the recycle bin.
+        recordingIds:
+          type: array
+          items:
+            type: string
+            example: 81bb582c-e93e-40aa-abf6-962b620f6db4, 81bb582c-e93e-40aa-abf6-962b620f6db5
+          description: Recording IDs for restoring recordings from the recycle bin in batch.
+    ReassignRecordingObject:
+      type: object
+      description: Reassign Recording details
+      required:
+      - reassignOwnerEmail
+      properties:
+        ownerEmail:
+          type: string
+          example: john.andersen@example.com
+          description: Recording owner email.
+        ownerID:
+          type: string
+          example: 3c6aa94c-e1f9-4f10-579f-e5582de5374f
+          description: Recording owner ID. Can be a user, a virtual line, or a workspace.
+        recordingIds:
+          type: array
+          items:
+            type: string
+            example: 81bb582c-e93e-40aa-abf6-962b620f6db4,81bb582c-e93e-40aa-abf6-962b620f6db5
+          description: List of recording identifiers to be reassigned.
+        reassignOwnerEmail:
+          type: string
+          example: brenda.song@example.com
+          description: New owner of the recordings.
+    BulkPurgeRecordingObject:
+      type: object
+      description: Bulk Purge Recording details
+      properties:
+        purgeAll:
+          type: boolean
+          example: false
+          description: If not specified or `false`, purges the recordings specified by `recordingIds` from the recycle bin. If `true`, purges all recordings owned by the caller in case of `user`, and all recordings owned by `ownerEmail` in case of `administrator` from the recycle bin.
+        ownerEmail:
+          type: string
+          example: john.andersen@example.com
+          description: Email address for the recording owner. This parameter is only used if `purgeAll` is set to `true` and the user or application calling the API has the required administrator scope `spark-admin:recordings_write`. The administrator may specify the email of a user from an org they manage and the API will purge all the recordings of that user from the recycle bin.
+        recordingIds:
+          type: array
+          items:
+            type: string
+            example: 81bb582c-e93e-40aa-abf6-962b620f6db4, 81bb582c-e93e-40aa-abf6-962b620f6db5
+          description: Recording IDs for purging recordings from the recycle bin in batch.
   securitySchemes:
     oauth2:
       flows:

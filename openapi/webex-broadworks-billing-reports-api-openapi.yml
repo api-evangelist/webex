@@ -71,7 +71,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: List BroadWorks Billing Reports
-      operationId: List BroadWorks Billing Reports
+      operationId: ListBroadWorksBillingReports
       description: Search for reports. There are a number of filter options which can be combined in a single request.
       tags:
       - BroadWorks Billing Reports
@@ -95,6 +95,8 @@ paths:
         schema:
           type: string
           default: billingPeriod
+      x-operation-id-source: normalized
+      x-operation-id-original: List BroadWorks Billing Reports
     post:
       responses:
         '200':
@@ -137,7 +139,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Create a BroadWorks Billing Report
-      operationId: Create a BroadWorks Billing Report
+      operationId: CreateABroadWorksBillingReport
       description: 'Generate a monthly reconciliation report.
 
 
@@ -159,6 +161,8 @@ paths:
                   type: string
                   example: 2020-11
                   description: The year and month (`YYYY-MM`) for which the billing report is to be generated.
+      x-operation-id-source: normalized
+      x-operation-id-original: Create a BroadWorks Billing Report
   /broadworks/billing/reports/{id}:
     get:
       responses:
@@ -207,7 +211,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Get a BroadWorks Billing Report
-      operationId: Get a BroadWorks Billing Report
+      operationId: GetABroadWorksBillingReport
       description: Retrieve a specific billing reconciliation report.
       tags:
       - BroadWorks Billing Reports
@@ -219,6 +223,8 @@ paths:
         example: Y2lzY29zcGFyazovL3VzL0JJTExJTkdfUkVQT1JULzViOGQ1MThhLThmMDAtNDUxYi1hNDA2LWVhZjQ5YjRhN2ZhOA
         schema:
           type: string
+      x-operation-id-source: normalized
+      x-operation-id-original: Get a BroadWorks Billing Report
     delete:
       responses:
         '204':
@@ -256,7 +262,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Delete a BroadWorks Billing Report
-      operationId: Delete a BroadWorks Billing Report
+      operationId: DeleteABroadWorksBillingReport
       description: Delete a monthly reconciliation report using a report ID.
       tags:
       - BroadWorks Billing Reports
@@ -268,6 +274,8 @@ paths:
         example: Y2lzY29zcGFyazovL3VzL0JJTExJTkdfUkVQT1JULzViOGQ1MThhLThmMDAtNDUxYi1hNDA2LWVhZjQ5YjRhN2ZhOA
         schema:
           type: string
+      x-operation-id-source: normalized
+      x-operation-id-original: Delete a BroadWorks Billing Report
 components:
   schemas:
     BillingReportsListResponse:
@@ -278,6 +286,42 @@ components:
           items:
             $ref: '#/components/schemas/ListReport'
           description: An array of reports objects.
+    ReportError:
+      type: object
+      properties:
+        code:
+          type: number
+          example: 2024
+          description: The error code itself.
+        description:
+          type: string
+          example: Billing Report not found.
+          description: A textual representation of the error code.
+    ListReport:
+      type: object
+      properties:
+        id:
+          type: string
+          example: '''Y2lzY29zcGFyazovL3VzL0JJTExJTkdfUkVQT1JULzViOGQ1MThhLThmMDAtNDUxYi1hNDA2LWVhZjQ5YjRhN2ZhOA'''
+          description: A unique report ID that corresponds to a billing report.
+        billingPeriod:
+          type: string
+          example: 2021-05
+          description: The year and month (`YYYY-MM`) for which the billing report was generated.
+        status:
+          type: string
+          enum:
+          - IN_PROGRESS
+          - COMPLETED
+          - FAILED
+          description: "The status of the billing report.\n * `IN_PROGRESS` - Report generation is in progress.\n * `COMPLETED` - Report generation is complete.\n * `FAILED` - Report generation failed.\n"
+    ReportId:
+      type: object
+      properties:
+        id:
+          type: string
+          example: '''Y2lzY29zcGFyazovL3VzL0JJTExJTkdfUkVQT1JULzViOGQ1MThhLThmMDAtNDUxYi1hNDA2LWVhZjQ5YjRhN2ZhOA'''
+          description: A unique report ID that corresponds to a billing report.
     Report:
       type: object
       properties:
@@ -319,42 +363,6 @@ components:
 
 
             * Captures errors that occurred during asynchronous or background report generation, after the request has been accepted and a `202 OK` response is returned.'
-    ReportError:
-      type: object
-      properties:
-        code:
-          type: number
-          example: 2024
-          description: The error code itself.
-        description:
-          type: string
-          example: Billing Report not found.
-          description: A textual representation of the error code.
-    ListReport:
-      type: object
-      properties:
-        id:
-          type: string
-          example: '''Y2lzY29zcGFyazovL3VzL0JJTExJTkdfUkVQT1JULzViOGQ1MThhLThmMDAtNDUxYi1hNDA2LWVhZjQ5YjRhN2ZhOA'''
-          description: A unique report ID that corresponds to a billing report.
-        billingPeriod:
-          type: string
-          example: 2021-05
-          description: The year and month (`YYYY-MM`) for which the billing report was generated.
-        status:
-          type: string
-          enum:
-          - IN_PROGRESS
-          - COMPLETED
-          - FAILED
-          description: "The status of the billing report.\n * `IN_PROGRESS` - Report generation is in progress.\n * `COMPLETED` - Report generation is complete.\n * `FAILED` - Report generation failed.\n"
-    ReportId:
-      type: object
-      properties:
-        id:
-          type: string
-          example: '''Y2lzY29zcGFyazovL3VzL0JJTExJTkdfUkVQT1JULzViOGQ1MThhLThmMDAtNDUxYi1hNDA2LWVhZjQ5YjRhN2ZhOA'''
-          description: A unique report ID that corresponds to a billing report.
   securitySchemes:
     oauth2:
       flows:

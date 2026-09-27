@@ -560,18 +560,95 @@ paths:
       deprecated: false
 components:
   schemas:
+    ErrorDetails:
+      description: Details of an error.
+      type: object
+      properties:
+        key:
+          type: string
+          description: An application defined error code.
+          example: '401'
+        message:
+          type: array
+          description: A message providing details about the error.
+          items:
+            $ref: '#/components/schemas/OperationError'
+    ApiErrorResponse:
+      description: Response body for an API error.
+      type: object
+      properties:
+        trackingId:
+          type: string
+          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
+          example: c1a4fcef-aee2-4dea-8977-29f594760552
+        error:
+          description: An object containing details about the error.
+          $ref: '#/components/schemas/ErrorDetails'
+    ContactNumberDTO:
+      required:
+      - number
+      type: object
+      properties:
+        organizationId:
+          maxLength: 36
+          minLength: 32
+          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
+          type: string
+          description: ID of the contact center organization. It is required to define for the following operations - All bulk save operations
+          format: uuid
+          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+        id:
+          type: string
+          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
+          example: 93912f11-6017-404b-bf14-5331890b1797
+        version:
+          type: integer
+          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
+          format: int32
+          example: 1
+        number:
+          pattern: ^[0-9]*$
+          type: string
+          description: The customized ani number.
+          example: '14033212'
+        createdTime:
+          type: integer
+          description: Creation time(in epoch millis) of this resource.
+          format: int64
+          readOnly: true
+          example: 1617536244000
+        lastUpdatedTime:
+          type: integer
+          description: Time(in epoch millis) when this resource was last updated.
+          format: int64
+          readOnly: true
+          example: 1617536244000
     ContactNumberBulkExportDTO:
       type: object
       properties:
         number:
           type: string
-    BulkRequestDTOContactNumberDTO:
+    BulkRequestItemDTOContactNumberDTO:
+      type: object
+      properties:
+        itemIdentifier:
+          type: integer
+          description: Unique item identifier for a bulk operation.
+          format: int32
+          example: 10
+        item:
+          $ref: '#/components/schemas/ContactNumberDTO'
+        requestAction:
+          type: string
+          description: Identifier for action type. Possible values can be SAVE and DELETE.
+          example: SAVE
+    BulkResponseDTO:
       type: object
       properties:
         items:
           type: array
           items:
-            $ref: '#/components/schemas/BulkRequestItemDTOContactNumberDTO'
+            $ref: '#/components/schemas/BulkResponseItemDTO'
     BulkResponseItemDTO:
       type: object
       properties:
@@ -616,20 +693,13 @@ components:
         itemIdentifier: 10
         operationType: CREATE
         status: 400
-    BulkRequestItemDTOContactNumberDTO:
+    BulkRequestDTOContactNumberDTO:
       type: object
       properties:
-        itemIdentifier:
-          type: integer
-          description: Unique item identifier for a bulk operation.
-          format: int32
-          example: 10
-        item:
-          $ref: '#/components/schemas/ContactNumberDTO'
-        requestAction:
-          type: string
-          description: Identifier for action type. Possible values can be SAVE and DELETE.
-          example: SAVE
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BulkRequestItemDTOContactNumberDTO'
     OperationError:
       description: An error message providing details about the operation failure.
       type: object
@@ -638,24 +708,6 @@ components:
           type: string
           description: A human readable explanation for the occurrence of an error.
           example: Incorrect Credentials.
-    ApiErrorResponse:
-      description: Response body for an API error.
-      type: object
-      properties:
-        trackingId:
-          type: string
-          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
-          example: c1a4fcef-aee2-4dea-8977-29f594760552
-        error:
-          description: An object containing details about the error.
-          $ref: '#/components/schemas/ErrorDetails'
-    BulkResponseDTO:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/BulkResponseItemDTO'
     ResponseEnvelopeContactNumberDTO:
       type: object
       properties:
@@ -667,58 +719,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ContactNumberDTO'
-    ErrorDetails:
-      description: Details of an error.
-      type: object
-      properties:
-        key:
-          type: string
-          description: An application defined error code.
-          example: '401'
-        message:
-          type: array
-          description: A message providing details about the error.
-          items:
-            $ref: '#/components/schemas/OperationError'
-    ContactNumberDTO:
-      required:
-      - number
-      type: object
-      properties:
-        organizationId:
-          maxLength: 36
-          minLength: 32
-          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
-          type: string
-          description: ID of the contact center organization. It is required to define for the following operations - All bulk save operations
-          format: uuid
-          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
-        id:
-          type: string
-          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
-          example: 93912f11-6017-404b-bf14-5331890b1797
-        version:
-          type: integer
-          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
-          format: int32
-          example: 1
-        number:
-          pattern: ^[0-9]*$
-          type: string
-          description: The customized ani number.
-          example: '14033212'
-        createdTime:
-          type: integer
-          description: Creation time(in epoch millis) of this resource.
-          format: int64
-          readOnly: true
-          example: 1617536244000
-        lastUpdatedTime:
-          type: integer
-          description: Time(in epoch millis) when this resource was last updated.
-          format: int64
-          readOnly: true
-          example: 1617536244000
     BulkExportDTOContactNumberBulkExportDTO:
       type: object
       properties:

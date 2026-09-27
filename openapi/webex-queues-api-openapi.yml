@@ -130,6 +130,30 @@ paths:
             application/json: {}
 components:
   schemas:
+    ErrorDetails:
+      description: Details of an error.
+      type: object
+      properties:
+        key:
+          type: string
+          description: An application defined error code.
+          example: '401'
+        message:
+          type: array
+          description: A message providing details about the error.
+          items:
+            $ref: '#/components/schemas/OperationError'
+    ApiErrorResponse:
+      description: Response body for an API error.
+      type: object
+      properties:
+        trackingId:
+          type: string
+          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
+          example: c1a4fcef-aee2-4dea-8977-29f594760552
+        error:
+          description: An object containing details about the error.
+          $ref: '#/components/schemas/ErrorDetails'
     OutQueueStatistics:
       type: object
       properties:
@@ -205,46 +229,6 @@ components:
           format: double
           example: 25.34
       description: List of Queue statistics records retrieved according to query parameters.
-    OperationError:
-      description: An error message providing details about the operation failure.
-      type: object
-      properties:
-        description:
-          type: string
-          description: A human readable explanation for the occurrence of an error.
-          example: Incorrect Credentials.
-    Meta:
-      type: object
-      properties:
-        orgId:
-          type: string
-          description: Organization ID to which resources belong.
-          example: 3dae8fdd-06e2-411a-9035-51f3719f5b65
-      description: Response metadata.
-    ApiErrorResponse:
-      description: Response body for an API error.
-      type: object
-      properties:
-        trackingId:
-          type: string
-          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
-          example: c1a4fcef-aee2-4dea-8977-29f594760552
-        error:
-          description: An object containing details about the error.
-          $ref: '#/components/schemas/ErrorDetails'
-    ErrorDetails:
-      description: Details of an error.
-      type: object
-      properties:
-        key:
-          type: string
-          description: An application defined error code.
-          example: '401'
-        message:
-          type: array
-          description: A message providing details about the error.
-          items:
-            $ref: '#/components/schemas/OperationError'
     QueueApiResponse:
       required:
       - data
@@ -258,6 +242,22 @@ components:
           description: List of Queue statistics records retrieved according to query parameters.
           items:
             $ref: '#/components/schemas/OutQueueStatistics'
+    Meta:
+      type: object
+      properties:
+        orgId:
+          type: string
+          description: Organization ID to which resources belong.
+          example: 3dae8fdd-06e2-411a-9035-51f3719f5b65
+      description: Response metadata.
+    OperationError:
+      description: An error message providing details about the operation failure.
+      type: object
+      properties:
+        description:
+          type: string
+          description: A human readable explanation for the occurrence of an error.
+          example: Incorrect Credentials.
   securitySchemes:
     oauth2:
       flows:

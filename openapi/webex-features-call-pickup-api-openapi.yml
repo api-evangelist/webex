@@ -78,7 +78,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Read the List of Call Pickups
-      operationId: Read the List of Call Pickups
+      operationId: ReadTheListOfCallPickups
       description: 'List all Call Pickups for the organization.
 
 
@@ -129,6 +129,8 @@ paths:
         example: Alaska-Group
         schema:
           type: string
+      x-operation-id-source: normalized
+      x-operation-id-original: Read the List of Call Pickups
     post:
       responses:
         '201':
@@ -177,7 +179,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Create a Call Pickup
-      operationId: Create a Call Pickup
+      operationId: CreateACallPickup
       description: 'Create new Call Pickups for the given location.
 
 
@@ -217,6 +219,8 @@ paths:
               - Y2lzY29zcGFyazovL3VzL1ZJUlRVQUxfTElORS85ODFlNTQ0Yy0xOGI0LTQ2MzItYmFkZi1iYWMwZjFkOGJkYWY=
             schema:
               $ref: '#/components/schemas/PostCallPickupObject'
+      x-operation-id-source: normalized
+      x-operation-id-original: Create a Call Pickup
   /telephony/config/locations/{locationId}/callPickups/{callPickupId}:
     delete:
       responses:
@@ -255,7 +259,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Delete a Call Pickup
-      operationId: Delete a Call Pickup
+      operationId: DeleteACallPickup
       description: 'Delete the designated Call Pickup.
 
 
@@ -289,6 +293,8 @@ paths:
         example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE
         schema:
           type: string
+      x-operation-id-source: normalized
+      x-operation-id-original: Delete a Call Pickup
     get:
       responses:
         '200':
@@ -370,7 +376,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Get Details for a Call Pickup
-      operationId: Get Details for a Call Pickup
+      operationId: GetDetailsForACallPickup
       description: 'Retrieve the designated Call Pickup details.
 
 
@@ -404,6 +410,8 @@ paths:
         example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE
         schema:
           type: string
+      x-operation-id-source: normalized
+      x-operation-id-original: Get Details for a Call Pickup
     put:
       responses:
         '200':
@@ -452,7 +460,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Update a Call Pickup
-      operationId: Update a Call Pickup
+      operationId: UpdateACallPickup
       description: 'Update the designated Call Pickup.
 
 
@@ -499,6 +507,8 @@ paths:
               - Y2lzY29zcGFyazovL3VzL1ZJUlRVQUxfTElORS85ODFlNTQ0Yy0xOGI0LTQ2MzItYmFkZi1iYWMwZjFkOGJkYWY=
             schema:
               $ref: '#/components/schemas/ModifyCallPickupObject'
+      x-operation-id-source: normalized
+      x-operation-id-original: Update a Call Pickup
   /telephony/config/locations/{locationId}/callPickups/availableUsers:
     get:
       responses:
@@ -585,7 +595,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Get available agents from Call Pickups
-      operationId: Get available agents from Call Pickups
+      operationId: GetAvailableAgentsFromCallPickups
       description: 'Retrieve available agents from call pickups for a given location.
 
 
@@ -645,6 +655,8 @@ paths:
         example: lname|fname|number
         schema:
           type: string
+      x-operation-id-source: normalized
+      x-operation-id-original: Get available agents from Call Pickups
 components:
   schemas:
     GetPersonPlaceVirtualLineCallPickupObject:
@@ -686,30 +698,37 @@ components:
           items:
             $ref: '#/components/schemas/GetUserNumberItemObject'
           description: List of phone numbers of a person, workspace or virtual line.
-    ListCallPickupObject:
+    GetCallPickupObject:
       type: object
       required:
-      - name
       - id
-      - locationName
-      - locationId
+      - name
       properties:
-        name:
-          type: string
-          example: North Alaska-Group
-          description: Unique name for the call pickup. The maximum length is 80.
         id:
           type: string
           example: Y2lzY29zcGFyazovL3VzL0NBTExfUElDS1VQL1kyRnNiRkJwWTJ0MWNERT0
           description: A unique identifier for the call pickup.
-        locationName:
+        name:
           type: string
-          example: Alaska
-          description: Name of the location for call pickup.
-        locationId:
+          example: North Alaska-Group
+          description: Unique name for the call pickup. The maximum length is 80.
+        notificationType:
           type: string
-          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzEyMzQ1
-          description: ID of the location for call pickup.
+          enum:
+          - NONE
+          - AUDIO_ONLY
+          - VISUAL_ONLY
+          - AUDIO_AND_VISUAL
+          description: "Type of the notification when an incoming call is unanswered. The call pickup group notifies all of its members. Default: NONE.\n * `NONE` - Notification is not sent to any member of the call pickup group.\n * `AUDIO_ONLY` - When the `notificationDelayTimerSeconds` number of seconds has elapsed, play an audio notification for each call pickup group member.\n * `VISUAL_ONLY` - When the `notificationDelayTimerSeconds` number of seconds has elapsed, provide a visual notification to every call pickup group member.\n * `AUDIO_AND_VISUAL` - When the `notificationDelayTimerSeconds` number of seconds has elapsed, provide an audio and visual notification to every call pickup group member.\n"
+        notificationDelayTimerSeconds:
+          type: number
+          example: 6
+          description: 'After the number of seconds given by the `notificationDelayTimerSeconds` has elapsed, notify every member of the call pickup group when an incoming call goes unanswered. The `notificationType` field specifies the notification method. Default: 6.'
+        agents:
+          type: array
+          items:
+            $ref: '#/components/schemas/GetPersonPlaceVirtualLineCallPickupObject'
+          description: People, workspaces and virtual lines that are eligible to receive calls.
     ModifyCallPickupObject:
       type: object
       properties:
@@ -734,6 +753,30 @@ components:
           items:
             type: string
           description: An array of people, workspace, and virtual lines IDs, that are added to call pickup.
+    ListCallPickupObject:
+      type: object
+      required:
+      - name
+      - id
+      - locationName
+      - locationId
+      properties:
+        name:
+          type: string
+          example: North Alaska-Group
+          description: Unique name for the call pickup. The maximum length is 80.
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0NBTExfUElDS1VQL1kyRnNiRkJwWTJ0MWNERT0
+          description: A unique identifier for the call pickup.
+        locationName:
+          type: string
+          example: Alaska
+          description: Name of the location for call pickup.
+        locationId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzEyMzQ1
+          description: ID of the location for call pickup.
     PostCallPickupObject:
       type: object
       required:
@@ -771,37 +814,6 @@ components:
           type: string
           example: '8080'
           description: Extension of a person, workspace or virtual line.
-    GetCallPickupObject:
-      type: object
-      required:
-      - id
-      - name
-      properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0NBTExfUElDS1VQL1kyRnNiRkJwWTJ0MWNERT0
-          description: A unique identifier for the call pickup.
-        name:
-          type: string
-          example: North Alaska-Group
-          description: Unique name for the call pickup. The maximum length is 80.
-        notificationType:
-          type: string
-          enum:
-          - NONE
-          - AUDIO_ONLY
-          - VISUAL_ONLY
-          - AUDIO_AND_VISUAL
-          description: "Type of the notification when an incoming call is unanswered. The call pickup group notifies all of its members. Default: NONE.\n * `NONE` - Notification is not sent to any member of the call pickup group.\n * `AUDIO_ONLY` - When the `notificationDelayTimerSeconds` number of seconds has elapsed, play an audio notification for each call pickup group member.\n * `VISUAL_ONLY` - When the `notificationDelayTimerSeconds` number of seconds has elapsed, provide a visual notification to every call pickup group member.\n * `AUDIO_AND_VISUAL` - When the `notificationDelayTimerSeconds` number of seconds has elapsed, provide an audio and visual notification to every call pickup group member.\n"
-        notificationDelayTimerSeconds:
-          type: number
-          example: 6
-          description: 'After the number of seconds given by the `notificationDelayTimerSeconds` has elapsed, notify every member of the call pickup group when an incoming call goes unanswered. The `notificationType` field specifies the notification method. Default: 6.'
-        agents:
-          type: array
-          items:
-            $ref: '#/components/schemas/GetPersonPlaceVirtualLineCallPickupObject'
-          description: People, workspaces and virtual lines that are eligible to receive calls.
   securitySchemes:
     oauth2:
       flows:

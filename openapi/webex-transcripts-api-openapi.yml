@@ -92,7 +92,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: List Meeting Transcripts
-      operationId: List Meeting Transcripts
+      operationId: ListMeetingTranscripts
       description: 'Lists available transcripts of an ended meeting instance.
 
 
@@ -144,6 +144,8 @@ paths:
         example: example.webex.com
         schema:
           type: string
+      x-operation-id-source: normalized
+      x-operation-id-original: List Meeting Transcripts
   /admin/meetingTranscripts:
     get:
       responses:
@@ -217,7 +219,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: List Meeting Transcripts For Compliance Officer
-      operationId: List Meeting Transcripts For Compliance Officer
+      operationId: ListMeetingTranscriptsForComplianceOfficer
       description: 'Lists available or deleted transcripts of an ended meeting instance for a specific site.
 
 
@@ -258,6 +260,8 @@ paths:
         example: example.webex.com
         schema:
           type: string
+      x-operation-id-source: normalized
+      x-operation-id-original: List Meeting Transcripts For Compliance Officer
   /meetingTranscripts/{transcriptId}/download:
     get:
       responses:
@@ -350,7 +354,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Download a Meeting Transcript
-      operationId: Download a Meeting Transcript
+      operationId: DownloadAMeetingTranscript
       description: Download a meeting transcript from the meeting transcript specified by `transcriptId`.
       tags:
       - Transcripts
@@ -378,6 +382,8 @@ paths:
         example: john.andersen@example.com
         schema:
           type: string
+      x-operation-id-source: normalized
+      x-operation-id-original: Download a Meeting Transcript
   /meetingTranscripts/{transcriptId}/snippets:
     get:
       responses:
@@ -433,7 +439,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: List Snippets of a Meeting Transcript
-      operationId: List Snippets of a Meeting Transcript
+      operationId: ListSnippetsOfAMeetingTranscript
       description: 'Lists snippets of a meeting transcript specified by `transcriptId`.
 
 
@@ -454,6 +460,8 @@ paths:
         example: '10'
         schema:
           type: string
+      x-operation-id-source: normalized
+      x-operation-id-original: List Snippets of a Meeting Transcript
   /meetingTranscripts/{transcriptId}/snippets/{snippetId}:
     get:
       responses:
@@ -502,7 +510,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Get a Transcript Snippet
-      operationId: Get a Transcript Snippet
+      operationId: GetATranscriptSnippet
       description: Retrieves details for a transcript snippet specified by `snippetId` from the meeting transcript specified by `transcriptId`.
       tags:
       - Transcripts
@@ -521,6 +529,8 @@ paths:
         example: 195d64646ad14be2924ea50f541fd91d_00001
         schema:
           type: string
+      x-operation-id-source: normalized
+      x-operation-id-original: Get a Transcript Snippet
     put:
       responses:
         '200':
@@ -568,7 +578,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Update a Transcript Snippet
-      operationId: Update a Transcript Snippet
+      operationId: UpdateATranscriptSnippet
       description: Updates details for a transcript snippet specified by `snippetId` from the meeting transcript specified by `transcriptId`.
       tags:
       - Transcripts
@@ -595,6 +605,8 @@ paths:
               text: Hello everybody!
             schema:
               $ref: '#/components/schemas/UpdateSnippetObject'
+      x-operation-id-source: normalized
+      x-operation-id-original: Update a Transcript Snippet
   /meetingTranscripts/{transcriptId}:
     delete:
       responses:
@@ -633,7 +645,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Delete a Transcript
-      operationId: Delete a Transcript
+      operationId: DeleteATranscript
       description: Removes a transcript with a specified transcript ID. The deleted transcript cannot be recovered. If a Compliance Officer deletes another user's transcript, the transcript will be inaccessible to regular users (host, attendees), but will be still available to the Compliance Officer.
       tags:
       - Transcripts
@@ -653,8 +665,34 @@ paths:
               comment: Violates the company policy
             schema:
               $ref: '#/components/schemas/DeleteTranscriptObject'
+      x-operation-id-source: normalized
+      x-operation-id-original: Delete a Transcript
 components:
   schemas:
+    DeleteTranscriptObject:
+      type: object
+      properties:
+        reason:
+          type: string
+          example: audit
+          description: Reason for deleting a transcript. Only required when a Compliance Officer is operating on another user's transcript.
+        comment:
+          type: string
+          example: Maintain data privacy
+          description: Explanation for deleting a transcript. The comment can be a maximum of 255 characters long.
+    UpdateSnippetObject:
+      type: object
+      required:
+      - text
+      properties:
+        reason:
+          type: string
+          example: audit
+          description: Reason for snippet update; only required for Compliance Officers.
+        text:
+          type: string
+          example: Hello everybody
+          description: Text for the snippet.
     SnippetObject:
       type: object
       required:
@@ -689,19 +727,6 @@ components:
           type: number
           example: 2000
           description: Duration of the snippet in milliseconds.
-    UpdateSnippetObject:
-      type: object
-      required:
-      - text
-      properties:
-        reason:
-          type: string
-          example: audit
-          description: Reason for snippet update; only required for Compliance Officers.
-        text:
-          type: string
-          example: Hello everybody
-          description: Text for the snippet.
     TranscriptObject:
       type: object
       required:
@@ -762,17 +787,6 @@ components:
           - available
           - deleted
           description: " * `available` - Transcript is available.\n * `deleted` - Transcript has been deleted.\n"
-    DeleteTranscriptObject:
-      type: object
-      properties:
-        reason:
-          type: string
-          example: audit
-          description: Reason for deleting a transcript. Only required when a Compliance Officer is operating on another user's transcript.
-        comment:
-          type: string
-          example: Maintain data privacy
-          description: Explanation for deleting a transcript. The comment can be a maximum of 255 characters long.
   securitySchemes:
     oauth2:
       flows:

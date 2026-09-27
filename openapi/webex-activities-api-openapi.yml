@@ -226,76 +226,24 @@ paths:
           content: {}
 components:
   schemas:
-    ActivityChoiceEntry:
-      title: ActivityChoiceEntry
+    ActivityOutputPort:
+      title: ActivityOutputPort
       type: object
-      description: A single resolved choice for an activity input.
+      description: An output port the activity may exit through. Edges reference a port via their `condition`.
       additionalProperties: true
       properties:
-        name:
+        condition:
           type: string
-          description: Human-readable label shown in authoring UIs.
-          example: Main Support Queue
-        value:
+          description: Port condition. An edge's `condition` must match one of these verbatim (for example, `default`, `error`).
+          example: default
+        label:
           type: string
-          description: The choice value/ID, suitable for use as the activity input value.
-          example: Main_Support_Queue
-    ActivityV2:
-      title: ActivityV2
-      type: object
-      description: Definition of an activity type, including its inputs, outputs, and named output ports.
-      additionalProperties: true
-      example:
-        activityName: play-message
-        displayName: Play Message
-        category: core
-        group: action
-        activityType: action
-        inputs: []
-        outputs: []
-        outputPorts:
-        - condition: error
-          label: ''
-          isErrorPath: true
-        - condition: default
-          label: default
-          isErrorPath: false
-      properties:
-        activityName:
-          type: string
-          description: Stable activity type identifier referenced by a flow node's `properties.activityName`. Read the value verbatim from this endpoint; it is not always kebab-case (for example, `SetCallerID`, `Feedback-V2`, `queue-lookup`).
-          example: play-message
-        displayName:
-          type: string
-          description: Human-readable name shown in authoring UIs.
-          example: Play Message
-        category:
-          type: string
-          description: High-level grouping the activity belongs to (for example, `core`).
-          example: core
-        group:
-          type: string
-          description: Group the activity belongs to. An open set; observed values include `action`, `enum-gateway`, `http-request`, `parse-activity`, `set-variable`, and `terminating-action`. Read the value verbatim rather than assuming a fixed set.
-          example: action
-        activityType:
-          type: string
-          description: Underlying activity classification used by the runtime (for example, `action`, `start`).
-          example: action
-        inputs:
-          type: array
-          description: Declared inputs for the activity.
-          items:
-            $ref: '#/components/schemas/ActivityInput'
-        outputs:
-          type: array
-          description: Declared outputs for the activity.
-          items:
-            $ref: '#/components/schemas/ActivityOutput'
-        outputPorts:
-          type: array
-          description: Output ports the activity may exit through. An edge's `condition` must match one of these ports' `condition` values.
-          items:
-            $ref: '#/components/schemas/ActivityOutputPort'
+          description: Human-readable port label shown in authoring UIs. May be empty.
+          example: default
+        isErrorPath:
+          type: boolean
+          description: True if this port is the activity's error path.
+          example: false
     ActivityInputChoices:
       title: ActivityInputChoices
       type: object
@@ -359,103 +307,6 @@ components:
           type: string
           description: The requested input name.
           example: channelType
-    FlowV2ValidationError:
-      title: FlowV2ValidationError
-      type: object
-      description: A single validation error against a flow document.
-      properties:
-        activityName:
-          type: string
-          description: Name of the activity the error relates to.
-          example: play-message
-        condition:
-          type: string
-          description: Edge condition the error relates to, when applicable.
-          example: onTimeout
-        from:
-          type: string
-          description: Source node label of the offending edge, when applicable.
-          example: WelcomeMessage
-        edge:
-          type: string
-          description: Human-readable description of the offending edge, when applicable.
-          example: WelcomeMessage->DisconnectContact(onTimeout)
-        suggestion:
-          type: string
-          description: Suggested fix.
-          example: 'Use one of: default, error'
-        message:
-          type: string
-          description: Human-readable explanation of the error.
-          example: Condition 'onTimeout' is not valid for activity 'play-message'.
-        severity:
-          type: string
-          description: Severity of the issue.
-          enum:
-          - ERROR
-          example: ERROR
-    FlowV2ErrorResponse:
-      title: FlowV2ErrorResponse
-      type: object
-      description: Standard error envelope returned by flow endpoints. For 400 (bad request) and 422 (validation failure), `details[]` carries field-level error information.
-      additionalProperties: true
-      example:
-        code: INVALID_FLOW
-        message: Flow document failed validation.
-        details:
-        - path: /nodes/2/inputs/queue
-          code: UNKNOWN_QUEUE
-          message: Queue 'Main_Support_Quueue' was not found in the project.
-      properties:
-        code:
-          type: string
-          description: Stable, machine-readable error code.
-          example: INVALID_FLOW
-        message:
-          type: string
-          description: Human-readable error message.
-          example: Flow document failed validation.
-        details:
-          type: array
-          description: Per-issue error details. Populated for 400 and 422 responses.
-          items:
-            $ref: '#/components/schemas/FlowV2ValidationError'
-    ActivityOutput:
-      title: ActivityOutput
-      type: object
-      description: A single output field produced by an activity.
-      additionalProperties: true
-      properties:
-        name:
-          type: string
-          description: Output field name.
-          example: callerEnteredDigits
-        type:
-          type: string
-          description: Output data type.
-          example: STRING
-        description:
-          type: string
-          description: Human-readable description of the output.
-          example: Digits the caller entered before timeout.
-    ActivityOutputPort:
-      title: ActivityOutputPort
-      type: object
-      description: An output port the activity may exit through. Edges reference a port via their `condition`.
-      additionalProperties: true
-      properties:
-        condition:
-          type: string
-          description: Port condition. An edge's `condition` must match one of these verbatim (for example, `default`, `error`).
-          example: default
-        label:
-          type: string
-          description: Human-readable port label shown in authoring UIs. May be empty.
-          example: default
-        isErrorPath:
-          type: boolean
-          description: True if this port is the activity's error path.
-          example: false
     ActivityInput:
       title: ActivityInput
       type: object
@@ -512,6 +363,155 @@ components:
           type: string
           description: Human-readable description of the input.
           example: Channel type the contact arrived on.
+    ActivityOutput:
+      title: ActivityOutput
+      type: object
+      description: A single output field produced by an activity.
+      additionalProperties: true
+      properties:
+        name:
+          type: string
+          description: Output field name.
+          example: callerEnteredDigits
+        type:
+          type: string
+          description: Output data type.
+          example: STRING
+        description:
+          type: string
+          description: Human-readable description of the output.
+          example: Digits the caller entered before timeout.
+    ActivityV2:
+      title: ActivityV2
+      type: object
+      description: Definition of an activity type, including its inputs, outputs, and named output ports.
+      additionalProperties: true
+      example:
+        activityName: play-message
+        displayName: Play Message
+        category: core
+        group: action
+        activityType: action
+        inputs: []
+        outputs: []
+        outputPorts:
+        - condition: error
+          label: ''
+          isErrorPath: true
+        - condition: default
+          label: default
+          isErrorPath: false
+      properties:
+        activityName:
+          type: string
+          description: Stable activity type identifier referenced by a flow node's `properties.activityName`. Read the value verbatim from this endpoint; it is not always kebab-case (for example, `SetCallerID`, `Feedback-V2`, `queue-lookup`).
+          example: play-message
+        displayName:
+          type: string
+          description: Human-readable name shown in authoring UIs.
+          example: Play Message
+        category:
+          type: string
+          description: High-level grouping the activity belongs to (for example, `core`).
+          example: core
+        group:
+          type: string
+          description: Group the activity belongs to. An open set; observed values include `action`, `enum-gateway`, `http-request`, `parse-activity`, `set-variable`, and `terminating-action`. Read the value verbatim rather than assuming a fixed set.
+          example: action
+        activityType:
+          type: string
+          description: Underlying activity classification used by the runtime (for example, `action`, `start`).
+          example: action
+        inputs:
+          type: array
+          description: Declared inputs for the activity.
+          items:
+            $ref: '#/components/schemas/ActivityInput'
+        outputs:
+          type: array
+          description: Declared outputs for the activity.
+          items:
+            $ref: '#/components/schemas/ActivityOutput'
+        outputPorts:
+          type: array
+          description: Output ports the activity may exit through. An edge's `condition` must match one of these ports' `condition` values.
+          items:
+            $ref: '#/components/schemas/ActivityOutputPort'
+    FlowV2ErrorResponse:
+      title: FlowV2ErrorResponse
+      type: object
+      description: Standard error envelope returned by flow endpoints. For 400 (bad request) and 422 (validation failure), `details[]` carries field-level error information.
+      additionalProperties: true
+      example:
+        code: INVALID_FLOW
+        message: Flow document failed validation.
+        details:
+        - path: /nodes/2/inputs/queue
+          code: UNKNOWN_QUEUE
+          message: Queue 'Main_Support_Quueue' was not found in the project.
+      properties:
+        code:
+          type: string
+          description: Stable, machine-readable error code.
+          example: INVALID_FLOW
+        message:
+          type: string
+          description: Human-readable error message.
+          example: Flow document failed validation.
+        details:
+          type: array
+          description: Per-issue error details. Populated for 400 and 422 responses.
+          items:
+            $ref: '#/components/schemas/FlowV2ValidationError'
+    ActivityChoiceEntry:
+      title: ActivityChoiceEntry
+      type: object
+      description: A single resolved choice for an activity input.
+      additionalProperties: true
+      properties:
+        name:
+          type: string
+          description: Human-readable label shown in authoring UIs.
+          example: Main Support Queue
+        value:
+          type: string
+          description: The choice value/ID, suitable for use as the activity input value.
+          example: Main_Support_Queue
+    FlowV2ValidationError:
+      title: FlowV2ValidationError
+      type: object
+      description: A single validation error against a flow document.
+      properties:
+        activityName:
+          type: string
+          description: Name of the activity the error relates to.
+          example: play-message
+        condition:
+          type: string
+          description: Edge condition the error relates to, when applicable.
+          example: onTimeout
+        from:
+          type: string
+          description: Source node label of the offending edge, when applicable.
+          example: WelcomeMessage
+        edge:
+          type: string
+          description: Human-readable description of the offending edge, when applicable.
+          example: WelcomeMessage->DisconnectContact(onTimeout)
+        suggestion:
+          type: string
+          description: Suggested fix.
+          example: 'Use one of: default, error'
+        message:
+          type: string
+          description: Human-readable explanation of the error.
+          example: Condition 'onTimeout' is not valid for activity 'play-message'.
+        severity:
+          type: string
+          description: Severity of the issue.
+          enum:
+          - ERROR
+          example: ERROR
   securitySchemes:
     oauth2:
       flows:

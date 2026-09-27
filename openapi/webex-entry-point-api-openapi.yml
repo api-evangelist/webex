@@ -813,6 +813,19 @@ paths:
       deprecated: false
 components:
   schemas:
+    EntityReferenceInfoDTO:
+      type: object
+      properties:
+        description:
+          type: string
+          description: Description about reference info.
+          example: list of referenced entities
+        meta:
+          $ref: '#/components/schemas/MetaDataReferencesPagingInfo'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityInfo'
     BulkRequestItemDTOEntryPointDTO:
       type: object
       properties:
@@ -827,6 +840,115 @@ components:
           type: string
           description: Identifier for action type. Possible values can be SAVE and DELETE.
           example: SAVE
+    ErrorDetails:
+      description: Details of an error.
+      type: object
+      properties:
+        key:
+          type: string
+          description: An application defined error code.
+          example: '401'
+        message:
+          type: array
+          description: A message providing details about the error.
+          items:
+            $ref: '#/components/schemas/OperationError'
+    ApiErrorResponse:
+      description: Response body for an API error.
+      type: object
+      properties:
+        trackingId:
+          type: string
+          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
+          example: c1a4fcef-aee2-4dea-8977-29f594760552
+        error:
+          description: An object containing details about the error.
+          $ref: '#/components/schemas/ErrorDetails'
+    BulkExportDTOEntryPointBulkExportDTO:
+      type: object
+      properties:
+        totalResources:
+          type: integer
+          description: Total number of items
+          format: int32
+          example: 100
+        pageNumber:
+          type: integer
+          description: Current page number
+          format: int32
+          example: 0
+        pageSize:
+          type: integer
+          description: Page size for current data set
+          format: int32
+          example: 50
+        rel:
+          type: string
+          description: Indicates whether more pages exist. When 'next' there are more pages available, otherwise 'last'.
+          example: last
+        resources:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntryPointBulkExportDTO'
+    EntryPointBulkExportDTO:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        serviceLevelThreshold:
+          type: string
+        timezone:
+          type: string
+        channelType:
+          type: string
+        socialChannelType:
+          type: string
+        entryPointType:
+          type: string
+        assetId:
+          type: string
+        flowId:
+          type: string
+        flowTag:
+          type: string
+        musicOnHoldId:
+          type: string
+        outdialQueueId:
+          type: string
+        callbackEnabled:
+          type: boolean
+    BulkRequestDTOEntryPointDTO:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BulkRequestItemDTOEntryPointDTO'
+    FlowOverrideSettingDTO:
+      required:
+      - name
+      - type
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+        entityType:
+          type: string
+        entityId:
+          type: string
+        value:
+          type: string
+    BulkResponseDTO:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BulkResponseItemDTO'
     MetaDataReferencesPagingInfo:
       title: MetaDataReferencesPagingInfo
       type: object
@@ -881,197 +1003,6 @@ components:
           description: Name of current entity
           example: entity_name
       description: Metadata of response for references with paging information
-    FlowOverrideSettingDTO:
-      required:
-      - name
-      - type
-      type: object
-      properties:
-        name:
-          type: string
-        type:
-          type: string
-        entityType:
-          type: string
-        entityId:
-          type: string
-        value:
-          type: string
-    EntityInfo:
-      type: object
-      properties:
-        id:
-          type: string
-          description: id
-          example: id.
-        name:
-          type: string
-          description: name
-          example: name.
-        additionalAttributes:
-          type: object
-          additionalProperties:
-            type: string
-            description: A map containing additional attributes of entity where both the key and value are Strings.
-            example: '{"key1":"value1","key2":"value2"}'
-          description: A map containing additional attributes of entity where both the key and value are Strings.
-          example:
-            key1: value1
-            key2: value2
-        createdDate:
-          type: string
-        lastModifiedDate:
-          type: string
-        version:
-          type: integer
-          format: int32
-    BulkResponseItemDTO:
-      type: object
-      properties:
-        itemIdentifier:
-          type: integer
-          description: Unique item identifier for a bulk operation.
-          format: int32
-          example: 10
-        status:
-          type: integer
-          description: Indicates the error status code.
-          format: int32
-          example: 400
-        operationType:
-          type: string
-          description: The kind of operation desired of an entity.
-          example: CREATE
-          enum:
-          - CREATE
-          - UPDATE
-          - DELETE
-          - GET
-        href:
-          type: string
-          description: The resource URI of an entity.
-          example: /api/organization/6705c69d-4585-42ad-bfc3-79cc485dfb15/team/7b26d174-0016-4682-9858-65918e05f85
-        apiError:
-          $ref: '#/components/schemas/ApiErrorResponse'
-      example:
-        apiError:
-          error:
-            key: '400'
-            message:
-            - description: 'siteId: not found for given orgId.'
-              entity: string
-              references:
-              - id: string
-                name: string
-            reason: dependency exists
-          trackingId: ccconfig_c1a4fcef-aee2-4dea-8977-29f594760552
-        href: /api/organization/6705c69d-4585-42ad-bfc3-79cc485dfb15/team/7b26d174-0016-4682-9858-65918e05f85
-        itemIdentifier: 10
-        operationType: CREATE
-        status: 400
-    EntryPointBulkExportDTO:
-      type: object
-      properties:
-        name:
-          type: string
-        description:
-          type: string
-        serviceLevelThreshold:
-          type: string
-        timezone:
-          type: string
-        channelType:
-          type: string
-        socialChannelType:
-          type: string
-        entryPointType:
-          type: string
-        assetId:
-          type: string
-        flowId:
-          type: string
-        flowTag:
-          type: string
-        musicOnHoldId:
-          type: string
-        outdialQueueId:
-          type: string
-        callbackEnabled:
-          type: boolean
-    OperationError:
-      description: An error message providing details about the operation failure.
-      type: object
-      properties:
-        description:
-          type: string
-          description: A human readable explanation for the occurrence of an error.
-          example: Incorrect Credentials.
-    Response:
-      type: object
-      properties:
-        code:
-          type: integer
-          format: int32
-        details:
-          type: object
-          additionalProperties:
-            type: object
-        links:
-          type: array
-          items:
-            $ref: '#/components/schemas/Link'
-    BulkRequestDTOEntryPointDTO:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/BulkRequestItemDTOEntryPointDTO'
-    Link:
-      type: object
-      properties:
-        href:
-          type: string
-        hreflang:
-          type: string
-        title:
-          type: string
-        type:
-          type: string
-        deprecation:
-          type: string
-        profile:
-          type: string
-        name:
-          type: string
-        templated:
-          type: boolean
-    BulkExportDTOEntryPointBulkExportDTO:
-      type: object
-      properties:
-        totalResources:
-          type: integer
-          description: Total number of items
-          format: int32
-          example: 100
-        pageNumber:
-          type: integer
-          description: Current page number
-          format: int32
-          example: 0
-        pageSize:
-          type: integer
-          description: Page size for current data set
-          format: int32
-          example: 50
-        rel:
-          type: string
-          description: Indicates whether more pages exist. When 'next' there are more pages available, otherwise 'last'.
-          example: last
-        resources:
-          type: array
-          items:
-            $ref: '#/components/schemas/EntryPointBulkExportDTO'
     EntryPointDTO:
       required:
       - active
@@ -1259,37 +1190,111 @@ components:
           format: int64
           readOnly: true
           example: 1617536244000
-    BulkResponseDTO:
+    Response:
       type: object
       properties:
-        items:
+        code:
+          type: integer
+          format: int32
+        details:
+          type: object
+          additionalProperties:
+            type: object
+        links:
           type: array
           items:
-            $ref: '#/components/schemas/BulkResponseItemDTO'
-    ApiErrorResponse:
-      description: Response body for an API error.
+            $ref: '#/components/schemas/Link'
+    BulkResponseItemDTO:
       type: object
       properties:
-        trackingId:
+        itemIdentifier:
+          type: integer
+          description: Unique item identifier for a bulk operation.
+          format: int32
+          example: 10
+        status:
+          type: integer
+          description: Indicates the error status code.
+          format: int32
+          example: 400
+        operationType:
           type: string
-          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
-          example: c1a4fcef-aee2-4dea-8977-29f594760552
-        error:
-          description: An object containing details about the error.
-          $ref: '#/components/schemas/ErrorDetails'
-    ErrorDetails:
-      description: Details of an error.
+          description: The kind of operation desired of an entity.
+          example: CREATE
+          enum:
+          - CREATE
+          - UPDATE
+          - DELETE
+          - GET
+        href:
+          type: string
+          description: The resource URI of an entity.
+          example: /api/organization/6705c69d-4585-42ad-bfc3-79cc485dfb15/team/7b26d174-0016-4682-9858-65918e05f85
+        apiError:
+          $ref: '#/components/schemas/ApiErrorResponse'
+      example:
+        apiError:
+          error:
+            key: '400'
+            message:
+            - description: 'siteId: not found for given orgId.'
+              entity: string
+              references:
+              - id: string
+                name: string
+            reason: dependency exists
+          trackingId: ccconfig_c1a4fcef-aee2-4dea-8977-29f594760552
+        href: /api/organization/6705c69d-4585-42ad-bfc3-79cc485dfb15/team/7b26d174-0016-4682-9858-65918e05f85
+        itemIdentifier: 10
+        operationType: CREATE
+        status: 400
+    EntityInfo:
       type: object
       properties:
-        key:
+        id:
           type: string
-          description: An application defined error code.
-          example: '401'
-        message:
-          type: array
-          description: A message providing details about the error.
-          items:
-            $ref: '#/components/schemas/OperationError'
+          description: id
+          example: id.
+        name:
+          type: string
+          description: name
+          example: name.
+        additionalAttributes:
+          type: object
+          additionalProperties:
+            type: string
+            description: A map containing additional attributes of entity where both the key and value are Strings.
+            example: '{"key1":"value1","key2":"value2"}'
+          description: A map containing additional attributes of entity where both the key and value are Strings.
+          example:
+            key1: value1
+            key2: value2
+        createdDate:
+          type: string
+        lastModifiedDate:
+          type: string
+        version:
+          type: integer
+          format: int32
+    Link:
+      type: object
+      properties:
+        href:
+          type: string
+        hreflang:
+          type: string
+        title:
+          type: string
+        type:
+          type: string
+        deprecation:
+          type: string
+        profile:
+          type: string
+        name:
+          type: string
+        templated:
+          type: boolean
     ResponseEnvelopeEntryPointDTO:
       type: object
       properties:
@@ -1301,19 +1306,14 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/EntryPointDTO'
-    EntityReferenceInfoDTO:
+    OperationError:
+      description: An error message providing details about the operation failure.
       type: object
       properties:
         description:
           type: string
-          description: Description about reference info.
-          example: list of referenced entities
-        meta:
-          $ref: '#/components/schemas/MetaDataReferencesPagingInfo'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/EntityInfo'
+          description: A human readable explanation for the occurrence of an error.
+          example: Incorrect Credentials.
   securitySchemes:
     oauth2:
       flows:

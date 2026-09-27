@@ -1116,86 +1116,58 @@ paths:
                     references: []
 components:
   schemas:
-    BulkRequestItemDTOHolidayListDTO:
-      type: object
-      description: List of items in the bulk request.
-      properties:
-        itemIdentifier:
-          type: integer
-          format: int32
-          description: Unique item identifier for a bulk operation.
-          example: 10
-        item:
-          $ref: '#/components/schemas/HolidayListDTO'
-          description: Item.
-        requestAction:
-          type: string
-          description: Identifier for action type. Possible values are `SAVE` and `DELETE`.
-          example: SAVE
-    RecurrenceDTO:
+    EntityReferenceInfoDTO:
       type: object
       properties:
-        interval:
-          type: integer
-          format: int32
-          minimum: 1
-        occurrenceInTheMonth:
+        description:
           type: string
-          enum:
-          - FIRST
-          - SECOND
-          - THIRD
-          - FOURTH
-          - LAST
-        daysOfWeek:
+          description: Description about reference info.
+          example: list of referenced entities
+        meta:
+          $ref: '#/components/schemas/MetaDataReferencesPagingInfo'
+        data:
           type: array
           items:
-            type: string
-            enum:
-            - SUN
-            - MON
-            - TUE
-            - WED
-            - THU
-            - FRI
-            - SAT
-          maxItems: 7
-          minItems: 0
-        specificDayOfMonth:
-          type: integer
-          format: int32
-          maximum: 31
-          minimum: 1
-        specificMonth:
-          type: string
-          enum:
-          - JAN
-          - FEB
-          - MAR
-          - APR
-          - MAY
-          - JUN
-          - JUL
-          - AUG
-          - SEP
-          - OCT
-          - NOV
-          - DEC
-        endDate:
-          type: string
-          pattern: ^\d{4}-\d{2}-\d{2}$
-      required:
-      - interval
-    BulkRequestDTOHolidayListDTO:
+            $ref: '#/components/schemas/EntityInfo'
+    ErrorDetails:
+      description: Details of an error.
       type: object
-      description: Bulk Request Holiday List schema.
+      properties:
+        key:
+          type: string
+          description: An application defined error code.
+          example: '401'
+        message:
+          type: array
+          description: A message providing details about the error.
+          items:
+            $ref: '#/components/schemas/OperationError'
+    ApiErrorResponse:
+      description: Response body for an API error.
+      type: object
+      properties:
+        trackingId:
+          type: string
+          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
+          example: c1a4fcef-aee2-4dea-8977-29f594760552
+        error:
+          description: An object containing details about the error.
+          $ref: '#/components/schemas/ErrorDetails'
+    BulkResponseDTO:
+      type: object
       properties:
         items:
           type: array
-          description: List of items in the bulk request.
           items:
-            $ref: '#/components/schemas/BulkRequestItemDTOHolidayListDTO'
-            description: Item.
+            $ref: '#/components/schemas/BulkResponseItemDTO'
+    OperationError:
+      description: An error message providing details about the operation failure.
+      type: object
+      properties:
+        description:
+          type: string
+          description: A human readable explanation for the occurrence of an error.
+          example: Incorrect Credentials.
     MetaDataReferencesPagingInfo:
       title: MetaDataReferencesPagingInfo
       type: object
@@ -1250,34 +1222,60 @@ components:
           description: Name of current entity
           example: entity_name
       description: Metadata of response for references with paging information
-    EntityInfo:
+    RecurrenceDTO:
       type: object
       properties:
-        id:
-          type: string
-          description: id
-          example: id.
-        name:
-          type: string
-          description: name
-          example: name.
-        additionalAttributes:
-          type: object
-          additionalProperties:
-            type: string
-            description: A map containing additional attributes of entity where both the key and value are Strings.
-            example: '{"key1":"value1","key2":"value2"}'
-          description: A map containing additional attributes of entity where both the key and value are Strings.
-          example:
-            key1: value1
-            key2: value2
-        createdDate:
-          type: string
-        lastModifiedDate:
-          type: string
-        version:
+        interval:
           type: integer
           format: int32
+          minimum: 1
+        occurrenceInTheMonth:
+          type: string
+          enum:
+          - FIRST
+          - SECOND
+          - THIRD
+          - FOURTH
+          - LAST
+        daysOfWeek:
+          type: array
+          items:
+            type: string
+            enum:
+            - SUN
+            - MON
+            - TUE
+            - WED
+            - THU
+            - FRI
+            - SAT
+          maxItems: 7
+          minItems: 0
+        specificDayOfMonth:
+          type: integer
+          format: int32
+          maximum: 31
+          minimum: 1
+        specificMonth:
+          type: string
+          enum:
+          - JAN
+          - FEB
+          - MAR
+          - APR
+          - MAY
+          - JUN
+          - JUL
+          - AUG
+          - SEP
+          - OCT
+          - NOV
+          - DEC
+        endDate:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}$
+      required:
+      - interval
     BulkResponseItemDTO:
       type: object
       properties:
@@ -1322,14 +1320,34 @@ components:
         itemIdentifier: 10
         operationType: CREATE
         status: 400
-    OperationError:
-      description: An error message providing details about the operation failure.
+    EntityInfo:
       type: object
       properties:
-        description:
+        id:
           type: string
-          description: A human readable explanation for the occurrence of an error.
-          example: Incorrect Credentials.
+          description: id
+          example: id.
+        name:
+          type: string
+          description: name
+          example: name.
+        additionalAttributes:
+          type: object
+          additionalProperties:
+            type: string
+            description: A map containing additional attributes of entity where both the key and value are Strings.
+            example: '{"key1":"value1","key2":"value2"}'
+          description: A map containing additional attributes of entity where both the key and value are Strings.
+          example:
+            key1: value1
+            key2: value2
+        createdDate:
+          type: string
+        lastModifiedDate:
+          type: string
+        version:
+          type: integer
+          format: int32
     HolidayListDTO:
       type: object
       description: Holiday List schema.
@@ -1566,37 +1584,16 @@ components:
               }'
       required:
       - name
-    ApiErrorResponse:
-      description: Response body for an API error.
+    BulkRequestDTOHolidayListDTO:
       type: object
-      properties:
-        trackingId:
-          type: string
-          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
-          example: c1a4fcef-aee2-4dea-8977-29f594760552
-        error:
-          description: An object containing details about the error.
-          $ref: '#/components/schemas/ErrorDetails'
-    BulkResponseDTO:
-      type: object
+      description: Bulk Request Holiday List schema.
       properties:
         items:
           type: array
+          description: List of items in the bulk request.
           items:
-            $ref: '#/components/schemas/BulkResponseItemDTO'
-    ErrorDetails:
-      description: Details of an error.
-      type: object
-      properties:
-        key:
-          type: string
-          description: An application defined error code.
-          example: '401'
-        message:
-          type: array
-          description: A message providing details about the error.
-          items:
-            $ref: '#/components/schemas/OperationError'
+            $ref: '#/components/schemas/BulkRequestItemDTOHolidayListDTO'
+            description: Item.
     ResponseEnvelopeHolidayListDTO:
       type: object
       description: Response Envelope Holiday List schema.
@@ -1612,19 +1609,22 @@ components:
           items:
             $ref: '#/components/schemas/HolidayListDTO'
             description: Data item.
-    EntityReferenceInfoDTO:
+    BulkRequestItemDTOHolidayListDTO:
       type: object
+      description: List of items in the bulk request.
       properties:
-        description:
+        itemIdentifier:
+          type: integer
+          format: int32
+          description: Unique item identifier for a bulk operation.
+          example: 10
+        item:
+          $ref: '#/components/schemas/HolidayListDTO'
+          description: Item.
+        requestAction:
           type: string
-          description: Description about reference info.
-          example: list of referenced entities
-        meta:
-          $ref: '#/components/schemas/MetaDataReferencesPagingInfo'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/EntityInfo'
+          description: Identifier for action type. Possible values are `SAVE` and `DELETE`.
+          example: SAVE
   securitySchemes:
     oauth2:
       flows:

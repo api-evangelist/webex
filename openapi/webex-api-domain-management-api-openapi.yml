@@ -65,7 +65,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Get Domain Verification Token
-      operationId: Get Domain Verification Token
+      operationId: GetDomainVerificationToken
       description: 'This endpoint helps generate a token for a given domain within the specified organization. The user needs to add this token as a ''TXT'' record to the DNS server.
 
 
@@ -111,6 +111,8 @@ paths:
               domain: cisco.com
             schema:
               $ref: '#/components/schemas/PostDomainVerificationToken'
+      x-operation-id-source: normalized
+      x-operation-id-original: Get Domain Verification Token
   /identity/organizations/{orgId}/actions/verifyDomain:
     post:
       responses:
@@ -160,7 +162,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Verify Domain
-      operationId: Verify Domain
+      operationId: VerifyDomain
       description: 'This endpoint helps verify a given domain within the specified organization. This API verifies domain ownership by looking up and validating the ''TXT'' record for the domain.
 
         Once verified, domain enforcement will be applied to the organization. Any users in the organization whose email domain doesn''t match one of the verified domains will be marked as transient.
@@ -216,6 +218,8 @@ paths:
               reserveDomain: false
             schema:
               $ref: '#/components/schemas/PostDomainVerification'
+      x-operation-id-source: normalized
+      x-operation-id-original: Verify Domain
   /identity/organizations/{orgId}/actions/claimDomain:
     post:
       responses:
@@ -266,7 +270,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Claim Domain
-      operationId: Claim Domain
+      operationId: ClaimDomain
       description: 'This endpoint helps claim the given domain within the specified organization. The domain needs to be verified before it can be claimed.
 
 
@@ -327,6 +331,8 @@ paths:
               claimDomainOnly: false
             schema:
               $ref: '#/components/schemas/PostClaimDomain'
+      x-operation-id-source: normalized
+      x-operation-id-original: Claim Domain
   /identity/organizations/{orgId}/actions/unverifyDomain:
     post:
       responses:
@@ -376,7 +382,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Unverify Domain
-      operationId: Unverify Domain
+      operationId: UnverifyDomain
       description: 'After you unclaim the domain, it will still be verified. Domain enforcement will still apply to the organization. The unverify endpoint helps to remove the domain ownership verification for the organization.
 
 
@@ -426,6 +432,8 @@ paths:
               removePending: false
             schema:
               $ref: '#/components/schemas/PostDomainUnverification'
+      x-operation-id-source: normalized
+      x-operation-id-original: Unverify Domain
   /identity/organizations/{orgId}/actions/unclaimDomain:
     post:
       responses:
@@ -464,7 +472,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Unclaim Domain
-      operationId: Unclaim Domain
+      operationId: UnclaimDomain
       description: 'This API is used to unclaim a domain for the organization. The domain will remain verified, and domain enforcement will still apply to the given organization.
 
 
@@ -510,8 +518,33 @@ paths:
               domain: test.dc-01.com
             schema:
               $ref: '#/components/schemas/UnclaimDomain'
+      x-operation-id-source: normalized
+      x-operation-id-original: Unclaim Domain
 components:
   schemas:
+    DomainVerification:
+      type: object
+      required:
+      - verifiedDomains
+      - claimedDomains
+      - url
+      properties:
+        verifiedDomains:
+          type: array
+          items:
+            type: string
+            example: cisco.com,webex.com
+          description: A list of verified domains for a given organization.
+        claimedDomains:
+          type: array
+          items:
+            type: string
+            example: cisco.com,webex.com
+          description: A list of claimed domains for a given organization.
+        url:
+          type: string
+          example: https://identity.webex.com/organization/bf732c85-68ca-4867-94e4-937286ad2fd4/v1/actions/DomainVerification/Verify/invoke
+          description: Use this URL for verifying domain ownership and managing the domain lifecycle within the organization.
     PostClaimDomain:
       type: object
       properties:
@@ -527,6 +560,60 @@ components:
         claimDomainOnly:
           type: boolean
           description: Indicate to just claim the domain only without searching/marking external users as transient. The default is false.
+    UnclaimDomain:
+      type: object
+      required:
+      - domain
+      properties:
+        domain:
+          type: string
+          example: test.dc-01.com
+          description: A claimed domain.
+    DomainVerificationToken:
+      type: object
+      required:
+      - domain
+      - token
+      - verificationMethod
+      - url
+      properties:
+        domain:
+          type: string
+          example: cisco.com
+          description: The domain name for which the token is generated.
+        token:
+          type: string
+          example: f5014515-6559-4a30-9d68-0deb028f27b7
+          description: 'A token needs to be added as a TXT record in your domain''s DNS settings. You should add the following string: ''cisco-ci-domain-verification=<token>'' as a TXT record in your DNS settings.'
+        verificationMethod:
+          type: string
+          example: DNS_TXT
+          description: 'Domain verification method: Currently, we only support the DNS_TXT method for domain verification.'
+        url:
+          type: string
+          example: https://identity.webex.com/organization/bf732c85-68ca-4867-94e4-937286ad2fd4/v1/actions/DomainVerification/GetToken/invoke
+          description: Use this URL for retrieving an authentication token needed to interact with the Domain Verification API.
+    PostDomainUnverification:
+      type: object
+      required:
+      - domain
+      properties:
+        domain:
+          type: string
+          example: abc.com
+          description: Domain name to be verified.
+        removePending:
+          type: boolean
+          description: Specify whether to remove pending domain. Default is false (backward compatibility). If true, domains will be deleted from pending domain list.
+    Domain:
+      type: object
+      required:
+      - domain
+      properties:
+        domain:
+          type: string
+          example: cisco.com
+          description: A valid domain name that is already verified by the organization.
     ClaimDomain:
       type: object
       required:
@@ -556,74 +643,6 @@ components:
         reserveDomain:
           type: boolean
           description: 'For FedRAMP only: If true, add the domain to the FedRAMP reserved domain list. The default value is false.'
-    PostDomainUnverification:
-      type: object
-      required:
-      - domain
-      properties:
-        domain:
-          type: string
-          example: abc.com
-          description: Domain name to be verified.
-        removePending:
-          type: boolean
-          description: Specify whether to remove pending domain. Default is false (backward compatibility). If true, domains will be deleted from pending domain list.
-    Domain:
-      type: object
-      required:
-      - domain
-      properties:
-        domain:
-          type: string
-          example: cisco.com
-          description: A valid domain name that is already verified by the organization.
-    DomainVerification:
-      type: object
-      required:
-      - verifiedDomains
-      - claimedDomains
-      - url
-      properties:
-        verifiedDomains:
-          type: array
-          items:
-            type: string
-            example: cisco.com,webex.com
-          description: A list of verified domains for a given organization.
-        claimedDomains:
-          type: array
-          items:
-            type: string
-            example: cisco.com,webex.com
-          description: A list of claimed domains for a given organization.
-        url:
-          type: string
-          example: https://identity.webex.com/organization/bf732c85-68ca-4867-94e4-937286ad2fd4/v1/actions/DomainVerification/Verify/invoke
-          description: Use this URL for verifying domain ownership and managing the domain lifecycle within the organization.
-    DomainVerificationToken:
-      type: object
-      required:
-      - domain
-      - token
-      - verificationMethod
-      - url
-      properties:
-        domain:
-          type: string
-          example: cisco.com
-          description: The domain name for which the token is generated.
-        token:
-          type: string
-          example: f5014515-6559-4a30-9d68-0deb028f27b7
-          description: 'A token needs to be added as a TXT record in your domain''s DNS settings. You should add the following string: ''cisco-ci-domain-verification=<token>'' as a TXT record in your DNS settings.'
-        verificationMethod:
-          type: string
-          example: DNS_TXT
-          description: 'Domain verification method: Currently, we only support the DNS_TXT method for domain verification.'
-        url:
-          type: string
-          example: https://identity.webex.com/organization/bf732c85-68ca-4867-94e4-937286ad2fd4/v1/actions/DomainVerification/GetToken/invoke
-          description: Use this URL for retrieving an authentication token needed to interact with the Domain Verification API.
     DomainUnverification:
       type: object
       required:
@@ -647,15 +666,6 @@ components:
           type: string
           example: https://identity.webex.com/organization/bf732c85-68ca-4867-94e4-937286ad2fd4/v1/actions/DomainVerification/Unverify/invoke
           description: Use this URL for unverifying domain ownership and managing the domain lifecycle within the organization.
-    UnclaimDomain:
-      type: object
-      required:
-      - domain
-      properties:
-        domain:
-          type: string
-          example: test.dc-01.com
-          description: A claimed domain.
     PostDomainVerificationToken:
       type: object
       required:

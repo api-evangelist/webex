@@ -79,7 +79,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: List Meeting Polls
-      operationId: List Meeting Polls
+      operationId: ListMeetingPolls
       description: 'Lists all the polls and the poll questions in a meeting when ready.
 
 
@@ -100,6 +100,8 @@ paths:
         example: 0ed74a1c0551494fb7a04e2881bf50ae_I_166022169160077044
         schema:
           type: string
+      x-operation-id-source: normalized
+      x-operation-id-original: List Meeting Polls
   /meetings/pollResults:
     get:
       responses:
@@ -176,7 +178,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Get Meeting PollResults
-      operationId: Get Meeting PollResults
+      operationId: GetMeetingPollResults
       description: 'List the meeting polls, the poll''s questions, and answers from the meeting when ready.
 
 
@@ -207,6 +209,8 @@ paths:
         schema:
           type: number
           default: 10
+      x-operation-id-source: normalized
+      x-operation-id-original: Get Meeting PollResults
   /meetings/polls/{pollId}/questions/{questionId}/respondents:
     get:
       responses:
@@ -257,7 +261,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: List Respondents of a Question
-      operationId: List Respondents of a Question
+      operationId: ListRespondentsOfAQuestion
       description: 'Lists the respondents to a specific questions in a poll.
 
 
@@ -299,25 +303,50 @@ paths:
         schema:
           type: number
           default: 10
+      x-operation-id-source: normalized
+      x-operation-id-original: List Respondents of a Question
 components:
   schemas:
-    Respondent:
+    Poll:
       type: object
       properties:
+        id:
+          type: string
+          example: 1aea8390-e375-4547-b7ff-58ecd9e0b03d
+          description: A unique identifier for the poll.
+        meetingId:
+          type: string
+          example: a2f95f5073e347489f7611492dbd6ad5_I_199075330905867928
+          description: A unique identifier for the [meeting instance](/docs/meetings#meeting-series-scheduled-meetings-and-meeting-instances) to which the poll belongs.
+        startTime:
+          type: string
+          example: '2021-07-06T09:22:34Z'
+          description: The date and time the poll started in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant format.
+        endTime:
+          type: string
+          example: '2021-07-06T09:25:51Z'
+          description: The date and time the poll ended in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant format.
+        timerDuration:
+          type: number
+          example: 300
+          description: The length of time in the alarm box, in seconds.
         displayName:
           type: string
           example: John Andersen
-          description: The name of the person who answers the question.
+          description: The name of the poll coordinator.
         email:
           type: string
-          example: john.andersen@example.com
-          description: The email of the person who answers the question.
-        answers:
+          example: john.andersen@example.co
+          description: The email of the poll coordinator.
+        personId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8xYTY5MmE2Mi00MTNmLTRjYWEtYjdkOS0wYzg0ZDZmMDdlNzY
+          description: The ID of the polling coordinator.
+        questions:
           type: array
           items:
-            type: string
-            example: Green
-          description: An array of answers. Single answer or text questions contain only a single answer.
+            $ref: '#/components/schemas/Question'
+          description: Poll's questions.
     QuestionResult:
       type: object
       properties:
@@ -348,25 +377,58 @@ components:
         respondents:
           $ref: '#/components/schemas/RespondentsReferenceLinks'
           description: Question's respondents.
-    AnswerSummaryItem:
+    PollCollectionResponse:
       type: object
       properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Poll'
+    PollResultCollectionResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PollResult'
+    RespondentsReferenceLinks:
+      type: object
+      properties:
+        links:
+          $ref: '#/components/schemas/Link'
+          description: The pagination links of this question's respondent.
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Respondent'
+          description: An array of answers.
+    Question:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 6f31147e-dd69-4ea9-8b75-2c5834b72ba2
+          description: A unique identifier for the question.
         order:
           type: string
           example: '1'
-          description: The order of the answer in the question.
-        value:
+          description: The order of the question.
+        title:
           type: string
-          example: China
-          description: The content of the answer.
-        totalRespondents:
-          type: number
-          example: 10
-          description: The total number of people who selected this answer.
-        isCorrect:
-          type: boolean
-          example: true
-          description: Whether the answer is correct.
+          example: Where is Webex exclusively sold through local partners?
+          description: The question.
+        type:
+          type: string
+          enum:
+          - single
+          - multiple
+          - short
+          description: "The type of the question.\n * `single` - A single-answer question.\n * `multiple` - A multiple-answer question.\n * `short` - A text answer.\n"
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/Option'
+          description: Question's options.
     Option:
       type: object
       properties:
@@ -397,24 +459,42 @@ components:
           type: string
           example: https://webexapis.com/v1/meetings/polls/1d4959fe-682e-4107-a346-0e1feac7b899_M_7b789da198e531ce0c4d84243abd9fee_I_231245894851233679/questions/6f31147e-dd69-4ea9-8b75-2c5834b72ba2/respondents?meetingId=7b789da198e531ce0c4d84243abd9fee_I_231245894851233679&offset=10&max=5
           description: Link to the next page question's respondents.
-    RespondentsReferenceLinks:
+    AnswerSummaryItem:
       type: object
       properties:
-        links:
-          $ref: '#/components/schemas/Link'
-          description: The pagination links of this question's respondent.
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/Respondent'
-          description: An array of answers.
-    PollResultCollectionResponse:
+        order:
+          type: string
+          example: '1'
+          description: The order of the answer in the question.
+        value:
+          type: string
+          example: China
+          description: The content of the answer.
+        totalRespondents:
+          type: number
+          example: 10
+          description: The total number of people who selected this answer.
+        isCorrect:
+          type: boolean
+          example: true
+          description: Whether the answer is correct.
+    Respondent:
       type: object
       properties:
-        items:
+        displayName:
+          type: string
+          example: John Andersen
+          description: The name of the person who answers the question.
+        email:
+          type: string
+          example: john.andersen@example.com
+          description: The email of the person who answers the question.
+        answers:
           type: array
           items:
-            $ref: '#/components/schemas/PollResult'
+            type: string
+            example: Green
+          description: An array of answers. Single answer or text questions contain only a single answer.
     PollResult:
       type: object
       properties:
@@ -463,40 +543,6 @@ components:
           items:
             $ref: '#/components/schemas/QuestionResult'
           description: An array of questions in this poll.
-    PollCollectionResponse:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/Poll'
-    Question:
-      type: object
-      properties:
-        id:
-          type: string
-          example: 6f31147e-dd69-4ea9-8b75-2c5834b72ba2
-          description: A unique identifier for the question.
-        order:
-          type: string
-          example: '1'
-          description: The order of the question.
-        title:
-          type: string
-          example: Where is Webex exclusively sold through local partners?
-          description: The question.
-        type:
-          type: string
-          enum:
-          - single
-          - multiple
-          - short
-          description: "The type of the question.\n * `single` - A single-answer question.\n * `multiple` - A multiple-answer question.\n * `short` - A text answer.\n"
-        options:
-          type: array
-          items:
-            $ref: '#/components/schemas/Option'
-          description: Question's options.
     RespondentCollectionResponse:
       type: object
       properties:
@@ -504,46 +550,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Respondent'
-    Poll:
-      type: object
-      properties:
-        id:
-          type: string
-          example: 1aea8390-e375-4547-b7ff-58ecd9e0b03d
-          description: A unique identifier for the poll.
-        meetingId:
-          type: string
-          example: a2f95f5073e347489f7611492dbd6ad5_I_199075330905867928
-          description: A unique identifier for the [meeting instance](/docs/meetings#meeting-series-scheduled-meetings-and-meeting-instances) to which the poll belongs.
-        startTime:
-          type: string
-          example: '2021-07-06T09:22:34Z'
-          description: The date and time the poll started in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant format.
-        endTime:
-          type: string
-          example: '2021-07-06T09:25:51Z'
-          description: The date and time the poll ended in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant format.
-        timerDuration:
-          type: number
-          example: 300
-          description: The length of time in the alarm box, in seconds.
-        displayName:
-          type: string
-          example: John Andersen
-          description: The name of the poll coordinator.
-        email:
-          type: string
-          example: john.andersen@example.co
-          description: The email of the poll coordinator.
-        personId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8xYTY5MmE2Mi00MTNmLTRjYWEtYjdkOS0wYzg0ZDZmMDdlNzY
-          description: The ID of the polling coordinator.
-        questions:
-          type: array
-          items:
-            $ref: '#/components/schemas/Question'
-          description: Poll's questions.
   securitySchemes:
     oauth2:
       flows:

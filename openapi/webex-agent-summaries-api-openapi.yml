@@ -140,12 +140,18 @@ paths:
           description: An Unexpected Error Occurred
 components:
   schemas:
-    ProposedWrapUpCode:
+    MidCallSummary:
       type: object
       properties:
-        name:
+        reasonForTransferOrConsult:
           type: string
-          description: The name of the proposed wrap-up reason.
+          description: The specific reason the interaction is being transferred or consulted.
+        additionalContext:
+          type: string
+          description: Important information already gathered that the next agent needs to continue smoothly.
+        keyActionsTaken:
+          type: string
+          description: Steps completed so far in the interaction before the transfer or consult occurred.
     SummaryListByAgentRequest:
       type: object
       required:
@@ -164,20 +170,12 @@ components:
           enum:
           - AGENT
           description: The type of search to be performed.
-    SummaryListByOrganizationRequest:
+    ProposedWrapUpCode:
       type: object
-      required:
-      - orgId
-      - searchType
       properties:
-        orgId:
+        name:
           type: string
-          description: The unique identifier of the organization to which the summarized interactions belong.
-        searchType:
-          type: string
-          enum:
-          - ORGANIZATION
-          description: The type of search to be performed.
+          description: The name of the proposed wrap-up reason.
     PostCallSummary:
       type: object
       properties:
@@ -213,6 +211,26 @@ components:
       - ORGANIZATION
       - INTERACTION
       - AGENT
+    SummaryListByOrganizationRequest:
+      type: object
+      required:
+      - orgId
+      - searchType
+      properties:
+        orgId:
+          type: string
+          description: The unique identifier of the organization to which the summarized interactions belong.
+        searchType:
+          type: string
+          enum:
+          - ORGANIZATION
+          description: The type of search to be performed.
+    SummaryListRequest:
+      description: List summaries based on the given search type.
+      oneOf:
+      - $ref: '#/components/schemas/SummaryListByOrganizationRequest'
+      - $ref: '#/components/schemas/SummaryListByInteractionRequest'
+      - $ref: '#/components/schemas/SummaryListByAgentRequest'
     SummaryListByInteractionRequest:
       type: object
       required:
@@ -231,12 +249,6 @@ components:
           enum:
           - INTERACTION
           description: The type of search to be performed.
-    SummaryListRequest:
-      description: List summaries based on the given search type.
-      oneOf:
-      - $ref: '#/components/schemas/SummaryListByOrganizationRequest'
-      - $ref: '#/components/schemas/SummaryListByInteractionRequest'
-      - $ref: '#/components/schemas/SummaryListByAgentRequest'
     SummaryListResponse:
       type: object
       properties:
@@ -297,18 +309,6 @@ components:
               additionalContext: The match will take place next weekend at 6 PM, and the caller is part of a group looking to buy a large number of tickets.
               keyActionsTaken: Checked the match schedule\nInquired about the number of tickets needed\nInitiated a transfer to check ticket availability with teammates
         queueId: null
-    MidCallSummary:
-      type: object
-      properties:
-        reasonForTransferOrConsult:
-          type: string
-          description: The specific reason the interaction is being transferred or consulted.
-        additionalContext:
-          type: string
-          description: Important information already gathered that the next agent needs to continue smoothly.
-        keyActionsTaken:
-          type: string
-          description: Steps completed so far in the interaction before the transfer or consult occurred.
   securitySchemes:
     oauth2:
       flows:

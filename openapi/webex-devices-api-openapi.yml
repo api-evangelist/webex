@@ -101,7 +101,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: List Devices
-      operationId: List Devices
+      operationId: ListDevices
       description: Lists all active Webex devices associated with the authenticated user, such as devices activated in personal mode. This requires the `spark:devices_read` scope. Administrators can list all devices within their organization. This requires an administrator auth token with the `spark-admin:devices_read` scope.
       tags:
       - Devices
@@ -320,6 +320,8 @@ paths:
           - 'off'
           - 'on'
           - upcoming
+      x-operation-id-source: normalized
+      x-operation-id-original: List Devices
     post:
       responses:
         '200':
@@ -399,7 +401,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Create a Device by MAC Address
-      operationId: Create a Device by MAC Address
+      operationId: CreateADeviceByMACAddress
       description: 'Create a phone by its MAC address in a specific workspace or for a person.
 
 
@@ -461,6 +463,8 @@ paths:
                   type: string
                   example: TestPassword123&
                   description: SIP password to be configured for the phone, only required with third party devices.
+      x-operation-id-source: normalized
+      x-operation-id-original: Create a Device by MAC Address
   /devices/{deviceId}:
     get:
       responses:
@@ -604,7 +608,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Delete a Device
-      operationId: Delete a Device
+      operationId: DeleteADevice
       description: 'Deletes a device, by ID. Deleting your own device requires an auth token with the `spark:devices_write` scope. Deleting any other device in the organization will require an administrator auth token with the `spark-admin:devices_write` scope.
 
 
@@ -628,6 +632,8 @@ paths:
         example: Y2lzY29zcGFyazovL3VybjpURUFNOnVzLXdlc3QtMl9yL09SR0FOSVpBVElPTi9mN2I3MzYwYy1lMDcxLTQwN2EtYTU1Ny04NDI4YmIyMjhlODQ
         schema:
           type: string
+      x-operation-id-source: normalized
+      x-operation-id-original: Delete a Device
     patch:
       responses:
         '200':
@@ -707,7 +713,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Modify Device Tags
-      operationId: Modify Device Tags
+      operationId: ModifyDeviceTags
       description: 'Create, delete or update tags on a device. For your own device, this requires an auth token with the `spark:devices_write` scope. An auth token with the `spark-admin:devices_write` scope is required to operate on other devices within the organization.
 
 
@@ -759,6 +765,8 @@ paths:
                   items:
                     type: string
                     example: First Tag,Second Tag
+      x-operation-id-source: normalized
+      x-operation-id-original: Modify Device Tags
   /devices/activationCode:
     post:
       responses:
@@ -803,7 +811,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Create a Device Activation Code
-      operationId: Create a Device Activation Code
+      operationId: CreateADeviceActivationCode
       description: 'Generate an activation code for a device in a specific workspace by `workspaceId` or for a person by `personId`. This requires an auth token with the `spark-admin:devices_write` scope, and either `identity:placeonetimepassword_create` (allows creating activation codes for workspaces only) or `identity:one_time_password` (allows creating activation codes for workspaces or persons).
 
 
@@ -853,32 +861,21 @@ paths:
                   type: string
                   example: DMS Cisco 8865
                   description: The model of the device being created. The corresponding device model display name sometimes called the product name, can also be used to specify the model.
+      x-operation-id-source: normalized
+      x-operation-id-original: Create a Device Activation Code
 components:
   schemas:
-    DeviceCollectionResponse:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/Device'
-    DevicePlatform:
-      type: string
-      enum:
-      - cisco
-      - microsoftTeamsRoom
-      description: Device platform
-      example: cisco
     NetworkConnectivityType:
       type: string
       enum:
       - wired
       description: The current network connectivity for the device.
       example: wired
-    DeviceCapabilities:
+    DevicePermissions:
       type: string
       enum:
-      - xapi
+      - xapi:readonly
+      - xapi:all
     Device:
       type: object
       required:
@@ -1020,6 +1017,21 @@ components:
               - 'on'
               - upcoming
               description: The planned maintenance mode for the device
+    DevicePlatform:
+      type: string
+      enum:
+      - cisco
+      - microsoftTeamsRoom
+      description: Device platform
+      example: cisco
+    ManagedBy:
+      type: string
+      enum:
+      - CISCO
+      - CUSTOMER
+      - PARTNER
+      description: Entity managing the device configuration.
+      example: CISCO
     DeviceConnectionStatus:
       type: string
       enum:
@@ -1033,11 +1045,17 @@ components:
       - offline_deep_sleep
       description: The connection status of the device.
       example: connected
-    DevicePermissions:
+    DeviceCapabilities:
       type: string
       enum:
-      - xapi:readonly
-      - xapi:all
+      - xapi
+    DeviceCollectionResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Device'
     ActivationCode:
       type: object
       properties:
@@ -1049,14 +1067,6 @@ components:
           type: string
           example: '2017-11-16T23:38:03.215Z'
           description: The date and time the activation code expires.
-    ManagedBy:
-      type: string
-      enum:
-      - CISCO
-      - CUSTOMER
-      - PARTNER
-      description: Entity managing the device configuration.
-      example: CISCO
   securitySchemes:
     oauth2:
       flows:

@@ -415,131 +415,6 @@ paths:
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
 components:
   schemas:
-    HotelingGuestSettings:
-      type: object
-      required:
-      - enabled
-      properties:
-        enabled:
-          type: boolean
-          example: true
-          description: Enable/Disable hoteling guest functionality for the person. When enabled, the person can associate themselves with a hoteling host device.
-        associationLimitEnabled:
-          type: boolean
-          example: true
-          description: When enabled, the person's hoteling guest association will be automatically removed after the specified time period.
-        associationLimitHours:
-          type: integer
-          minimum: 1
-          maximum: 999
-          example: 12
-          description: Time limit in hours for the hoteling guest association (1-999). Applicable when associationLimitEnabled is true.
-        hostAssociationLimitHours:
-          type: integer
-          minimum: 1
-          maximum: 999
-          example: 24
-          description: Time limit in hours configured by the host for guest associations.
-        hostEnforcedAssociationLimitEnabled:
-          type: boolean
-          example: false
-          description: Indicates whether the host has enforced an association time limit.
-        hostFirstName:
-          type: string
-          example: John
-          description: First name of the hoteling host.
-        hostLastName:
-          type: string
-          example: Smith
-          description: Last name of the hoteling host.
-        hostId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9hYmNkZWYxMi0zNDU2LTc4OTAtYWJjZC1lZjEyMzQ1Njc4OTA
-          description: Unique identifier of the hoteling host person or workspace.
-        hostPhoneNumber:
-          type: string
-          example: '+1234567890'
-          description: Phone number of the hoteling host.
-        hostExtension:
-          type: string
-          example: '1234'
-          description: Extension of the hoteling host.
-        hostLocation:
-          $ref: '#/components/schemas/HotelingHostLocation'
-      example:
-        enabled: true
-        associationLimitEnabled: true
-        associationLimitHours: 12
-        hostAssociationLimitHours: 24
-        hostEnforcedAssociationLimitEnabled: false
-        hostFirstName: John
-        hostLastName: Smith
-        hostId: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9hYmNkZWYxMi0zNDU2LTc4OTAtYWJjZC1lZjEyMzQ1Njc4OTA
-        hostPhoneNumber: '+1234567890'
-        hostExtension: '1234'
-        hostLocation:
-          id: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzU0MDQ5NzQzLTIwM2MtNDM5OS1iN2NjLTU4ZmNkYzIwNjA3Zg
-          name: San Jose
-      description: Hoteling guest settings for a person.
-    PersonalAssistantSettingsUpdate:
-      type: object
-      required:
-      - enabled
-      properties:
-        enabled:
-          type: boolean
-          example: true
-          description: Enable/Disable the personal assistant feature.
-        presence:
-          type: string
-          enum:
-          - BUSINESS_TRIP
-          - GONE_FOR_THE_DAY
-          - LUNCH
-          - MEETING
-          - OUT_OF_OFFICE
-          - TEMPORARILY_OUT
-          - TRAINING
-          - UNAVAILABLE
-          - VACATION
-          example: OUT_OF_OFFICE
-          description: Presence status that triggers the personal assistant.
-        untilDateTime:
-          type: string
-          format: date-time
-          example: '2026-03-28T14:30:00Z'
-          description: Date and time until which the personal assistant is active (ISO 8601 format).
-        transferEnabled:
-          type: boolean
-          example: true
-          description: Enable/Disable call transfer when personal assistant is active.
-        transferNumber:
-          type: string
-          example: '+14126525012'
-          description: Phone number to transfer calls to when transfer is enabled.
-        alerting:
-          type: string
-          enum:
-          - ALERT_ME_FIRST
-          - PLAY_RING_REMINDER
-          - NONE
-          example: ALERT_ME_FIRST
-          description: 'Alerting behavior for incoming calls when personal assistant is active. Possible values: ALERT_ME_FIRST - Ring the user''s phone first before the personal assistant takes over. PLAY_RING_REMINDER - Play a ring reminder to the user. NONE - No alerting.'
-        alertMeFirstNumberOfRings:
-          type: integer
-          minimum: 0
-          maximum: 20
-          example: 3
-          description: Number of rings before transferring the call when alerting is set to ALERT_ME_FIRST.
-      description: Personal assistant settings update request.
-      example:
-        enabled: true
-        presence: OUT_OF_OFFICE
-        untilDateTime: '2026-03-28T14:30:00Z'
-        transferEnabled: true
-        transferNumber: '+14126525012'
-        alerting: ALERT_ME_FIRST
-        alertMeFirstNumberOfRings: 3
     VoicemailRules:
       type: object
       required:
@@ -595,6 +470,21 @@ components:
         length:
           min: 6
           max: 15
+    HotelingHostLocation:
+      type: object
+      required:
+      - id
+      - name
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzU0MDQ5NzQzLTIwM2MtNDM5OS1iN2NjLTU4ZmNkYzIwNjA3Zg
+          description: Unique identifier of the hoteling host location.
+        name:
+          type: string
+          example: San Jose
+          description: Name of the hoteling host location.
+      description: Location information for the hoteling host.
     BlockRepeatedDigits:
       type: object
       required:
@@ -612,15 +502,6 @@ components:
           example: 3
           description: Maximum number of repeated digit sequence allowed. The minimum value is 1. The maximum value is 6.
       description: Settings to prevent single digits from being repeated in the passcode. For example, with a maximum value of 3, 111222 is allowed but 112222 is not allowed since it contains a repeated digit sequence longer than 3.
-    VoicemailPin:
-      type: object
-      required:
-      - passcode
-      properties:
-        passcode:
-          type: string
-          description: Person voicemail PIN. The PIN must comply with the passcode rules defined for the organization.
-          example: '27850230'
     BlockPreviousPasscodes:
       type: object
       required:
@@ -638,101 +519,44 @@ components:
           example: 3
           description: Number of previous passcodes. The minimum value is 1. The maximum value is 10.
       description: Settings for previous passcode usage.
-    PasscodeLength:
-      type: object
-      required:
-      - min
-      - max
-      properties:
-        min:
-          type: integer
-          minimum: 2
-          maximum: 15
-          example: 6
-          description: The minimum value is 2. The maximum value is 15.
-        max:
-          type: integer
-          minimum: 3
-          maximum: 30
-          example: 15
-          description: The minimum value is 3. The maximum value is 30.
-      description: Length of the passcode.
-    AvailableHotelingHost:
-      type: object
-      required:
-      - hostId
-      - firstName
-      - lastName
-      - phoneNumber
-      - extension
-      - allowedAssociationDuration
-      properties:
-        hostId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9hYmNkZWYxMi0zNDU2LTc4OTAtYWJjZC1lZjEyMzQ1Njc4OTA
-          description: Unique identifier for the person or workspace.
-        firstName:
-          type: string
-          example: John
-          description: First name of the hoteling host.
-        lastName:
-          type: string
-          example: Doe
-          description: Last name of the hoteling host.
-        phoneNumber:
-          type: string
-          example: '+14085551234'
-          description: Phone number of the hoteling host.
-        extension:
-          type: string
-          example: '1234'
-          description: Extension of the hoteling host.
-        allowedAssociationDuration:
-          type: integer
-          minimum: 1
-          maximum: 999
-          example: 24
-          description: Maximum allowed association duration in hours for this host.
-      description: Information about an available hoteling host.
-    HotelingHostLocation:
-      type: object
-      required:
-      - id
-      - name
-      properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzU0MDQ5NzQzLTIwM2MtNDM5OS1iN2NjLTU4ZmNkYzIwNjA3Zg
-          description: Unique identifier of the hoteling host location.
-        name:
-          type: string
-          example: San Jose
-          description: Name of the hoteling host location.
-      description: Location information for the hoteling host.
-    BlockContiguousSequences:
+    HotelingGuestSettingsUpdate:
       type: object
       required:
       - enabled
-      - numberOfAscendingDigits
-      - numberOfDescendingDigits
       properties:
         enabled:
           type: boolean
           example: true
-          description: If enabled, passcode should not contain a numerical sequence.
-        numberOfAscendingDigits:
+          description: Enable/Disable hoteling guest functionality for the person. When enabled, the person can associate themselves with a hoteling host device.
+        associationLimitEnabled:
+          type: boolean
+          example: true
+          description: When enabled, the person's hoteling guest association will be automatically removed after the specified time period.
+        associationLimitHours:
           type: integer
-          minimum: 2
-          maximum: 5
-          example: 3
-          description: 'Specifies the maximum length of an ascending numerical sequence allowed. The minimum value is 2. The maximum value is 5. Example: If this value is set to 3, then 123856 is allowed, but 123485 is not allowed (since the ascending sequence 1234 exceeds 3 digits).'
-        numberOfDescendingDigits:
-          type: integer
-          minimum: 2
-          maximum: 5
-          example: 3
-          description: 'Specifies the maximum length of a descending numerical sequence allowed. The minimum value is 2. The maximum value is 5. Example: If this value is set to 3, then 321856 is allowed, but 432185 is not allowed (since the descending sequence 4321 exceeds 3 digits).'
-      description: Settings for not allowing numerical sequence in passcode (for example, 012345 or 987654).
+          minimum: 1
+          maximum: 999
+          example: 12
+          description: Time limit in hours for the hoteling guest association (1-999). Applicable when associationLimitEnabled is true.
+        hostId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9hYmNkZWYxMi0zNDU2LTc4OTAtYWJjZC1lZjEyMzQ1Njc4OTA
+          description: Unique identifier of the hoteling host person or workspace to associate with. Required when enabling hoteling guest functionality.
+      example:
+        enabled: true
+        associationLimitEnabled: true
+        associationLimitHours: 12
+        hostId: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9hYmNkZWYxMi0zNDU2LTc4OTAtYWJjZC1lZjEyMzQ1Njc4OTA
+      description: Hoteling guest settings update request.
+    VoicemailPin:
+      type: object
+      required:
+      - passcode
+      properties:
+        passcode:
+          type: string
+          description: Person voicemail PIN. The PIN must comply with the passcode rules defined for the organization.
+          example: '27850230'
     PersonalAssistantSettings:
       type: object
       required:
@@ -817,7 +641,7 @@ components:
           phoneNumber: '+14085555678'
           extension: '5678'
           allowedAssociationDuration: 12
-    HotelingGuestSettingsUpdate:
+    HotelingGuestSettings:
       type: object
       required:
       - enabled
@@ -836,16 +660,192 @@ components:
           maximum: 999
           example: 12
           description: Time limit in hours for the hoteling guest association (1-999). Applicable when associationLimitEnabled is true.
+        hostAssociationLimitHours:
+          type: integer
+          minimum: 1
+          maximum: 999
+          example: 24
+          description: Time limit in hours configured by the host for guest associations.
+        hostEnforcedAssociationLimitEnabled:
+          type: boolean
+          example: false
+          description: Indicates whether the host has enforced an association time limit.
+        hostFirstName:
+          type: string
+          example: John
+          description: First name of the hoteling host.
+        hostLastName:
+          type: string
+          example: Smith
+          description: Last name of the hoteling host.
         hostId:
           type: string
           example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9hYmNkZWYxMi0zNDU2LTc4OTAtYWJjZC1lZjEyMzQ1Njc4OTA
-          description: Unique identifier of the hoteling host person or workspace to associate with. Required when enabling hoteling guest functionality.
+          description: Unique identifier of the hoteling host person or workspace.
+        hostPhoneNumber:
+          type: string
+          example: '+1234567890'
+          description: Phone number of the hoteling host.
+        hostExtension:
+          type: string
+          example: '1234'
+          description: Extension of the hoteling host.
+        hostLocation:
+          $ref: '#/components/schemas/HotelingHostLocation'
       example:
         enabled: true
         associationLimitEnabled: true
         associationLimitHours: 12
+        hostAssociationLimitHours: 24
+        hostEnforcedAssociationLimitEnabled: false
+        hostFirstName: John
+        hostLastName: Smith
         hostId: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9hYmNkZWYxMi0zNDU2LTc4OTAtYWJjZC1lZjEyMzQ1Njc4OTA
-      description: Hoteling guest settings update request.
+        hostPhoneNumber: '+1234567890'
+        hostExtension: '1234'
+        hostLocation:
+          id: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzU0MDQ5NzQzLTIwM2MtNDM5OS1iN2NjLTU4ZmNkYzIwNjA3Zg
+          name: San Jose
+      description: Hoteling guest settings for a person.
+    BlockContiguousSequences:
+      type: object
+      required:
+      - enabled
+      - numberOfAscendingDigits
+      - numberOfDescendingDigits
+      properties:
+        enabled:
+          type: boolean
+          example: true
+          description: If enabled, passcode should not contain a numerical sequence.
+        numberOfAscendingDigits:
+          type: integer
+          minimum: 2
+          maximum: 5
+          example: 3
+          description: 'Specifies the maximum length of an ascending numerical sequence allowed. The minimum value is 2. The maximum value is 5. Example: If this value is set to 3, then 123856 is allowed, but 123485 is not allowed (since the ascending sequence 1234 exceeds 3 digits).'
+        numberOfDescendingDigits:
+          type: integer
+          minimum: 2
+          maximum: 5
+          example: 3
+          description: 'Specifies the maximum length of a descending numerical sequence allowed. The minimum value is 2. The maximum value is 5. Example: If this value is set to 3, then 321856 is allowed, but 432185 is not allowed (since the descending sequence 4321 exceeds 3 digits).'
+      description: Settings for not allowing numerical sequence in passcode (for example, 012345 or 987654).
+    PasscodeLength:
+      type: object
+      required:
+      - min
+      - max
+      properties:
+        min:
+          type: integer
+          minimum: 2
+          maximum: 15
+          example: 6
+          description: The minimum value is 2. The maximum value is 15.
+        max:
+          type: integer
+          minimum: 3
+          maximum: 30
+          example: 15
+          description: The minimum value is 3. The maximum value is 30.
+      description: Length of the passcode.
+    PersonalAssistantSettingsUpdate:
+      type: object
+      required:
+      - enabled
+      properties:
+        enabled:
+          type: boolean
+          example: true
+          description: Enable/Disable the personal assistant feature.
+        presence:
+          type: string
+          enum:
+          - BUSINESS_TRIP
+          - GONE_FOR_THE_DAY
+          - LUNCH
+          - MEETING
+          - OUT_OF_OFFICE
+          - TEMPORARILY_OUT
+          - TRAINING
+          - UNAVAILABLE
+          - VACATION
+          example: OUT_OF_OFFICE
+          description: Presence status that triggers the personal assistant.
+        untilDateTime:
+          type: string
+          format: date-time
+          example: '2026-03-28T14:30:00Z'
+          description: Date and time until which the personal assistant is active (ISO 8601 format).
+        transferEnabled:
+          type: boolean
+          example: true
+          description: Enable/Disable call transfer when personal assistant is active.
+        transferNumber:
+          type: string
+          example: '+14126525012'
+          description: Phone number to transfer calls to when transfer is enabled.
+        alerting:
+          type: string
+          enum:
+          - ALERT_ME_FIRST
+          - PLAY_RING_REMINDER
+          - NONE
+          example: ALERT_ME_FIRST
+          description: 'Alerting behavior for incoming calls when personal assistant is active. Possible values: ALERT_ME_FIRST - Ring the user''s phone first before the personal assistant takes over. PLAY_RING_REMINDER - Play a ring reminder to the user. NONE - No alerting.'
+        alertMeFirstNumberOfRings:
+          type: integer
+          minimum: 0
+          maximum: 20
+          example: 3
+          description: Number of rings before transferring the call when alerting is set to ALERT_ME_FIRST.
+      description: Personal assistant settings update request.
+      example:
+        enabled: true
+        presence: OUT_OF_OFFICE
+        untilDateTime: '2026-03-28T14:30:00Z'
+        transferEnabled: true
+        transferNumber: '+14126525012'
+        alerting: ALERT_ME_FIRST
+        alertMeFirstNumberOfRings: 3
+    AvailableHotelingHost:
+      type: object
+      required:
+      - hostId
+      - firstName
+      - lastName
+      - phoneNumber
+      - extension
+      - allowedAssociationDuration
+      properties:
+        hostId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9hYmNkZWYxMi0zNDU2LTc4OTAtYWJjZC1lZjEyMzQ1Njc4OTA
+          description: Unique identifier for the person or workspace.
+        firstName:
+          type: string
+          example: John
+          description: First name of the hoteling host.
+        lastName:
+          type: string
+          example: Doe
+          description: Last name of the hoteling host.
+        phoneNumber:
+          type: string
+          example: '+14085551234'
+          description: Phone number of the hoteling host.
+        extension:
+          type: string
+          example: '1234'
+          description: Extension of the hoteling host.
+        allowedAssociationDuration:
+          type: integer
+          minimum: 1
+          maximum: 999
+          example: 24
+          description: Maximum allowed association duration in hours for this host.
+      description: Information about an available hoteling host.
   securitySchemes:
     oauth2:
       flows:

@@ -111,7 +111,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Create a group
-      operationId: Create a group
+      operationId: CreateAGroup
       description: 'Create a new group for a given organization. The group may optionally be created with group members.
 
 
@@ -195,6 +195,8 @@ paths:
                   role: location_full_admin
             schema:
               $ref: '#/components/schemas/PostGroup'
+      x-operation-id-source: normalized
+      x-operation-id-original: Create a group
     get:
       responses:
         '200':
@@ -330,7 +332,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Search groups
-      operationId: Search groups
+      operationId: SearchGroups
       description: 'Retrieve a list of groups in the organization.
 
 
@@ -433,6 +435,8 @@ paths:
         example: user
         schema:
           type: string
+      x-operation-id-source: normalized
+      x-operation-id-original: Search groups
   /identity/scim/{orgId}/v2/Groups/{groupId}:
     get:
       responses:
@@ -525,7 +529,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Get a group
-      operationId: Get a group
+      operationId: GetAGroup
       description: 'Retrieve details for a group, by ID.
 
 
@@ -583,6 +587,8 @@ paths:
         example: members
         schema:
           type: string
+      x-operation-id-source: normalized
+      x-operation-id-original: Get a group
     put:
       responses:
         '200':
@@ -669,7 +675,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Update a group with PUT
-      operationId: Update a group with PUT
+      operationId: UpdateAGroupWithPUT
       description: 'Replace the contents of the Group.
 
 
@@ -767,6 +773,8 @@ paths:
                   role: location_full_admin
             schema:
               $ref: '#/components/schemas/PutGroup'
+      x-operation-id-source: normalized
+      x-operation-id-original: Update a group with PUT
     patch:
       responses:
         '200':
@@ -858,7 +866,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Update a group with PATCH
-      operationId: Update a group with PATCH
+      operationId: UpdateAGroupWithPATCH
       description: Update group attributes with PATCH.
       tags:
       - SCIM 2 Groups
@@ -895,6 +903,8 @@ paths:
                   - user
             schema:
               $ref: '#/components/schemas/PatchGroup'
+      x-operation-id-source: normalized
+      x-operation-id-original: Update a group with PATCH
     delete:
       responses:
         '204':
@@ -932,7 +942,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Delete a group
-      operationId: Delete a group
+      operationId: DeleteAGroup
       description: 'Remove a group from the system.
 
 
@@ -975,6 +985,8 @@ paths:
         example: cb8f48e4-5db2-496b-b43d-83d8d5a2a4b3
         schema:
           type: string
+      x-operation-id-source: normalized
+      x-operation-id-original: Delete a group
   /identity/scim/{orgId}/v2/Groups/{groupId}/Members:
     get:
       responses:
@@ -1030,7 +1042,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Get Group Members
-      operationId: Get Group Members
+      operationId: GetGroupMembers
       description: 'Returns the members of a group.
 
 
@@ -1111,61 +1123,21 @@ paths:
         example: user
         schema:
           type: string
+      x-operation-id-source: normalized
+      x-operation-id-original: Get Group Members
 components:
   schemas:
-    PutGroup:
+    GroupMemberObject:
       type: object
-      required:
-      - schemas
-      - displayName
       properties:
-        schemas:
-          type: array
-          items:
-            type: string
-            example: urn:ietf:params:scim:schemas:core:2.0:Group,urn:scim:schemas:extension:cisco:webexidentity:2.0:Group
-          description: Input JSON schemas.
-        displayName:
+        value:
           type: string
-          example: group1@example.com
-          description: A human-readable name for the group.
-        externalId:
+          example: c5349664-9f3d-410b-8bd3-6c31f181f13d
+          description: The identifier of the member of this Group.
+        type:
           type: string
-          example: test
-          description: An identifier for the resource as defined by the provisioning client.
-        members:
-          type: array
-          items:
-            $ref: '#/components/schemas/GroupMemberObject'
-          description: A list of members of this group.
-        urn:scim:schemas:extension:cisco:webexidentity:2.0:Group:
-          type: object
-          properties:
-            usage:
-              type: string
-              example: policy
-              description: The identifier of this Group.
-            owners:
-              type: array
-              items:
-                type: object
-                properties:
-                  value:
-                    type: string
-                    example: c5349664-9f3d-410b-8bd3-6c31f181f13d
-                    description: The identifier of the owner of this group.
-              description: The owners of this group.
-            inheritances:
-              type: array
-              items:
-                $ref: '#/components/schemas/GroupInheritancesObject'
-              description: An array of inheritances
-            managedBy:
-              type: array
-              items:
-                $ref: '#/components/schemas/ManagedByObject'
-              description: A list of delegates of this group.
-          description: The Cisco extension of SCIM 2.
+          example: user
+          description: A label indicating the type of resource, for example user, machine, or group.
     MetaObject:
       type: object
       description: Response metadata.
@@ -1197,25 +1169,6 @@ components:
           type: string
           example: https://webexapi.com/identity/scim/0ae87ade-8c8a-4952-af08-318798958d0c/v2/Users/3426a8e3-d414-4bf0-a493-4f6787632a13
           description: The resource itself.
-    ManagedByObject:
-      type: object
-      properties:
-        orgId:
-          type: string
-          example: d1349664-9f3d-410b-8bd3-6c31f181f14e
-          description: The Organization identifier of the resource.
-        type:
-          type: string
-          example: user
-          description: The resource type.
-        id:
-          type: string
-          example: c5349664-9f3d-410b-8bd3-6c31f181f13d
-          description: The identifier of the resource.
-        role:
-          type: string
-          example: location_full_admin
-          description: The delegated role.
     GroupMemberResponse:
       type: object
       required:
@@ -1262,87 +1215,54 @@ components:
                 example: A user
                 description: A human-readable name for the group member.
           description: A list of members of this group.
-    SearchGroupResponse:
+    GroupInheritancesObject:
       type: object
-      required:
-      - schemas
       properties:
-        schemas:
+        type:
+          type: string
+          enum:
+          - role
+          - location_role
+          example: role
+          description: Type of inheritance. Currently, `role` and `location_role` type is supported. Only `policy` usage supports inheritance.
+        value:
+          type: string
+          example: id_full_admin
+          description: The value of the inheritance. For the role type, this can be role names such as `id_full_admin`, `id_user_admin`, etc. For the location_role type, the value should be `location_full_admin`.
+        nested:
+          type: boolean
+          example: false
+          description: Indicates whether this inheritance is nested.
+        locationId:
+          type: string
+          example: 72e22cec-cc28-45b7-b3dc-eafe0f44a2bd
+          description: The ID of the location group.
+        scope:
           type: array
           items:
             type: string
-            example: urn:scim:schemas:extension:cisco:webexidentity:2.0:GroupMembers
-          description: Input JSON schemas.
-        memberSize:
-          type: number
-          example: 2
-          description: Total number of groups in search results.
-        itemsPerPage:
-          type: number
-          example: 2
-          description: The total number of items in a paged result.
-        startIndex:
-          type: number
-          example: 1
-          description: Start at the one-based offset in the list of matching contacts.
-        Resources:
-          type: array
-          items:
-            $ref: '#/components/schemas/GetGroupResponse'
-          description: An array of group objects.
-    PostGroup:
+            example:
+            - user
+          description: Indicates which types of entities can inherit this property.
+    ManagedByObject:
       type: object
-      required:
-      - schemas
-      - displayName
       properties:
-        schemas:
-          type: array
-          items:
-            type: string
-            example: urn:ietf:params:scim:schemas:core:2.0:Group,urn:scim:schemas:extension:cisco:webexidentity:2.0:Group
-          description: Input JSON schemas.
-        displayName:
+        orgId:
           type: string
-          example: group1@example.com
-          description: A human-readable name for the Group.
-        externalId:
+          example: d1349664-9f3d-410b-8bd3-6c31f181f14e
+          description: The Organization identifier of the resource.
+        type:
           type: string
-          example: test
-          description: An identifier for the resource as defined by the provisioning client.
-        members:
-          type: array
-          items:
-            $ref: '#/components/schemas/GroupMemberObject'
-          description: A list of members of this group.
-        urn:scim:schemas:extension:cisco:webexidentity:2.0:Group:
-          type: object
-          properties:
-            usage:
-              type: string
-              example: policy
-              description: The identifier of this Group.
-            owners:
-              type: array
-              items:
-                type: object
-                properties:
-                  value:
-                    type: string
-                    example: c5349664-9f3d-410b-8bd3-6c31f181f13d
-                    description: The identifier of the owner of this group.
-              description: The owners of this group.
-            inheritances:
-              type: array
-              items:
-                $ref: '#/components/schemas/GroupInheritancesObject'
-              description: An array of inheritances
-            managedBy:
-              type: array
-              items:
-                $ref: '#/components/schemas/ManagedByObject'
-              description: A list of delegates of this group.
-          description: The Cisco extension of SCIM 2.
+          example: user
+          description: The resource type.
+        id:
+          type: string
+          example: c5349664-9f3d-410b-8bd3-6c31f181f13d
+          description: The identifier of the resource.
+        role:
+          type: string
+          example: location_full_admin
+          description: The delegated role.
     PatchGroup:
       type: object
       required:
@@ -1379,17 +1299,6 @@ components:
                   $ref: '#/components/schemas/GroupInheritancesObject'
                 description: New value.
           description: A list of patch operations.
-    GroupMemberObject:
-      type: object
-      properties:
-        value:
-          type: string
-          example: c5349664-9f3d-410b-8bd3-6c31f181f13d
-          description: The identifier of the member of this Group.
-        type:
-          type: string
-          example: user
-          description: A label indicating the type of resource, for example user, machine, or group.
     GetGroupResponse:
       type: object
       required:
@@ -1487,35 +1396,140 @@ components:
                   description: The ID of the organization to which this group belongs.
               description: Response metadata.
           description: The Cisco extention of SCIM 2
-    GroupInheritancesObject:
+    PutGroup:
       type: object
+      required:
+      - schemas
+      - displayName
       properties:
-        type:
-          type: string
-          enum:
-          - role
-          - location_role
-          example: role
-          description: Type of inheritance. Currently, `role` and `location_role` type is supported. Only `policy` usage supports inheritance.
-        value:
-          type: string
-          example: id_full_admin
-          description: The value of the inheritance. For the role type, this can be role names such as `id_full_admin`, `id_user_admin`, etc. For the location_role type, the value should be `location_full_admin`.
-        nested:
-          type: boolean
-          example: false
-          description: Indicates whether this inheritance is nested.
-        locationId:
-          type: string
-          example: 72e22cec-cc28-45b7-b3dc-eafe0f44a2bd
-          description: The ID of the location group.
-        scope:
+        schemas:
           type: array
           items:
             type: string
-            example:
-            - user
-          description: Indicates which types of entities can inherit this property.
+            example: urn:ietf:params:scim:schemas:core:2.0:Group,urn:scim:schemas:extension:cisco:webexidentity:2.0:Group
+          description: Input JSON schemas.
+        displayName:
+          type: string
+          example: group1@example.com
+          description: A human-readable name for the group.
+        externalId:
+          type: string
+          example: test
+          description: An identifier for the resource as defined by the provisioning client.
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/GroupMemberObject'
+          description: A list of members of this group.
+        urn:scim:schemas:extension:cisco:webexidentity:2.0:Group:
+          type: object
+          properties:
+            usage:
+              type: string
+              example: policy
+              description: The identifier of this Group.
+            owners:
+              type: array
+              items:
+                type: object
+                properties:
+                  value:
+                    type: string
+                    example: c5349664-9f3d-410b-8bd3-6c31f181f13d
+                    description: The identifier of the owner of this group.
+              description: The owners of this group.
+            inheritances:
+              type: array
+              items:
+                $ref: '#/components/schemas/GroupInheritancesObject'
+              description: An array of inheritances
+            managedBy:
+              type: array
+              items:
+                $ref: '#/components/schemas/ManagedByObject'
+              description: A list of delegates of this group.
+          description: The Cisco extension of SCIM 2.
+    PostGroup:
+      type: object
+      required:
+      - schemas
+      - displayName
+      properties:
+        schemas:
+          type: array
+          items:
+            type: string
+            example: urn:ietf:params:scim:schemas:core:2.0:Group,urn:scim:schemas:extension:cisco:webexidentity:2.0:Group
+          description: Input JSON schemas.
+        displayName:
+          type: string
+          example: group1@example.com
+          description: A human-readable name for the Group.
+        externalId:
+          type: string
+          example: test
+          description: An identifier for the resource as defined by the provisioning client.
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/GroupMemberObject'
+          description: A list of members of this group.
+        urn:scim:schemas:extension:cisco:webexidentity:2.0:Group:
+          type: object
+          properties:
+            usage:
+              type: string
+              example: policy
+              description: The identifier of this Group.
+            owners:
+              type: array
+              items:
+                type: object
+                properties:
+                  value:
+                    type: string
+                    example: c5349664-9f3d-410b-8bd3-6c31f181f13d
+                    description: The identifier of the owner of this group.
+              description: The owners of this group.
+            inheritances:
+              type: array
+              items:
+                $ref: '#/components/schemas/GroupInheritancesObject'
+              description: An array of inheritances
+            managedBy:
+              type: array
+              items:
+                $ref: '#/components/schemas/ManagedByObject'
+              description: A list of delegates of this group.
+          description: The Cisco extension of SCIM 2.
+    SearchGroupResponse:
+      type: object
+      required:
+      - schemas
+      properties:
+        schemas:
+          type: array
+          items:
+            type: string
+            example: urn:scim:schemas:extension:cisco:webexidentity:2.0:GroupMembers
+          description: Input JSON schemas.
+        memberSize:
+          type: number
+          example: 2
+          description: Total number of groups in search results.
+        itemsPerPage:
+          type: number
+          example: 2
+          description: The total number of items in a paged result.
+        startIndex:
+          type: number
+          example: 1
+          description: Start at the one-based offset in the list of matching contacts.
+        Resources:
+          type: array
+          items:
+            $ref: '#/components/schemas/GetGroupResponse'
+          description: An array of group objects.
   securitySchemes:
     oauth2:
       flows:

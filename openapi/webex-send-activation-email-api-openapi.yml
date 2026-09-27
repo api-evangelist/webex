@@ -84,7 +84,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Initiate Bulk Activation Email Resend Job
-      operationId: Initiate Bulk Activation Email Resend Job
+      operationId: InitiateBulkActivationEmailResendJob
       description: 'Initiate a bulk activation email resend job that sends an activation email to all eligible users in an organization. Only a single instance of the job can be running for an organization.
 
 
@@ -99,6 +99,8 @@ paths:
         example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi8yMDIwYTkyMC0zMTRjLTQ3NmUtYmNiMS1hNDJhNGI2YzM2MDM
         schema:
           type: string
+      x-operation-id-source: normalized
+      x-operation-id-original: Initiate Bulk Activation Email Resend Job
   /identity/organizations/{orgId}/jobs/sendActivationEmails/{jobId}/status:
     get:
       responses:
@@ -182,7 +184,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Get Bulk Activation Email Resend Job Status
-      operationId: Get Bulk Activation Email Resend Job Status
+      operationId: GetBulkActivationEmailResendJobStatus
       description: 'Get the details of an activation email resend job by its job ID.
 
 
@@ -204,6 +206,8 @@ paths:
         example: Y2lzY29zcGFyazovL3VzL0pPQl9JRC9lNzc4NWU3YS1mNmFiLTRjNTEtYWVjOS00YTg5NWQyOTdjMjc
         schema:
           type: string
+      x-operation-id-source: normalized
+      x-operation-id-original: Get Bulk Activation Email Resend Job Status
   /identity/organizations/{orgId}/jobs/sendActivationEmails/{jobId}/errors:
     get:
       responses:
@@ -258,7 +262,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Get Bulk Activation Email Resend Job Errors
-      operationId: Get Bulk Activation Email Resend Job Errors
+      operationId: GetBulkActivationEmailResendJobErrors
       description: 'Get errors of an activation email resend job by its job ID.
 
 
@@ -287,6 +291,8 @@ paths:
         schema:
           type: number
           default: 50
+      x-operation-id-source: normalized
+      x-operation-id-original: Get Bulk Activation Email Resend Job Errors
 components:
   schemas:
     StepExecutionStatus:
@@ -325,6 +331,37 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ItemObject'
+    ErrorObject:
+      type: object
+      properties:
+        key:
+          type: string
+          description: HTTP status code.
+        message:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorMessageObject'
+          description: List of error messages.
+    BulkActivationEmailResendJobCounts:
+      type: object
+      required:
+      - userResendInviteSent
+      - userResendInviteFailed
+      - userResendInviteSkipped
+      - totalUsers
+      properties:
+        userResendInviteSent:
+          type: number
+          description: Count of users sent an invitation.
+        userResendInviteFailed:
+          type: number
+          description: Count of users who failed to receive an invitation.
+        userResendInviteSkipped:
+          type: number
+          description: Count of users who were skipped.
+        totalUsers:
+          type: number
+          description: Total count of users processed.
     ErrorMessageObject:
       type: object
       properties:
@@ -337,28 +374,6 @@ components:
         locationId:
           type: string
           description: Not used.
-    ErrorObject:
-      type: object
-      properties:
-        key:
-          type: string
-          description: HTTP status code.
-        message:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorMessageObject'
-          description: List of error messages.
-    ExecutionStatus:
-      type: string
-      enum:
-      - COMPLETED
-      - STARTING
-      - STARTED
-      - STOPPING
-      - FAILED
-      - ABANDONED
-      - UNKNOWN
-      description: " * `COMPLETED` - Step or job has completed.\n * `STARTING` - Step or job is starting.\n * `STARTED` - Step or job is running.\n * `STOPPING` - Step or job is stopping.\n * `FAILED` - Step or job has failed with an error.\n * `ABANDONED` - Step or job has been abandone (manually stopped).\n * `UNKNOWN` - Step or job status is unknown.\n"
     BulkActivationEmailResendJobDetails:
       type: object
       required:
@@ -416,6 +431,17 @@ components:
         allowAdminInviteEmails:
           type: boolean
           description: Indicates if the org allows admin invite emails to be sent.
+    ExecutionStatus:
+      type: string
+      enum:
+      - COMPLETED
+      - STARTING
+      - STARTED
+      - STOPPING
+      - FAILED
+      - ABANDONED
+      - UNKNOWN
+      description: " * `COMPLETED` - Step or job has completed.\n * `STARTING` - Step or job is starting.\n * `STARTED` - Step or job is running.\n * `STOPPING` - Step or job is stopping.\n * `FAILED` - Step or job has failed with an error.\n * `ABANDONED` - Step or job has been abandone (manually stopped).\n * `UNKNOWN` - Step or job status is unknown.\n"
     ItemObject:
       type: object
       properties:
@@ -428,26 +454,6 @@ components:
         error:
           $ref: '#/components/schemas/ErrorObject'
           description: Error details.
-    BulkActivationEmailResendJobCounts:
-      type: object
-      required:
-      - userResendInviteSent
-      - userResendInviteFailed
-      - userResendInviteSkipped
-      - totalUsers
-      properties:
-        userResendInviteSent:
-          type: number
-          description: Count of users sent an invitation.
-        userResendInviteFailed:
-          type: number
-          description: Count of users who failed to receive an invitation.
-        userResendInviteSkipped:
-          type: number
-          description: Count of users who were skipped.
-        totalUsers:
-          type: number
-          description: Total count of users processed.
   securitySchemes:
     oauth2:
       flows:

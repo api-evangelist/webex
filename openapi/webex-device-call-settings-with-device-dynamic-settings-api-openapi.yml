@@ -1015,14 +1015,22 @@ paths:
           type: number
 components:
   schemas:
-    LocationDeviceDynamicSettingsListPostResponse:
+    LocationParentLevel:
+      type: string
+      enum:
+      - SYSTEM_DEFAULT
+      - REGIONAL_DEFAULT
+      - ORGANIZATION
+      - LOCATION
+      description: The level from which the tag's parent value is inherited. If there is no parent level for this tag, this field will not be included in the response.
+    CustomerDeviceDynamicSettingsListPostResponse:
       type: object
       example:
         tags:
         - familyOrModelDisplayName: Poly
-          tag: '%G711U_ORDER%'
-          value: '4'
-          parentValue: '3'
+          tag: '%DO_MENU_ITEM_BACKGROUND%'
+          value: '#RRGGBB'
+          parentValue: '#FFFFFF'
           parentLevel: ORGANIZATION
         lastUpdateTime: 1651396800000
         updateInProgress: false
@@ -1030,7 +1038,7 @@ components:
         tags:
           type: array
           items:
-            $ref: '#/components/schemas/LocationDevicePostResponseTag'
+            $ref: '#/components/schemas/CustomerDevicePostTag'
           description: Array of device setting values matching the requested tags.
         lastUpdateTime:
           type: integer
@@ -1039,31 +1047,187 @@ components:
         updateInProgress:
           type: boolean
           description: Flag indicating if an update to these settings is currently in progress.
-    DeviceDynamicSettingsSettingsGroupsGet:
+    DynamicSettingsUpdateJobDevicePostItem:
       type: object
-      example:
-        settingsGroups:
-        - path: Voice.Codec Preferences
-          friendlyName: voice.codecPref.G711Mu
-          tab: Poly
-          familyOrModelDisplayName: Poly
-          tags:
-          - tagBlock:
-            - '%G711U_ORDER%'
-        settingsTabs:
-        - Poly
-        - MPP
+      required:
+      - familyOrModelDisplayName
+      - tag
+      - action
       properties:
-        settingsGroups:
-          type: array
-          items:
-            $ref: '#/components/schemas/DeviceSettingsGroup'
-          description: Array of settings groups defining structure and association of tags.
-        settingsTabs:
+        familyOrModelDisplayName:
+          type: string
+          description: The `familyOrModelDisplayName` of the device to which the tag applies. This value must exist in the validation schema.
+          example: Poly
+          minLength: 1
+          maxLength: 40
+        tag:
+          type: string
+          description: The unique identifier for the setting to be updated.
+          example: '%G711U_ORDER%'
+          minLength: 1
+          maxLength: 64
+        action:
+          $ref: '#/components/schemas/Action'
+        value:
+          type: string
+          description: The new value to set for the setting. This field is required when `action` is `SET` and ignored otherwise.
+          example: '4'
+          minLength: 1
+          maxLength: 256
+    CustomerDeviceDynamicSettingsListPostRequest:
+      type: object
+      properties:
+        tags:
           type: array
           items:
             type: string
-          description: Array of settings tabs names. Can be filtered using the `includeSettingsType` parameter.
+            minLength: 1
+            maxLength: 64
+          description: Optional array of device tag identifiers to request settings for. Each identifier must have a length between 1 and 64 characters.
+          minItems: 0
+    UpgradeChannelObject:
+      type: string
+      enum:
+      - STABLE
+      - STABLE_DELAY
+      - PREVIEW
+      - BETA
+      - TESTING
+    PostDynamicSettingsUpdateStartJobRequest:
+      type: object
+      required:
+      - tags
+      properties:
+        locationId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OL2E4Mjg5NzIyLTFiODAtNDFiNy05Njc4LTBlNzdhZThjMTA5OA
+          description: If present, the requested settings will be updated to devices under this location.
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/DynamicSettingsUpdateJobDevicePostItem'
+          description: Array of tag identifiers for settings to be updated. Each setting is identified by a `familyOrModelDisplayName` and `tag`. Supports updating multiple settings across different device families in a single request.
+          minItems: 1
+    LocationDevicePostResponseTag:
+      type: object
+      properties:
+        familyOrModelDisplayName:
+          type: string
+          description: The `familyOrModelDisplayName` of the device.
+          example: Poly
+        tag:
+          type: string
+          description: The unique identifier for the setting.
+          example: '%G711U_ORDER%'
+        value:
+          type: string
+          description: The current value of the setting at `LOCATION` level. If the tag value is not set at the `LOCATION` level, this field will not be included in the response.
+          example: '4'
+        parentValue:
+          type: string
+          description: The value inherited from the immediate parent level above `LOCATION`. It can be `SYSTEM_DEFAULT`, `REGIONAL_DEFAULT`, `ORGANIZATION`, or `LOCATION`, depending on which level the setting is actually configured at. If there is no parent level for this tag, this field will not be included in the response.
+          example: '3'
+        parentLevel:
+          $ref: '#/components/schemas/LocationParentLevel'
+    ErrorMessageObject:
+      type: object
+      properties:
+        description:
+          type: string
+          description: Error message.
+        code:
+          type: string
+          description: Internal error code.
+        locationId:
+          type: string
+          description: Error messages describing the location ID in which the error occurs. For a move operation, this is the target location ID.
+    JobExecutionStatusObject:
+      type: object
+      required:
+      - id
+      - lastUpdated
+      - statusMessage
+      - createdTime
+      - timeElapsed
+      properties:
+        id:
+          type: number
+          example: 735206
+          description: Unique identifier that identifies each instance of the job.
+        startTime:
+          type: string
+          example: '2023-05-30T13:04:00.469Z'
+          description: The date and time with seconds, the job has started in UTC format.
+        endTime:
+          type: string
+          example: '2023-05-30T13:04:03.245Z'
+          description: The date and time with seconds, the job has ended in UTC format.
+        lastUpdated:
+          type: string
+          example: '2023-05-30T13:04:03.574Z'
+          description: The date and time with seconds, the job has last updated in UTC format post one of the step execution completion.
+        statusMessage:
+          type: string
+          enum:
+          - STARTING
+          - STARTED
+          - COMPLETED
+          - FAILED
+          - UNKNOWN
+          - ABANDONED
+          description: "Displays status for overall steps that are part of the job.\n * `STARTING` - Job has started.\n * `STARTED` - Job is in progress.\n * `COMPLETED` - Job has completed.\n * `FAILED` - Job has failed.\n * `UNKNOWN` - Job status is unknown.\n * `ABANDONED` - Job has been abandoned (manually stopped).\n"
+        exitCode:
+          type: string
+          enum:
+          - UNKNOWN
+          - COMPLETED
+          - FAILED
+          - STOPPED
+          - COMPLETED_WITH_ERRORS
+          - COMPLETED_WITH_PENDING_ORDERS
+          description: "Exit Code for a job.\n * `UNKNOWN` - Job is in progress.\n * `COMPLETED` - Job has completed successfully.\n * `FAILED` - Job has failed.\n * `STOPPED` - Job has been stopped.\n * `COMPLETED_WITH_ERRORS` - Job has completed with errors.\n * `COMPLETED_WITH_PENDING_ORDERS` - Job has completed with pending number orders.\n"
+        createdTime:
+          type: string
+          example: '2023-05-30T13:04:00.457Z'
+          description: The date and time with seconds, the job has created in UTC format.
+        timeElapsed:
+          type: string
+          example: PT2.752S
+          description: Time lapsed in seconds since the job execution started.
+        stepExecutionStatuses:
+          type: array
+          items:
+            $ref: '#/components/schemas/stepExecutionStatusesObject'
+          description: Status of each step within a job.
+    MemberType:
+      type: string
+      enum:
+      - PEOPLE
+      - PLACE
+      description: " * `PEOPLE` - Indicates the associated member is a person.\n * `PLACE` - Indicates the associated member is a workspace.\n"
+    LatestExecutionStatus:
+      type: string
+      enum:
+      - STARTING
+      - STARTED
+      - COMPLETED
+      - FAILED
+      description: " * `STARTING` - Job has started.\n * `STARTED` - Job is in progress.\n * `COMPLETED` - Job has been completed.\n * `FAILED` - Job has failed.\n"
+    DeviceDynamicSettingsListPostRequest:
+      type: object
+      properties:
+        tags:
+          type: array
+          items:
+            type: string
+          description: Optional array of tag identifiers representing specific settings to fetch. If omitted or provided as an empty array, all settings for the device will be returned.
+          minItems: 0
+    Action:
+      type: string
+      enum:
+      - ADD
+      - DELETE
+      description: " * `ADD` - Add action.\n * `DELETE` - Delete action.\n"
     DevicePutItem:
       type: object
       required:
@@ -1084,37 +1248,31 @@ components:
           example: '4'
           minLength: 1
           maxLength: 256
-    DeviceParentLevel:
-      type: string
-      enum:
-      - SYSTEM_DEFAULT
-      - REGIONAL_DEFAULT
-      - ORGANIZATION
-      - LOCATION
-      description: The level from which the tag's parent value is inherited. If there is no parent level for this tag, this field will not be included in the response.
-    PostDynamicSettingsUpdateStartJobRequest:
+    ErrorResponseObject:
       type: object
-      required:
-      - tags
       properties:
-        locationId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OL2E4Mjg5NzIyLTFiODAtNDFiNy05Njc4LTBlNzdhZThjMTA5OA
-          description: If present, the requested settings will be updated to devices under this location.
-        tags:
+        items:
           type: array
           items:
-            $ref: '#/components/schemas/DynamicSettingsUpdateJobDevicePostItem'
-          description: Array of tag identifiers for settings to be updated. Each setting is identified by a `familyOrModelDisplayName` and `tag`. Supports updating multiple settings across different device families in a single request.
-          minItems: 1
-    UpgradeChannelObject:
+            $ref: '#/components/schemas/ItemObject'
+    ErrorObject:
+      type: object
+      properties:
+        key:
+          type: string
+          description: HTTP error code.
+        message:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorMessageObject'
+          description: Message string with further error information.
+    DeviceActivationStates:
       type: string
       enum:
-      - STABLE
-      - STABLE_DELAY
-      - PREVIEW
-      - BETA
-      - TESTING
+      - ACTIVATING
+      - ACTIVATED
+      - DEACTIVATED
+      description: " * `ACTIVATING` - Indicates a device is activating.\n * `ACTIVATED` - Indicates a device is activated.\n * `DEACTIVATED` - Indicates a device is deactivated.\n"
     DeviceObject:
       type: object
       required:
@@ -1170,7 +1328,145 @@ components:
               example: Main Location Test
               description: Name of location associated with virtual line.
           description: Location details of virtual line.
-    CustomerDeviceDynamicSettingsListPostRequest:
+    DeviceSettingsGroupTag:
+      type: object
+      properties:
+        tagBlock:
+          type: array
+          items:
+            type: string
+          description: Array of tags associated with the settings group.
+          example:
+          - '%G711U_ORDER%'
+    stepExecutionStatusesObject:
+      type: object
+      required:
+      - id
+      - lastUpdated
+      - statusMessage
+      - name
+      - timeElapsed
+      properties:
+        id:
+          type: number
+          example: 3624681
+          description: Unique identifier that identifies each step in a job.
+        startTime:
+          type: string
+          example: '2023-05-30T13:04:00.469Z'
+          description: The date and time with seconds, the step execution has started in UTC format.
+        endTime:
+          type: string
+          example: '2023-05-30T13:04:03.245Z'
+          description: The date and time with seconds, the step execution has ended in UTC format.
+        lastUpdated:
+          type: string
+          example: '2023-05-30T13:04:03.574Z'
+          description: The date and time with seconds, the step has last updated in UTC format.
+        statusMessage:
+          type: string
+          enum:
+          - STARTING
+          - STARTED
+          - COMPLETED
+          - FAILED
+          - UNKNOWN
+          - ABANDONED
+          description: "Displays status for a step.\n * `STARTING` - Job has started.\n * `STARTED` - Job is in progress.\n * `COMPLETED` - Job has completed.\n * `FAILED` - Job has failed.\n * `UNKNOWN` - Job status is unknown.\n * `ABANDONED` - Job has been abandoned (manually stopped).\n"
+        exitCode:
+          type: string
+          enum:
+          - UNKNOWN
+          - COMPLETED
+          - FAILED
+          - STOPPED
+          - COMPLETED_WITH_ERRORS
+          - COMPLETED_WITH_PENDING_ORDERS
+          description: "Exit Code for a step.\n * `UNKNOWN` - Job is in progress.\n * `COMPLETED` - Job has completed successfully.\n * `FAILED` - Job has failed.\n * `STOPPED` - Job has been stopped.\n * `COMPLETED_WITH_ERRORS` - Job has completed with errors.\n * `COMPLETED_WITH_PENDING_ORDERS` - Job has completed with pending number orders.\n"
+        name:
+          type: string
+          example: moveusersvalidateAndMove
+          description: Step name.
+        timeElapsed:
+          type: string
+          example: PT2.752S
+          description: Time lapsed in seconds since the job execution started.
+    deviceOwner:
+      type: object
+      required:
+      - id
+      - type
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0FVVE9fQVRURU5EQU5UL2J6QjJlRGd6Ym1GeU5rQm1iR1Y0TWk1amFYTmpieTVqYjIw
+          description: Unique identifier of a person or a workspace.
+        type:
+          $ref: '#/components/schemas/MemberType'
+          description: Enumeration that indicates if the member is of type `PEOPLE` or `PLACE`.
+        firstName:
+          type: string
+          example: Christian
+          description: The first name of the device owner.
+        lastName:
+          type: string
+          example: Smith
+          description: The last name of the device owner.
+    LocationDeviceDynamicSettingsListPostResponse:
+      type: object
+      example:
+        tags:
+        - familyOrModelDisplayName: Poly
+          tag: '%G711U_ORDER%'
+          value: '4'
+          parentValue: '3'
+          parentLevel: ORGANIZATION
+        lastUpdateTime: 1651396800000
+        updateInProgress: false
+      properties:
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocationDevicePostResponseTag'
+          description: Array of device setting values matching the requested tags.
+        lastUpdateTime:
+          type: integer
+          format: int64
+          description: Timestamp of the last update to these settings.
+        updateInProgress:
+          type: boolean
+          description: Flag indicating if an update to these settings is currently in progress.
+    DeviceDynamicSettingsListPostResponse:
+      type: object
+      required:
+      - tags
+      example:
+        tags:
+        - familyOrModelDisplayName: Poly
+          tag: '%G711U_ORDER%'
+          value: '4'
+          parentValue: '3'
+          parentLevel: ORGANIZATION
+        lastUpdateTime: 1651396800000
+      properties:
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/DevicePostResponseTag'
+          description: Array of device setting values matching the requested tags.
+        lastUpdateTime:
+          type: integer
+          format: int64
+          description: Timestamp of the last update to these settings.
+    DeviceParentLevel:
+      type: string
+      enum:
+      - SYSTEM_DEFAULT
+      - REGIONAL_DEFAULT
+      - ORGANIZATION
+      - LOCATION
+      description: The level from which the tag's parent value is inherited. If there is no parent level for this tag, this field will not be included in the response.
+    LocationDeviceDynamicSettingsListPostRequest:
       type: object
       properties:
         tags:
@@ -1181,6 +1477,156 @@ components:
             maxLength: 64
           description: Optional array of device tag identifiers to request settings for. Each identifier must have a length between 1 and 64 characters.
           minItems: 0
+    PostDynamicDeviceSettingsJobResponse:
+      type: object
+      required:
+      - name
+      - id
+      - trackingId
+      - sourceUserId
+      - sourceCustomerId
+      - targetCustomerId
+      - instanceId
+      - jobExecutionStatus
+      - latestExecutionStatus
+      - latestExecutionExitCode
+      - target
+      - percentageComplete
+      example:
+        name: dynamicdevicesettings
+        id: Y2lzY29zcGFyazovL3VzL0pPQl9JRC8wNjZkOTQzNC1kODEyLTQzODItODVhMC00MjBlOTFlODg3ZTY
+        trackingId: ROUTERGW_1d458245-ee34-48c8-8ed6-92ea16ed48aa
+        sourceUserId: Y2lzY29zcGFyazovL3VzL1BFT1BMRS81MDRhZmQ1YS0zODRiLTQ0NjYtYTJlNC05Y2ExZjUwMDRlYWQ
+        sourceCustomerId: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi9lYTRiZTEyNS00Y2ZjLTQ5OTItOGMwNi00Y2U4Mzc2ZDU4MmE
+        targetCustomerId: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi9lYTRiZTEyNS00Y2ZjLTQ5OTItOGMwNi00Y2U4Mzc2ZDU4MmE
+        instanceId: 428989
+        jobExecutionStatus:
+        - id: 0
+          startTime: '2025-05-13T10:59:44.106Z'
+          lastUpdated: '2025-05-13T10:59:44.106Z'
+          statusMessage: STARTED
+          exitCode: UNKNOWN
+          createdTime: '2025-05-13T10:50:01.352Z'
+          timeElapsed: PT11.476S
+        latestExecutionStatus: STARTED
+        latestExecutionExitCode: UNKNOWN
+        target: CUSTOMER
+        locationId: ''
+        percentageComplete: 100
+      properties:
+        name:
+          type: string
+          example: dynamicdevicesettings
+          description: Name of the job which in this case, is `dynamicdevicesettings`.
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0pPQl9JRC8wNjZkOTQzNC1kODEyLTQzODItODVhMC00MjBlOTFlODg3ZTY
+          description: Unique identifier of the job.
+        trackingId:
+          type: string
+          example: ROUTERGW_1d458245-ee34-48c8-8ed6-92ea16ed48aa
+          description: Unique identifier to track the flow of HTTP requests.
+        sourceUserId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS81MDRhZmQ1YS0zODRiLTQ0NjYtYTJlNC05Y2ExZjUwMDRlYWQ
+          description: Unique identifier of the user who has run the job.
+        sourceCustomerId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi9lYTRiZTEyNS00Y2ZjLTQ5OTItOGMwNi00Y2U4Mzc2ZDU4MmE
+          description: Unique identifier of the customer who has run the job.
+        targetCustomerId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi9lYTRiZTEyNS00Y2ZjLTQ5OTItOGMwNi00Y2U4Mzc2ZDU4MmE
+          description: Unique identifier of the customer for which the job was run.
+        instanceId:
+          type: number
+          example: 428989
+          description: Unique identifier to identify the instance of the job.
+        jobExecutionStatus:
+          type: array
+          items:
+            $ref: '#/components/schemas/JobExecutionStatusObject'
+          description: Displays the most recent step's execution status. Contains execution statuses of all the steps involved in the execution of the job.
+        latestExecutionStatus:
+          $ref: '#/components/schemas/LatestExecutionStatus'
+        latestExecutionExitCode:
+          type: string
+          enum:
+          - UNKNOWN
+          - COMPLETED
+          - FAILED
+          - STOPPED
+          - COMPLETED_WITH_ERRORS
+          description: "Most recent exit code of the job at the time of invocation.\n * `UNKNOWN` - Job is in progress.\n * `COMPLETED` - Job has completed successfully.\n * `FAILED` - Job has failed.\n * `STOPPED` - Job has been stopped.\n * `COMPLETED_WITH_ERRORS` - Job has completed with errors.\n"
+        target:
+          type: string
+          enum:
+          - CUSTOMER
+          - LOCATION
+          example: LOCATION
+          description: Indicates the target entity.
+        locationId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzQ0Y2UwNDBhLTEzNmMtNDc3NS1hMjIzLTY5OTczYmEyYWNhYw
+          description: Unique identifier of a location.
+        locationName:
+          type: string
+          example: Brampton
+          description: Name of the location. Included only when `target` is `LOCATION`.
+        percentageComplete:
+          type: integer
+          example: 10
+          description: Indicates the progress of the job.
+    DynamicDeviceSettingsJobListResponse:
+      type: object
+      required:
+      - items
+      example:
+        items:
+        - name: dynamicdevicesettings
+          id: Y2lzY29zcGFyazovL3VzL0pPQl9JRC8wZTJjNmI5NC1hNDdlLTQxZGUtODE5ZS04YTcwNTZjMTc5MDk
+          trackingId: NA_a9ef6908-60cf-40e6-b56f-461abffd6fa3
+          sourceUserId: Y2lzY29zcGFyazovL3VzL1BFT1BMRS85OThhMThhYi1kZjY5LTQ5MWYtYmViZi03MzUxMGE3ODI5N2I
+          sourceCustomerId: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi9hNDVkNmNkYS1hZTVhLTQwYzMtYTdhZC01NjUwZmRkZGQ1M2M
+          targetCustomerId: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi9hNDVkNmNkYS1hZTVhLTQwYzMtYTdhZC01NjUwZmRkZGQ1M2M
+          instanceId: 0
+          jobExecutionStatus: []
+          latestExecutionStatus: COMPLETED
+          latestExecutionExitCode: COMPLETED
+          target: LOCATION
+          locationId: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzgwZmUxMzdkLTg5NDgtNDlhYS1iODdiLTk4MGMxN2I2YzdiYg
+          percentageComplete: 100
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PostDynamicDeviceSettingsJobResponse'
+          description: Lists all jobs for the customer of type `dynamicdevicesettings` in order of most recent one to oldest one irrespective of its status.
+    DeviceDynamicSettingsSettingsGroupsGet:
+      type: object
+      example:
+        settingsGroups:
+        - path: Voice.Codec Preferences
+          friendlyName: voice.codecPref.G711Mu
+          tab: Poly
+          familyOrModelDisplayName: Poly
+          tags:
+          - tagBlock:
+            - '%G711U_ORDER%'
+        settingsTabs:
+        - Poly
+        - MPP
+      properties:
+        settingsGroups:
+          type: array
+          items:
+            $ref: '#/components/schemas/DeviceSettingsGroup'
+          description: Array of settings groups defining structure and association of tags.
+        settingsTabs:
+          type: array
+          items:
+            type: string
+          description: Array of settings tabs names. Can be filtered using the `includeSettingsType` parameter.
     CustomerDevicePostTag:
       type: object
       properties:
@@ -1296,291 +1742,21 @@ components:
           items:
             $ref: '#/components/schemas/DeviceObject'
           description: List of supported devices.
-    LocationParentLevel:
-      type: string
-      enum:
-      - SYSTEM_DEFAULT
-      - REGIONAL_DEFAULT
-      - ORGANIZATION
-      - LOCATION
-      description: The level from which the tag's parent value is inherited. If there is no parent level for this tag, this field will not be included in the response.
-    ErrorMessageObject:
-      type: object
-      properties:
-        description:
-          type: string
-          description: Error message.
-        code:
-          type: string
-          description: Internal error code.
-        locationId:
-          type: string
-          description: Error messages describing the location ID in which the error occurs. For a move operation, this is the target location ID.
-    DeviceDynamicSettingsListPostRequest:
-      type: object
-      properties:
-        tags:
-          type: array
-          items:
-            type: string
-          description: Optional array of tag identifiers representing specific settings to fetch. If omitted or provided as an empty array, all settings for the device will be returned.
-          minItems: 0
-    CustomerDeviceDynamicSettingsListPostResponse:
-      type: object
-      example:
-        tags:
-        - familyOrModelDisplayName: Poly
-          tag: '%DO_MENU_ITEM_BACKGROUND%'
-          value: '#RRGGBB'
-          parentValue: '#FFFFFF'
-          parentLevel: ORGANIZATION
-        lastUpdateTime: 1651396800000
-        updateInProgress: false
-      properties:
-        tags:
-          type: array
-          items:
-            $ref: '#/components/schemas/CustomerDevicePostTag'
-          description: Array of device setting values matching the requested tags.
-        lastUpdateTime:
-          type: integer
-          format: int64
-          description: Timestamp of the last update to these settings.
-        updateInProgress:
-          type: boolean
-          description: Flag indicating if an update to these settings is currently in progress.
-    ItemObject:
-      type: object
-      properties:
-        item:
-          type: string
-          description: Phone number
-        itemNumber:
-          type: number
-          description: Index of error number.
-        trackingId:
-          type: string
-          description: Unique identifier to track the HTTP requests.
-        error:
-          $ref: '#/components/schemas/ErrorObject'
-    DeviceSettingsGroup:
-      type: object
-      properties:
-        path:
-          type: string
-          description: Path of the settings group. Creates an easily navigable settings hierarchy.
-          example: Voice.Codec Preferences
-        friendlyName:
-          type: string
-          description: Friendly name of the settings group.
-          example: voice.codecPref.G711Mu
-        tab:
-          type: string
-          description: Tab name associated with the settings group.
-          example: Poly
-        familyOrModelDisplayName:
-          type: string
-          description: Family or model display name associated with the settings group.
-          example: Poly
-        tags:
-          type: array
-          items:
-            $ref: '#/components/schemas/DeviceSettingsGroupTag'
-          description: List of `tagBlock` objects associated with the settings group.
-    LocationDevicePostResponseTag:
-      type: object
-      properties:
-        familyOrModelDisplayName:
-          type: string
-          description: The `familyOrModelDisplayName` of the device.
-          example: Poly
-        tag:
-          type: string
-          description: The unique identifier for the setting.
-          example: '%G711U_ORDER%'
-        value:
-          type: string
-          description: The current value of the setting at `LOCATION` level. If the tag value is not set at the `LOCATION` level, this field will not be included in the response.
-          example: '4'
-        parentValue:
-          type: string
-          description: The value inherited from the immediate parent level above `LOCATION`. It can be `SYSTEM_DEFAULT`, `REGIONAL_DEFAULT`, `ORGANIZATION`, or `LOCATION`, depending on which level the setting is actually configured at. If there is no parent level for this tag, this field will not be included in the response.
-          example: '3'
-        parentLevel:
-          $ref: '#/components/schemas/LocationParentLevel'
-    DynamicDeviceSettingsCustomerParentLevel:
-      type: string
-      enum:
-      - SYSTEM_DEFAULT
-      - REGIONAL_DEFAULT
-      - ORGANIZATION
-      description: The level from which the tag's parent value is inherited. If there is no parent level for this tag, this field will not be included in the response.
-    LocationDeviceDynamicSettingsListPostRequest:
-      type: object
-      properties:
-        tags:
-          type: array
-          items:
-            type: string
-            minLength: 1
-            maxLength: 64
-          description: Optional array of device tag identifiers to request settings for. Each identifier must have a length between 1 and 64 characters.
-          minItems: 0
     LineType:
       type: string
       enum:
       - PRIMARY
       - SHARED_CALL_APPEARANCE
       description: " * `PRIMARY` - Primary line for the member.\n * `SHARED_CALL_APPEARANCE` - Shared line for the member. A shared line allows users to receive and place calls to and from another user's extension, using their own device.\n"
-    DeviceSettingsGroupTag:
+    DeviceDynamicSettingsPutRequest:
       type: object
-      properties:
-        tagBlock:
-          type: array
-          items:
-            type: string
-          description: Array of tags associated with the settings group.
-          example:
-          - '%G711U_ORDER%'
-    deviceOwner:
-      type: object
-      required:
-      - id
-      - type
-      properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0FVVE9fQVRURU5EQU5UL2J6QjJlRGd6Ym1GeU5rQm1iR1Y0TWk1amFYTmpieTVqYjIw
-          description: Unique identifier of a person or a workspace.
-        type:
-          $ref: '#/components/schemas/MemberType'
-          description: Enumeration that indicates if the member is of type `PEOPLE` or `PLACE`.
-        firstName:
-          type: string
-          example: Christian
-          description: The first name of the device owner.
-        lastName:
-          type: string
-          example: Smith
-          description: The last name of the device owner.
-    DeviceDynamicSettingsListPostResponse:
-      type: object
-      required:
-      - tags
-      example:
-        tags:
-        - familyOrModelDisplayName: Poly
-          tag: '%G711U_ORDER%'
-          value: '4'
-          parentValue: '3'
-          parentLevel: ORGANIZATION
-        lastUpdateTime: 1651396800000
       properties:
         tags:
           type: array
           items:
-            $ref: '#/components/schemas/DevicePostResponseTag'
-          description: Array of device setting values matching the requested tags.
-        lastUpdateTime:
-          type: integer
-          format: int64
-          description: Timestamp of the last update to these settings.
-    DeviceActivationStates:
-      type: string
-      enum:
-      - ACTIVATING
-      - ACTIVATED
-      - DEACTIVATED
-      description: " * `ACTIVATING` - Indicates a device is activating.\n * `ACTIVATED` - Indicates a device is activated.\n * `DEACTIVATED` - Indicates a device is deactivated.\n"
-    DynamicDeviceSettingsJobListResponse:
-      type: object
-      required:
-      - items
-      example:
-        items:
-        - name: dynamicdevicesettings
-          id: Y2lzY29zcGFyazovL3VzL0pPQl9JRC8wZTJjNmI5NC1hNDdlLTQxZGUtODE5ZS04YTcwNTZjMTc5MDk
-          trackingId: NA_a9ef6908-60cf-40e6-b56f-461abffd6fa3
-          sourceUserId: Y2lzY29zcGFyazovL3VzL1BFT1BMRS85OThhMThhYi1kZjY5LTQ5MWYtYmViZi03MzUxMGE3ODI5N2I
-          sourceCustomerId: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi9hNDVkNmNkYS1hZTVhLTQwYzMtYTdhZC01NjUwZmRkZGQ1M2M
-          targetCustomerId: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi9hNDVkNmNkYS1hZTVhLTQwYzMtYTdhZC01NjUwZmRkZGQ1M2M
-          instanceId: 0
-          jobExecutionStatus: []
-          latestExecutionStatus: COMPLETED
-          latestExecutionExitCode: COMPLETED
-          target: LOCATION
-          locationId: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzgwZmUxMzdkLTg5NDgtNDlhYS1iODdiLTk4MGMxN2I2YzdiYg
-          percentageComplete: 100
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/PostDynamicDeviceSettingsJobResponse'
-          description: Lists all jobs for the customer of type `dynamicdevicesettings` in order of most recent one to oldest one irrespective of its status.
-    ErrorObject:
-      type: object
-      properties:
-        key:
-          type: string
-          description: HTTP error code.
-        message:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorMessageObject'
-          description: Message string with further error information.
-    stepExecutionStatusesObject:
-      type: object
-      required:
-      - id
-      - lastUpdated
-      - statusMessage
-      - name
-      - timeElapsed
-      properties:
-        id:
-          type: number
-          example: 3624681
-          description: Unique identifier that identifies each step in a job.
-        startTime:
-          type: string
-          example: '2023-05-30T13:04:00.469Z'
-          description: The date and time with seconds, the step execution has started in UTC format.
-        endTime:
-          type: string
-          example: '2023-05-30T13:04:03.245Z'
-          description: The date and time with seconds, the step execution has ended in UTC format.
-        lastUpdated:
-          type: string
-          example: '2023-05-30T13:04:03.574Z'
-          description: The date and time with seconds, the step has last updated in UTC format.
-        statusMessage:
-          type: string
-          enum:
-          - STARTING
-          - STARTED
-          - COMPLETED
-          - FAILED
-          - UNKNOWN
-          - ABANDONED
-          description: "Displays status for a step.\n * `STARTING` - Job has started.\n * `STARTED` - Job is in progress.\n * `COMPLETED` - Job has completed.\n * `FAILED` - Job has failed.\n * `UNKNOWN` - Job status is unknown.\n * `ABANDONED` - Job has been abandoned (manually stopped).\n"
-        exitCode:
-          type: string
-          enum:
-          - UNKNOWN
-          - COMPLETED
-          - FAILED
-          - STOPPED
-          - COMPLETED_WITH_ERRORS
-          - COMPLETED_WITH_PENDING_ORDERS
-          description: "Exit Code for a step.\n * `UNKNOWN` - Job is in progress.\n * `COMPLETED` - Job has completed successfully.\n * `FAILED` - Job has failed.\n * `STOPPED` - Job has been stopped.\n * `COMPLETED_WITH_ERRORS` - Job has completed with errors.\n * `COMPLETED_WITH_PENDING_ORDERS` - Job has completed with pending number orders.\n"
-        name:
-          type: string
-          example: moveusersvalidateAndMove
-          description: Step name.
-        timeElapsed:
-          type: string
-          example: PT2.752S
-          description: Time lapsed in seconds since the job execution started.
+            $ref: '#/components/schemas/DevicePutItem'
+          description: Optional array of `tag` identifiers representing specific settings to update. If omitted or provided as an empty array, the request will have no effect.
+          minItems: 0
     DevicePostResponseTag:
       type: object
       required:
@@ -1605,227 +1781,63 @@ components:
           example: '3'
         parentLevel:
           $ref: '#/components/schemas/DeviceParentLevel'
-    DynamicSettingsUpdateJobDevicePostItem:
+    DynamicDeviceSettingsCustomerParentLevel:
+      type: string
+      enum:
+      - SYSTEM_DEFAULT
+      - REGIONAL_DEFAULT
+      - ORGANIZATION
+      description: The level from which the tag's parent value is inherited. If there is no parent level for this tag, this field will not be included in the response.
+    DeviceSettingsGroup:
       type: object
-      required:
-      - familyOrModelDisplayName
-      - tag
-      - action
       properties:
+        path:
+          type: string
+          description: Path of the settings group. Creates an easily navigable settings hierarchy.
+          example: Voice.Codec Preferences
+        friendlyName:
+          type: string
+          description: Friendly name of the settings group.
+          example: voice.codecPref.G711Mu
+        tab:
+          type: string
+          description: Tab name associated with the settings group.
+          example: Poly
         familyOrModelDisplayName:
           type: string
-          description: The `familyOrModelDisplayName` of the device to which the tag applies. This value must exist in the validation schema.
+          description: Family or model display name associated with the settings group.
           example: Poly
-          minLength: 1
-          maxLength: 40
-        tag:
-          type: string
-          description: The unique identifier for the setting to be updated.
-          example: '%G711U_ORDER%'
-          minLength: 1
-          maxLength: 64
-        action:
-          $ref: '#/components/schemas/Action'
-        value:
-          type: string
-          description: The new value to set for the setting. This field is required when `action` is `SET` and ignored otherwise.
-          example: '4'
-          minLength: 1
-          maxLength: 256
-    JobExecutionStatusObject:
-      type: object
-      required:
-      - id
-      - lastUpdated
-      - statusMessage
-      - createdTime
-      - timeElapsed
-      properties:
-        id:
-          type: number
-          example: 735206
-          description: Unique identifier that identifies each instance of the job.
-        startTime:
-          type: string
-          example: '2023-05-30T13:04:00.469Z'
-          description: The date and time with seconds, the job has started in UTC format.
-        endTime:
-          type: string
-          example: '2023-05-30T13:04:03.245Z'
-          description: The date and time with seconds, the job has ended in UTC format.
-        lastUpdated:
-          type: string
-          example: '2023-05-30T13:04:03.574Z'
-          description: The date and time with seconds, the job has last updated in UTC format post one of the step execution completion.
-        statusMessage:
-          type: string
-          enum:
-          - STARTING
-          - STARTED
-          - COMPLETED
-          - FAILED
-          - UNKNOWN
-          - ABANDONED
-          description: "Displays status for overall steps that are part of the job.\n * `STARTING` - Job has started.\n * `STARTED` - Job is in progress.\n * `COMPLETED` - Job has completed.\n * `FAILED` - Job has failed.\n * `UNKNOWN` - Job status is unknown.\n * `ABANDONED` - Job has been abandoned (manually stopped).\n"
-        exitCode:
-          type: string
-          enum:
-          - UNKNOWN
-          - COMPLETED
-          - FAILED
-          - STOPPED
-          - COMPLETED_WITH_ERRORS
-          - COMPLETED_WITH_PENDING_ORDERS
-          description: "Exit Code for a job.\n * `UNKNOWN` - Job is in progress.\n * `COMPLETED` - Job has completed successfully.\n * `FAILED` - Job has failed.\n * `STOPPED` - Job has been stopped.\n * `COMPLETED_WITH_ERRORS` - Job has completed with errors.\n * `COMPLETED_WITH_PENDING_ORDERS` - Job has completed with pending number orders.\n"
-        createdTime:
-          type: string
-          example: '2023-05-30T13:04:00.457Z'
-          description: The date and time with seconds, the job has created in UTC format.
-        timeElapsed:
-          type: string
-          example: PT2.752S
-          description: Time lapsed in seconds since the job execution started.
-        stepExecutionStatuses:
-          type: array
-          items:
-            $ref: '#/components/schemas/stepExecutionStatusesObject'
-          description: Status of each step within a job.
-    ErrorResponseObject:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/ItemObject'
-    DeviceDynamicSettingsPutRequest:
-      type: object
-      properties:
         tags:
           type: array
           items:
-            $ref: '#/components/schemas/DevicePutItem'
-          description: Optional array of `tag` identifiers representing specific settings to update. If omitted or provided as an empty array, the request will have no effect.
-          minItems: 0
-    PostDynamicDeviceSettingsJobResponse:
+            $ref: '#/components/schemas/DeviceSettingsGroupTag'
+          description: List of `tagBlock` objects associated with the settings group.
+    ItemObject:
       type: object
-      required:
-      - name
-      - id
-      - trackingId
-      - sourceUserId
-      - sourceCustomerId
-      - targetCustomerId
-      - instanceId
-      - jobExecutionStatus
-      - latestExecutionStatus
-      - latestExecutionExitCode
-      - target
-      - percentageComplete
-      example:
-        name: dynamicdevicesettings
-        id: Y2lzY29zcGFyazovL3VzL0pPQl9JRC8wNjZkOTQzNC1kODEyLTQzODItODVhMC00MjBlOTFlODg3ZTY
-        trackingId: ROUTERGW_1d458245-ee34-48c8-8ed6-92ea16ed48aa
-        sourceUserId: Y2lzY29zcGFyazovL3VzL1BFT1BMRS81MDRhZmQ1YS0zODRiLTQ0NjYtYTJlNC05Y2ExZjUwMDRlYWQ
-        sourceCustomerId: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi9lYTRiZTEyNS00Y2ZjLTQ5OTItOGMwNi00Y2U4Mzc2ZDU4MmE
-        targetCustomerId: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi9lYTRiZTEyNS00Y2ZjLTQ5OTItOGMwNi00Y2U4Mzc2ZDU4MmE
-        instanceId: 428989
-        jobExecutionStatus:
-        - id: 0
-          startTime: '2025-05-13T10:59:44.106Z'
-          lastUpdated: '2025-05-13T10:59:44.106Z'
-          statusMessage: STARTED
-          exitCode: UNKNOWN
-          createdTime: '2025-05-13T10:50:01.352Z'
-          timeElapsed: PT11.476S
-        latestExecutionStatus: STARTED
-        latestExecutionExitCode: UNKNOWN
-        target: CUSTOMER
-        locationId: ''
-        percentageComplete: 100
       properties:
-        name:
+        item:
           type: string
-          example: dynamicdevicesettings
-          description: Name of the job which in this case, is `dynamicdevicesettings`.
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0pPQl9JRC8wNjZkOTQzNC1kODEyLTQzODItODVhMC00MjBlOTFlODg3ZTY
-          description: Unique identifier of the job.
+          description: Phone number
+        itemNumber:
+          type: number
+          description: Index of error number.
         trackingId:
           type: string
-          example: ROUTERGW_1d458245-ee34-48c8-8ed6-92ea16ed48aa
-          description: Unique identifier to track the flow of HTTP requests.
-        sourceUserId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS81MDRhZmQ1YS0zODRiLTQ0NjYtYTJlNC05Y2ExZjUwMDRlYWQ
-          description: Unique identifier of the user who has run the job.
-        sourceCustomerId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi9lYTRiZTEyNS00Y2ZjLTQ5OTItOGMwNi00Y2U4Mzc2ZDU4MmE
-          description: Unique identifier of the customer who has run the job.
-        targetCustomerId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi9lYTRiZTEyNS00Y2ZjLTQ5OTItOGMwNi00Y2U4Mzc2ZDU4MmE
-          description: Unique identifier of the customer for which the job was run.
-        instanceId:
-          type: number
-          example: 428989
-          description: Unique identifier to identify the instance of the job.
-        jobExecutionStatus:
-          type: array
-          items:
-            $ref: '#/components/schemas/JobExecutionStatusObject'
-          description: Displays the most recent step's execution status. Contains execution statuses of all the steps involved in the execution of the job.
-        latestExecutionStatus:
-          $ref: '#/components/schemas/LatestExecutionStatus'
-        latestExecutionExitCode:
-          type: string
-          enum:
-          - UNKNOWN
-          - COMPLETED
-          - FAILED
-          - STOPPED
-          - COMPLETED_WITH_ERRORS
-          description: "Most recent exit code of the job at the time of invocation.\n * `UNKNOWN` - Job is in progress.\n * `COMPLETED` - Job has completed successfully.\n * `FAILED` - Job has failed.\n * `STOPPED` - Job has been stopped.\n * `COMPLETED_WITH_ERRORS` - Job has completed with errors.\n"
-        target:
-          type: string
-          enum:
-          - CUSTOMER
-          - LOCATION
-          example: LOCATION
-          description: Indicates the target entity.
-        locationId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzQ0Y2UwNDBhLTEzNmMtNDc3NS1hMjIzLTY5OTczYmEyYWNhYw
-          description: Unique identifier of a location.
-        locationName:
-          type: string
-          example: Brampton
-          description: Name of the location. Included only when `target` is `LOCATION`.
-        percentageComplete:
-          type: integer
-          example: 10
-          description: Indicates the progress of the job.
-    Action:
+          description: Unique identifier to track the HTTP requests.
+        error:
+          $ref: '#/components/schemas/ErrorObject'
+    OnboardingMethodObject:
       type: string
       enum:
-      - ADD
-      - DELETE
-      description: " * `ADD` - Add action.\n * `DELETE` - Delete action.\n"
-    MemberType:
+      - MAC_ADDRESS
+      - ACTIVATION_CODE
+      - NONE
+    ManagedByObject:
       type: string
       enum:
-      - PEOPLE
-      - PLACE
-      description: " * `PEOPLE` - Indicates the associated member is a person.\n * `PLACE` - Indicates the associated member is a workspace.\n"
-    LatestExecutionStatus:
-      type: string
-      enum:
-      - STARTING
-      - STARTED
-      - COMPLETED
-      - FAILED
-      description: " * `STARTING` - Job has started.\n * `STARTED` - Job is in progress.\n * `COMPLETED` - Job has been completed.\n * `FAILED` - Job has failed.\n"
+      - CISCO
+      - CUSTOMER
+      description: " * `CISCO` - Devices managed by Cisco.\n * `CUSTOMER` - Devices managed by a customer that are approved by a Cisco account manager to be enabled for provisioning in the control hub.\n"
     TypeObject:
       type: string
       enum:
@@ -1835,17 +1847,115 @@ components:
       - ESIM
       - DESK_PHONE
       description: " * `MPP` - Cisco Multiplatform Phone\n * `ATA` - Analog Telephone Adapters\n * `GENERIC_SIP` - GENERIC Session Initiation Protocol\n * `ESIM` - Esim Supported Webex Go\n * `DESK_PHONE` - Desk Phone\n"
-    OnboardingMethodObject:
+    ErrorMessageObject_2:
+      type: object
+      properties:
+        description:
+          type: string
+          description: Error message.
+        code:
+          type: string
+          description: Internal error code.
+        locationId:
+          type: string
+          description: Error messages describing the location ID in which the error occurs.
+    JobExecutionStatusObject_2:
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          type: number
+          example: 436272
+          description: Unique identifier that identifies each instance of the job.
+        startTime:
+          type: string
+          example: '2025-05-13T10:59:44.106Z'
+          description: Step execution start time in UTC format.
+        endTime:
+          type: string
+          example: '2025-05-13T10:59:44.692Z'
+          description: Step execution end time in UTC format.
+        lastUpdated:
+          type: string
+          example: '2025-05-13T10:59:44.854Z'
+          description: Last updated time (in UTC format) post one of the step execution completion.
+        statusMessage:
+          type: string
+          example: STARTING
+          description: Displays status for overall steps that are part of the job.
+        exitCode:
+          type: string
+          example: UNKNOWN
+          description: Exit Code for a job.
+        createdTime:
+          type: string
+          example: '2024-03-13T14:57:04.678Z'
+          description: Job creation time in UTC format.
+        timeElapsed:
+          type: string
+          example: PT0S
+          description: Time lapsed since the job execution started.
+        stepExecutionStatuses:
+          type: array
+          items:
+            $ref: '#/components/schemas/stepExecutionStatusesObject_2'
+          description: Status of each step within a job.
+    SupportsLogCollectionObject:
       type: string
       enum:
-      - MAC_ADDRESS
-      - ACTIVATION_CODE
       - NONE
-    SupportedForObject:
+      - CISCO_PRT
+      - CISCO_ROOMOS
+      description: " * `NONE` - Devices which does not support log collection.\n * `CISCO_PRT` - Devices which supports Cisco PRT log collection.\n * `CISCO_ROOMOS` - Devices which supports Cisco RoomOS log collection.\n"
+    LatestExecutionStatus_2:
       type: string
       enum:
-      - PEOPLE
-      - PLACE
+      - STARTING
+      - STARTED
+      - COMPLETED
+      - FAILED
+      description: " * `STARTING` - Indicates the job has started.\n * `STARTED` - Indicates the job is in progress.\n * `COMPLETED` - Indicates the job has completed.\n * `FAILED` - Indicates the job has failed.\n"
+    Action_2:
+      type: string
+      enum:
+      - SET
+      - CLEAR
+      description: The action to perform on the setting. When action is `SET`, `tag` is updated to specified value. When action is `CLEAR`, the `tag` value at device level is removed, and the device will inherit the value from the parent level, if it exists.
+      example: SET
+    ErrorResponseObject_2:
+      type: object
+      example:
+        items:
+        - itemNumber: 0
+          error:
+            key: error.key
+            message:
+            - description: Error description
+              code: '1001'
+              locationId: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzMzZjBlZDFiLWQ1YjctNGI4Mi1iMzIzLTg4ZTFmODMzNGNmMw
+          trackingId: ROUTER_62F66055-8D70-01BB-0137-AC10A8310137
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemObject_2'
+          description: Array of error items for failed operations.
+          example:
+          - itemNumber: 0
+            trackingId: ROUTER_62F66055-8D70-01BB-0137-AC10A8310137
+    ErrorObject_2:
+      type: object
+      description: Error details object containing error information.
+      properties:
+        key:
+          type: string
+          description: HTTP error code.
+        message:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorMessageObject_2'
+          description: Message string with further error information.
     DeviceObject_2:
       type: object
       required:
@@ -1988,60 +2098,6 @@ components:
         maxNumberOfLineAppearances:
           type: number
           description: Maximum number of line appearances available on the device.
-    ManagedByObject:
-      type: string
-      enum:
-      - CISCO
-      - CUSTOMER
-      description: " * `CISCO` - Devices managed by Cisco.\n * `CUSTOMER` - Devices managed by a customer that are approved by a Cisco account manager to be enabled for provisioning in the control hub.\n"
-    ErrorMessageObject_2:
-      type: object
-      properties:
-        description:
-          type: string
-          description: Error message.
-        code:
-          type: string
-          description: Internal error code.
-        locationId:
-          type: string
-          description: Error messages describing the location ID in which the error occurs.
-    ItemObject_2:
-      type: object
-      properties:
-        itemNumber:
-          type: number
-          description: Index of error number.
-        trackingId:
-          type: string
-          description: Unique identifier to track the HTTP requests.
-        error:
-          $ref: '#/components/schemas/ErrorObject_2'
-    KemModuleType:
-      type: string
-      enum:
-      - KEM_14_KEYS
-      - KEM_18_KEYS
-      - KEM_20_KEYS
-      description: " * `KEM_14_KEYS` - Extension module has 14 line keys that can be configured.\n * `KEM_18_KEYS` - Extension module has 18 line keys that can be configured.\n * `KEM_20_KEYS` - Extension module has 20 line keys that can be configured.\n"
-    ManufacturerObject:
-      type: string
-      enum:
-      - CISCO
-      - THIRD_PARTY
-      description: " * `CISCO` - Devices manufactured by Cisco.\n * `THIRD_PARTY` - Devices manufactured by a third-party that are approved by a Cisco account manager to be enabled for provisioning in the control hub.\n"
-    ErrorObject_2:
-      type: object
-      description: Error details object containing error information.
-      properties:
-        key:
-          type: string
-          description: HTTP error code.
-        message:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorMessageObject_2'
-          description: Message string with further error information.
     stepExecutionStatusesObject_2:
       type: object
       required:
@@ -2079,83 +2135,6 @@ components:
           type: string
           example: PT11.585S
           description: Time lapsed since the step execution started.
-    JobExecutionStatusObject_2:
-      type: object
-      required:
-      - id
-      properties:
-        id:
-          type: number
-          example: 436272
-          description: Unique identifier that identifies each instance of the job.
-        startTime:
-          type: string
-          example: '2025-05-13T10:59:44.106Z'
-          description: Step execution start time in UTC format.
-        endTime:
-          type: string
-          example: '2025-05-13T10:59:44.692Z'
-          description: Step execution end time in UTC format.
-        lastUpdated:
-          type: string
-          example: '2025-05-13T10:59:44.854Z'
-          description: Last updated time (in UTC format) post one of the step execution completion.
-        statusMessage:
-          type: string
-          example: STARTING
-          description: Displays status for overall steps that are part of the job.
-        exitCode:
-          type: string
-          example: UNKNOWN
-          description: Exit Code for a job.
-        createdTime:
-          type: string
-          example: '2024-03-13T14:57:04.678Z'
-          description: Job creation time in UTC format.
-        timeElapsed:
-          type: string
-          example: PT0S
-          description: Time lapsed since the job execution started.
-        stepExecutionStatuses:
-          type: array
-          items:
-            $ref: '#/components/schemas/stepExecutionStatusesObject_2'
-          description: Status of each step within a job.
-    ErrorResponseObject_2:
-      type: object
-      example:
-        items:
-        - itemNumber: 0
-          error:
-            key: error.key
-            message:
-            - description: Error description
-              code: '1001'
-              locationId: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzMzZjBlZDFiLWQ1YjctNGI4Mi1iMzIzLTg4ZTFmODMzNGNmMw
-          trackingId: ROUTER_62F66055-8D70-01BB-0137-AC10A8310137
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/ItemObject_2'
-          description: Array of error items for failed operations.
-          example:
-          - itemNumber: 0
-            trackingId: ROUTER_62F66055-8D70-01BB-0137-AC10A8310137
-    Action_2:
-      type: string
-      enum:
-      - SET
-      - CLEAR
-      description: The action to perform on the setting. When action is `SET`, `tag` is updated to specified value. When action is `CLEAR`, the `tag` value at device level is removed, and the device will inherit the value from the parent level, if it exists.
-      example: SET
-    SupportsLogCollectionObject:
-      type: string
-      enum:
-      - NONE
-      - CISCO_PRT
-      - CISCO_ROOMOS
-      description: " * `NONE` - Devices which does not support log collection.\n * `CISCO_PRT` - Devices which supports Cisco PRT log collection.\n * `CISCO_ROOMOS` - Devices which supports Cisco RoomOS log collection.\n"
     DeviceSettingsConfigurationObject:
       type: string
       enum:
@@ -2164,14 +2143,35 @@ components:
       - WEBEX_CALLING_DYNAMIC_DEVICE_CONFIGURATION
       - NONE
       description: " * `WEBEX_CALLING_DEVICE_CONFIGURATION` - Devices which supports Webex Calling Device Settings Configuration.\n * `WEBEX_DEVICE_CONFIGURATION` - Devices which supports Webex Device Settings Configuration.\n * `WEBEX_CALLING_DYNAMIC_DEVICE_CONFIGURATION` - Devices which supports Webex Calling dynamic Settings Configuration.\n * `NONE` - Devices does not support any configuration.\n"
-    LatestExecutionStatus_2:
+    KemModuleType:
       type: string
       enum:
-      - STARTING
-      - STARTED
-      - COMPLETED
-      - FAILED
-      description: " * `STARTING` - Indicates the job has started.\n * `STARTED` - Indicates the job is in progress.\n * `COMPLETED` - Indicates the job has completed.\n * `FAILED` - Indicates the job has failed.\n"
+      - KEM_14_KEYS
+      - KEM_18_KEYS
+      - KEM_20_KEYS
+      description: " * `KEM_14_KEYS` - Extension module has 14 line keys that can be configured.\n * `KEM_18_KEYS` - Extension module has 18 line keys that can be configured.\n * `KEM_20_KEYS` - Extension module has 20 line keys that can be configured.\n"
+    ManufacturerObject:
+      type: string
+      enum:
+      - CISCO
+      - THIRD_PARTY
+      description: " * `CISCO` - Devices manufactured by Cisco.\n * `THIRD_PARTY` - Devices manufactured by a third-party that are approved by a Cisco account manager to be enabled for provisioning in the control hub.\n"
+    SupportedForObject:
+      type: string
+      enum:
+      - PEOPLE
+      - PLACE
+    ItemObject_2:
+      type: object
+      properties:
+        itemNumber:
+          type: number
+          description: Index of error number.
+        trackingId:
+          type: string
+          description: Unique identifier to track the HTTP requests.
+        error:
+          $ref: '#/components/schemas/ErrorObject_2'
   securitySchemes:
     oauth2:
       flows:

@@ -96,7 +96,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Create a Contact
-      operationId: Create a Contact
+      operationId: CreateAContact
       description: 'Creating a new contact for a given organization requires an org admin role.
 
 
@@ -150,6 +150,8 @@ paths:
               - 9ac175bf-0249-4287-8fb3-e320e525fcf6
             schema:
               $ref: '#/components/schemas/Contact'
+      x-operation-id-source: normalized
+      x-operation-id-original: Create a Contact
   /contacts/organizations/{orgId}/contacts/{contactId}:
     get:
       responses:
@@ -227,7 +229,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Get a Contact
-      operationId: Get a Contact
+      operationId: GetAContact
       description: 'Shows details for an organization contact by ID.
 
         Specify the organization ID in the `orgId` parameter in the URI, and specify the contact ID in the `contactId` parameter in the URI.
@@ -253,6 +255,8 @@ paths:
         example: 6847ee0f-5e9c-4403-9f0e-0aa8552f7828
         schema:
           type: string
+      x-operation-id-source: normalized
+      x-operation-id-original: Get a Contact
     patch:
       responses:
         '200':
@@ -414,7 +418,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Update a Contact
-      operationId: Update a Contact
+      operationId: UpdateAContact
       description: 'Update details for contact by ID. Only an admin can update a contact.
 
         Specify the organization ID in the `orgId` parameter in the URI, and specify the contact ID in the `contactId` parameter in the URI.
@@ -473,6 +477,8 @@ paths:
               - 9ac175bf-0249-4287-8fb3-e320e525fcf6
             schema:
               $ref: '#/components/schemas/UpdateContact'
+      x-operation-id-source: normalized
+      x-operation-id-original: Update a Contact
     delete:
       responses:
         '204':
@@ -510,7 +516,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Delete a Contact
-      operationId: Delete a Contact
+      operationId: DeleteAContact
       description: 'Remove a contact from the organization. Only an admin can remove a contact.
 
 
@@ -532,6 +538,8 @@ paths:
         example: 6847ee0f-5e9c-4403-9f0e-0aa8552f7828
         schema:
           type: string
+      x-operation-id-source: normalized
+      x-operation-id-original: Delete a Contact
   /contacts/organizations/{orgId}/contacts/search:
     get:
       responses:
@@ -613,7 +621,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: List Contacts
-      operationId: List Contacts
+      operationId: ListContacts
       description: 'List contacts in the organization. The default limit is `100`.
 
 
@@ -662,6 +670,8 @@ paths:
             type: string
             example: 9ac175bf-0249-4287-8fb3-e320e525fcf6,23b95024-7063-404c-9a3c-37532f53a9ce
           description: Filter contacts based on groups.
+      x-operation-id-source: normalized
+      x-operation-id-original: List Contacts
   /contacts/organizations/{orgId}/contacts/bulk:
     post:
       responses:
@@ -729,7 +739,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Bulk Create or Update Contacts
-      operationId: Bulk Create or Update Contacts
+      operationId: BulkCreateOrUpdateContacts
       description: Create or update contacts in bulk. Update an existing contact by specifying the contact ID in the `contactId` parameter in the request body.
       tags:
       - Organization Contacts
@@ -775,6 +785,8 @@ paths:
                   primary: true
             schema:
               $ref: '#/components/schemas/BulkCreate'
+      x-operation-id-source: normalized
+      x-operation-id-original: Bulk Create or Update Contacts
   /contacts/organizations/{orgId}/contacts/bulk/delete:
     post:
       responses:
@@ -813,7 +825,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Bulk Delete Contacts
-      operationId: Bulk Delete Contacts
+      operationId: BulkDeleteContacts
       description: Delete contacts in bulk.
       tags:
       - Organization Contacts
@@ -834,8 +846,190 @@ paths:
               - 8a5fac49-2c5f-4773-aec7-02db0e3a9d72
             schema:
               $ref: '#/components/schemas/BulkDelete'
+      x-operation-id-source: normalized
+      x-operation-id-original: Bulk Delete Contacts
 components:
   schemas:
+    BulkCreate:
+      type: object
+      required:
+      - schemas
+      - contacts
+      properties:
+        schemas:
+          type: string
+          example: urn:cisco:codev:identity:contact:core:1.0
+          description: '"urn:cisco:codev:identity:contact:core:1.0".'
+        contacts:
+          type: array
+          items:
+            type: object
+            required:
+            - source
+            properties:
+              contactId:
+                type: string
+                example: 6847ee0f-5e9c-4403-9f0e-0aa8552f7828
+                description: Use this to update an existing contact.
+              displayName:
+                type: string
+                example: John Andersen
+                description: The full name of the contact.
+              firstName:
+                type: string
+                example: John
+                description: The first name of the contact.
+              lastName:
+                type: string
+                example: Andersen
+                description: The last name of the contact.
+              companyName:
+                type: string
+                example: Cisco Systems
+                description: The company the contact is working for.
+              title:
+                type: string
+                example: GM
+                description: The contact's title.
+              address:
+                type: string
+                example: '{\"city\" : \"Milpitas\", \"country\" : \"US\", \"street\" : \"1099 Bird Ave.\", \"zipCode\" : \"99212\"}'
+                description: Contact's address.
+              avatarURL:
+                type: string
+                example: https://avatar-prod-us-east-2.webexcontent.com/default_avatar~1600
+                description: The URL to the person's avatar in PNG format.
+              primaryContactMethod:
+                type: string
+                enum:
+                - SIPADDRESS
+                - EMAIL
+                - PHONE
+                - IMS
+                description: The contact's primary contact method.
+              source:
+                type: string
+                enum:
+                - CH
+                - Webex4Broadworks
+                description: Where the data come from.
+              emails:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    value:
+                      type: string
+                      example: user1@example.home.com
+                      description: The email address.
+                    type:
+                      type: string
+                      enum:
+                      - work
+                      - home
+                      - room
+                      - other
+                      description: The type of the email.
+                    primary:
+                      type: boolean
+                      description: A Boolean value indicating the email status.
+                description: A list of the user's email addresses with an indicator of the user's primary email address.
+              phoneNumbers:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    value:
+                      type: string
+                      example: 400 123 1234
+                      description: The phone number.
+                    type:
+                      type: string
+                      enum:
+                      - work
+                      - home
+                      - mobile
+                      - work_extension
+                      - fax
+                      - pager
+                      - other
+                      description: The types of phone numbers.
+                    primary:
+                      type: boolean
+                      example: true
+                      description: A Boolean value indicating the phone number's primary status.
+                description: A list of user's phone numbers with an indicator of primary to specify the user's main number.
+              sipAddresses:
+                type: array
+                items:
+                  type: object
+                  required:
+                  - value
+                  properties:
+                    value:
+                      type: string
+                      example: sipAddress value1
+                      description: The sipAddress value.
+                    type:
+                      type: string
+                      enum:
+                      - enterprise
+                      - cloud-calling
+                      - personal-room
+                      description: The type of the sipAddress.
+                    primary:
+                      type: boolean
+                      example: true
+                      description: Designate the primary sipAddress.
+                description: The sipAddress values for the user.
+              ims:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    value:
+                      type: string
+                      example: aim_account_ID
+                      description: The IMS account value.
+                    type:
+                      type: string
+                      enum:
+                      - aim
+                      - cucm-jid
+                      - gtalk
+                      - icq
+                      - msn
+                      - qq
+                      - skype
+                      - webex-messenger-jid
+                      - webex-squared-jid
+                      - xmpp
+                      - yahoo
+                      - microsoft-sip-uri
+                      - xmpp-fed-jid
+                      description: The type of the IMS.
+                    primary:
+                      type: boolean
+                      example: true
+                      description: A Boolean value indicating the IMS account status.
+                description: Instant messaging addresses for the user.
+          description: Contains a list of contacts to be created/updated.
+    BulkDelete:
+      type: object
+      required:
+      - schemas
+      - objectIds
+      properties:
+        schemas:
+          type: string
+          example: urn:cisco:codev:identity:contact:core:1.0
+          description: '"urn:cisco:codev:identity:contact:core:1.0".'
+        objectIds:
+          type: array
+          items:
+            type: string
+            example: 8a5fac49-2c5f-4773-aec7-02db0e3a9d72
+          description: List of UUIDs for the contacts.
     Contact:
       type: object
       required:
@@ -1175,186 +1369,6 @@ components:
             type: string
             example: 9ac175bf-0249-4287-8fb3-e320e525fcf6
           description: Groups associated with the contact.
-    BulkCreate:
-      type: object
-      required:
-      - schemas
-      - contacts
-      properties:
-        schemas:
-          type: string
-          example: urn:cisco:codev:identity:contact:core:1.0
-          description: '"urn:cisco:codev:identity:contact:core:1.0".'
-        contacts:
-          type: array
-          items:
-            type: object
-            required:
-            - source
-            properties:
-              contactId:
-                type: string
-                example: 6847ee0f-5e9c-4403-9f0e-0aa8552f7828
-                description: Use this to update an existing contact.
-              displayName:
-                type: string
-                example: John Andersen
-                description: The full name of the contact.
-              firstName:
-                type: string
-                example: John
-                description: The first name of the contact.
-              lastName:
-                type: string
-                example: Andersen
-                description: The last name of the contact.
-              companyName:
-                type: string
-                example: Cisco Systems
-                description: The company the contact is working for.
-              title:
-                type: string
-                example: GM
-                description: The contact's title.
-              address:
-                type: string
-                example: '{\"city\" : \"Milpitas\", \"country\" : \"US\", \"street\" : \"1099 Bird Ave.\", \"zipCode\" : \"99212\"}'
-                description: Contact's address.
-              avatarURL:
-                type: string
-                example: https://avatar-prod-us-east-2.webexcontent.com/default_avatar~1600
-                description: The URL to the person's avatar in PNG format.
-              primaryContactMethod:
-                type: string
-                enum:
-                - SIPADDRESS
-                - EMAIL
-                - PHONE
-                - IMS
-                description: The contact's primary contact method.
-              source:
-                type: string
-                enum:
-                - CH
-                - Webex4Broadworks
-                description: Where the data come from.
-              emails:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    value:
-                      type: string
-                      example: user1@example.home.com
-                      description: The email address.
-                    type:
-                      type: string
-                      enum:
-                      - work
-                      - home
-                      - room
-                      - other
-                      description: The type of the email.
-                    primary:
-                      type: boolean
-                      description: A Boolean value indicating the email status.
-                description: A list of the user's email addresses with an indicator of the user's primary email address.
-              phoneNumbers:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    value:
-                      type: string
-                      example: 400 123 1234
-                      description: The phone number.
-                    type:
-                      type: string
-                      enum:
-                      - work
-                      - home
-                      - mobile
-                      - work_extension
-                      - fax
-                      - pager
-                      - other
-                      description: The types of phone numbers.
-                    primary:
-                      type: boolean
-                      example: true
-                      description: A Boolean value indicating the phone number's primary status.
-                description: A list of user's phone numbers with an indicator of primary to specify the user's main number.
-              sipAddresses:
-                type: array
-                items:
-                  type: object
-                  required:
-                  - value
-                  properties:
-                    value:
-                      type: string
-                      example: sipAddress value1
-                      description: The sipAddress value.
-                    type:
-                      type: string
-                      enum:
-                      - enterprise
-                      - cloud-calling
-                      - personal-room
-                      description: The type of the sipAddress.
-                    primary:
-                      type: boolean
-                      example: true
-                      description: Designate the primary sipAddress.
-                description: The sipAddress values for the user.
-              ims:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    value:
-                      type: string
-                      example: aim_account_ID
-                      description: The IMS account value.
-                    type:
-                      type: string
-                      enum:
-                      - aim
-                      - cucm-jid
-                      - gtalk
-                      - icq
-                      - msn
-                      - qq
-                      - skype
-                      - webex-messenger-jid
-                      - webex-squared-jid
-                      - xmpp
-                      - yahoo
-                      - microsoft-sip-uri
-                      - xmpp-fed-jid
-                      description: The type of the IMS.
-                    primary:
-                      type: boolean
-                      example: true
-                      description: A Boolean value indicating the IMS account status.
-                description: Instant messaging addresses for the user.
-          description: Contains a list of contacts to be created/updated.
-    BulkDelete:
-      type: object
-      required:
-      - schemas
-      - objectIds
-      properties:
-        schemas:
-          type: string
-          example: urn:cisco:codev:identity:contact:core:1.0
-          description: '"urn:cisco:codev:identity:contact:core:1.0".'
-        objectIds:
-          type: array
-          items:
-            type: string
-            example: 8a5fac49-2c5f-4773-aec7-02db0e3a9d72
-          description: List of UUIDs for the contacts.
     BulkCreateResponse:
       type: object
       properties:
@@ -1385,6 +1399,17 @@ components:
           type: string
           example: 36818b6f-ef07-43d1-b76f-ced79ab2e3e7
           description: Organization ID in which the contacts were created.
+    Meta:
+      type: object
+      properties:
+        created:
+          type: string
+          example: '2022-04-29T13:06:26.831Z'
+          description: The date and time the contact was created.
+        lastModified:
+          type: string
+          example: '2022-05-29T13:06:26.831Z'
+          description: The date and time the contact was last changed.
     ContactResponse:
       type: object
       required:
@@ -1574,17 +1599,6 @@ components:
             type: string
             example: 9ac175bf-0249-4287-8fb3-e320e525fcf6
           description: Groups associated with the contact.
-    Meta:
-      type: object
-      properties:
-        created:
-          type: string
-          example: '2022-04-29T13:06:26.831Z'
-          description: The date and time the contact was created.
-        lastModified:
-          type: string
-          example: '2022-05-29T13:06:26.831Z'
-          description: The date and time the contact was last changed.
   securitySchemes:
     oauth2:
       flows:

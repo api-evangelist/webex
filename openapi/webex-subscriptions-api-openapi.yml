@@ -693,6 +693,42 @@ paths:
                 $ref: '#/components/schemas/ErrorResult'
 components:
   schemas:
+    MetaResourceVersionInfo:
+      required:
+      - resourceVersionList
+      type: object
+      properties:
+        orgId:
+          type: string
+          description: Organization ID used for this operation.
+          format: uuid
+          example: 97cdbf45-ebe2-4687-8341-44d5c7abf101
+        resourceVersionList:
+          type: array
+          description: List of all resources, and it's supported versions available to subscribe.
+          items:
+            $ref: '#/components/schemas/ResourceVersion'
+    SubscriptionApiListResponseEnhanced:
+      required:
+      - data
+      - meta
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubscriptionResponseEnhanced'
+        meta:
+          $ref: '#/components/schemas/MetaSubInfo'
+    FieldValidationError:
+      required:
+      - description
+      type: object
+      properties:
+        description:
+          type: string
+          description: Message detailing an error discovered during request processing.
+          example: Body is invalid JSON.
     MetaSubInfo:
       properties:
         orgId:
@@ -701,14 +737,67 @@ components:
           format: uuid
           type: string
       type: object
-    SubscriptionRequestUpdateEnhanced:
-      required:
-      - resourceVersion
+    SubscriptionCreateApiResponseEnhanced:
       type: object
       properties:
+        meta:
+          $ref: '#/components/schemas/MetaSubInfo'
+        data:
+          $ref: '#/components/schemas/SubscriptionResponseEnhanced'
+    SubscriptionApiListResponse:
+      required:
+      - data
+      - meta
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubscriptionResponse'
+        meta:
+          $ref: '#/components/schemas/MetaSubInfo'
+    SubscriptionApiResponse:
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/SubscriptionResponse'
+    Meta:
+      type: object
+      properties:
+        orgId:
+          type: string
+          description: Organization ID to which resources belong.
+          example: 3dae8fdd-06e2-411a-9035-51f3719f5b65
+      description: Response metadata.
+    SubscriptionResponseEnhanced:
+      required:
+      - createdBy
+      - createdTime
+      - destinationUrl
+      - eventTypes
+      - id
+      - lastUpdatedBy
+      - lastUpdatedTime
+      - name
+      - resourceVersion
+      - status
+      type: object
+      properties:
+        id:
+          type: string
+          description: Subscription ID.
+          format: uuid
+          example: 41e92806-331d-4802-bc12-674f92d4a6f7
+        name:
+          maxLength: 64
+          minLength: 4
+          type: string
+          description: Client-defined string naming the subscription.
+          example: My Integration's Subscription
         description:
           maxLength: 1024
-          minLength: 0
           type: string
           description: Client-defined string describing the subscription.
           example: The subscription my integration uses to synchronize with WxCC
@@ -723,117 +812,43 @@ components:
           items:
             type: string
         destinationUrl:
-          pattern: ^(https?)://.*$
           type: string
           description: URL to which webhooks will be posted. Must be HTTPS on an IANA-listed top-level domain name (e.g. .com) with a path (at least /). No query parameters, userinfo, non-443 ports, or fragments allowed. We do not treat this field as sensitive data, so do not use secrets in this URL such as tokens or API keys.
           format: uri
           example: https://www.cisco.com/
+        createdTime:
+          type: integer
+          description: Time when subscription was created (epoch milliseconds).
+          format: int64
+          example: 1591702170000
+        createdBy:
+          type: string
+          description: Email address of the user who created the subscription.
+          format: email
+          example: example@example.com
         status:
-          pattern: (active|inactive)
           type: string
           description: Status of the subscription. Can be "active" or "inactive". The system may change the status to "inactive" in error scenarios.
-          example: inactive
+          example: active
           enum:
           - active
           - inactive
-        secret:
-          maxLength: 256
-          minLength: 32
+        lastUpdatedTime:
+          type: integer
+          description: Time when the subscription was last updated (epoch milliseconds).
+          format: int64
+          example: 1591702170000
+        lastUpdatedBy:
           type: string
-          description: Secret string used to sign payloads sent to the destination URL.
-          example: my-32-plus-character-long-secret
-        orgId:
-          type: string
-          description: Organization ID to be used for this operation. If unspecified, the Organization ID is inferred from the token. The token must have permission to interact with the organization.
-          format: uuid
-          example: 97cdbf45-ebe2-4687-8341-44d5c7abf101
+          description: Email address of the user who updated the subscription most recently.
+          format: email
+          example: example@example.com
         resourceVersion:
           maxLength: 50
           minLength: 1
           type: string
-          description: Represents version of the resource client is interested in. Should be of the format ‘resource:version’. Refer to the List Event Types V2 API for details on the latest available resources and versions.
-          example: agent:1.0.0
-    Error:
-      required:
-      - key
-      type: object
-      properties:
-        key:
-          type: integer
-          description: Status code of error.
-          format: int32
-          example: 400
-        message:
-          type: array
-          items:
-            $ref: '#/components/schemas/FieldValidationError'
-    ErrorResult:
-      required:
-      - trackingId
-      type: object
-      properties:
-        error:
-          $ref: '#/components/schemas/Error'
-        trackingId:
-          type: string
-          description: Unique ID by which a request can be debugged, provided in request header or autogenerated. Please provide if opening a support case.
-          example: NOTIFS_9bcdc696-57fa-4e91-b5aa-57a66a347c23
-    SubscriptionRequestUpdate:
-      type: object
-      properties:
-        description:
-          maxLength: 1024
-          minLength: 0
-          type: string
-          description: Client-defined string describing the subscription.
-          example: The subscription my integration uses to synchronize with WxCC
-        eventTypes:
-          maxItems: 32
-          minItems: 1
-          type: array
-          description: Types of events to which the subscription will listen.
-          example:
-          - agent:login
-          - agent:logout
-          items:
-            type: string
-        destinationUrl:
-          pattern: ^(https?)://.*$
-          type: string
-          description: URL to which webhooks will be posted. Must be HTTPS on an IANA-listed top-level domain name (e.g. .com) with a path (at least /). No query parameters, userinfo, non-443 ports, or fragments allowed. We do not treat this field as sensitive data, so do not use secrets in this URL such as tokens or API keys.
-          format: uri
-          example: https://www.cisco.com/
-        status:
-          pattern: (active|inactive)
-          type: string
-          description: Status of the subscription. Can be "active" or "inactive". The system may change the status to "inactive" in error scenarios.
-          example: inactive
-          enum:
-          - active
-          - inactive
-        secret:
-          maxLength: 256
-          minLength: 32
-          type: string
-          description: Secret string used to sign payloads sent to the destination URL.
-          example: my-32-plus-character-long-secret
-        orgId:
-          type: string
-          description: Organization ID to be used for this operation. If unspecified, the Organization ID is inferred from the token. The token must have permission to interact with the organization.
-          format: uuid
-          example: 97cdbf45-ebe2-4687-8341-44d5c7abf101
-    ResourceVersion:
-      type: object
-      properties:
-        resource:
-          type: string
-          description: Resource name.
-          example: agent
-        version:
-          type: string
           description: Version of the resource.
-          example: 1.0.0
-      description: List of all resources, and it's supported versions available to subscribe.
+          example: agent:1.0.0
     SubscriptionRequestEnhanced:
       required:
       - destinationUrl
@@ -958,82 +973,6 @@ components:
           description: Email address of the user who updated the subscription most recently.
           format: email
           example: example@example.com
-    Meta:
-      type: object
-      properties:
-        orgId:
-          type: string
-          description: Organization ID to which resources belong.
-          example: 3dae8fdd-06e2-411a-9035-51f3719f5b65
-      description: Response metadata.
-    SubscriptionCreateApiResponseEnhanced:
-      type: object
-      properties:
-        meta:
-          $ref: '#/components/schemas/MetaSubInfo'
-        data:
-          $ref: '#/components/schemas/SubscriptionResponseEnhanced'
-    EventTypesResponse:
-      required:
-      - action
-      - name
-      - resource
-      type: object
-      properties:
-        name:
-          maxLength: 64
-          minLength: 4
-          type: string
-          description: The name of the event type. Consists of the resource and the action which occurred on it, separated by a colon. Use when registering a subscription.
-          example: agent:login
-        resource:
-          maxLength: 64
-          minLength: 4
-          type: string
-          description: The resource to which the event type belongs.
-          example: agent
-        action:
-          maxLength: 64
-          minLength: 4
-          type: string
-          description: The action being taken on the resource in the event.
-          example: login
-    EventTypesApiListResponseEnhanced:
-      required:
-      - data
-      - meta
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/EventTypesResponse'
-        meta:
-          $ref: '#/components/schemas/MetaResourceVersionInfo'
-    SubscriptionApiListResponseEnhanced:
-      required:
-      - data
-      - meta
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/SubscriptionResponseEnhanced'
-        meta:
-          $ref: '#/components/schemas/MetaSubInfo'
-    SubscriptionApiListResponse:
-      required:
-      - data
-      - meta
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/SubscriptionResponse'
-        meta:
-          $ref: '#/components/schemas/MetaSubInfo'
     SubscriptionRequest:
       required:
       - destinationUrl
@@ -1080,40 +1019,44 @@ components:
           description: Organization ID to be used for this operation. If unspecified, the Organization ID is inferred from the token. The token must have permission to interact with the organization.
           format: uuid
           example: 97cdbf45-ebe2-4687-8341-44d5c7abf101
-    SubscriptionCreateApiResponse:
+    SubscriptionApiResponseEnhanced:
       type: object
       properties:
         meta:
-          $ref: '#/components/schemas/MetaSubInfo'
+          $ref: '#/components/schemas/Meta'
         data:
-          $ref: '#/components/schemas/SubscriptionResponse'
-    SubscriptionResponseEnhanced:
+          $ref: '#/components/schemas/SubscriptionResponseEnhanced'
+    ErrorResult:
       required:
-      - createdBy
-      - createdTime
-      - destinationUrl
-      - eventTypes
-      - id
-      - lastUpdatedBy
-      - lastUpdatedTime
-      - name
-      - resourceVersion
-      - status
+      - trackingId
       type: object
       properties:
-        id:
+        error:
+          $ref: '#/components/schemas/Error'
+        trackingId:
           type: string
-          description: Subscription ID.
-          format: uuid
-          example: 41e92806-331d-4802-bc12-674f92d4a6f7
-        name:
-          maxLength: 64
-          minLength: 4
-          type: string
-          description: Client-defined string naming the subscription.
-          example: My Integration's Subscription
+          description: Unique ID by which a request can be debugged, provided in request header or autogenerated. Please provide if opening a support case.
+          example: NOTIFS_9bcdc696-57fa-4e91-b5aa-57a66a347c23
+    EventTypesApiListResponseEnhanced:
+      required:
+      - data
+      - meta
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventTypesResponse'
+        meta:
+          $ref: '#/components/schemas/MetaResourceVersionInfo'
+    SubscriptionRequestUpdateEnhanced:
+      required:
+      - resourceVersion
+      type: object
+      properties:
         description:
           maxLength: 1024
+          minLength: 0
           type: string
           description: Client-defined string describing the subscription.
           example: The subscription my integration uses to synchronize with WxCC
@@ -1128,65 +1071,36 @@ components:
           items:
             type: string
         destinationUrl:
+          pattern: ^(https?)://.*$
           type: string
           description: URL to which webhooks will be posted. Must be HTTPS on an IANA-listed top-level domain name (e.g. .com) with a path (at least /). No query parameters, userinfo, non-443 ports, or fragments allowed. We do not treat this field as sensitive data, so do not use secrets in this URL such as tokens or API keys.
           format: uri
           example: https://www.cisco.com/
-        createdTime:
-          type: integer
-          description: Time when subscription was created (epoch milliseconds).
-          format: int64
-          example: 1591702170000
-        createdBy:
-          type: string
-          description: Email address of the user who created the subscription.
-          format: email
-          example: example@example.com
         status:
+          pattern: (active|inactive)
           type: string
           description: Status of the subscription. Can be "active" or "inactive". The system may change the status to "inactive" in error scenarios.
-          example: active
+          example: inactive
           enum:
           - active
           - inactive
-        lastUpdatedTime:
-          type: integer
-          description: Time when the subscription was last updated (epoch milliseconds).
-          format: int64
-          example: 1591702170000
-        lastUpdatedBy:
+        secret:
+          maxLength: 256
+          minLength: 32
           type: string
-          description: Email address of the user who updated the subscription most recently.
-          format: email
-          example: example@example.com
+          description: Secret string used to sign payloads sent to the destination URL.
+          example: my-32-plus-character-long-secret
+        orgId:
+          type: string
+          description: Organization ID to be used for this operation. If unspecified, the Organization ID is inferred from the token. The token must have permission to interact with the organization.
+          format: uuid
+          example: 97cdbf45-ebe2-4687-8341-44d5c7abf101
         resourceVersion:
           maxLength: 50
           minLength: 1
           type: string
-          description: Version of the resource.
+          description: Represents version of the resource client is interested in. Should be of the format ‘resource:version’. Refer to the List Event Types V2 API for details on the latest available resources and versions.
           example: agent:1.0.0
-    MetaResourceVersionInfo:
-      required:
-      - resourceVersionList
-      type: object
-      properties:
-        orgId:
-          type: string
-          description: Organization ID used for this operation.
-          format: uuid
-          example: 97cdbf45-ebe2-4687-8341-44d5c7abf101
-        resourceVersionList:
-          type: array
-          description: List of all resources, and it's supported versions available to subscribe.
-          items:
-            $ref: '#/components/schemas/ResourceVersion'
-    SubscriptionApiResponse:
-      type: object
-      properties:
-        meta:
-          $ref: '#/components/schemas/Meta'
-        data:
-          $ref: '#/components/schemas/SubscriptionResponse'
     EventTypesApiListResponse:
       required:
       - data
@@ -1199,22 +1113,108 @@ components:
             $ref: '#/components/schemas/EventTypesResponse'
         meta:
           $ref: '#/components/schemas/Meta'
-    FieldValidationError:
+    EventTypesResponse:
       required:
-      - description
+      - action
+      - name
+      - resource
       type: object
       properties:
-        description:
+        name:
+          maxLength: 64
+          minLength: 4
           type: string
-          description: Message detailing an error discovered during request processing.
-          example: Body is invalid JSON.
-    SubscriptionApiResponseEnhanced:
+          description: The name of the event type. Consists of the resource and the action which occurred on it, separated by a colon. Use when registering a subscription.
+          example: agent:login
+        resource:
+          maxLength: 64
+          minLength: 4
+          type: string
+          description: The resource to which the event type belongs.
+          example: agent
+        action:
+          maxLength: 64
+          minLength: 4
+          type: string
+          description: The action being taken on the resource in the event.
+          example: login
+    SubscriptionCreateApiResponse:
       type: object
       properties:
         meta:
-          $ref: '#/components/schemas/Meta'
+          $ref: '#/components/schemas/MetaSubInfo'
         data:
-          $ref: '#/components/schemas/SubscriptionResponseEnhanced'
+          $ref: '#/components/schemas/SubscriptionResponse'
+    SubscriptionRequestUpdate:
+      type: object
+      properties:
+        description:
+          maxLength: 1024
+          minLength: 0
+          type: string
+          description: Client-defined string describing the subscription.
+          example: The subscription my integration uses to synchronize with WxCC
+        eventTypes:
+          maxItems: 32
+          minItems: 1
+          type: array
+          description: Types of events to which the subscription will listen.
+          example:
+          - agent:login
+          - agent:logout
+          items:
+            type: string
+        destinationUrl:
+          pattern: ^(https?)://.*$
+          type: string
+          description: URL to which webhooks will be posted. Must be HTTPS on an IANA-listed top-level domain name (e.g. .com) with a path (at least /). No query parameters, userinfo, non-443 ports, or fragments allowed. We do not treat this field as sensitive data, so do not use secrets in this URL such as tokens or API keys.
+          format: uri
+          example: https://www.cisco.com/
+        status:
+          pattern: (active|inactive)
+          type: string
+          description: Status of the subscription. Can be "active" or "inactive". The system may change the status to "inactive" in error scenarios.
+          example: inactive
+          enum:
+          - active
+          - inactive
+        secret:
+          maxLength: 256
+          minLength: 32
+          type: string
+          description: Secret string used to sign payloads sent to the destination URL.
+          example: my-32-plus-character-long-secret
+        orgId:
+          type: string
+          description: Organization ID to be used for this operation. If unspecified, the Organization ID is inferred from the token. The token must have permission to interact with the organization.
+          format: uuid
+          example: 97cdbf45-ebe2-4687-8341-44d5c7abf101
+    Error:
+      required:
+      - key
+      type: object
+      properties:
+        key:
+          type: integer
+          description: Status code of error.
+          format: int32
+          example: 400
+        message:
+          type: array
+          items:
+            $ref: '#/components/schemas/FieldValidationError'
+    ResourceVersion:
+      type: object
+      properties:
+        resource:
+          type: string
+          description: Resource name.
+          example: agent
+        version:
+          type: string
+          description: Version of the resource.
+          example: 1.0.0
+      description: List of all resources, and it's supported versions available to subscribe.
   securitySchemes:
     oauth2:
       flows:

@@ -1869,6 +1869,111 @@ paths:
                     references: []
 components:
   schemas:
+    ErrorDetails:
+      description: Details of an error.
+      type: object
+      properties:
+        key:
+          type: string
+          description: An application defined error code.
+          example: '401'
+        message:
+          type: array
+          description: A message providing details about the error.
+          items:
+            $ref: '#/components/schemas/OperationError'
+    ApiErrorResponse:
+      description: Response body for an API error.
+      type: object
+      properties:
+        trackingId:
+          type: string
+          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
+          example: c1a4fcef-aee2-4dea-8977-29f594760552
+        error:
+          description: An object containing details about the error.
+          $ref: '#/components/schemas/ErrorDetails'
+    AgentPersonalGreetingPatchDTO_AgentPersonalGreetingsWithGreetingPurpose:
+      type: object
+      description: Agent Personal Greeting Patch Agent Personal Greetings With Greeting Purpose schema.
+      properties:
+        attributeTag:
+          type: string
+          description: This is used to identify the purpose of a greeting.
+          example: ENVIP
+        greetingPurposeId:
+          type: string
+          description: Id of the greeting purpose
+          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+    OperationError:
+      description: An error message providing details about the operation failure.
+      type: object
+      properties:
+        description:
+          type: string
+          description: A human readable explanation for the occurrence of an error.
+          example: Incorrect Credentials.
+    Response:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        details:
+          type: object
+          additionalProperties:
+            type: object
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'
+    AgentPersonalGreetingPatchDTO_AgentPersonalGreetingsWithAttributeTag:
+      type: object
+      description: Agent Personal Greeting Patch Agent Personal Greetings With Attribute Tag schema.
+      properties:
+        attributeTag:
+          type: string
+          description: This is used to identify the purpose of a greeting.
+          example: ENVIP
+        greetingPurposeId:
+          type: string
+          description: Id of the greeting purpose
+          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+    FieldRequestBody:
+      type: object
+      description: Request payload identifying the entity references that should be removed from contact service queues. The `references` map contains key/value pairs where the key is the referenced entity type (for example, `team`, `site`, `agent`, `skillProfile`) and the value is the unique identifier of that entity. All matching references will be detached from any contact service queue in the target organization.
+      example:
+        references:
+          team: 76cf35bc-12df-49ef-88e1-c86226d8a645
+          skillProfile: af9eecc5-0472-4549-9a83-2afdae0d4ba0
+      properties:
+        references:
+          type: object
+          additionalProperties:
+            type: string
+            description: References additional property.
+          description: Map of entity type to entity identifier whose references must be removed from contact service queues. The key is the referenced entity type (e.g. `team`, `site`, `agent`, `skillProfile`) and the value is its UUID.
+          example:
+            team: 76cf35bc-12df-49ef-88e1-c86226d8a645
+    Link:
+      type: object
+      properties:
+        href:
+          type: string
+        hreflang:
+          type: string
+        title:
+          type: string
+        type:
+          type: string
+        deprecation:
+          type: string
+        profile:
+          type: string
+        name:
+          type: string
+        templated:
+          type: boolean
     AgentPersonalGreetingDTO_AgentPersonalGreetingsWithAttributeTag:
       type: object
       description: Agent Personal Greeting Agent Personal Greetings With Attribute Tag schema.
@@ -1966,71 +2071,48 @@ components:
       - agentId
       - contentType
       - name
-    AgentPersonalGreetingPatchDTO_AgentPersonalGreetingsWithAttributeTag:
+    MetaDataWithPagingInfo:
       type: object
-      description: Agent Personal Greeting Patch Agent Personal Greetings With Attribute Tag schema.
+      description: Metadata of response with paging information
       properties:
-        attributeTag:
+        orgid:
           type: string
-          description: This is used to identify the purpose of a greeting.
-          example: ENVIP
-        greetingPurposeId:
-          type: string
-          description: Id of the greeting purpose
-          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
-    AgentPersonalGreetingPatchDTO_AgentPersonalGreetingsWithGreetingPurpose:
-      type: object
-      description: Agent Personal Greeting Patch Agent Personal Greetings With Greeting Purpose schema.
-      properties:
-        attributeTag:
-          type: string
-          description: This is used to identify the purpose of a greeting.
-          example: ENVIP
-        greetingPurposeId:
-          type: string
-          description: Id of the greeting purpose
-          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
-    OperationError:
-      description: An error message providing details about the operation failure.
-      type: object
-      properties:
-        description:
-          type: string
-          description: A human readable explanation for the occurrence of an error.
-          example: Incorrect Credentials.
-    Response:
-      type: object
-      properties:
-        code:
+          format: uuid
+          description: Organization ID.
+          example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+          maxLength: 36
+          minLength: 32
+          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
+        page:
           type: integer
           format: int32
-        details:
-          type: object
-          additionalProperties:
-            type: object
+          description: Current page number.
+          example: 1
+        pageSize:
+          type: integer
+          format: int32
+          description: Page size for current data set.
+          example: 100
+        totalPages:
+          type: integer
+          format: int32
+          description: Number of pages.
+          example: 1
+        totalRecords:
+          type: integer
+          format: int32
+          description: Total number of items.
+          example: 1000
         links:
-          type: array
-          items:
-            $ref: '#/components/schemas/Link'
-    Link:
-      type: object
-      properties:
-        href:
-          type: string
-        hreflang:
-          type: string
-        title:
-          type: string
-        type:
-          type: string
-        deprecation:
-          type: string
-        profile:
-          type: string
-        name:
-          type: string
-        templated:
-          type: boolean
+          type: object
+          description: Map of pagination links with `self`, `next`, `prev`, `last`, and `first`.
+          example:
+            next: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=2&pageSize=10
+            last: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=3&pageSize=10
+            prev: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=0&pageSize=10
+            self: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=1&pageSize=10
+            first: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=0&pageSize=10
+      title: MetaDataWithPagingInfo
     AgentPersonalGreetingDTO_AgentPersonalGreetingsWithGreetingPurpose:
       type: object
       description: Agent Personal Greeting Agent Personal Greetings With Greeting Purpose schema.
@@ -2129,88 +2211,6 @@ components:
       - agentId
       - contentType
       - name
-    ErrorDetails:
-      description: Details of an error.
-      type: object
-      properties:
-        key:
-          type: string
-          description: An application defined error code.
-          example: '401'
-        message:
-          type: array
-          description: A message providing details about the error.
-          items:
-            $ref: '#/components/schemas/OperationError'
-    ApiErrorResponse:
-      description: Response body for an API error.
-      type: object
-      properties:
-        trackingId:
-          type: string
-          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
-          example: c1a4fcef-aee2-4dea-8977-29f594760552
-        error:
-          description: An object containing details about the error.
-          $ref: '#/components/schemas/ErrorDetails'
-    FieldRequestBody:
-      type: object
-      description: Request payload identifying the entity references that should be removed from contact service queues. The `references` map contains key/value pairs where the key is the referenced entity type (for example, `team`, `site`, `agent`, `skillProfile`) and the value is the unique identifier of that entity. All matching references will be detached from any contact service queue in the target organization.
-      example:
-        references:
-          team: 76cf35bc-12df-49ef-88e1-c86226d8a645
-          skillProfile: af9eecc5-0472-4549-9a83-2afdae0d4ba0
-      properties:
-        references:
-          type: object
-          additionalProperties:
-            type: string
-            description: References additional property.
-          description: Map of entity type to entity identifier whose references must be removed from contact service queues. The key is the referenced entity type (e.g. `team`, `site`, `agent`, `skillProfile`) and the value is its UUID.
-          example:
-            team: 76cf35bc-12df-49ef-88e1-c86226d8a645
-    MetaDataWithPagingInfo:
-      type: object
-      description: Metadata of response with paging information
-      properties:
-        orgid:
-          type: string
-          format: uuid
-          description: Organization ID.
-          example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
-          maxLength: 36
-          minLength: 32
-          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
-        page:
-          type: integer
-          format: int32
-          description: Current page number.
-          example: 1
-        pageSize:
-          type: integer
-          format: int32
-          description: Page size for current data set.
-          example: 100
-        totalPages:
-          type: integer
-          format: int32
-          description: Number of pages.
-          example: 1
-        totalRecords:
-          type: integer
-          format: int32
-          description: Total number of items.
-          example: 1000
-        links:
-          type: object
-          description: Map of pagination links with `self`, `next`, `prev`, `last`, and `first`.
-          example:
-            next: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=2&pageSize=10
-            last: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=3&pageSize=10
-            prev: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=0&pageSize=10
-            self: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=1&pageSize=10
-            first: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=0&pageSize=10
-      title: MetaDataWithPagingInfo
   securitySchemes:
     oauth2:
       flows:

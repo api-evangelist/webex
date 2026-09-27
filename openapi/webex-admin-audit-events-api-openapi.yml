@@ -86,7 +86,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: List Admin Audit Events
-      operationId: List Admin Audit Events
+      operationId: ListAdminAuditEvents
       description: 'List admin audit events in your organization. Several query parameters are available to filter the response.
 
 
@@ -147,6 +147,8 @@ paths:
             type: string
             example: LOGINS,LOGOUT
           description: List events, by event categories.
+      x-operation-id-source: normalized
+      x-operation-id-original: List Admin Audit Events
   /adminAudit/eventCategories:
     get:
       responses:
@@ -190,13 +192,23 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: List Admin Audit Event Categories
-      operationId: List Admin Audit Event Categories
+      operationId: ListAdminAuditEventCategories
       description: Get the list of all admin event categories.
       tags:
       - Admin Audit Events
       parameters: []
+      x-operation-id-source: normalized
+      x-operation-id-original: List Admin Audit Event Categories
 components:
   schemas:
+    AuditEventCollectionResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuditEvent'
+          description: An array of audit event objects. See [this article](https://help.webex.com/n3b0w6x/) for details about each event type.
     AuditEvent:
       type: object
       properties:
@@ -288,20 +300,6 @@ components:
           type: string
           example: MjQ4Njg2OTYtYWMwZC00ODY4LWJkMjEtZGUxZDc4MzhjOTdm
           description: The `personId` of the person who made the change.
-    AuditEventCollectionResponse:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/AuditEvent'
-          description: An array of audit event objects. See [this article](https://help.webex.com/n3b0w6x/) for details about each event type.
-    AdminRolesEnum:
-      type: string
-      enum:
-      - User
-      - Full_Admin
-      - id_full_admin
     AuditEventCategoryCollectionResponse:
       type: object
       properties:
@@ -310,6 +308,12 @@ components:
           items:
             type: string
           description: An array of audit event categories.
+    AdminRolesEnum:
+      type: string
+      enum:
+      - User
+      - Full_Admin
+      - id_full_admin
   securitySchemes:
     oauth2:
       flows:

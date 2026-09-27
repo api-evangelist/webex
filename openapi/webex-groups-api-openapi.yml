@@ -71,7 +71,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Create a Group
-      operationId: Create a Group
+      operationId: CreateAGroup
       description: Create a new group for a given organization. The group may optionally be created with group members.
       tags:
       - Groups
@@ -87,6 +87,8 @@ paths:
               - id: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8xOTUzOTdhMi03MTU5LTRjNTgtYTBiOC00NmQ2ZWZlZTdkMTM
             schema:
               $ref: '#/components/schemas/PostGroup'
+      x-operation-id-source: normalized
+      x-operation-id-original: Create a Group
     get:
       responses:
         '200':
@@ -142,7 +144,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: List and Search Groups
-      operationId: List and Search Groups
+      operationId: ListAndSearchGroups
       description: 'List groups in your organization.
 
 
@@ -207,6 +209,8 @@ paths:
         example: '100'
         schema:
           type: number
+      x-operation-id-source: normalized
+      x-operation-id-original: List and Search Groups
   /groups/{groupId}:
     patch:
       responses:
@@ -259,7 +263,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Update a Group
-      operationId: Update a Group
+      operationId: UpdateAGroup
       description: 'Update the group details, by ID.
 
 
@@ -285,6 +289,8 @@ paths:
                 operation: add
             schema:
               $ref: '#/components/schemas/PatchGroup'
+      x-operation-id-source: normalized
+      x-operation-id-original: Update a Group
     get:
       responses:
         '200':
@@ -336,7 +342,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Get Group Details
-      operationId: Get Group Details
+      operationId: GetGroupDetails
       description: 'Get details for a group, by ID.
 
 
@@ -358,6 +364,8 @@ paths:
         schema:
           type: boolean
           default: 'false'
+      x-operation-id-source: normalized
+      x-operation-id-original: Get Group Details
     delete:
       responses:
         '204':
@@ -395,7 +403,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Delete a Group
-      operationId: Delete a Group
+      operationId: DeleteAGroup
       description: 'Remove a group from the system.
 
 
@@ -410,6 +418,8 @@ paths:
         example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9mNWIzNjE4Ny1jOGRkLTQ3MjctOGIyZi1mOWM0NDdmMjkwNDY
         schema:
           type: string
+      x-operation-id-source: normalized
+      x-operation-id-original: Delete a Group
   /groups/{groupId}/members:
     get:
       responses:
@@ -462,7 +472,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Get Group Members
-      operationId: Get Group Members
+      operationId: GetGroupMembers
       description: 'Gets the members of a group.
 
 
@@ -492,39 +502,53 @@ paths:
         example: '100'
         schema:
           type: number
+      x-operation-id-source: normalized
+      x-operation-id-original: Get Group Members
 components:
   schemas:
-    GroupResponse:
+    GroupMemberObject:
+      type: object
+      properties:
+        value:
+          type: string
+          example: c5349664-9f3d-410b-8bd3-6c31f181f13d
+          description: The identifier of the member of this Group.
+        type:
+          type: string
+          example: user
+          description: A label indicating the type of resource, for example user, machine, or group.
+    GroupsCollectionResponse:
+      type: object
+      properties:
+        totalResults:
+          type: number
+          example: 3
+          description: Total number of groups returned in the response.
+        startIndex:
+          type: number
+          example: 1
+        itemsPerPage:
+          type: number
+          example: 10
+        groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/GroupResponse'
+          description: An array of group objects.
+    Member:
       type: object
       properties:
         id:
           type: string
-          example: Y2lzY29zcGFyazovL3VzL1NDSU1fR1JPVVAvMjUxMDRiZTAtZjg3NC00MzQzLTk2MDctZGYwMmRmMzdiNWMxOjM0OGFkYjgxLTI4ZjktNGFiNS1iMmQ2LWU5YjQ5NGU3MmEwNg
-          description: A unique identifier for the group.
+          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8xOTUzOTdhMi03MTU5LTRjNTgtYTBiOC00NmQ2ZWZlZTdkMTM
+          description: Person ID of the group member.
+        type:
+          type: string
+          example: user
+          description: Member type.
         displayName:
           type: string
-          example: Sales Group
-          description: The name of the group.
-        orgId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi8zNDhhZGI4MS0yOGY5LTRhYjUtYjJkNi1lOWI0OTRlNzJhMDY
-          description: The ID of the organization to which this group belongs.
-        created:
-          type: string
-          example: '2022-02-17T02:13:29.706Z'
-          description: The timestamp indicating creation date/time of group
-        lastModified:
-          type: string
-          example: '2022-02-17T02:13:29.706Z'
-          description: The timestamp indicating lastModification time of group
-        memberSize:
-          type: number
-          example: 1
-        members:
-          type: array
-          items:
-            $ref: '#/components/schemas/Member'
-          description: An array of members
+          example: Jane Smith
     ManagedByObject:
       type: object
       properties:
@@ -544,6 +568,71 @@ components:
           type: string
           example: location_full_admin
           description: The delegated role.
+    GroupInheritancesObject:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - role
+          - location_role
+          example: role
+          description: Type of inheritance. Currently, `role` and `location_role` type is supported. Only `policy` usage supports inheritance.
+        value:
+          type: string
+          example: id_full_admin
+          description: The value of the inheritance. For the role type, this can be role names such as `id_full_admin`, `id_user_admin`, etc. For the location_role type, the value should be `location_full_admin`.
+        nested:
+          type: boolean
+          example: false
+          description: Indicates whether this inheritance is nested.
+        locationId:
+          type: string
+          example: 72e22cec-cc28-45b7-b3dc-eafe0f44a2bd
+          description: The ID of the location group.
+        scope:
+          type: array
+          items:
+            type: string
+            example:
+            - user
+          description: Indicates which types of entities can inherit this property.
+    PatchGroup:
+      type: object
+      required:
+      - schemas
+      - Operations
+      properties:
+        schemas:
+          type: array
+          items:
+            type: string
+            example: urn:ietf:params:scim:api:messages:2.0:PatchOp
+          description: Input JSON schemas.
+        Operations:
+          type: array
+          items:
+            type: object
+            required:
+            - op
+            properties:
+              op:
+                type: string
+                enum:
+                - add
+                - replace
+                - remove
+                description: The operation to perform.
+              path:
+                type: string
+                example: displayName
+                description: A string containing an attribute path describing the target of the operation.
+              value:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GroupInheritancesObject'
+                description: New value.
+          description: A list of patch operations.
     PostGroup:
       type: object
       required:
@@ -597,114 +686,37 @@ components:
                 $ref: '#/components/schemas/ManagedByObject'
               description: A list of delegates of this group.
           description: The Cisco extension of SCIM 2.
-    Member:
+    GroupResponse:
       type: object
       properties:
         id:
           type: string
-          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8xOTUzOTdhMi03MTU5LTRjNTgtYTBiOC00NmQ2ZWZlZTdkMTM
-          description: Person ID of the group member.
-        type:
-          type: string
-          example: user
-          description: Member type.
+          example: Y2lzY29zcGFyazovL3VzL1NDSU1fR1JPVVAvMjUxMDRiZTAtZjg3NC00MzQzLTk2MDctZGYwMmRmMzdiNWMxOjM0OGFkYjgxLTI4ZjktNGFiNS1iMmQ2LWU5YjQ5NGU3MmEwNg
+          description: A unique identifier for the group.
         displayName:
           type: string
-          example: Jane Smith
-    PatchGroup:
-      type: object
-      required:
-      - schemas
-      - Operations
-      properties:
-        schemas:
-          type: array
-          items:
-            type: string
-            example: urn:ietf:params:scim:api:messages:2.0:PatchOp
-          description: Input JSON schemas.
-        Operations:
-          type: array
-          items:
-            type: object
-            required:
-            - op
-            properties:
-              op:
-                type: string
-                enum:
-                - add
-                - replace
-                - remove
-                description: The operation to perform.
-              path:
-                type: string
-                example: displayName
-                description: A string containing an attribute path describing the target of the operation.
-              value:
-                type: array
-                items:
-                  $ref: '#/components/schemas/GroupInheritancesObject'
-                description: New value.
-          description: A list of patch operations.
-    GroupMemberObject:
-      type: object
-      properties:
-        value:
+          example: Sales Group
+          description: The name of the group.
+        orgId:
           type: string
-          example: c5349664-9f3d-410b-8bd3-6c31f181f13d
-          description: The identifier of the member of this Group.
-        type:
+          example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi8zNDhhZGI4MS0yOGY5LTRhYjUtYjJkNi1lOWI0OTRlNzJhMDY
+          description: The ID of the organization to which this group belongs.
+        created:
           type: string
-          example: user
-          description: A label indicating the type of resource, for example user, machine, or group.
-    GroupsCollectionResponse:
-      type: object
-      properties:
-        totalResults:
-          type: number
-          example: 3
-          description: Total number of groups returned in the response.
-        startIndex:
+          example: '2022-02-17T02:13:29.706Z'
+          description: The timestamp indicating creation date/time of group
+        lastModified:
+          type: string
+          example: '2022-02-17T02:13:29.706Z'
+          description: The timestamp indicating lastModification time of group
+        memberSize:
           type: number
           example: 1
-        itemsPerPage:
-          type: number
-          example: 10
-        groups:
+        members:
           type: array
           items:
-            $ref: '#/components/schemas/GroupResponse'
-          description: An array of group objects.
-    GroupInheritancesObject:
-      type: object
-      properties:
-        type:
-          type: string
-          enum:
-          - role
-          - location_role
-          example: role
-          description: Type of inheritance. Currently, `role` and `location_role` type is supported. Only `policy` usage supports inheritance.
-        value:
-          type: string
-          example: id_full_admin
-          description: The value of the inheritance. For the role type, this can be role names such as `id_full_admin`, `id_user_admin`, etc. For the location_role type, the value should be `location_full_admin`.
-        nested:
-          type: boolean
-          example: false
-          description: Indicates whether this inheritance is nested.
-        locationId:
-          type: string
-          example: 72e22cec-cc28-45b7-b3dc-eafe0f44a2bd
-          description: The ID of the location group.
-        scope:
-          type: array
-          items:
-            type: string
-            example:
-            - user
-          description: Indicates which types of entities can inherit this property.
+            $ref: '#/components/schemas/Member'
+          description: An array of members
   securitySchemes:
     oauth2:
       flows:

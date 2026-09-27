@@ -450,6 +450,14 @@ paths:
         example: 100
 components:
   schemas:
+    GetAvailableMembersForMonitoringResponse:
+      type: object
+      properties:
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/AvailableMemberObject'
+          description: List of available members.
     MonitoredElementSpeedDial:
       type: object
       properties:
@@ -484,110 +492,6 @@ components:
           type: string
           example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzEyMzQ1
           description: The ID for the location.
-    MonitoredElementCallParkExtension:
-      type: object
-      required:
-      - id
-      - name
-      - extension
-      - location
-      - locationId
-      properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS80NDVkMzMzMC1mNjE3LTExZWItOWQyZS01NzViODE3ZGE2NmE
-          description: ID of call park extension.
-        name:
-          type: string
-          example: CPE1
-          description: Name of call park extension.
-        extension:
-          type: string
-          example: '8080'
-          description: Extension of call park extension.
-        routingPrefix:
-          type: string
-          example: '1234'
-          description: Routing prefix of location.
-        esn:
-          type: string
-          example: '12348080'
-          description: Routing prefix + extension of a person or workspace.
-        location:
-          type: string
-          example: Alaska
-          description: Name of location for call park extension.
-        locationId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzEyMzQ1
-          description: ID of location for call park extension.
-        lineKeyLabel:
-          type: string
-          example: CPE Label
-          description: Customizable line key label for monitored call park extension.
-    UserNumberItem:
-      type: object
-      required:
-      - primary
-      properties:
-        external:
-          type: string
-          example: '+19075552859'
-          description: Phone number of person or workspace. Either `phoneNumber` or `extension` is mandatory.
-        extension:
-          type: string
-          example: '8080'
-          description: Extension of person or workspace. Either `phoneNumber` or `extension` is mandatory.
-        routingPrefix:
-          type: string
-          example: '1234'
-          description: Routing prefix of location.
-        esn:
-          type: string
-          example: '12348080'
-          description: Routing prefix + extension of a person or workspace.
-        primary:
-          type: boolean
-          example: true
-          description: Flag to indicate primary phone.
-        tollFreeNumber:
-          type: boolean
-          example: true
-          description: Flag to indicate toll free number.
-    MonitoredElementItem:
-      type: object
-      properties:
-        callparkextension:
-          $ref: '#/components/schemas/MonitoredElementCallParkExtension'
-          description: Monitored Call Park extension.
-        member:
-          $ref: '#/components/schemas/MonitoredElementUser'
-          description: Monitored member for this workspace.
-        speedDial:
-          $ref: '#/components/schemas/MonitoredElementSpeedDial'
-          description: Monitored Speed Dial.
-    MonitoredElementItemPatch:
-      type: object
-      properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS80NDVkMzMzMC1mNjE3LTExZWItOWQyZS01NzViODE3ZGE2NmE
-          description: The identifier of the monitored element.
-        type:
-          type: string
-          enum:
-          - MEMBER
-          - CALL_PARK_EXTENSION
-          - SPEED_DIAL
-          description: "The type of the monitored element.\n * `MEMBER` - Monitored element is a person, place, or virtual line.\n * `CALL_PARK_EXTENSION` - Monitored element is a call park extension.\n * `SPEED_DIAL` - Monitored element is a speed dial.\n"
-        lineKeyLabel:
-          type: string
-          example: Sr Manager
-          description: Customizable line key label for speed dial.
-        phoneNumber:
-          type: string
-          example: '+19075552859'
-          description: Phone number for the speed dial.
     AvailableMemberObject:
       type: object
       properties:
@@ -625,27 +529,6 @@ components:
         location:
           $ref: '#/components/schemas/LocationObject'
           description: The location of the available member.
-    GetAvailableMembersForMonitoringResponse:
-      type: object
-      properties:
-        members:
-          type: array
-          items:
-            $ref: '#/components/schemas/AvailableMemberObject'
-          description: List of available members.
-    WorkspaceMonitoringPatch:
-      type: object
-      properties:
-        enableCallParkNotification:
-          type: boolean
-          example: true
-          description: Call park notification is enabled or disabled.
-        monitoredElements:
-          type: array
-          maxItems: 50
-          items:
-            $ref: '#/components/schemas/MonitoredElementItemPatch'
-          description: Array of monitored elements. Maximum 50 elements.
     MonitoredElementUser:
       type: object
       properties:
@@ -692,6 +575,18 @@ components:
           type: string
           example: Member Label
           description: Customizable line key label for monitored member.
+    MonitoredElementItem:
+      type: object
+      properties:
+        callparkextension:
+          $ref: '#/components/schemas/MonitoredElementCallParkExtension'
+          description: Monitored Call Park extension.
+        member:
+          $ref: '#/components/schemas/MonitoredElementUser'
+          description: Monitored member for this workspace.
+        speedDial:
+          $ref: '#/components/schemas/MonitoredElementSpeedDial'
+          description: Monitored Speed Dial.
     LocationObject:
       type: object
       properties:
@@ -703,6 +598,69 @@ components:
           type: string
           example: San Jose
           description: The name of the location.
+    MonitoredElementItemPatch:
+      type: object
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS80NDVkMzMzMC1mNjE3LTExZWItOWQyZS01NzViODE3ZGE2NmE
+          description: The identifier of the monitored element.
+        type:
+          type: string
+          enum:
+          - MEMBER
+          - CALL_PARK_EXTENSION
+          - SPEED_DIAL
+          description: "The type of the monitored element.\n * `MEMBER` - Monitored element is a person, place, or virtual line.\n * `CALL_PARK_EXTENSION` - Monitored element is a call park extension.\n * `SPEED_DIAL` - Monitored element is a speed dial.\n"
+        lineKeyLabel:
+          type: string
+          example: Sr Manager
+          description: Customizable line key label for speed dial.
+        phoneNumber:
+          type: string
+          example: '+19075552859'
+          description: Phone number for the speed dial.
+    MonitoredElementCallParkExtension:
+      type: object
+      required:
+      - id
+      - name
+      - extension
+      - location
+      - locationId
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS80NDVkMzMzMC1mNjE3LTExZWItOWQyZS01NzViODE3ZGE2NmE
+          description: ID of call park extension.
+        name:
+          type: string
+          example: CPE1
+          description: Name of call park extension.
+        extension:
+          type: string
+          example: '8080'
+          description: Extension of call park extension.
+        routingPrefix:
+          type: string
+          example: '1234'
+          description: Routing prefix of location.
+        esn:
+          type: string
+          example: '12348080'
+          description: Routing prefix + extension of a person or workspace.
+        location:
+          type: string
+          example: Alaska
+          description: Name of location for call park extension.
+        locationId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzEyMzQ1
+          description: ID of location for call park extension.
+        lineKeyLabel:
+          type: string
+          example: CPE Label
+          description: Customizable line key label for monitored call park extension.
     UserMonitoringGet:
       type: object
       required:
@@ -721,6 +679,48 @@ components:
           items:
             $ref: '#/components/schemas/MonitoredElementItem'
           description: Monitored element items.
+    WorkspaceMonitoringPatch:
+      type: object
+      properties:
+        enableCallParkNotification:
+          type: boolean
+          example: true
+          description: Call park notification is enabled or disabled.
+        monitoredElements:
+          type: array
+          maxItems: 50
+          items:
+            $ref: '#/components/schemas/MonitoredElementItemPatch'
+          description: Array of monitored elements. Maximum 50 elements.
+    UserNumberItem:
+      type: object
+      required:
+      - primary
+      properties:
+        external:
+          type: string
+          example: '+19075552859'
+          description: Phone number of person or workspace. Either `phoneNumber` or `extension` is mandatory.
+        extension:
+          type: string
+          example: '8080'
+          description: Extension of person or workspace. Either `phoneNumber` or `extension` is mandatory.
+        routingPrefix:
+          type: string
+          example: '1234'
+          description: Routing prefix of location.
+        esn:
+          type: string
+          example: '12348080'
+          description: Routing prefix + extension of a person or workspace.
+        primary:
+          type: boolean
+          example: true
+          description: Flag to indicate primary phone.
+        tollFreeNumber:
+          type: boolean
+          example: true
+          description: Flag to indicate toll free number.
   securitySchemes:
     oauth2:
       flows:

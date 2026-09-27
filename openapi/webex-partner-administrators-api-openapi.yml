@@ -64,7 +64,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Get all customers managed by a partner admin
-      operationId: Get all customers managed by a partner admin
+      operationId: GetAllCustomersManagedByAPartnerAdmin
       description: 'Get all customer organizations managed by given partner admin, in the `managedBy` request parameter. The `managedBy` user typically has the role of a Partner Admin. In case where a Partner Full Admin or Partner Read-Only admin is selected an error like "The user already has access to all customers managed by their partner organization." is shown as a Partner Admin (Full and Read-Only) is able to manage all customers by default. This does not include customers managed through Customer Groups.
 
 
@@ -81,6 +81,8 @@ paths:
         example: Y2LZY29ZCGFYAZOVL3VZL1BFT1BMRS9JOTYWOTZIYI1KYTRHLTQ3NZETYTC2ZI1KNDEZODQWZWVM1TQ
         schema:
           type: string
+      x-operation-id-source: normalized
+      x-operation-id-original: Get all customers managed by a partner admin
   /partner/organizations/{orgId}/partnerAdmins:
     get:
       responses:
@@ -131,7 +133,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Get all partner admins assigned to a customer
-      operationId: Get all partner admins assigned to a customer
+      operationId: GetAllPartnerAdminsAssignedToACustomer
       description: 'For a given customer, get all the partner admins with their role details. This does not include partner admins who have access through Customer Groups.
 
         This API can be used by Partner Full Admins.
@@ -148,6 +150,8 @@ paths:
         example: Y2LZY29ZCGFYAZOVL3VZL09SR0FOSVPBVELPTI8XZWI2NWZKZI05NJQZLTQXN2YTOTK3NC1HZDCYY2FLM9UXMGY
         schema:
           type: string
+      x-operation-id-source: normalized
+      x-operation-id-original: Get all partner admins assigned to a customer
   /partner/organizations/{orgId}/partnerAdmin/{personId}/assign:
     post:
       responses:
@@ -186,7 +190,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Assign partner admin to a customer
-      operationId: Assign partner admin to a customer
+      operationId: AssignPartnerAdminToACustomer
       description: 'Assign a specific Partner Admin to a customer organization. The partner admin is a user that has the Partner Administrator role.
 
         Other partner roles, such as Partner Full Administrator are not applicable for this API, since this role manages all customer organizations.
@@ -213,6 +217,8 @@ paths:
         example: Y2LZY29ZCGFYAZOVL3VZL1BFT1BMRS80ZGEZYTI0OC05YJBHLTQXMDGTODU0NC1INTQWMZEYZTU2M2E
         schema:
           type: string
+      x-operation-id-source: normalized
+      x-operation-id-original: Assign partner admin to a customer
   /partner/organizations/{orgId}/partnerAdmin/{personId}/unassign:
     delete:
       responses:
@@ -251,7 +257,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Unassign partner admin from a customer
-      operationId: Unassign partner admin from a customer
+      operationId: UnassignPartnerAdminFromACustomer
       description: 'Unassign a specific partner admin from a customer organization. Unassigning a customer organization from a partner admin does not remove the role from the user. If a partner admin is also managing the customer organization through a Customer Group, they will continue to have access.
 
         This API can be used by Partner Full Admin.
@@ -275,6 +281,8 @@ paths:
         example: Y2LZY29ZCGFYAZOVL3VZL1BFT1BMRS80ZGEZYTI0OC05YJBHLTQXMDGTODU0NC1INTQWMZEYZTU2M2E
         schema:
           type: string
+      x-operation-id-source: normalized
+      x-operation-id-original: Unassign partner admin from a customer
   /partner/organizations/partnerAdmin/{personId}:
     delete:
       responses:
@@ -313,7 +321,7 @@ paths:
         '504':
           description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
       summary: Revoke all partner admin roles for a given person ID
-      operationId: Revoke all partner admin roles for a given person ID
+      operationId: RevokeAllPartnerAdminRolesForAGivenPersonID
       description: 'Revoke all partner administrator roles from a user, thereby revoking access to Partner Hub and all managed customer organizations.
 
         This action does not grant or revoke Control Hub administrator roles (e.g. Full Administrator, User and Device Administrator, etc.).
@@ -331,27 +339,10 @@ paths:
         example: Y2LZY29ZCGFYAZOVL3VZL1BFT1BMRS9JOTYWOTZIYI1KYTRHLTQ3NZETYTC2ZI1KNDEZODQWZWVM1TQ
         schema:
           type: string
+      x-operation-id-source: normalized
+      x-operation-id-original: Revoke all partner admin roles for a given person ID
 components:
   schemas:
-    IdentityManagedOrg:
-      type: object
-      properties:
-        orgId:
-          type: string
-          example: Y2LZY29ZCGFYAZOVL3VZL1BFT1BMRS9MNWIZNJE4NY1JOGRKLTQ3MJCTOGIYZI1MOWM0NDDMMJKWNDY
-          description: The org ID of the managed org.
-        role:
-          type: string
-          example: YXRSYXMTCG9YDGFSLNBHCNRUZXIUC2FSZXNMDWXSYWRTAW4=
-          description: role ID of the user to this org.
-    ManagedOrgsResponse:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/IdentityManagedOrg'
-          description: An array of managed orgs objects.
     PartnerAdminUser:
       type: object
       properties:
@@ -389,6 +380,25 @@ components:
           items:
             $ref: '#/components/schemas/PartnerAdminUser'
           description: An array of partner admin user details.
+    ManagedOrgsResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/IdentityManagedOrg'
+          description: An array of managed orgs objects.
+    IdentityManagedOrg:
+      type: object
+      properties:
+        orgId:
+          type: string
+          example: Y2LZY29ZCGFYAZOVL3VZL1BFT1BMRS9MNWIZNJE4NY1JOGRKLTQ3MJCTOGIYZI1MOWM0NDDMMJKWNDY
+          description: The org ID of the managed org.
+        role:
+          type: string
+          example: YXRSYXMTCG9YDGFSLNBHCNRUZXIUC2FSZXNMDWXSYWRTAW4=
+          description: role ID of the user to this org.
   securitySchemes:
     oauth2:
       flows:

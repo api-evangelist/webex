@@ -539,81 +539,62 @@ paths:
           description: Service Unavailable
 components:
   schemas:
-    LogOutResourceRequest:
-      properties:
-        logoutReason:
-          description: The reason for performing logout operation, maximum length 128 characters.
-          type: string
-          example: Logout initiated by user abcd@xyz.com
-        agentId:
-          description: Unique ID of the user who is being logged out, maximum length 36 characters.
-          type: string
-          example: faedfcc8-035a-41e3-ad53-ee9fad4ca286
-      required:
-      - logoutReason
+    ErrorDetails:
+      description: Details of an error.
       type: object
-    AgentChannelStateChangeResourceRequest:
       properties:
-        channelType:
+        key:
+          type: string
+          description: An application defined error code.
+          example: '401'
+        message:
           type: array
+          description: A message providing details about the error.
           items:
-            type: string
-          description: 'It represents the channelType of the agent which can be set to ```telephony```,```chat```, ```social```, ```email```, ```workItem``` and ```customMessaging```. This would be sent for any channel types the agent wants to set the state on. In the event that the agent is setting more than one channel type states at once, it would send multiple state change requests .channelType is a list, and can include one or more channel types in the request. Note: `customMessaging` requires the `wxcc_digital_byoc` feature flag to be enabled for the organization.'
-          example: '[telephony, chat]'
-        state:
-          description: It represents the current state of the user. Can be set to ```Available``` or ```Idle``` or ```LoggedOut``` or ```Reserved``` or ```Engaged``` or or ```EngagedOther``` .
+            $ref: '#/components/schemas/OperationError'
+    ApiErrorResponse:
+      description: Response body for an API error.
+      type: object
+      properties:
+        trackingId:
           type: string
-          example: Idle
-        auxCodeId:
-          description: 'Auxiliary Codes are status codes which an agent can select in Webex Contact Center Agent Desktop. They are of two types: ```Idle``` and ```Wrap-Up``` codes, and every agent profile must have one of each for the agent to use. Idle codes are used to explain an agent''s unavailability to take customer contacts, such as during a lunch break or a meeting. Wrap-up codes indicate the result of customer contacts, such as successful resolution or escalation of the contact. Creating and managing auxiliary codes requires an administrator role and the appropriate cjp:config_write or cjp:config_read scopes, maximum length 36 characters.'
-          type: string
-          example: c08805ca-920a-4d7d-a9d8-cb3fe40a76c5
-        reason:
-          description: It represents the reason of the last agent channel state change request, maximum length 128 characters.
-          type: string
-          example: Lunch
+          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
+          example: c1a4fcef-aee2-4dea-8977-29f594760552
+        error:
+          description: An object containing details about the error.
+          $ref: '#/components/schemas/ErrorDetails'
+    OutAgentStatistics:
+      required:
+      - channels
+      type: object
+      properties:
+        intervalStartTime:
+          type: integer
+          description: Time in GMT
+          format: int64
+          example: 1591702200000
         agentId:
-          description: User for which agent channel state change is initiated, maximum length 36 characters.
           type: string
-          example: 1a80ba23-194b-49af-9b93-074b3ecc852a
-      required:
-      - channelType
-      - state
-      type: object
-    BuddyAgentRequest:
-      properties:
-        agentProfileId:
-          description: The profile ID of a particular agent. Can be obtained from [Users API](/docs/users), maximum length 36 characters.
+          description: The ID of the agent.
+          example: 06ce7234-dd3e-49e2-8763-d93766739d
+        agentName:
           type: string
-          example: 315fbb91-2288-427c-9588-ec764cd46ea4
-        mediaType:
-          description: The media type for the request. The supported values are ```telephony```, ```chat```, ```social```, ```email```, ```workItem``` and ```customMessaging```.
+          description: The name of the agent
+          example: Daniel Garrett
+        teamId:
           type: string
-          example: telephony
-        state:
-          description: It represents the current state of the returned agents which can be either ```Available``` or ```Idle```. If state is omitted from the payload, the API will return a list of both available and idle agents. This is useful for consult scenarios, since consulting an idle agent is also supported.
+          description: The ID of the team.
+          example: fbf80248-b328-4c37-9ea5-4c2ec8b4d52c
+        teamName:
           type: string
-          example: Available
-      required:
-      - agentProfileId
-      - mediaType
-      type: object
-      description: Request payload to retrieve buddy agents.
-    AgentApiResponse:
-      required:
-      - data
-      - meta
-      type: object
-      properties:
-        meta:
-          description: Response metadata.
-          $ref: '#/components/schemas/Meta'
-        data:
+          description: Name of the team to which agent belongs.
+          example: Collaboration
+        channels:
           type: array
-          description: List of Agent Statistics records retrieved according to query parameters.
+          description: Channel-level statistics for the agent.
           items:
-            $ref: '#/components/schemas/OutAgentStatistics'
-      description: Response wrapper for agent statistics.
+            $ref: '#/components/schemas/ChannelResponse'
+      description: List of Agent Statistics records retrieved according to query parameters.
     LogInResourceRequest:
       properties:
         dialNumber:
@@ -648,6 +629,141 @@ components:
       - dialNumber
       - roles
       type: object
+    BuddyAgentRequest:
+      properties:
+        agentProfileId:
+          description: The profile ID of a particular agent. Can be obtained from [Users API](/docs/users), maximum length 36 characters.
+          type: string
+          example: 315fbb91-2288-427c-9588-ec764cd46ea4
+        mediaType:
+          description: The media type for the request. The supported values are ```telephony```, ```chat```, ```social```, ```email```, ```workItem``` and ```customMessaging```.
+          type: string
+          example: telephony
+        state:
+          description: It represents the current state of the returned agents which can be either ```Available``` or ```Idle```. If state is omitted from the payload, the API will return a list of both available and idle agents. This is useful for consult scenarios, since consulting an idle agent is also supported.
+          type: string
+          example: Available
+      required:
+      - agentProfileId
+      - mediaType
+      type: object
+      description: Request payload to retrieve buddy agents.
+    ChannelResponse:
+      type: object
+      properties:
+        channelType:
+          type: string
+          description: Channel Type
+          example: chat
+        totalAssignedTasks:
+          type: integer
+          description: Number of tasks assigned within the channel during the agent session.
+          format: int32
+          example: 3
+        totalOfferedTasks:
+          type: integer
+          description: Number of offered tasks within this channel during the agent's session.
+          format: int32
+          example: 3
+        totalAcceptedTasks:
+          type: integer
+          description: Number of assigned tasks that were accepted by the agent.
+          format: int32
+          example: 3
+        totalRejectedTasks:
+          type: integer
+          description: Number of assigned tasks that were rejected by the agent.
+          format: int32
+          example: 3
+        totalTransferredTasks:
+          type: integer
+          description: Number of tasks that the agent transferred to another agent.
+          format: int32
+          example: 2
+        totalEngagedDuration:
+          type: integer
+          description: 'The amount of time the agent was engaged with a customer (in milliseconds).
+
+            Note :-
+
+            - Does not include wrap-up time and consult duration
+
+            - Includes conferencing duration since the customer is involved'
+          format: int32
+          example: 40302
+        totalHoldDuration:
+          type: integer
+          description: The amount of time for which the customer(s) was put on hold (in milliseconds).
+          format: int64
+          example: 10198
+        totalWrapUpDuration:
+          type: integer
+          description: 'The amount of time spent by the agent wrapping up customer interactions (in milliseconds).
+
+            i.e Sum of all wrap-up time metric for a given agent'
+          format: int64
+          example: 3552
+        totalAvailableTime:
+          type: integer
+          description: Duration of time(in milliseconds) outside of the idle time when an agent was available and handling contacts after logging in.
+          format: int64
+          example: 234947
+        totalUnAvailableTime:
+          type: integer
+          description: Amount of time the agent was unavailable (in milliseconds).
+          format: int64
+          example: 22300
+        averageHandledTime:
+          type: number
+          description: 'This is the average of the total handle time by an agent (in milliseconds)
+
+            i.e avg(engagedDuration(connected state) + hold-duration  + wrap-up time)'
+          format: double
+          example: 22300
+      description: Statistics for a specific channel.
+    AgentChannelStateChangeResourceRequest:
+      properties:
+        channelType:
+          type: array
+          items:
+            type: string
+          description: 'It represents the channelType of the agent which can be set to ```telephony```,```chat```, ```social```, ```email```, ```workItem``` and ```customMessaging```. This would be sent for any channel types the agent wants to set the state on. In the event that the agent is setting more than one channel type states at once, it would send multiple state change requests .channelType is a list, and can include one or more channel types in the request. Note: `customMessaging` requires the `wxcc_digital_byoc` feature flag to be enabled for the organization.'
+          example: '[telephony, chat]'
+        state:
+          description: It represents the current state of the user. Can be set to ```Available``` or ```Idle``` or ```LoggedOut``` or ```Reserved``` or ```Engaged``` or or ```EngagedOther``` .
+          type: string
+          example: Idle
+        auxCodeId:
+          description: 'Auxiliary Codes are status codes which an agent can select in Webex Contact Center Agent Desktop. They are of two types: ```Idle``` and ```Wrap-Up``` codes, and every agent profile must have one of each for the agent to use. Idle codes are used to explain an agent''s unavailability to take customer contacts, such as during a lunch break or a meeting. Wrap-up codes indicate the result of customer contacts, such as successful resolution or escalation of the contact. Creating and managing auxiliary codes requires an administrator role and the appropriate cjp:config_write or cjp:config_read scopes, maximum length 36 characters.'
+          type: string
+          example: c08805ca-920a-4d7d-a9d8-cb3fe40a76c5
+        reason:
+          description: It represents the reason of the last agent channel state change request, maximum length 128 characters.
+          type: string
+          example: Lunch
+        agentId:
+          description: User for which agent channel state change is initiated, maximum length 36 characters.
+          type: string
+          example: 1a80ba23-194b-49af-9b93-074b3ecc852a
+      required:
+      - channelType
+      - state
+      type: object
+    AgentActivitiesApiResponse:
+      required:
+      - data
+      - meta
+      type: object
+      properties:
+        meta:
+          description: Response metadata.
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: array
+          description: List of agent activities retrieved according to query parameters.
+          items:
+            $ref: '#/components/schemas/AgentActivity'
+      description: Response wrapper for agent activities.
     AgentActivity:
       required:
       - active
@@ -781,14 +897,6 @@ components:
           description: Multimedia profile type
           example: blended
       description: List of agent activities retrieved according to query parameters.
-    OperationError:
-      description: An error message providing details about the operation failure.
-      type: object
-      properties:
-        description:
-          type: string
-          description: A human readable explanation for the occurrence of an error.
-          example: Incorrect Credentials.
     StateResourceRequest:
       properties:
         state:
@@ -812,136 +920,7 @@ components:
       - auxCodeId
       type: object
       description: Request payload to update an agent state.
-    ChannelResponse:
-      type: object
-      properties:
-        channelType:
-          type: string
-          description: Channel Type
-          example: chat
-        totalAssignedTasks:
-          type: integer
-          description: Number of tasks assigned within the channel during the agent session.
-          format: int32
-          example: 3
-        totalOfferedTasks:
-          type: integer
-          description: Number of offered tasks within this channel during the agent's session.
-          format: int32
-          example: 3
-        totalAcceptedTasks:
-          type: integer
-          description: Number of assigned tasks that were accepted by the agent.
-          format: int32
-          example: 3
-        totalRejectedTasks:
-          type: integer
-          description: Number of assigned tasks that were rejected by the agent.
-          format: int32
-          example: 3
-        totalTransferredTasks:
-          type: integer
-          description: Number of tasks that the agent transferred to another agent.
-          format: int32
-          example: 2
-        totalEngagedDuration:
-          type: integer
-          description: 'The amount of time the agent was engaged with a customer (in milliseconds).
-
-            Note :-
-
-            - Does not include wrap-up time and consult duration
-
-            - Includes conferencing duration since the customer is involved'
-          format: int32
-          example: 40302
-        totalHoldDuration:
-          type: integer
-          description: The amount of time for which the customer(s) was put on hold (in milliseconds).
-          format: int64
-          example: 10198
-        totalWrapUpDuration:
-          type: integer
-          description: 'The amount of time spent by the agent wrapping up customer interactions (in milliseconds).
-
-            i.e Sum of all wrap-up time metric for a given agent'
-          format: int64
-          example: 3552
-        totalAvailableTime:
-          type: integer
-          description: Duration of time(in milliseconds) outside of the idle time when an agent was available and handling contacts after logging in.
-          format: int64
-          example: 234947
-        totalUnAvailableTime:
-          type: integer
-          description: Amount of time the agent was unavailable (in milliseconds).
-          format: int64
-          example: 22300
-        averageHandledTime:
-          type: number
-          description: 'This is the average of the total handle time by an agent (in milliseconds)
-
-            i.e avg(engagedDuration(connected state) + hold-duration  + wrap-up time)'
-          format: double
-          example: 22300
-      description: Statistics for a specific channel.
-    OutAgentStatistics:
-      required:
-      - channels
-      type: object
-      properties:
-        intervalStartTime:
-          type: integer
-          description: Time in GMT
-          format: int64
-          example: 1591702200000
-        agentId:
-          type: string
-          description: The ID of the agent.
-          example: 06ce7234-dd3e-49e2-8763-d93766739d
-        agentName:
-          type: string
-          description: The name of the agent
-          example: Daniel Garrett
-        teamId:
-          type: string
-          description: The ID of the team.
-          example: fbf80248-b328-4c37-9ea5-4c2ec8b4d52c
-        teamName:
-          type: string
-          description: Name of the team to which agent belongs.
-          example: Collaboration
-        channels:
-          type: array
-          description: Channel-level statistics for the agent.
-          items:
-            $ref: '#/components/schemas/ChannelResponse'
-      description: List of Agent Statistics records retrieved according to query parameters.
-    ApiErrorResponse:
-      description: Response body for an API error.
-      type: object
-      properties:
-        trackingId:
-          type: string
-          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
-          example: c1a4fcef-aee2-4dea-8977-29f594760552
-        error:
-          description: An object containing details about the error.
-          $ref: '#/components/schemas/ErrorDetails'
-    ErrorDetails:
-      description: Details of an error.
-      type: object
-      properties:
-        key:
-          type: string
-          description: An application defined error code.
-          example: '401'
-        message:
-          type: array
-          description: A message providing details about the error.
-          items:
-            $ref: '#/components/schemas/OperationError'
-    AgentActivitiesApiResponse:
+    AgentApiResponse:
       required:
       - data
       - meta
@@ -952,10 +931,23 @@ components:
           $ref: '#/components/schemas/Meta'
         data:
           type: array
-          description: List of agent activities retrieved according to query parameters.
+          description: List of Agent Statistics records retrieved according to query parameters.
           items:
-            $ref: '#/components/schemas/AgentActivity'
-      description: Response wrapper for agent activities.
+            $ref: '#/components/schemas/OutAgentStatistics'
+      description: Response wrapper for agent statistics.
+    LogOutResourceRequest:
+      properties:
+        logoutReason:
+          description: The reason for performing logout operation, maximum length 128 characters.
+          type: string
+          example: Logout initiated by user abcd@xyz.com
+        agentId:
+          description: Unique ID of the user who is being logged out, maximum length 36 characters.
+          type: string
+          example: faedfcc8-035a-41e3-ad53-ee9fad4ca286
+      required:
+      - logoutReason
+      type: object
     Meta:
       type: object
       properties:
@@ -964,6 +956,14 @@ components:
           description: Organization ID to which resources belong.
           example: 3dae8fdd-06e2-411a-9035-51f3719f5b65
       description: Response metadata.
+    OperationError:
+      description: An error message providing details about the operation failure.
+      type: object
+      properties:
+        description:
+          type: string
+          description: A human readable explanation for the occurrence of an error.
+          example: Incorrect Credentials.
   securitySchemes:
     oauth2:
       flows:

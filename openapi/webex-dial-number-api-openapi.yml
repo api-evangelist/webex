@@ -1573,6 +1573,86 @@ paths:
       deprecated: false
 components:
   schemas:
+    EntityReferenceInfoDTO:
+      type: object
+      properties:
+        description:
+          type: string
+          description: Description about reference info.
+          example: list of referenced entities
+        meta:
+          $ref: '#/components/schemas/MetaDataReferencesPagingInfo'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityInfo'
+    BulkRequestDTODialledNumberEntryPointDTO:
+      type: object
+      properties:
+        items:
+          type: array
+          description: List of items in the bulk request.
+          items:
+            $ref: '#/components/schemas/BulkRequestItemDTODialledNumberEntryPointDTO'
+    ErrorDetails:
+      description: Details of an error.
+      type: object
+      properties:
+        key:
+          type: string
+          description: An application defined error code.
+          example: '401'
+        message:
+          type: array
+          description: A message providing details about the error.
+          items:
+            $ref: '#/components/schemas/OperationError'
+    ApiErrorResponse:
+      description: Response body for an API error.
+      type: object
+      properties:
+        trackingId:
+          type: string
+          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
+          example: c1a4fcef-aee2-4dea-8977-29f594760552
+        error:
+          description: An object containing details about the error.
+          $ref: '#/components/schemas/ErrorDetails'
+    DialledNumberEntryPointExportDTO:
+      type: object
+      properties:
+        dialledNumber:
+          type: string
+        extension:
+          type: string
+        location:
+          type: string
+        entryPointName:
+          type: string
+        region:
+          type: string
+    BulkRequestItemDTODialledNumberEntryPointDTO:
+      type: object
+      description: List of items in the bulk request.
+      properties:
+        itemIdentifier:
+          type: integer
+          format: int32
+          description: Unique item identifier for a bulk operation.
+          example: 10
+        item:
+          $ref: '#/components/schemas/DialledNumberEntryPointDTO'
+        requestAction:
+          type: string
+          description: Identifier for action type. Possible values are `SAVE` and `DELETE`.
+          example: SAVE
+    BulkResponseDTO:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BulkResponseItemDTO'
     ResponseEnvelopeDialledNumberEntryPointDTO:
       type: object
       properties:
@@ -1637,49 +1717,6 @@ components:
           description: Name of current entity
           example: entity_name
       description: Metadata of response for references with paging information
-    BulkRequestItemDTODialledNumberEntryPointDTO:
-      type: object
-      description: List of items in the bulk request.
-      properties:
-        itemIdentifier:
-          type: integer
-          format: int32
-          description: Unique item identifier for a bulk operation.
-          example: 10
-        item:
-          $ref: '#/components/schemas/DialledNumberEntryPointDTO'
-        requestAction:
-          type: string
-          description: Identifier for action type. Possible values are `SAVE` and `DELETE`.
-          example: SAVE
-    EntityInfo:
-      type: object
-      properties:
-        id:
-          type: string
-          description: id
-          example: id.
-        name:
-          type: string
-          description: name
-          example: name.
-        additionalAttributes:
-          type: object
-          additionalProperties:
-            type: string
-            description: A map containing additional attributes of entity where both the key and value are Strings.
-            example: '{"key1":"value1","key2":"value2"}'
-          description: A map containing additional attributes of entity where both the key and value are Strings.
-          example:
-            key1: value1
-            key2: value2
-        createdDate:
-          type: string
-        lastModifiedDate:
-          type: string
-        version:
-          type: integer
-          format: int32
     BulkResponseItemDTO:
       type: object
       properties:
@@ -1724,72 +1761,34 @@ components:
         itemIdentifier: 10
         operationType: CREATE
         status: 400
-    OperationError:
-      description: An error message providing details about the operation failure.
+    EntityInfo:
       type: object
       properties:
-        description:
+        id:
           type: string
-          description: A human readable explanation for the occurrence of an error.
-          example: Incorrect Credentials.
-    DialledNumberEntryPointExportDTO:
-      type: object
-      properties:
-        dialledNumber:
+          description: id
+          example: id.
+        name:
           type: string
-        extension:
+          description: name
+          example: name.
+        additionalAttributes:
+          type: object
+          additionalProperties:
+            type: string
+            description: A map containing additional attributes of entity where both the key and value are Strings.
+            example: '{"key1":"value1","key2":"value2"}'
+          description: A map containing additional attributes of entity where both the key and value are Strings.
+          example:
+            key1: value1
+            key2: value2
+        createdDate:
           type: string
-        location:
+        lastModifiedDate:
           type: string
-        entryPointName:
-          type: string
-        region:
-          type: string
-    BulkExportDTODialledNumberEntryPointExportDTO:
-      type: object
-      description: Bulk export Dto
-      example:
-        totalResources: 100
-        pageNumber: 0
-        pageSize: 50
-        rel: last
-        resources: []
-      properties:
-        totalResources:
+        version:
           type: integer
           format: int32
-          description: Total number of items.
-          example: 100
-        pageNumber:
-          type: integer
-          format: int32
-          description: Current page number.
-          example: 0
-        pageSize:
-          type: integer
-          format: int32
-          description: Page size for current data set.
-          example: 50
-        rel:
-          type: string
-          description: Indicates whether more pages exist. When 'next' there are more pages available, otherwise 'last'.
-          example: last
-        resources:
-          type: array
-          description: Indicate the page resources
-          items:
-            $ref: '#/components/schemas/DialledNumberEntryPointExportDTO'
-    ApiErrorResponse:
-      description: Response body for an API error.
-      type: object
-      properties:
-        trackingId:
-          type: string
-          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
-          example: c1a4fcef-aee2-4dea-8977-29f594760552
-        error:
-          description: An object containing details about the error.
-          $ref: '#/components/schemas/ErrorDetails'
     DialledNumberEntryPointDTO:
       type: object
       properties:
@@ -1887,47 +1886,48 @@ components:
       required:
       - entryPointId
       - entryPointName
-    BulkResponseDTO:
+    BulkExportDTODialledNumberEntryPointExportDTO:
       type: object
+      description: Bulk export Dto
+      example:
+        totalResources: 100
+        pageNumber: 0
+        pageSize: 50
+        rel: last
+        resources: []
       properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/BulkResponseItemDTO'
-    ErrorDetails:
-      description: Details of an error.
-      type: object
-      properties:
-        key:
+        totalResources:
+          type: integer
+          format: int32
+          description: Total number of items.
+          example: 100
+        pageNumber:
+          type: integer
+          format: int32
+          description: Current page number.
+          example: 0
+        pageSize:
+          type: integer
+          format: int32
+          description: Page size for current data set.
+          example: 50
+        rel:
           type: string
-          description: An application defined error code.
-          example: '401'
-        message:
+          description: Indicates whether more pages exist. When 'next' there are more pages available, otherwise 'last'.
+          example: last
+        resources:
           type: array
-          description: A message providing details about the error.
+          description: Indicate the page resources
           items:
-            $ref: '#/components/schemas/OperationError'
-    BulkRequestDTODialledNumberEntryPointDTO:
-      type: object
-      properties:
-        items:
-          type: array
-          description: List of items in the bulk request.
-          items:
-            $ref: '#/components/schemas/BulkRequestItemDTODialledNumberEntryPointDTO'
-    EntityReferenceInfoDTO:
+            $ref: '#/components/schemas/DialledNumberEntryPointExportDTO'
+    OperationError:
+      description: An error message providing details about the operation failure.
       type: object
       properties:
         description:
           type: string
-          description: Description about reference info.
-          example: list of referenced entities
-        meta:
-          $ref: '#/components/schemas/MetaDataReferencesPagingInfo'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/EntityInfo'
+          description: A human readable explanation for the occurrence of an error.
+          example: Incorrect Credentials.
   securitySchemes:
     oauth2:
       flows:
