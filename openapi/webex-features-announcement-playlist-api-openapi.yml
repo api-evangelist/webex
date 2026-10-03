@@ -504,41 +504,41 @@ paths:
               $ref: '#/components/schemas/PutPlaylistAssignedLocation'
 components:
   schemas:
-    AnnouncementPlaylistResponseWithId:
+    AnnouncementPlaylistGetResponse:
       type: object
-      required:
-      - id
-      properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0FOTk9VTkNFTUVOVC9jNzAwNmI4ZC1kYmQ3LTQ3YjctOWQ0Ny05ZDJkMWEzYmY1Yzc
-          description: Unique identifier of the announcement playlist.
-    PutPlaylistAssignedLocation:
-      type: object
-      required:
-      - locationIds
-      properties:
-        locationIds:
-          type: array
-          items:
-            type: string
-            example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi81ZTk3MzFlNy1iOWQ0LTRmMWQtYjYyMi05NDgwMDhhMjkzMzM, Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi81ZTk3MzFlNy1iOWQ0LTRmMWQtYjYyMi05NDgwMDhhMjkzMzM
-          description: Array of location IDs with which the playlist is associated.
-    PlaylistObject:
-      type: object
-      description: Basic playlist metadata available for announcement selection.
       required:
       - id
       - name
+      - lastUpdated
+      - fileSize
+      - fileCount
+      - announcements
       properties:
         id:
           type: string
           example: Y2lzY29zcGFyazovL3VzL0FOTk9VTkNFTUVOVC9iYzZjOTYwYi01ZDJjLTRiM2QtYjRlZC0wNWY1ZmFhMTJjZjA
-          description: A unique identifier for the playlist.
+          description: Unique identifier of the playlist.
         name:
           type: string
           example: testingAnnouncementPlaylist
-          description: Unique name for the playlist.
+          description: Unique name of the playlist.
+        lastUpdated:
+          type: string
+          example: '2024-03-06T07:06:36.396Z'
+          description: Last updated timestamp (in UTC format) of the playlist.
+        fileSize:
+          type: string
+          example: '356'
+          description: Size of the files in kilobytes.
+        fileCount:
+          type: string
+          example: '3'
+          description: Number of files in the playlist.
+        announcements:
+          type: array
+          items:
+            $ref: '#/components/schemas/AnnouncementObject'
+          description: List of announcement details associated with playlist.
     LocationObject:
       type: object
       properties:
@@ -550,6 +550,19 @@ components:
           type: string
           example: San Jose
           description: The name of the location.
+    PutAnnouncementPlaylistObject:
+      type: object
+      properties:
+        name:
+          type: string
+          example: testingHydraAnnouncementPlaylistWithTwoFiles
+          description: Unique name for the announcement playlist.
+        announcementIds:
+          type: array
+          items:
+            type: string
+            example: Y2lzY29zcGFyazovL3VzL0FOTk9VTkNFTUVOVC8yMTkxMDhmNC1iMGVjLTRkNTMtODMzYy1kNTE1NWE4OWQzZTk,Y2lzY29zcGFyazovL3VzL0FOTk9VTkNFTUVOVC8zY2I2Y2Q1MS02Zjk3LTRiMmYtYTA0Yy04MjRmOGQ2NjQyYTU
+          description: Array of `announcementIds` associated with the playlist.
     PostAnnouncementPlaylistObject:
       type: object
       required:
@@ -566,6 +579,30 @@ components:
             type: string
             example: Y2lzY29zcGFyazovL3VzL0FOTk9VTkNFTUVOVC8yMTkxMDhmNC1iMGVjLTRkNTMtODMzYy1kNTE1NWE4OWQzZTk,Y2lzY29zcGFyazovL3VzL0FOTk9VTkNFTUVOVC8zY2I2Y2Q1MS02Zjk3LTRiMmYtYTA0Yy04MjRmOGQ2NjQyYTU
           description: Array of `announcementIds` associated with the playlist.
+    AnnouncementPlaylistResponseWithId:
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0FOTk9VTkNFTUVOVC9jNzAwNmI4ZC1kYmQ3LTQ3YjctOWQ0Ny05ZDJkMWEzYmY1Yzc
+          description: Unique identifier of the announcement playlist.
+    PlaylistObject:
+      type: object
+      description: Basic playlist metadata available for announcement selection.
+      required:
+      - id
+      - name
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0FOTk9VTkNFTUVOVC9iYzZjOTYwYi01ZDJjLTRiM2QtYjRlZC0wNWY1ZmFhMTJjZjA
+          description: A unique identifier for the playlist.
+        name:
+          type: string
+          example: testingAnnouncementPlaylist
+          description: Unique name for the playlist.
     AnnouncementObject:
       type: object
       required:
@@ -605,19 +642,17 @@ components:
           enum:
           - ORGANIZATION
           description: The level at which this playlist exists.
-    PutAnnouncementPlaylistObject:
+    PutPlaylistAssignedLocation:
       type: object
+      required:
+      - locationIds
       properties:
-        name:
-          type: string
-          example: testingHydraAnnouncementPlaylistWithTwoFiles
-          description: Unique name for the announcement playlist.
-        announcementIds:
+        locationIds:
           type: array
           items:
             type: string
-            example: Y2lzY29zcGFyazovL3VzL0FOTk9VTkNFTUVOVC8yMTkxMDhmNC1iMGVjLTRkNTMtODMzYy1kNTE1NWE4OWQzZTk,Y2lzY29zcGFyazovL3VzL0FOTk9VTkNFTUVOVC8zY2I2Y2Q1MS02Zjk3LTRiMmYtYTA0Yy04MjRmOGQ2NjQyYTU
-          description: Array of `announcementIds` associated with the playlist.
+            example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi81ZTk3MzFlNy1iOWQ0LTRmMWQtYjYyMi05NDgwMDhhMjkzMzM, Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi81ZTk3MzFlNy1iOWQ0LTRmMWQtYjYyMi05NDgwMDhhMjkzMzM
+          description: Array of location IDs with which the playlist is associated.
     PlaylistAssignedLocationResponse:
       type: object
       required:
@@ -633,41 +668,6 @@ components:
           items:
             $ref: '#/components/schemas/LocationObject'
           description: Array of locations with which the playlist is associated.
-    AnnouncementPlaylistGetResponse:
-      type: object
-      required:
-      - id
-      - name
-      - lastUpdated
-      - fileSize
-      - fileCount
-      - announcements
-      properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0FOTk9VTkNFTUVOVC9iYzZjOTYwYi01ZDJjLTRiM2QtYjRlZC0wNWY1ZmFhMTJjZjA
-          description: Unique identifier of the playlist.
-        name:
-          type: string
-          example: testingAnnouncementPlaylist
-          description: Unique name of the playlist.
-        lastUpdated:
-          type: string
-          example: '2024-03-06T07:06:36.396Z'
-          description: Last updated timestamp (in UTC format) of the playlist.
-        fileSize:
-          type: string
-          example: '356'
-          description: Size of the files in kilobytes.
-        fileCount:
-          type: string
-          example: '3'
-          description: Number of files in the playlist.
-        announcements:
-          type: array
-          items:
-            $ref: '#/components/schemas/AnnouncementObject'
-          description: List of announcement details associated with playlist.
   securitySchemes:
     oauth2:
       flows:

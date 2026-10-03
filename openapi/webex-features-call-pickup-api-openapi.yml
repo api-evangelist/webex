@@ -698,6 +698,65 @@ components:
           items:
             $ref: '#/components/schemas/GetUserNumberItemObject'
           description: List of phone numbers of a person, workspace or virtual line.
+    GetUserNumberItemObject:
+      type: object
+      properties:
+        external:
+          type: string
+          example: '+19075552859'
+          description: Phone number of a person, workspace or virtual line.
+        extension:
+          type: string
+          example: '8080'
+          description: Extension of a person, workspace or virtual line.
+    ListCallPickupObject:
+      type: object
+      required:
+      - name
+      - id
+      - locationName
+      - locationId
+      properties:
+        name:
+          type: string
+          example: North Alaska-Group
+          description: Unique name for the call pickup. The maximum length is 80.
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0NBTExfUElDS1VQL1kyRnNiRkJwWTJ0MWNERT0
+          description: A unique identifier for the call pickup.
+        locationName:
+          type: string
+          example: Alaska
+          description: Name of the location for call pickup.
+        locationId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzEyMzQ1
+          description: ID of the location for call pickup.
+    ModifyCallPickupObject:
+      type: object
+      properties:
+        name:
+          type: string
+          example: North Alaska-Group
+          description: Unique name for the call pickup. The maximum length is 80.
+        notificationType:
+          type: string
+          enum:
+          - NONE
+          - AUDIO_ONLY
+          - VISUAL_ONLY
+          - AUDIO_AND_VISUAL
+          description: "Type of the notification when an incoming call is unanswered. The call pickup group notifies all of its members. Default: NONE.\n * `NONE` - Notification is not sent to any member of the call pickup group.\n * `AUDIO_ONLY` - When the notificationDelayTimerSeconds number of seconds has elapsed, play an audio notification for each call pickup group member.\n * `VISUAL_ONLY` - When the notificationDelayTimerSeconds number of seconds has elapsed, provide a visual notification to every call pickup group member.\n * `AUDIO_AND_VISUAL` - When the `notificationDelayTimerSeconds` number of seconds has elapsed, provide an audio and visual notification to every call pickup group member.\n"
+        notificationDelayTimerSeconds:
+          type: number
+          example: 6
+          description: 'After the number of seconds given by the `notificationDelayTimerSeconds` has elapsed, notify every member of the call pickup group when an incoming call goes unanswered. The `notificationType` field specifies the notification method. Default: 6.'
+        agents:
+          type: array
+          items:
+            type: string
+          description: An array of people, workspace, and virtual lines IDs, that are added to call pickup.
     GetCallPickupObject:
       type: object
       required:
@@ -729,54 +788,6 @@ components:
           items:
             $ref: '#/components/schemas/GetPersonPlaceVirtualLineCallPickupObject'
           description: People, workspaces and virtual lines that are eligible to receive calls.
-    ModifyCallPickupObject:
-      type: object
-      properties:
-        name:
-          type: string
-          example: North Alaska-Group
-          description: Unique name for the call pickup. The maximum length is 80.
-        notificationType:
-          type: string
-          enum:
-          - NONE
-          - AUDIO_ONLY
-          - VISUAL_ONLY
-          - AUDIO_AND_VISUAL
-          description: "Type of the notification when an incoming call is unanswered. The call pickup group notifies all of its members. Default: NONE.\n * `NONE` - Notification is not sent to any member of the call pickup group.\n * `AUDIO_ONLY` - When the notificationDelayTimerSeconds number of seconds has elapsed, play an audio notification for each call pickup group member.\n * `VISUAL_ONLY` - When the notificationDelayTimerSeconds number of seconds has elapsed, provide a visual notification to every call pickup group member.\n * `AUDIO_AND_VISUAL` - When the `notificationDelayTimerSeconds` number of seconds has elapsed, provide an audio and visual notification to every call pickup group member.\n"
-        notificationDelayTimerSeconds:
-          type: number
-          example: 6
-          description: 'After the number of seconds given by the `notificationDelayTimerSeconds` has elapsed, notify every member of the call pickup group when an incoming call goes unanswered. The `notificationType` field specifies the notification method. Default: 6.'
-        agents:
-          type: array
-          items:
-            type: string
-          description: An array of people, workspace, and virtual lines IDs, that are added to call pickup.
-    ListCallPickupObject:
-      type: object
-      required:
-      - name
-      - id
-      - locationName
-      - locationId
-      properties:
-        name:
-          type: string
-          example: North Alaska-Group
-          description: Unique name for the call pickup. The maximum length is 80.
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0NBTExfUElDS1VQL1kyRnNiRkJwWTJ0MWNERT0
-          description: A unique identifier for the call pickup.
-        locationName:
-          type: string
-          example: Alaska
-          description: Name of the location for call pickup.
-        locationId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzEyMzQ1
-          description: ID of the location for call pickup.
     PostCallPickupObject:
       type: object
       required:
@@ -803,17 +814,6 @@ components:
           items:
             type: string
           description: An Array of ID strings of people, workspaces and virtual lines that are added to call pickup.
-    GetUserNumberItemObject:
-      type: object
-      properties:
-        external:
-          type: string
-          example: '+19075552859'
-          description: Phone number of a person, workspace or virtual line.
-        extension:
-          type: string
-          example: '8080'
-          description: Extension of a person, workspace or virtual line.
   securitySchemes:
     oauth2:
       flows:

@@ -1101,21 +1101,288 @@ paths:
       - bearer-key: []
 components:
   schemas:
-    ExtendModeRequest:
+    SwitchModeRequest:
       type: object
       required:
       - operatingModeId
       properties:
         operatingModeId:
           type: string
-          example: Y2lzY29zcGFyazovL3VzL09QRVJBVElOR19NT0RFLzAyZjZlMmI4LTFjZDktNWI3ZS1jOTVjLTczYzZkYzk1MTZMg==
-          description: Unique identifier for the operating mode for which the extension is being configured.
-        extensionTime:
-          type: integer
-          minimum: 30
-          maximum: 720
-          example: 30
-          description: Extension time in minutes (must be multiple of 30). If not sent, mode is extended with manual switch back exception
+          example: Y2lzY29zcGFyazovL3VzL09QRVJBVElOR19NT0RFLzAyZjZlMmI4LTFjZDktNWI3ZS1jOTVjLTczYzZkYzk1MTZjMg==
+          description: Operating mode ID to switch to
+        isManualSwitchbackEnabled:
+          type: boolean
+          example: true
+          description: Determines if switch back will be manual (if true) or automatic (if false or omitted from request)
+    SwitchModeMultipleFeaturesRequest:
+      type: object
+      required:
+      - featureIds
+      - operatingModeName
+      properties:
+        featureIds:
+          type: array
+          example:
+          - Y2lzY29zcGFyazovL3VzL0ZFQVRVUkUvYjQzMmI2NmQtM2VkYy00ZGNkLTg4ODctNDZlOGU2NWQwYzIw
+          description: List of feature IDs to switch mode
+          items:
+            type: string
+          minItems: 1
+          maxItems: 50
+        operatingModeName:
+          type: string
+          example: Night
+          description: Name of the common operating mode to be set as current operating mode
+    NormalOperationModeResponse:
+      type: object
+      required:
+      - operatingModeId
+      properties:
+        operatingModeId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL09QRVJBVElOR19NT0RFLzAyZjZlMmI4LTFjZDktNWI3ZS1jOTVjLTczYzZkYzk1MTZjMg==
+          description: Unique identifier for the scheduled operating mode.
+      example:
+        operatingModeId: Y2lzY29zcGFyazovL3VzL09QRVJBVElOR19NT0RFLzAyZjZlMmI4LTFjZDktNWI3ZS1jOTVjLTczYzZkYzk1MTZjMg==
+    ModeManagementFeatureResponse:
+      type: object
+      required:
+      - modeBasedForwardingEnabled
+      - currentOperatingModeId
+      - timezone
+      - modes
+      properties:
+        modeBasedForwardingEnabled:
+          type: boolean
+          example: true
+          description: Whether mode based forwarding is enabled for the feature
+        timezone:
+          type: string
+          example: America/Los_Angeles
+          description: Timezone for the feature
+        phoneNumber:
+          type: string
+          example: '+14085551234'
+          description: Phone number of the feature
+        extension:
+          type: string
+          example: '1234'
+          description: Extension of the feature
+        currentOperatingModeId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL09QRVJBVElOR19NT0RFLzAyZjZlMmI4LTFjZDktNWI3ZS1jOTVjLTczYzZkYzk1MTZjMg==
+          description: Unique identifier for the current operating mode.
+        currentOperatingModeEndTime:
+          type: string
+          example: 06:00 AM
+          description: "The current operating mode's end time in 12-hour format showing hour and minute only (no date information). This field's presence and meaning depends on the operational state:\n * Present during normal operation with the time at which the next mode change will occur.\n * Not present for Manual Switch Back exceptions.\n * For Automatic Switch Back (Early Start) exceptions it is when the exception ends and the feature automatically reverts to normal operation which is the mode's configured start time.\n * For Automatic Switch Back (Extension) exceptions it is when the exception ends and the feature automatically reverts to normal operation which is the mode's configured end time when the exception started plus the extension time.\n * For Automatic Switch Back (Standard) exceptions it is when the exception ends and the feature automatically reverts to normal operation which is the mode's configured end time."
+        currentOperatingModeForwardDestination:
+          type: string
+          example: '+14085555678'
+          description: Forward destination for current operating mode
+        exceptionType:
+          type: string
+          enum:
+          - AUTOMATIC_SWITCH_BACK_EARLY_START
+          - AUTOMATIC_SWITCH_BACK_EXTENSION
+          - MANUAL_SWITCH_BACK
+          - AUTOMATIC_SWITCH_BACK_STANDARD
+          example: MANUAL_SWITCH_BACK
+          description: "Type of exception indicating how the feature will switch back from the current mode. This field is not present when the feature is in normal operation.\n\n * `AUTOMATIC_SWITCH_BACK_EARLY_START` - Automatic switchback with early start.\n * `AUTOMATIC_SWITCH_BACK_EXTENSION` - Automatic switchback with extension.\n * `MANUAL_SWITCH_BACK` - Manual switchback required.\n * `AUTOMATIC_SWITCH_BACK_STANDARD` - Standard automatic switchback.\n"
+        modes:
+          type: array
+          description: Array of operating modes configured for this feature
+          example:
+          - id: Y2lzY29zcGFyazovL3VzL09QRVJBVElOR19NT0RFLzAyZjZlMmI4LTFjZDktNWI3ZS1jOTVjLTczYzZkYzk1MTZjMg==
+            name: Business Hours
+            normalOperationEnabled: true
+          items:
+            type: object
+            required:
+            - id
+            - name
+            - normalOperationEnabled
+            properties:
+              id:
+                type: string
+                example: Y2lzY29zcGFyazovL3VzL09QRVJBVElOR19NT0RFLzAyZjZlMmI4LTFjZDktNWI3ZS1jOTVjLTczYzZkYzk1MTZjMg==
+                description: Unique identifier for the operating mode.
+              name:
+                type: string
+                example: Business Hours
+                description: Display name of the operating mode.
+              type:
+                type: string
+                enum:
+                - NONE
+                - SAME_HOURS_DAILY
+                - DIFFERENT_HOURS_DAILY
+                - HOLIDAY
+                example: SAME_HOURS_DAILY
+                description: " * `NONE` - No schedule defined.\n * `SAME_HOURS_DAILY` - Same hours for weekdays and weekends.\n * `DIFFERENT_HOURS_DAILY` - Different hours for each day.\n * `HOLIDAY` - Holiday-based schedule.\n"
+              level:
+                type: string
+                enum:
+                - ORGANIZATION
+                - LOCATION
+                example: LOCATION
+                description: " * `ORGANIZATION` - Organization level mode.\n * `LOCATION` - Location level mode.\n"
+              normalOperationEnabled:
+                type: boolean
+                example: true
+                description: Whether this mode is enabled for normal operation.
+              forwardTo:
+                type: object
+                description: Forwarding configuration for this mode
+                required:
+                - sendToVoicemailEnabled
+                - defaultSendToVoicemailEnabled
+                properties:
+                  selection:
+                    type: string
+                    enum:
+                    - DO_NOT_FORWARD
+                    - FORWARD_TO_SPECIFIED_NUMBER
+                    - FORWARD_TO_DEFAULT_NUMBER
+                    example: FORWARD_TO_SPECIFIED_NUMBER
+                    description: " * `DO_NOT_FORWARD` - Do not forward calls.\n * `FORWARD_TO_SPECIFIED_NUMBER` - Forward to a specified number.\n * `FORWARD_TO_DEFAULT_NUMBER` - Use the mode's default forwarding setting (which may be to forward or not forward).\n"
+                  phoneNumber:
+                    type: string
+                    example: '+14085551234'
+                    description: Phone number to forward to when selection is FORWARD_TO_SPECIFIED_NUMBER.
+                  sendToVoicemailEnabled:
+                    type: boolean
+                    example: false
+                    description: Whether to send to voicemail when selection is FORWARD_TO_SPECIFIED_NUMBER.
+                  defaultPhoneNumber:
+                    type: string
+                    example: '+14085555678'
+                    description: Default phone number when selection is FORWARD_TO_DEFAULT_NUMBER. This field is not present if the mode's default is to not forward.
+                  defaultSendToVoicemailEnabled:
+                    type: boolean
+                    example: true
+                    description: Whether default is to send to voicemail
+      example:
+        modeBasedForwardingEnabled: true
+        timezone: America/Los_Angeles
+        phoneNumber: '+14085551234'
+        extension: '1234'
+        currentOperatingModeId: Y2lzY29zcGFyazovL3VzL09QRVJBVElOR19NT0RFLzAyZjZlMmI4LTFjZDktNWI3ZS1jOTVjLTczYzZkYzk1MTZjMg==
+        currentOperatingModeEndTime: 06:00 AM
+        currentOperatingModeForwardDestination: '+14085555678'
+        exceptionType: MANUAL_SWITCH_BACK
+        modes:
+        - id: Y2lzY29zcGFyazovL3VzL09QRVJBVElOR19NT0RFLzAyZjZlMmI4LTFjZDktNWI3ZS1jOTVjLTczYzZkYzk1MTZjMg==
+          name: Business Hours
+          type: SAME_HOURS_DAILY
+          level: LOCATION
+          normalOperationEnabled: true
+          forwardTo:
+            selection: FORWARD_TO_SPECIFIED_NUMBER
+            phoneNumber: '+14085551234'
+            sendToVoicemailEnabled: false
+            defaultPhoneNumber: '+14085555678'
+            defaultSendToVoicemailEnabled: true
+    ModeManagementFeaturesResponse:
+      type: object
+      required:
+      - features
+      properties:
+        features:
+          type: array
+          description: List of mode management features. Returns all items in a single response.
+          example:
+          - id: Y2lzY29zcGFyazovL3VzL0ZFQVRVUkUvYjQzMmI2NmQtM2VkYy00ZGNkLTg4ODctNDZlOGU2NWQwYzIw
+            name: Main Reception
+            type: AUTO_ATTENDANT
+            modeBasedForwardingEnabled: true
+          items:
+            type: object
+            required:
+            - id
+            - name
+            - type
+            - modeBasedForwardingEnabled
+            properties:
+              id:
+                type: string
+                example: Y2lzY29zcGFyazovL3VzL0ZFQVRVUkUvYjQzMmI2NmQtM2VkYy00ZGNkLTg4ODctNDZlOGU2NWQwYzIw
+                description: Unique identifier for the auto attendant, call queue, or hunt group.
+              name:
+                type: string
+                example: Main Reception
+                description: Display name of the auto attendant, call queue, or hunt group.
+              type:
+                type: string
+                enum:
+                - AUTO_ATTENDANT
+                - CALL_QUEUE
+                - HUNT_GROUP
+                example: AUTO_ATTENDANT
+                description: " * `AUTO_ATTENDANT` - Auto Attendant feature.\n * `CALL_QUEUE` - Call Queue feature (includes customer assist queues).\n * `HUNT_GROUP` - Hunt Group feature.\n"
+              phoneNumber:
+                type: string
+                example: '+14085551234'
+                description: Phone number of the feature
+              extension:
+                type: string
+                example: '1234'
+                description: Extension of the feature
+              modeBasedForwardingEnabled:
+                type: boolean
+                example: true
+                description: Whether mode based forwarding is enabled for the feature
+              location:
+                type: object
+                description: Location information for the feature
+                required:
+                - id
+                - name
+                properties:
+                  id:
+                    type: string
+                    example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzEyMzQ1Njc4LTkwYWItY2RlZi0xMjM0LTU2Nzg5MGFiY2RlZg==
+                    description: Unique identifier for the location.
+                  name:
+                    type: string
+                    example: San Jose Office
+                    description: Display name of the location.
+              forwardDestination:
+                type: string
+                example: '+14085555678'
+                description: Current forward destination
+              currentOperatingModeName:
+                type: string
+                example: Business Hours
+                description: Name of the current operating mode
+              currentOperatingModeId:
+                type: string
+                example: Y2lzY29zcGFyazovL3VzL09QRVJBVElOR19NT0RFLzAyZjZlMmI4LTFjZDktNWI3ZS1jOTVjLTczYzZkYzk1MTZjMg==
+                description: ID of the current operating mode
+              exceptionType:
+                type: string
+                enum:
+                - AUTOMATIC_SWITCH_BACK_EARLY_START
+                - AUTOMATIC_SWITCH_BACK_EXTENSION
+                - MANUAL_SWITCH_BACK
+                - AUTOMATIC_SWITCH_BACK_STANDARD
+                example: MANUAL_SWITCH_BACK
+                description: "Type of exception indicating how the feature will switch back from the current mode. This field is not present when the feature is in normal operation.\n\n * `AUTOMATIC_SWITCH_BACK_EARLY_START` - Automatic switchback with early start.\n * `AUTOMATIC_SWITCH_BACK_EXTENSION` - Automatic switchback with extension.\n * `MANUAL_SWITCH_BACK` - Manual switchback required.\n * `AUTOMATIC_SWITCH_BACK_STANDARD` - Standard automatic switchback.\n"
+      example:
+        features:
+        - id: Y2lzY29zcGFyazovL3VzL0ZFQVRVUkUvYjQzMmI2NmQtM2VkYy00ZGNkLTg4ODctNDZlOGU2NWQwYzIw
+          name: Main Reception
+          type: AUTO_ATTENDANT
+          phoneNumber: '+14085551234'
+          extension: '1234'
+          modeBasedForwardingEnabled: true
+          location:
+            id: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzEyMzQ1Njc4LTkwYWItY2RlZi0xMjM0LTU2Nzg5MGFiY2RlZg==
+            name: San Jose Office
+          forwardDestination: '+14085555678'
+          currentOperatingModeName: Business Hours
+          currentOperatingModeId: Y2lzY29zcGFyazovL3VzL09QRVJBVElOR19NT0RFLzAyZjZlMmI4LTFjZDktNWI3ZS1jOTVjLTczYzZkYzk1MTZjMg==
+          exceptionType: MANUAL_SWITCH_BACK
     OperatingModeResponse:
       type: object
       required:
@@ -1506,258 +1773,6 @@ components:
           enabled: true
           destination: '+14085551234'
           sendToVoicemailEnabled: false
-    ModeManagementFeaturesResponse:
-      type: object
-      required:
-      - features
-      properties:
-        features:
-          type: array
-          description: List of mode management features. Returns all items in a single response.
-          example:
-          - id: Y2lzY29zcGFyazovL3VzL0ZFQVRVUkUvYjQzMmI2NmQtM2VkYy00ZGNkLTg4ODctNDZlOGU2NWQwYzIw
-            name: Main Reception
-            type: AUTO_ATTENDANT
-            modeBasedForwardingEnabled: true
-          items:
-            type: object
-            required:
-            - id
-            - name
-            - type
-            - modeBasedForwardingEnabled
-            properties:
-              id:
-                type: string
-                example: Y2lzY29zcGFyazovL3VzL0ZFQVRVUkUvYjQzMmI2NmQtM2VkYy00ZGNkLTg4ODctNDZlOGU2NWQwYzIw
-                description: Unique identifier for the auto attendant, call queue, or hunt group.
-              name:
-                type: string
-                example: Main Reception
-                description: Display name of the auto attendant, call queue, or hunt group.
-              type:
-                type: string
-                enum:
-                - AUTO_ATTENDANT
-                - CALL_QUEUE
-                - HUNT_GROUP
-                example: AUTO_ATTENDANT
-                description: " * `AUTO_ATTENDANT` - Auto Attendant feature.\n * `CALL_QUEUE` - Call Queue feature (includes customer assist queues).\n * `HUNT_GROUP` - Hunt Group feature.\n"
-              phoneNumber:
-                type: string
-                example: '+14085551234'
-                description: Phone number of the feature
-              extension:
-                type: string
-                example: '1234'
-                description: Extension of the feature
-              modeBasedForwardingEnabled:
-                type: boolean
-                example: true
-                description: Whether mode based forwarding is enabled for the feature
-              location:
-                type: object
-                description: Location information for the feature
-                required:
-                - id
-                - name
-                properties:
-                  id:
-                    type: string
-                    example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzEyMzQ1Njc4LTkwYWItY2RlZi0xMjM0LTU2Nzg5MGFiY2RlZg==
-                    description: Unique identifier for the location.
-                  name:
-                    type: string
-                    example: San Jose Office
-                    description: Display name of the location.
-              forwardDestination:
-                type: string
-                example: '+14085555678'
-                description: Current forward destination
-              currentOperatingModeName:
-                type: string
-                example: Business Hours
-                description: Name of the current operating mode
-              currentOperatingModeId:
-                type: string
-                example: Y2lzY29zcGFyazovL3VzL09QRVJBVElOR19NT0RFLzAyZjZlMmI4LTFjZDktNWI3ZS1jOTVjLTczYzZkYzk1MTZjMg==
-                description: ID of the current operating mode
-              exceptionType:
-                type: string
-                enum:
-                - AUTOMATIC_SWITCH_BACK_EARLY_START
-                - AUTOMATIC_SWITCH_BACK_EXTENSION
-                - MANUAL_SWITCH_BACK
-                - AUTOMATIC_SWITCH_BACK_STANDARD
-                example: MANUAL_SWITCH_BACK
-                description: "Type of exception indicating how the feature will switch back from the current mode. This field is not present when the feature is in normal operation.\n\n * `AUTOMATIC_SWITCH_BACK_EARLY_START` - Automatic switchback with early start.\n * `AUTOMATIC_SWITCH_BACK_EXTENSION` - Automatic switchback with extension.\n * `MANUAL_SWITCH_BACK` - Manual switchback required.\n * `AUTOMATIC_SWITCH_BACK_STANDARD` - Standard automatic switchback.\n"
-      example:
-        features:
-        - id: Y2lzY29zcGFyazovL3VzL0ZFQVRVUkUvYjQzMmI2NmQtM2VkYy00ZGNkLTg4ODctNDZlOGU2NWQwYzIw
-          name: Main Reception
-          type: AUTO_ATTENDANT
-          phoneNumber: '+14085551234'
-          extension: '1234'
-          modeBasedForwardingEnabled: true
-          location:
-            id: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzEyMzQ1Njc4LTkwYWItY2RlZi0xMjM0LTU2Nzg5MGFiY2RlZg==
-            name: San Jose Office
-          forwardDestination: '+14085555678'
-          currentOperatingModeName: Business Hours
-          currentOperatingModeId: Y2lzY29zcGFyazovL3VzL09QRVJBVElOR19NT0RFLzAyZjZlMmI4LTFjZDktNWI3ZS1jOTVjLTczYzZkYzk1MTZjMg==
-          exceptionType: MANUAL_SWITCH_BACK
-    ModeManagementFeatureResponse:
-      type: object
-      required:
-      - modeBasedForwardingEnabled
-      - currentOperatingModeId
-      - timezone
-      - modes
-      properties:
-        modeBasedForwardingEnabled:
-          type: boolean
-          example: true
-          description: Whether mode based forwarding is enabled for the feature
-        timezone:
-          type: string
-          example: America/Los_Angeles
-          description: Timezone for the feature
-        phoneNumber:
-          type: string
-          example: '+14085551234'
-          description: Phone number of the feature
-        extension:
-          type: string
-          example: '1234'
-          description: Extension of the feature
-        currentOperatingModeId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL09QRVJBVElOR19NT0RFLzAyZjZlMmI4LTFjZDktNWI3ZS1jOTVjLTczYzZkYzk1MTZjMg==
-          description: Unique identifier for the current operating mode.
-        currentOperatingModeEndTime:
-          type: string
-          example: 06:00 AM
-          description: "The current operating mode's end time in 12-hour format showing hour and minute only (no date information). This field's presence and meaning depends on the operational state:\n * Present during normal operation with the time at which the next mode change will occur.\n * Not present for Manual Switch Back exceptions.\n * For Automatic Switch Back (Early Start) exceptions it is when the exception ends and the feature automatically reverts to normal operation which is the mode's configured start time.\n * For Automatic Switch Back (Extension) exceptions it is when the exception ends and the feature automatically reverts to normal operation which is the mode's configured end time when the exception started plus the extension time.\n * For Automatic Switch Back (Standard) exceptions it is when the exception ends and the feature automatically reverts to normal operation which is the mode's configured end time."
-        currentOperatingModeForwardDestination:
-          type: string
-          example: '+14085555678'
-          description: Forward destination for current operating mode
-        exceptionType:
-          type: string
-          enum:
-          - AUTOMATIC_SWITCH_BACK_EARLY_START
-          - AUTOMATIC_SWITCH_BACK_EXTENSION
-          - MANUAL_SWITCH_BACK
-          - AUTOMATIC_SWITCH_BACK_STANDARD
-          example: MANUAL_SWITCH_BACK
-          description: "Type of exception indicating how the feature will switch back from the current mode. This field is not present when the feature is in normal operation.\n\n * `AUTOMATIC_SWITCH_BACK_EARLY_START` - Automatic switchback with early start.\n * `AUTOMATIC_SWITCH_BACK_EXTENSION` - Automatic switchback with extension.\n * `MANUAL_SWITCH_BACK` - Manual switchback required.\n * `AUTOMATIC_SWITCH_BACK_STANDARD` - Standard automatic switchback.\n"
-        modes:
-          type: array
-          description: Array of operating modes configured for this feature
-          example:
-          - id: Y2lzY29zcGFyazovL3VzL09QRVJBVElOR19NT0RFLzAyZjZlMmI4LTFjZDktNWI3ZS1jOTVjLTczYzZkYzk1MTZjMg==
-            name: Business Hours
-            normalOperationEnabled: true
-          items:
-            type: object
-            required:
-            - id
-            - name
-            - normalOperationEnabled
-            properties:
-              id:
-                type: string
-                example: Y2lzY29zcGFyazovL3VzL09QRVJBVElOR19NT0RFLzAyZjZlMmI4LTFjZDktNWI3ZS1jOTVjLTczYzZkYzk1MTZjMg==
-                description: Unique identifier for the operating mode.
-              name:
-                type: string
-                example: Business Hours
-                description: Display name of the operating mode.
-              type:
-                type: string
-                enum:
-                - NONE
-                - SAME_HOURS_DAILY
-                - DIFFERENT_HOURS_DAILY
-                - HOLIDAY
-                example: SAME_HOURS_DAILY
-                description: " * `NONE` - No schedule defined.\n * `SAME_HOURS_DAILY` - Same hours for weekdays and weekends.\n * `DIFFERENT_HOURS_DAILY` - Different hours for each day.\n * `HOLIDAY` - Holiday-based schedule.\n"
-              level:
-                type: string
-                enum:
-                - ORGANIZATION
-                - LOCATION
-                example: LOCATION
-                description: " * `ORGANIZATION` - Organization level mode.\n * `LOCATION` - Location level mode.\n"
-              normalOperationEnabled:
-                type: boolean
-                example: true
-                description: Whether this mode is enabled for normal operation.
-              forwardTo:
-                type: object
-                description: Forwarding configuration for this mode
-                required:
-                - sendToVoicemailEnabled
-                - defaultSendToVoicemailEnabled
-                properties:
-                  selection:
-                    type: string
-                    enum:
-                    - DO_NOT_FORWARD
-                    - FORWARD_TO_SPECIFIED_NUMBER
-                    - FORWARD_TO_DEFAULT_NUMBER
-                    example: FORWARD_TO_SPECIFIED_NUMBER
-                    description: " * `DO_NOT_FORWARD` - Do not forward calls.\n * `FORWARD_TO_SPECIFIED_NUMBER` - Forward to a specified number.\n * `FORWARD_TO_DEFAULT_NUMBER` - Use the mode's default forwarding setting (which may be to forward or not forward).\n"
-                  phoneNumber:
-                    type: string
-                    example: '+14085551234'
-                    description: Phone number to forward to when selection is FORWARD_TO_SPECIFIED_NUMBER.
-                  sendToVoicemailEnabled:
-                    type: boolean
-                    example: false
-                    description: Whether to send to voicemail when selection is FORWARD_TO_SPECIFIED_NUMBER.
-                  defaultPhoneNumber:
-                    type: string
-                    example: '+14085555678'
-                    description: Default phone number when selection is FORWARD_TO_DEFAULT_NUMBER. This field is not present if the mode's default is to not forward.
-                  defaultSendToVoicemailEnabled:
-                    type: boolean
-                    example: true
-                    description: Whether default is to send to voicemail
-      example:
-        modeBasedForwardingEnabled: true
-        timezone: America/Los_Angeles
-        phoneNumber: '+14085551234'
-        extension: '1234'
-        currentOperatingModeId: Y2lzY29zcGFyazovL3VzL09QRVJBVElOR19NT0RFLzAyZjZlMmI4LTFjZDktNWI3ZS1jOTVjLTczYzZkYzk1MTZjMg==
-        currentOperatingModeEndTime: 06:00 AM
-        currentOperatingModeForwardDestination: '+14085555678'
-        exceptionType: MANUAL_SWITCH_BACK
-        modes:
-        - id: Y2lzY29zcGFyazovL3VzL09QRVJBVElOR19NT0RFLzAyZjZlMmI4LTFjZDktNWI3ZS1jOTVjLTczYzZkYzk1MTZjMg==
-          name: Business Hours
-          type: SAME_HOURS_DAILY
-          level: LOCATION
-          normalOperationEnabled: true
-          forwardTo:
-            selection: FORWARD_TO_SPECIFIED_NUMBER
-            phoneNumber: '+14085551234'
-            sendToVoicemailEnabled: false
-            defaultPhoneNumber: '+14085555678'
-            defaultSendToVoicemailEnabled: true
-    SwitchModeRequest:
-      type: object
-      required:
-      - operatingModeId
-      properties:
-        operatingModeId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL09QRVJBVElOR19NT0RFLzAyZjZlMmI4LTFjZDktNWI3ZS1jOTVjLTczYzZkYzk1MTZjMg==
-          description: Operating mode ID to switch to
-        isManualSwitchbackEnabled:
-          type: boolean
-          example: true
-          description: Determines if switch back will be manual (if true) or automatic (if false or omitted from request)
     ErrorResponse:
       type: object
       properties:
@@ -1780,6 +1795,21 @@ components:
         errors:
         - description: Error processing request
         trackingId: NA_7b1234567-1234-1234-1234-123456789abc_1234
+    ExtendModeRequest:
+      type: object
+      required:
+      - operatingModeId
+      properties:
+        operatingModeId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL09QRVJBVElOR19NT0RFLzAyZjZlMmI4LTFjZDktNWI3ZS1jOTVjLTczYzZkYzk1MTZMg==
+          description: Unique identifier for the operating mode for which the extension is being configured.
+        extensionTime:
+          type: integer
+          minimum: 30
+          maximum: 720
+          example: 30
+          description: Extension time in minutes (must be multiple of 30). If not sent, mode is extended with manual switch back exception
     CommonModesResponse:
       type: object
       required:
@@ -1799,36 +1829,6 @@ components:
         - Day1
         - Holiday1
         - Operating Mode Outage
-    SwitchModeMultipleFeaturesRequest:
-      type: object
-      required:
-      - featureIds
-      - operatingModeName
-      properties:
-        featureIds:
-          type: array
-          example:
-          - Y2lzY29zcGFyazovL3VzL0ZFQVRVUkUvYjQzMmI2NmQtM2VkYy00ZGNkLTg4ODctNDZlOGU2NWQwYzIw
-          description: List of feature IDs to switch mode
-          items:
-            type: string
-          minItems: 1
-          maxItems: 50
-        operatingModeName:
-          type: string
-          example: Night
-          description: Name of the common operating mode to be set as current operating mode
-    NormalOperationModeResponse:
-      type: object
-      required:
-      - operatingModeId
-      properties:
-        operatingModeId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL09QRVJBVElOR19NT0RFLzAyZjZlMmI4LTFjZDktNWI3ZS1jOTVjLTczYzZkYzk1MTZjMg==
-          description: Unique identifier for the scheduled operating mode.
-      example:
-        operatingModeId: Y2lzY29zcGFyazovL3VzL09QRVJBVElOR19NT0RFLzAyZjZlMmI4LTFjZDktNWI3ZS1jOTVjLTczYzZkYzk1MTZjMg==
   securitySchemes:
     oauth2:
       flows:

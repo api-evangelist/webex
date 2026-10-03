@@ -2076,56 +2076,122 @@ paths:
       x-operation-id-original: Update DECT Serviceability Password Status
 components:
   schemas:
-    DECTNetworkList:
+    DECTHandsetItem:
       type: object
       required:
-      - dectNetworks
+      - id
+      - index
+      - defaultDisplayName
+      - lines
       properties:
-        dectNetworks:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0RFQ1RfREVWX0hBTkRTRVQvYjE0MDYyOWUtZTExMy00ODQyLWIxMmMtMDVjODEwYTRjYjIz
+          description: Unique identifier of the handset.
+        index:
+          type: string
+          example: '1'
+          description: Index of the handset.
+        defaultDisplayName:
+          type: string
+          example: Demo_Handset
+          description: Default display name for the handset.
+        customDisplayName:
+          type: string
+          example: Demo_Handset
+          description: Custom display name on the handset.
+        accessCode:
+          type: string
+          example: '4788'
+          description: Access code is used to pair handsets to the DECT Network for the first time or if a handset becomes disconnected.
+        primaryEnabled:
+          type: boolean
+          example: true
+          description: Flags the handset as a primary line if `true`.
+        lines:
           type: array
           items:
-            $ref: '#/components/schemas/DECTNetworkDetail'
-          description: List of DECT networks in an organization.
-    CreateDECTNetwork:
+            $ref: '#/components/schemas/lines'
+          description: Array of lines associated to the handset up to a maximum of 2.
+    DECTHandsetList:
+      type: object
+      required:
+      - numberOfHandsetsAssigned
+      - numberOfLinesAssigned
+      - handsets
+      properties:
+        numberOfHandsetsAssigned:
+          type: number
+          example: 1
+          description: Number of handsets associated.
+        numberOfLinesAssigned:
+          type: number
+          example: 1
+          description: Total number of lines assigned.
+        handsets:
+          type: array
+          items:
+            $ref: '#/components/schemas/DECTHandsetItem'
+          description: Array of `DECTHandsetItem` objects, each representing a handset with its associated details and lines.
+    MemberType:
+      type: string
+      enum:
+      - PEOPLE
+      - PLACE
+      description: " * `PEOPLE` - Indicates the associated member is a person.\n * `PLACE` - Indicates the associated member is a workspace.\n"
+    BaseStationsListResponse:
+      type: object
+      required:
+      - baseStations
+      properties:
+        baseStations:
+          type: array
+          items:
+            $ref: '#/components/schemas/BaseStationsResponse'
+          description: List of base stations in a DECT Network.
+    AvailableMembersResponse:
+      type: object
+      properties:
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/AvailableMember'
+    DECTNetworkPatch:
       type: object
       required:
       - name
-      - model
       - defaultAccessCodeEnabled
       - defaultAccessCode
       properties:
         name:
           type: string
-          example: test-dect
-          description: Name of the DECT network. Min and max length supported for the DECT network name are 1 and 40 respectively.
+          example: Demo-DectNetwork
+          description: Name of the DECT network. This should be unique across the location.
         displayName:
           type: string
-          example: test-dect
-          description: Add a default name (11 characters max) to display for all handsets. If left blank, the default name will be an indexed number followed by the DECT network name.
-        model:
-          type: string
-          enum:
-          - DMS Cisco DBS110
-          - Cisco DECT 110 Base
-          - DMS Cisco DBS210
-          - Cisco DECT 210 Base
-          description: "Select a device model type depending on the number of base stations and handset lines needed in the DECT network.  The corresponding device model display name sometimes called the product name, can also be used to specify the model.\n * `DMS Cisco DBS110` - Model name supporting 1 base station and 30 line ports.\n * `Cisco DECT 110 Base` - Alternate product/display name which also specifies the model `DMS Cisco DBS110`.\n * `DMS Cisco DBS210` - Supports 250 base stations and 1000 line ports.\n * `Cisco DECT 210 Base` - Alternate product/display name which also specifies the model `DMS Cisco DBS210`.\n"
+          example: Demo-DectNetwork
+          description: DECT network name that will be displayed on the handset.
         defaultAccessCodeEnabled:
           type: boolean
           example: true
-          description: 'If set to true, need to provide a default access code that will be shared for all users in this network to pair their lines to the next available handset. Otherwise, each user will get a unique 4-digit access code that will be auto-generated. Note: There is currently no public API to retrieve the auto generated access codes for handsets. Use Control Hub instead.'
+          description: Default access code is enabled. If true, the default access code is mandatory. If false, an auto-generated access code is used.
         defaultAccessCode:
           type: string
-          example: '1551'
-          description: If `defaultAccessCodeEnabled` is set to true, then provide a default access code that needs to be a 4-numeric digit. The access code should be unique to the DECT network for the location.
-    DECTNetworkListWorkspace:
+          example: '1234'
+          description: Default access code for the DECT network. The default access code should be unique within the same location to avoid the handset accidentally registering with base stations from different DECT networks in range. This is mandatory when `defaultAccessCodeEnabled` is true.
+    BaseStationResponse:
       type: object
+      required:
+      - mac
+      - result
       properties:
-        dectNetworks:
-          type: array
-          items:
-            $ref: '#/components/schemas/DECTNetworkItem'
-          description: List of DECT networks associated with the workspace.
+        mac:
+          type: string
+          example: 6DDE9EBDE1C9
+          description: MAC Address added to the base station.
+        result:
+          $ref: '#/components/schemas/BaseStationPostResult'
+          description: Object with base station POST Result.
     AddDECTHandsetBulkRequest:
       type: object
       required:
@@ -2138,138 +2204,78 @@ components:
           maxItems: 50
           minItems: 1
           description: List of handsets that are to be added to the DECT network.
-    BaseStationsResponse:
+    AvailableMember:
       type: object
       required:
       - id
-      - mac
-      - numberOfLinesRegistered
+      - lineType
+      - memberType
+      - location
       properties:
         id:
           type: string
-          example: Y2lzY29zcGFyazovL3VzL1NDSU1fR1JPVVAvZjA2ZWRiOGMtMjMxNC00ZTcxLWIzNzgtZTdiMmQwNjk3OTliOjk2YWJjMmFhLTNkY2MtMTFlNS1hMTUyLWZlMzQ4MTljZGM5YQ
-          description: Unique identifier of the base station.
-        mac:
-          type: string
-          example: ABBD45856978
-          description: Mac address of the DECT base station device.
-        numberOfLinesRegistered:
-          type: number
-          example: 2
-          description: Number of handset member lines registered with the base station.
-    DECTNetworkHandsetsDeleteItem:
-      type: object
-      required:
-      - handsetIds
-      properties:
-        handsetIds:
-          type: array
-          items:
-            type: string
-            example: Y2lzY29zcGFyazovL3VzL0RFQ1RfREVWX0hBTkRTRVQvYjE0MDYyOWUtZTExMy00ODQyLWIxMmMtMDVjODEwYTRjYjIz,Y2lzY29zcGFyazovL3VzL0RFQ1RfREVWX1NUQVRJT04vYjVhMTQxN2ItZGNiYi00MGMzLWE3YWQtNTY1MGZkZGRkNQ
-          description: Array of the handset IDs to be deleted.
-        deleteAll:
-          type: boolean
-          example: true
-          description: If present the items array is ignored and all items in the context are deleted.
-    DECTNetworkHandsetPatch:
-      type: object
-      required:
-      - line1MemberId
-      - customDisplayName
-      properties:
-        line1MemberId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9jODhiZGIwNC1jZjU5LTRjMjMtODQ4OC00NTNhOTE3ZDFlMlm
-          description: ID of the member on line1 of the handset. Members can be PEOPLE or PLACE.
-        line2MemberId:
-          type: string
           example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9jODhiZGIwNC1jZjU5LTRjMjMtODQ4OC00NTNhOTE3ZDFlMjk
-          description: ID of the member on line2 of the handset. Members can be PEOPLE, PLACE, or VIRTUAL_LINE.
-        customDisplayName:
-          type: string
-          example: handsetDisplayName
-          description: Custom display name on the handset.
-    lines:
-      type: object
-      required:
-      - memberId
-      - firstName
-      - lastName
-      - location
-      - memberType
-      properties:
-        memberId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9jODhiZGIwNC1jZjU5LTRjMjMtODQ4OC00NTNhOTE3ZDFlMjk
-          description: ID of the member on line1 of the handset. Members can be PEOPLE or PLACE.
+          description: Unique identifier for the member.
         firstName:
           type: string
           example: John
-          description: Line members's first name.
+          description: First name of the member.
         lastName:
           type: string
           example: Smith
-          description: Line members's last name.
-        external:
+          description: Last name of the member.
+        phoneNumber:
           type: string
-          example: '+14088571272'
-          description: Line members primary number.
+          example: '+12055552221'
+          description: Phone Number of the member.
         extension:
           type: string
-          example: '3459'
-          description: Line members extension.
-        lastRegistrationTime:
-          type: string
-          example: '1611229671234'
-          description: Last registration timestamp.
-        hostIP:
-          type: string
-          example: 10.0.0.45
-          description: Registration host IP address for the line port.
-        remoteIP:
-          type: string
-          example: 76.102.12.84
-          description: Registration remote IP address for the line port.
-        location:
-          $ref: '#/components/schemas/location'
-          description: Location object including a unique identifier for the location and its name.
+          example: '1234'
+          description: Extension of the member.
+        lineType:
+          $ref: '#/components/schemas/LineType'
+          description: Line type indicates if the associated line is a primary line or a shared line.
         memberType:
           $ref: '#/components/schemas/MemberType'
-          description: Indicates member type.
-    MemberType:
-      type: string
-      enum:
-      - PEOPLE
-      - PLACE
-      description: " * `PEOPLE` - Indicates the associated member is a person.\n * `PLACE` - Indicates the associated member is a workspace.\n"
-    AvailableMembersResponse:
+          description: Indicates the type of the member.
+        location:
+          $ref: '#/components/schemas/location'
+          description: Location object having a unique identifier for the location and its name.
+    DECTNetworkList:
       type: object
+      required:
+      - dectNetworks
       properties:
-        members:
+        dectNetworks:
           type: array
           items:
-            $ref: '#/components/schemas/AvailableMember'
-    BaseStationDetailResponse:
+            $ref: '#/components/schemas/DECTNetworkDetail'
+          description: List of DECT networks in an organization.
+    HandsetsResponse:
       type: object
       required:
       - id
-      - mac
-      - handsets
+      - displayName
+      - accessCode
+      - lines
       properties:
         id:
           type: string
-          example: Y2lzY29zcGFyazovL3VzL1NDSU1fR1JPVVAvZjA2ZWRiOGMtMjMxNC00ZTcxLWIzNzgtZTdiMmQwNjk3OTliOjk2YWJjMmFhLTNkY2MtMTFlNS1hMTUyLWZlMzQ4MTljZGM5YQ
-          description: Unique identifier of the base station.
-        mac:
+          example: Y2lzY29zcGFyazovL3VzL1NDSU1fR1JPVVAvZjA2ZWRiOGMtMjMxNC00ZTcxLWIzNzgtZTdiMmQwNjk3OTliOjk2YWJjMmFhLTNkY2MtMTFlNS1hMTUyLWZlMzQ4MTljZGM5RG
+          description: Unique identifier of the DECT handset.
+        displayName:
           type: string
-          example: ABBD45856978
-          description: Mac address of the DECT base station device.
-        handsets:
+          example: Inventory-handset-1
+          description: Display name of the DECT handset.
+        accessCode:
+          type: string
+          example: '1558'
+          description: Access code for the DECT handset.
+        lines:
           type: array
           items:
-            $ref: '#/components/schemas/HandsetsResponse'
-          description: List of handset and member line details registered with the base station.
+            $ref: '#/components/schemas/DECTHandsetLineResponse'
+          description: Details of the handset member lines registered with the base station. The maximum number of lines supported is 2.
     DECTNetworkDetail:
       type: object
       required:
@@ -2326,31 +2332,14 @@ components:
         location:
           $ref: '#/components/schemas/location'
           description: Location of the DECT network.
-    HandsetsResponse:
+    DECTNetworkListPerson:
       type: object
-      required:
-      - id
-      - displayName
-      - accessCode
-      - lines
       properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1NDSU1fR1JPVVAvZjA2ZWRiOGMtMjMxNC00ZTcxLWIzNzgtZTdiMmQwNjk3OTliOjk2YWJjMmFhLTNkY2MtMTFlNS1hMTUyLWZlMzQ4MTljZGM5RG
-          description: Unique identifier of the DECT handset.
-        displayName:
-          type: string
-          example: Inventory-handset-1
-          description: Display name of the DECT handset.
-        accessCode:
-          type: string
-          example: '1558'
-          description: Access code for the DECT handset.
-        lines:
+        dectNetworks:
           type: array
           items:
-            $ref: '#/components/schemas/DECTHandsetLineResponse'
-          description: Details of the handset member lines registered with the base station. The maximum number of lines supported is 2.
+            $ref: '#/components/schemas/DECTNetworkItem'
+          description: List of DECT networks associated with the person.
     DECTNetworkItem:
       type: object
       required:
@@ -2370,72 +2359,105 @@ components:
           type: number
           example: 5
           description: Number of handsets assigned to the DECT network.
-    AddDECTHandsetBulkSuccessResponse:
+    AddDECTHandset:
       type: object
       required:
+      - line1MemberId
       - customDisplayName
-      - result
       properties:
+        line1MemberId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9jODhiZGIwNC1jZjU5LTRjMjMtODQ4OC00NTNhOTE3ZDFlMjk
+          description: ID of the member on line1 of the handset. Members can be PEOPLE or PLACE.
+        line2MemberId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9jODhiZGIwNC1jZjU5LTRjMjMtODQ4OC00NTNhOTE3ZDFlMjk
+          description: ID of the member on line2 of the handset. Members can be PEOPLE, PLACE, or VIRTUAL_LINE.
         customDisplayName:
           type: string
           example: handsetDisplayName
-          description: The custom display name on the handset.
-        result:
-          type: object
-          required:
-          - status
-          properties:
-            status:
-              type: number
-              example: 201
-              description: The status of the add handset request.
-          description: The result of the add handset request.
-    DECTServiceabilityPassword:
+          description: Custom display name on the handset. Min and max length supported for the custom display name is 1 and 16 respectively.
+    CreateDECTNetwork:
       type: object
       required:
-      - enabled
+      - name
+      - model
+      - defaultAccessCodeEnabled
+      - defaultAccessCode
       properties:
-        enabled:
+        name:
+          type: string
+          example: test-dect
+          description: Name of the DECT network. Min and max length supported for the DECT network name are 1 and 40 respectively.
+        displayName:
+          type: string
+          example: test-dect
+          description: Add a default name (11 characters max) to display for all handsets. If left blank, the default name will be an indexed number followed by the DECT network name.
+        model:
+          type: string
+          enum:
+          - DMS Cisco DBS110
+          - Cisco DECT 110 Base
+          - DMS Cisco DBS210
+          - Cisco DECT 210 Base
+          description: "Select a device model type depending on the number of base stations and handset lines needed in the DECT network.  The corresponding device model display name sometimes called the product name, can also be used to specify the model.\n * `DMS Cisco DBS110` - Model name supporting 1 base station and 30 line ports.\n * `Cisco DECT 110 Base` - Alternate product/display name which also specifies the model `DMS Cisco DBS110`.\n * `DMS Cisco DBS210` - Supports 250 base stations and 1000 line ports.\n * `Cisco DECT 210 Base` - Alternate product/display name which also specifies the model `DMS Cisco DBS210`.\n"
+        defaultAccessCodeEnabled:
           type: boolean
           example: true
-          description: DECT serviceability password status. When `enabled` is set to `true`, the serviceability password can be used to manage DECT. When `enabled` is set to `false`, the serviceability password is disabled and the password owned and known by Cisco is required to perform serviceability and troubleshooting.
-    DECTHandsetLineResponse:
-      type: object
-      required:
-      - memberId
-      - firstName
-      - lastName
-      - external
-      - extension
-      - location
-      - memberType
-      properties:
-        memberId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1NDSU1fR1JPVVAvZjA2ZWRiOGMtMjMxNC00ZTcxLWIzNzgtZTdiMmQwNjk3OTliOjk2YWJjMmFhLTNkY2MtMTFlNS1hMTUyLWZlMzQ4MTljZGM5RG
-          description: Unique identifier of the handset line member.
-        firstName:
-          type: string
-          example: John
-          description: First name of handset line member.
-        lastName:
-          type: string
-          example: Smith
-          description: Last name of handset line member.
-        external:
-          type: string
-          example: '+12555533333'
-          description: Primary number of handset line member.
-        extension:
+          description: 'If set to true, need to provide a default access code that will be shared for all users in this network to pair their lines to the next available handset. Otherwise, each user will get a unique 4-digit access code that will be auto-generated. Note: There is currently no public API to retrieve the auto generated access codes for handsets. Use Control Hub instead.'
+        defaultAccessCode:
           type: string
           example: '1551'
-          description: Extension of handset line member.
-        location:
-          $ref: '#/components/schemas/location'
-          description: Location details of the handset line member.
-        memberType:
-          $ref: '#/components/schemas/MemberType'
-          description: Indicates handset line member type.
+          description: If `defaultAccessCodeEnabled` is set to true, then provide a default access code that needs to be a 4-numeric digit. The access code should be unique to the DECT network for the location.
+    DECTNetworkHandsetsDeleteItem:
+      type: object
+      required:
+      - handsetIds
+      properties:
+        handsetIds:
+          type: array
+          items:
+            type: string
+            example: Y2lzY29zcGFyazovL3VzL0RFQ1RfREVWX0hBTkRTRVQvYjE0MDYyOWUtZTExMy00ODQyLWIxMmMtMDVjODEwYTRjYjIz,Y2lzY29zcGFyazovL3VzL0RFQ1RfREVWX1NUQVRJT04vYjVhMTQxN2ItZGNiYi00MGMzLWE3YWQtNTY1MGZkZGRkNQ
+          description: Array of the handset IDs to be deleted.
+        deleteAll:
+          type: boolean
+          example: true
+          description: If present the items array is ignored and all items in the context are deleted.
+    BaseStationDetailResponse:
+      type: object
+      required:
+      - id
+      - mac
+      - handsets
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1NDSU1fR1JPVVAvZjA2ZWRiOGMtMjMxNC00ZTcxLWIzNzgtZTdiMmQwNjk3OTliOjk2YWJjMmFhLTNkY2MtMTFlNS1hMTUyLWZlMzQ4MTljZGM5YQ
+          description: Unique identifier of the base station.
+        mac:
+          type: string
+          example: ABBD45856978
+          description: Mac address of the DECT base station device.
+        handsets:
+          type: array
+          items:
+            $ref: '#/components/schemas/HandsetsResponse'
+          description: List of handset and member line details registered with the base station.
+    location:
+      type: object
+      required:
+      - id
+      - name
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzJiNDkyZmZkLTRjNGItNGVmNS04YzAzLWE1MDYyYzM4NDA5Mw
+          description: Location identifier associated with the members.
+        name:
+          type: string
+          example: MainOffice
+          description: Location name associated with the member.
     DECTHandsetGet:
       type: object
       required:
@@ -2479,43 +2501,58 @@ components:
           items:
             $ref: '#/components/schemas/lines'
           description: 'Array of lines associated with the handset. Maximum: 2 lines.'
-    DECTHandsetItem:
+    PostDECTServiceabilityPasswordResponse:
+      type: object
+      required:
+      - password
+      properties:
+        password:
+          type: string
+          example: ?i@9$?F)iR?rHNsu
+          description: 16-character serviceability password.
+    BaseStationsResponse:
       type: object
       required:
       - id
-      - index
-      - defaultDisplayName
-      - lines
+      - mac
+      - numberOfLinesRegistered
       properties:
         id:
           type: string
-          example: Y2lzY29zcGFyazovL3VzL0RFQ1RfREVWX0hBTkRTRVQvYjE0MDYyOWUtZTExMy00ODQyLWIxMmMtMDVjODEwYTRjYjIz
-          description: Unique identifier of the handset.
-        index:
+          example: Y2lzY29zcGFyazovL3VzL1NDSU1fR1JPVVAvZjA2ZWRiOGMtMjMxNC00ZTcxLWIzNzgtZTdiMmQwNjk3OTliOjk2YWJjMmFhLTNkY2MtMTFlNS1hMTUyLWZlMzQ4MTljZGM5YQ
+          description: Unique identifier of the base station.
+        mac:
           type: string
-          example: '1'
-          description: Index of the handset.
-        defaultDisplayName:
-          type: string
-          example: Demo_Handset
-          description: Default display name for the handset.
-        customDisplayName:
-          type: string
-          example: Demo_Handset
-          description: Custom display name on the handset.
-        accessCode:
-          type: string
-          example: '4788'
-          description: Access code is used to pair handsets to the DECT Network for the first time or if a handset becomes disconnected.
-        primaryEnabled:
-          type: boolean
-          example: true
-          description: Flags the handset as a primary line if `true`.
-        lines:
+          example: ABBD45856978
+          description: Mac address of the DECT base station device.
+        numberOfLinesRegistered:
+          type: number
+          example: 2
+          description: Number of handset member lines registered with the base station.
+    DECTNetworkListWorkspace:
+      type: object
+      properties:
+        dectNetworks:
           type: array
           items:
-            $ref: '#/components/schemas/lines'
-          description: Array of lines associated to the handset up to a maximum of 2.
+            $ref: '#/components/schemas/DECTNetworkItem'
+          description: List of DECT networks associated with the workspace.
+    BaseStationsPostResponse:
+      type: object
+      required:
+      - baseStations
+      properties:
+        baseStations:
+          type: array
+          items:
+            $ref: '#/components/schemas/BaseStationResponse'
+          description: List of base station MAC addresses that have to be added to the DECT network.
+    LineType:
+      type: string
+      enum:
+      - PRIMARY
+      - SHARED_CALL_APPEARANCE
+      description: " * `PRIMARY` - Primary line for the member.\n * `SHARED_CALL_APPEARANCE` - Shared line for the member. A shared line allows users to receive and place calls to and from another user's extension, using their own device.\n"
     AddDECTHandsetBulkPartialResponse:
       type: object
       required:
@@ -2551,6 +2588,52 @@ components:
                   description: The error code.
               description: The error message if the add handset request failed.
           description: The result of the add handset request.
+    DECTHandsetLineResponse:
+      type: object
+      required:
+      - memberId
+      - firstName
+      - lastName
+      - external
+      - extension
+      - location
+      - memberType
+      properties:
+        memberId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1NDSU1fR1JPVVAvZjA2ZWRiOGMtMjMxNC00ZTcxLWIzNzgtZTdiMmQwNjk3OTliOjk2YWJjMmFhLTNkY2MtMTFlNS1hMTUyLWZlMzQ4MTljZGM5RG
+          description: Unique identifier of the handset line member.
+        firstName:
+          type: string
+          example: John
+          description: First name of handset line member.
+        lastName:
+          type: string
+          example: Smith
+          description: Last name of handset line member.
+        external:
+          type: string
+          example: '+12555533333'
+          description: Primary number of handset line member.
+        extension:
+          type: string
+          example: '1551'
+          description: Extension of handset line member.
+        location:
+          $ref: '#/components/schemas/location'
+          description: Location details of the handset line member.
+        memberType:
+          $ref: '#/components/schemas/MemberType'
+          description: Indicates handset line member type.
+    DECTServiceabilityPassword:
+      type: object
+      required:
+      - enabled
+      properties:
+        enabled:
+          type: boolean
+          example: true
+          description: DECT serviceability password status. When `enabled` is set to `true`, the serviceability password can be used to manage DECT. When `enabled` is set to `false`, the serviceability password is disabled and the password owned and known by Cisco is required to perform serviceability and troubleshooting.
     BaseStationPostResult:
       type: object
       required:
@@ -2564,74 +2647,54 @@ components:
           type: string
           example: Y2lzY29zcGFyazovL3VzL0RFQ1RfREVWX1NUQVRJT04vYzRhMTQxN2ItZGNiYi00MGMzLWE3YWQtNTY1MGZkZGRkNTNj
           description: Unique identifier of the base station.
-    BaseStationType:
-      type: string
-      enum:
-      - DMS Cisco DBS210
-      - DMS Cisco DBS110
-      description: " * `DMS Cisco DBS210` - Cisco DBS210 base station model.\n * `DMS Cisco DBS110` - Cisco DBS110 base station model.\n"
-    DECTNetworkListPerson:
-      type: object
-      properties:
-        dectNetworks:
-          type: array
-          items:
-            $ref: '#/components/schemas/DECTNetworkItem'
-          description: List of DECT networks associated with the person.
-    location:
+    lines:
       type: object
       required:
-      - id
-      - name
+      - memberId
+      - firstName
+      - lastName
+      - location
+      - memberType
       properties:
-        id:
+        memberId:
           type: string
-          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzJiNDkyZmZkLTRjNGItNGVmNS04YzAzLWE1MDYyYzM4NDA5Mw
-          description: Location identifier associated with the members.
-        name:
+          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9jODhiZGIwNC1jZjU5LTRjMjMtODQ4OC00NTNhOTE3ZDFlMjk
+          description: ID of the member on line1 of the handset. Members can be PEOPLE or PLACE.
+        firstName:
           type: string
-          example: MainOffice
-          description: Location name associated with the member.
-    PostDECTServiceabilityPasswordResponse:
-      type: object
-      required:
-      - password
-      properties:
-        password:
+          example: John
+          description: Line members's first name.
+        lastName:
           type: string
-          example: ?i@9$?F)iR?rHNsu
-          description: 16-character serviceability password.
-    DECTHandsetList:
-      type: object
-      required:
-      - numberOfHandsetsAssigned
-      - numberOfLinesAssigned
-      - handsets
-      properties:
-        numberOfHandsetsAssigned:
-          type: number
-          example: 1
-          description: Number of handsets associated.
-        numberOfLinesAssigned:
-          type: number
-          example: 1
-          description: Total number of lines assigned.
-        handsets:
-          type: array
-          items:
-            $ref: '#/components/schemas/DECTHandsetItem'
-          description: Array of `DECTHandsetItem` objects, each representing a handset with its associated details and lines.
-    BaseStationsPostResponse:
-      type: object
-      required:
-      - baseStations
-      properties:
-        baseStations:
-          type: array
-          items:
-            $ref: '#/components/schemas/BaseStationResponse'
-          description: List of base station MAC addresses that have to be added to the DECT network.
-    AddDECTHandset:
+          example: Smith
+          description: Line members's last name.
+        external:
+          type: string
+          example: '+14088571272'
+          description: Line members primary number.
+        extension:
+          type: string
+          example: '3459'
+          description: Line members extension.
+        lastRegistrationTime:
+          type: string
+          example: '1611229671234'
+          description: Last registration timestamp.
+        hostIP:
+          type: string
+          example: 10.0.0.45
+          description: Registration host IP address for the line port.
+        remoteIP:
+          type: string
+          example: 76.102.12.84
+          description: Registration remote IP address for the line port.
+        location:
+          $ref: '#/components/schemas/location'
+          description: Location object including a unique identifier for the location and its name.
+        memberType:
+          $ref: '#/components/schemas/MemberType'
+          description: Indicates member type.
+    DECTNetworkHandsetPatch:
       type: object
       required:
       - line1MemberId
@@ -2639,7 +2702,7 @@ components:
       properties:
         line1MemberId:
           type: string
-          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9jODhiZGIwNC1jZjU5LTRjMjMtODQ4OC00NTNhOTE3ZDFlMjk
+          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9jODhiZGIwNC1jZjU5LTRjMjMtODQ4OC00NTNhOTE3ZDFlMlm
           description: ID of the member on line1 of the handset. Members can be PEOPLE or PLACE.
         line2MemberId:
           type: string
@@ -2648,96 +2711,33 @@ components:
         customDisplayName:
           type: string
           example: handsetDisplayName
-          description: Custom display name on the handset. Min and max length supported for the custom display name is 1 and 16 respectively.
-    LineType:
+          description: Custom display name on the handset.
+    BaseStationType:
       type: string
       enum:
-      - PRIMARY
-      - SHARED_CALL_APPEARANCE
-      description: " * `PRIMARY` - Primary line for the member.\n * `SHARED_CALL_APPEARANCE` - Shared line for the member. A shared line allows users to receive and place calls to and from another user's extension, using their own device.\n"
-    AvailableMember:
+      - DMS Cisco DBS210
+      - DMS Cisco DBS110
+      description: " * `DMS Cisco DBS210` - Cisco DBS210 base station model.\n * `DMS Cisco DBS110` - Cisco DBS110 base station model.\n"
+    AddDECTHandsetBulkSuccessResponse:
       type: object
       required:
-      - id
-      - lineType
-      - memberType
-      - location
-      properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9jODhiZGIwNC1jZjU5LTRjMjMtODQ4OC00NTNhOTE3ZDFlMjk
-          description: Unique identifier for the member.
-        firstName:
-          type: string
-          example: John
-          description: First name of the member.
-        lastName:
-          type: string
-          example: Smith
-          description: Last name of the member.
-        phoneNumber:
-          type: string
-          example: '+12055552221'
-          description: Phone Number of the member.
-        extension:
-          type: string
-          example: '1234'
-          description: Extension of the member.
-        lineType:
-          $ref: '#/components/schemas/LineType'
-          description: Line type indicates if the associated line is a primary line or a shared line.
-        memberType:
-          $ref: '#/components/schemas/MemberType'
-          description: Indicates the type of the member.
-        location:
-          $ref: '#/components/schemas/location'
-          description: Location object having a unique identifier for the location and its name.
-    BaseStationResponse:
-      type: object
-      required:
-      - mac
+      - customDisplayName
       - result
       properties:
-        mac:
+        customDisplayName:
           type: string
-          example: 6DDE9EBDE1C9
-          description: MAC Address added to the base station.
+          example: handsetDisplayName
+          description: The custom display name on the handset.
         result:
-          $ref: '#/components/schemas/BaseStationPostResult'
-          description: Object with base station POST Result.
-    BaseStationsListResponse:
-      type: object
-      required:
-      - baseStations
-      properties:
-        baseStations:
-          type: array
-          items:
-            $ref: '#/components/schemas/BaseStationsResponse'
-          description: List of base stations in a DECT Network.
-    DECTNetworkPatch:
-      type: object
-      required:
-      - name
-      - defaultAccessCodeEnabled
-      - defaultAccessCode
-      properties:
-        name:
-          type: string
-          example: Demo-DectNetwork
-          description: Name of the DECT network. This should be unique across the location.
-        displayName:
-          type: string
-          example: Demo-DectNetwork
-          description: DECT network name that will be displayed on the handset.
-        defaultAccessCodeEnabled:
-          type: boolean
-          example: true
-          description: Default access code is enabled. If true, the default access code is mandatory. If false, an auto-generated access code is used.
-        defaultAccessCode:
-          type: string
-          example: '1234'
-          description: Default access code for the DECT network. The default access code should be unique within the same location to avoid the handset accidentally registering with base stations from different DECT networks in range. This is mandatory when `defaultAccessCodeEnabled` is true.
+          type: object
+          required:
+          - status
+          properties:
+            status:
+              type: number
+              example: 201
+              description: The status of the add handset request.
+          description: The result of the add handset request.
   securitySchemes:
     oauth2:
       flows:

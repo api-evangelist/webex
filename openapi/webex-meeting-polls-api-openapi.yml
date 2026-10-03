@@ -307,6 +307,85 @@ paths:
       x-operation-id-original: List Respondents of a Question
 components:
   schemas:
+    QuestionResult:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 6f31147e-dd69-4ea9-8b75-2c5834b72ba2
+          description: A unique identifier of the question.
+        order:
+          type: string
+          example: '1'
+          description: The order of the question in the poll.
+        title:
+          type: string
+          example: What colors do you like?
+          description: The question.
+        type:
+          type: string
+          enum:
+          - single
+          - multiple
+          - short
+          description: "The type of the question.\n * `single` - A single-answer question.\n * `multiple` - A multiple-answer question.\n * `short` - A text answer.\n"
+        answerSummary:
+          type: array
+          items:
+            $ref: '#/components/schemas/AnswerSummaryItem'
+          description: Summary of all answers.
+        respondents:
+          $ref: '#/components/schemas/RespondentsReferenceLinks'
+          description: Question's respondents.
+    AnswerSummaryItem:
+      type: object
+      properties:
+        order:
+          type: string
+          example: '1'
+          description: The order of the answer in the question.
+        value:
+          type: string
+          example: China
+          description: The content of the answer.
+        totalRespondents:
+          type: number
+          example: 10
+          description: The total number of people who selected this answer.
+        isCorrect:
+          type: boolean
+          example: true
+          description: Whether the answer is correct.
+    Option:
+      type: object
+      properties:
+        order:
+          type: string
+          example: '1'
+          description: The order of the option.
+        value:
+          type: string
+          example: China
+          description: The value of the option.
+        isCorrect:
+          type: boolean
+          example: true
+          description: Whether or not the option is correct.
+    Link:
+      type: object
+      properties:
+        prev:
+          type: string
+          example: https://webexapis.com/v1/meetings/polls/1d4959fe-682e-4107-a346-0e1feac7b899_M_7b789da198e531ce0c4d84243abd9fee_I_231245894851233679/questions/6f31147e-dd69-4ea9-8b75-2c5834b72ba2/respondents?meetingId=7b789da198e531ce0c4d84243abd9fee_I_231245894851233679&offset=0&max=5
+          description: Link to the previous question's respondents.
+        self:
+          type: string
+          example: https://webexapis.com/v1/meetings/polls/1d4959fe-682e-4107-a346-0e1feac7b899_M_7b789da198e531ce0c4d84243abd9fee_I_231245894851233679/questions/6f31147e-dd69-4ea9-8b75-2c5834b72ba2/respondents?meetingId=7b789da198e531ce0c4d84243abd9fee_I_231245894851233679&offset=5&max=5
+          description: Link to the current question's respondents.
+        next:
+          type: string
+          example: https://webexapis.com/v1/meetings/polls/1d4959fe-682e-4107-a346-0e1feac7b899_M_7b789da198e531ce0c4d84243abd9fee_I_231245894851233679/questions/6f31147e-dd69-4ea9-8b75-2c5834b72ba2/respondents?meetingId=7b789da198e531ce0c4d84243abd9fee_I_231245894851233679&offset=10&max=5
+          description: Link to the next page question's respondents.
     Poll:
       type: object
       properties:
@@ -347,36 +426,6 @@ components:
           items:
             $ref: '#/components/schemas/Question'
           description: Poll's questions.
-    QuestionResult:
-      type: object
-      properties:
-        id:
-          type: string
-          example: 6f31147e-dd69-4ea9-8b75-2c5834b72ba2
-          description: A unique identifier of the question.
-        order:
-          type: string
-          example: '1'
-          description: The order of the question in the poll.
-        title:
-          type: string
-          example: What colors do you like?
-          description: The question.
-        type:
-          type: string
-          enum:
-          - single
-          - multiple
-          - short
-          description: "The type of the question.\n * `single` - A single-answer question.\n * `multiple` - A multiple-answer question.\n * `short` - A text answer.\n"
-        answerSummary:
-          type: array
-          items:
-            $ref: '#/components/schemas/AnswerSummaryItem'
-          description: Summary of all answers.
-        respondents:
-          $ref: '#/components/schemas/RespondentsReferenceLinks'
-          description: Question's respondents.
     PollCollectionResponse:
       type: object
       properties:
@@ -384,100 +433,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Poll'
-    PollResultCollectionResponse:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/PollResult'
-    RespondentsReferenceLinks:
-      type: object
-      properties:
-        links:
-          $ref: '#/components/schemas/Link'
-          description: The pagination links of this question's respondent.
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/Respondent'
-          description: An array of answers.
-    Question:
-      type: object
-      properties:
-        id:
-          type: string
-          example: 6f31147e-dd69-4ea9-8b75-2c5834b72ba2
-          description: A unique identifier for the question.
-        order:
-          type: string
-          example: '1'
-          description: The order of the question.
-        title:
-          type: string
-          example: Where is Webex exclusively sold through local partners?
-          description: The question.
-        type:
-          type: string
-          enum:
-          - single
-          - multiple
-          - short
-          description: "The type of the question.\n * `single` - A single-answer question.\n * `multiple` - A multiple-answer question.\n * `short` - A text answer.\n"
-        options:
-          type: array
-          items:
-            $ref: '#/components/schemas/Option'
-          description: Question's options.
-    Option:
-      type: object
-      properties:
-        order:
-          type: string
-          example: '1'
-          description: The order of the option.
-        value:
-          type: string
-          example: China
-          description: The value of the option.
-        isCorrect:
-          type: boolean
-          example: true
-          description: Whether or not the option is correct.
-    Link:
-      type: object
-      properties:
-        prev:
-          type: string
-          example: https://webexapis.com/v1/meetings/polls/1d4959fe-682e-4107-a346-0e1feac7b899_M_7b789da198e531ce0c4d84243abd9fee_I_231245894851233679/questions/6f31147e-dd69-4ea9-8b75-2c5834b72ba2/respondents?meetingId=7b789da198e531ce0c4d84243abd9fee_I_231245894851233679&offset=0&max=5
-          description: Link to the previous question's respondents.
-        self:
-          type: string
-          example: https://webexapis.com/v1/meetings/polls/1d4959fe-682e-4107-a346-0e1feac7b899_M_7b789da198e531ce0c4d84243abd9fee_I_231245894851233679/questions/6f31147e-dd69-4ea9-8b75-2c5834b72ba2/respondents?meetingId=7b789da198e531ce0c4d84243abd9fee_I_231245894851233679&offset=5&max=5
-          description: Link to the current question's respondents.
-        next:
-          type: string
-          example: https://webexapis.com/v1/meetings/polls/1d4959fe-682e-4107-a346-0e1feac7b899_M_7b789da198e531ce0c4d84243abd9fee_I_231245894851233679/questions/6f31147e-dd69-4ea9-8b75-2c5834b72ba2/respondents?meetingId=7b789da198e531ce0c4d84243abd9fee_I_231245894851233679&offset=10&max=5
-          description: Link to the next page question's respondents.
-    AnswerSummaryItem:
-      type: object
-      properties:
-        order:
-          type: string
-          example: '1'
-          description: The order of the answer in the question.
-        value:
-          type: string
-          example: China
-          description: The content of the answer.
-        totalRespondents:
-          type: number
-          example: 10
-          description: The total number of people who selected this answer.
-        isCorrect:
-          type: boolean
-          example: true
-          description: Whether the answer is correct.
     Respondent:
       type: object
       properties:
@@ -543,6 +498,24 @@ components:
           items:
             $ref: '#/components/schemas/QuestionResult'
           description: An array of questions in this poll.
+    RespondentsReferenceLinks:
+      type: object
+      properties:
+        links:
+          $ref: '#/components/schemas/Link'
+          description: The pagination links of this question's respondent.
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Respondent'
+          description: An array of answers.
+    PollResultCollectionResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PollResult'
     RespondentCollectionResponse:
       type: object
       properties:
@@ -550,6 +523,33 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Respondent'
+    Question:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 6f31147e-dd69-4ea9-8b75-2c5834b72ba2
+          description: A unique identifier for the question.
+        order:
+          type: string
+          example: '1'
+          description: The order of the question.
+        title:
+          type: string
+          example: Where is Webex exclusively sold through local partners?
+          description: The question.
+        type:
+          type: string
+          enum:
+          - single
+          - multiple
+          - short
+          description: "The type of the question.\n * `single` - A single-answer question.\n * `multiple` - A multiple-answer question.\n * `short` - A text answer.\n"
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/Option'
+          description: Question's options.
   securitySchemes:
     oauth2:
       flows:

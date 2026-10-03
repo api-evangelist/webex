@@ -955,19 +955,32 @@ paths:
       x-operation-id-original: Update Meeting Common Settings Configuration
 components:
   schemas:
-    EntityReferenceInfoDTO:
+    BulkResponseDTO:
       type: object
       properties:
-        description:
-          type: string
-          description: Description about reference info.
-          example: list of referenced entities
-        meta:
-          $ref: '#/components/schemas/MetaDataReferencesPagingInfo'
-        data:
+        items:
           type: array
           items:
-            $ref: '#/components/schemas/EntityInfo'
+            $ref: '#/components/schemas/BulkResponseItemDTO'
+    Link:
+      type: object
+      properties:
+        href:
+          type: string
+        hreflang:
+          type: string
+        title:
+          type: string
+        type:
+          type: string
+        deprecation:
+          type: string
+        profile:
+          type: string
+        name:
+          type: string
+        templated:
+          type: boolean
     ErrorDetails:
       description: Details of an error.
       type: object
@@ -981,6 +994,14 @@ components:
           description: A message providing details about the error.
           items:
             $ref: '#/components/schemas/OperationError'
+    OperationError:
+      description: An error message providing details about the operation failure.
+      type: object
+      properties:
+        description:
+          type: string
+          description: A human readable explanation for the occurrence of an error.
+          example: Incorrect Credentials.
     ApiErrorResponse:
       description: Response body for an API error.
       type: object
@@ -999,35 +1020,17 @@ components:
           type: string
         multimediaProfileName:
           type: string
-    BulkRequestItemDTOSiteDTO:
+    ResponseEnvelopeSiteDTO:
       type: object
       properties:
-        itemIdentifier:
-          type: integer
-          description: Unique item identifier for a bulk operation.
-          format: int32
-          example: 10
-        item:
-          $ref: '#/components/schemas/SiteDTO'
-        requestAction:
-          type: string
-          description: Identifier for action type. Possible values can be SAVE and DELETE.
-          example: SAVE
-    BulkResponseDTO:
-      type: object
-      properties:
-        items:
+        meta:
+          type: object
+          additionalProperties:
+            type: object
+        data:
           type: array
           items:
-            $ref: '#/components/schemas/BulkResponseItemDTO'
-    OperationError:
-      description: An error message providing details about the operation failure.
-      type: object
-      properties:
-        description:
-          type: string
-          description: A human readable explanation for the occurrence of an error.
-          example: Incorrect Credentials.
+            $ref: '#/components/schemas/SiteDTO'
     MetaDataReferencesPagingInfo:
       title: MetaDataReferencesPagingInfo
       type: object
@@ -1082,155 +1085,6 @@ components:
           description: Name of current entity
           example: entity_name
       description: Metadata of response for references with paging information
-    Response:
-      type: object
-      properties:
-        code:
-          type: integer
-          format: int32
-        details:
-          type: object
-          additionalProperties:
-            type: object
-        links:
-          type: array
-          items:
-            $ref: '#/components/schemas/Link'
-    BulkResponseItemDTO:
-      type: object
-      properties:
-        itemIdentifier:
-          type: integer
-          description: Unique item identifier for a bulk operation.
-          format: int32
-          example: 10
-        status:
-          type: integer
-          description: Indicates the error status code.
-          format: int32
-          example: 400
-        operationType:
-          type: string
-          description: The kind of operation desired of an entity.
-          example: CREATE
-          enum:
-          - CREATE
-          - UPDATE
-          - DELETE
-          - GET
-        href:
-          type: string
-          description: The resource URI of an entity.
-          example: /api/organization/6705c69d-4585-42ad-bfc3-79cc485dfb15/team/7b26d174-0016-4682-9858-65918e05f85
-        apiError:
-          $ref: '#/components/schemas/ApiErrorResponse'
-      example:
-        apiError:
-          error:
-            key: '400'
-            message:
-            - description: 'siteId: not found for given orgId.'
-              entity: string
-              references:
-              - id: string
-                name: string
-            reason: dependency exists
-          trackingId: ccconfig_c1a4fcef-aee2-4dea-8977-29f594760552
-        href: /api/organization/6705c69d-4585-42ad-bfc3-79cc485dfb15/team/7b26d174-0016-4682-9858-65918e05f85
-        itemIdentifier: 10
-        operationType: CREATE
-        status: 400
-    BulkRequestDTOSiteDTO:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/BulkRequestItemDTOSiteDTO'
-    BulkExportDTOSiteBulkExportDTO:
-      type: object
-      properties:
-        totalResources:
-          type: integer
-          description: Total number of items
-          format: int32
-          example: 100
-        pageNumber:
-          type: integer
-          description: Current page number
-          format: int32
-          example: 0
-        pageSize:
-          type: integer
-          description: Page size for current data set
-          format: int32
-          example: 50
-        rel:
-          type: string
-          description: Indicates whether more pages exist. When 'next' there are more pages available, otherwise 'last'.
-          example: last
-        resources:
-          type: array
-          items:
-            $ref: '#/components/schemas/SiteBulkExportDTO'
-    EntityInfo:
-      type: object
-      properties:
-        id:
-          type: string
-          description: id
-          example: id.
-        name:
-          type: string
-          description: name
-          example: name.
-        additionalAttributes:
-          type: object
-          additionalProperties:
-            type: string
-            description: A map containing additional attributes of entity where both the key and value are Strings.
-            example: '{"key1":"value1","key2":"value2"}'
-          description: A map containing additional attributes of entity where both the key and value are Strings.
-          example:
-            key1: value1
-            key2: value2
-        createdDate:
-          type: string
-        lastModifiedDate:
-          type: string
-        version:
-          type: integer
-          format: int32
-    ResponseEnvelopeSiteDTO:
-      type: object
-      properties:
-        meta:
-          type: object
-          additionalProperties:
-            type: object
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/SiteDTO'
-    Link:
-      type: object
-      properties:
-        href:
-          type: string
-        hreflang:
-          type: string
-        title:
-          type: string
-        type:
-          type: string
-        deprecation:
-          type: string
-        profile:
-          type: string
-        name:
-          type: string
-        templated:
-          type: boolean
     SiteDTO:
       required:
       - active
@@ -1290,112 +1144,152 @@ components:
           format: int64
           readOnly: true
           example: 1617536244000
-    UpdateMeetingConfigurationCommonSettingObject:
+    BulkRequestDTOSiteDTO:
       type: object
       properties:
-        siteOptions:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BulkRequestItemDTOSiteDTO'
+    EntityReferenceInfoDTO:
+      type: object
+      properties:
+        description:
+          type: string
+          description: Description about reference info.
+          example: list of referenced entities
+        meta:
+          $ref: '#/components/schemas/MetaDataReferencesPagingInfo'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityInfo'
+    EntityInfo:
+      type: object
+      properties:
+        id:
+          type: string
+          description: id
+          example: id.
+        name:
+          type: string
+          description: name
+          example: name.
+        additionalAttributes:
           type: object
-          properties:
-            allowCustomPersonalRoomURL:
-              type: boolean
-              description: Allow hosts to change their Personal Room URLs.
-          description: Site Options on Webex Administration.
-        defaultSchedulerOptions:
+          additionalProperties:
+            type: string
+            description: A map containing additional attributes of entity where both the key and value are Strings.
+            example: '{"key1":"value1","key2":"value2"}'
+          description: A map containing additional attributes of entity where both the key and value are Strings.
+          example:
+            key1: value1
+            key2: value2
+        createdDate:
+          type: string
+        lastModifiedDate:
+          type: string
+        version:
+          type: integer
+          format: int32
+    BulkExportDTOSiteBulkExportDTO:
+      type: object
+      properties:
+        totalResources:
+          type: integer
+          description: Total number of items
+          format: int32
+          example: 100
+        pageNumber:
+          type: integer
+          description: Current page number
+          format: int32
+          example: 0
+        pageSize:
+          type: integer
+          description: Page size for current data set
+          format: int32
+          example: 50
+        rel:
+          type: string
+          description: Indicates whether more pages exist. When 'next' there are more pages available, otherwise 'last'.
+          example: last
+        resources:
+          type: array
+          items:
+            $ref: '#/components/schemas/SiteBulkExportDTO'
+    BulkResponseItemDTO:
+      type: object
+      properties:
+        itemIdentifier:
+          type: integer
+          description: Unique item identifier for a bulk operation.
+          format: int32
+          example: 10
+        status:
+          type: integer
+          description: Indicates the error status code.
+          format: int32
+          example: 400
+        operationType:
+          type: string
+          description: The kind of operation desired of an entity.
+          example: CREATE
+          enum:
+          - CREATE
+          - UPDATE
+          - DELETE
+          - GET
+        href:
+          type: string
+          description: The resource URI of an entity.
+          example: /api/organization/6705c69d-4585-42ad-bfc3-79cc485dfb15/team/7b26d174-0016-4682-9858-65918e05f85
+        apiError:
+          $ref: '#/components/schemas/ApiErrorResponse'
+      example:
+        apiError:
+          error:
+            key: '400'
+            message:
+            - description: 'siteId: not found for given orgId.'
+              entity: string
+              references:
+              - id: string
+                name: string
+            reason: dependency exists
+          trackingId: ccconfig_c1a4fcef-aee2-4dea-8977-29f594760552
+        href: /api/organization/6705c69d-4585-42ad-bfc3-79cc485dfb15/team/7b26d174-0016-4682-9858-65918e05f85
+        itemIdentifier: 10
+        operationType: CREATE
+        status: 400
+    BulkRequestItemDTOSiteDTO:
+      type: object
+      properties:
+        itemIdentifier:
+          type: integer
+          description: Unique item identifier for a bulk operation.
+          format: int32
+          example: 10
+        item:
+          $ref: '#/components/schemas/SiteDTO'
+        requestAction:
+          type: string
+          description: Identifier for action type. Possible values can be SAVE and DELETE.
+          example: SAVE
+    Response:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        details:
           type: object
-          required:
-          - entryAndExitTone
-          - telephonySupport
-          properties:
-            entryAndExitTone:
-              type: string
-              enum:
-              - NoTone
-              - Beep
-              - AnnounceName
-              description: "Determines if a sound is made when someone enters or exits.\n * `NoTone` - No tone.\n * `Beep` - Beep.\n * `AnnounceName` - Announce name.\n"
-            joinTeleconfNotPress1:
-              type: boolean
-              description: Specifies whether or not joining teleconference without pressing 1 is checked by default.
-            telephonySupport:
-              type: string
-              enum:
-              - None
-              - WebexTeleconferencing
-              - Other
-              description: "Specifies the type of teleconference support for meetings.\n * `None` - None.\n * `WebexTeleconferencing` - Webex teleconferencing (Unabled when Webex Super Admin hasn't turned on call-in teleconferencing and call-back teleconferencing).\n * `Other` - Other Teleconferencing (Unabled when Webex Super Admin hasn't turned on other teleconferencing).\n"
-            tollFree:
-              type: boolean
-              description: Specifies whether toll-free call-in is available, it can't be specified when `telephonySupport` was not `WebexTeleconferencing`, and it can't be specified as `true` when Webex Super Admin hasn't turned on toll-free call-in teleconferencing.
-            VoIP:
-              type: boolean
-              description: Denotes if VoIP protocols are being used, it can't be specified as `true` when Webex Super Admin hasn't turned on Voice Over IP functionality.
-          description: Default Scheduler Options on Webex Administration (These options are applied to the site as defaults, but individual users can change them).
-        scheduleMeetingOptions:
-          type: object
-          properties:
-            emailReminders:
-              type: boolean
-              description: Determines if email reminders are to be sent out.
-          description: Schedule Meeting Options on Webex Administration.
-        securityOptions:
-          type: object
-          properties:
-            joinBeforeHost:
-              type: boolean
-              description: Allow attendees or panelists to join before the host.
-            audioBeforeHost:
-              type: boolean
-              description: Allows attendees or panelists to join the teleconference before the host, it can't be turned on when `joinBeforeHost` was `false`.
-            firstAttendeeAsPresenter:
-              type: boolean
-              description: Allows first attendee or panelist as the presenter, it can't be turned on when `firstAttendeeAsPresenter` was `false`.
-            unlistAllMeetings:
-              type: boolean
-              description: Specifies that all meetings must be unlisted.
-            requireLoginBeforeAccess:
-              type: boolean
-              description: Determines if a user must login before getting site access.
-            allowMobileScreenCapture:
-              type: boolean
-              description: Allow screen capture (Android devices only).
-            requireStrongPassword:
-              type: boolean
-              description: Determines if strict passwords are required for meetings.
-            passwordCriteria:
-              type: object
-              properties:
-                mixedCase:
-                  type: boolean
-                  description: Determines if a password requires mixed case.
-                minLength:
-                  type: number
-                  example: 8
-                  description: Sets the minimum password length, maximum value limit of 12.
-                minNumeric:
-                  type: number
-                  example: 2
-                  description: Sets the minimum number of numeric characters in the password, maximum value limit of 12.
-                minAlpha:
-                  type: number
-                  example: 4
-                  description: Sets the minimum number of alphabetical characters in the password, maximum value limit of 12.
-                minSpecial:
-                  type: number
-                  example: 1
-                  description: Sets the minimum number of special characters in the password, maximum value limit of 12.
-                disallowDynamicWebText:
-                  type: boolean
-                  description: Do not allow dynamic web page text for meeting passwords (like site name, host's name, username, meeting topic).
-                disallowList:
-                  type: boolean
-                  description: Specifies if passwords from the `disallowValues` list are to be allowed.
-                disallowValues:
-                  type: array
-                  items:
-                    type: string
-                  description: Sets password values that are not allowed, and cannot type repeated items in it.
-              description: Criteria of a strong password, which cannot be specified when `requireStrongPassword` was `false`.
-          description: Security Options on Webex Administration.
+          additionalProperties:
+            type: object
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'
     GetMeetingConfigurationCommonSettingObject:
       type: object
       properties:
@@ -1526,6 +1420,112 @@ components:
                     type: string
                   description: Sets password values that are not allowed.
               description: Criteria of a strong password.
+          description: Security Options on Webex Administration.
+    UpdateMeetingConfigurationCommonSettingObject:
+      type: object
+      properties:
+        siteOptions:
+          type: object
+          properties:
+            allowCustomPersonalRoomURL:
+              type: boolean
+              description: Allow hosts to change their Personal Room URLs.
+          description: Site Options on Webex Administration.
+        defaultSchedulerOptions:
+          type: object
+          required:
+          - entryAndExitTone
+          - telephonySupport
+          properties:
+            entryAndExitTone:
+              type: string
+              enum:
+              - NoTone
+              - Beep
+              - AnnounceName
+              description: "Determines if a sound is made when someone enters or exits.\n * `NoTone` - No tone.\n * `Beep` - Beep.\n * `AnnounceName` - Announce name.\n"
+            joinTeleconfNotPress1:
+              type: boolean
+              description: Specifies whether or not joining teleconference without pressing 1 is checked by default.
+            telephonySupport:
+              type: string
+              enum:
+              - None
+              - WebexTeleconferencing
+              - Other
+              description: "Specifies the type of teleconference support for meetings.\n * `None` - None.\n * `WebexTeleconferencing` - Webex teleconferencing (Unabled when Webex Super Admin hasn't turned on call-in teleconferencing and call-back teleconferencing).\n * `Other` - Other Teleconferencing (Unabled when Webex Super Admin hasn't turned on other teleconferencing).\n"
+            tollFree:
+              type: boolean
+              description: Specifies whether toll-free call-in is available, it can't be specified when `telephonySupport` was not `WebexTeleconferencing`, and it can't be specified as `true` when Webex Super Admin hasn't turned on toll-free call-in teleconferencing.
+            VoIP:
+              type: boolean
+              description: Denotes if VoIP protocols are being used, it can't be specified as `true` when Webex Super Admin hasn't turned on Voice Over IP functionality.
+          description: Default Scheduler Options on Webex Administration (These options are applied to the site as defaults, but individual users can change them).
+        scheduleMeetingOptions:
+          type: object
+          properties:
+            emailReminders:
+              type: boolean
+              description: Determines if email reminders are to be sent out.
+          description: Schedule Meeting Options on Webex Administration.
+        securityOptions:
+          type: object
+          properties:
+            joinBeforeHost:
+              type: boolean
+              description: Allow attendees or panelists to join before the host.
+            audioBeforeHost:
+              type: boolean
+              description: Allows attendees or panelists to join the teleconference before the host, it can't be turned on when `joinBeforeHost` was `false`.
+            firstAttendeeAsPresenter:
+              type: boolean
+              description: Allows first attendee or panelist as the presenter, it can't be turned on when `firstAttendeeAsPresenter` was `false`.
+            unlistAllMeetings:
+              type: boolean
+              description: Specifies that all meetings must be unlisted.
+            requireLoginBeforeAccess:
+              type: boolean
+              description: Determines if a user must login before getting site access.
+            allowMobileScreenCapture:
+              type: boolean
+              description: Allow screen capture (Android devices only).
+            requireStrongPassword:
+              type: boolean
+              description: Determines if strict passwords are required for meetings.
+            passwordCriteria:
+              type: object
+              properties:
+                mixedCase:
+                  type: boolean
+                  description: Determines if a password requires mixed case.
+                minLength:
+                  type: number
+                  example: 8
+                  description: Sets the minimum password length, maximum value limit of 12.
+                minNumeric:
+                  type: number
+                  example: 2
+                  description: Sets the minimum number of numeric characters in the password, maximum value limit of 12.
+                minAlpha:
+                  type: number
+                  example: 4
+                  description: Sets the minimum number of alphabetical characters in the password, maximum value limit of 12.
+                minSpecial:
+                  type: number
+                  example: 1
+                  description: Sets the minimum number of special characters in the password, maximum value limit of 12.
+                disallowDynamicWebText:
+                  type: boolean
+                  description: Do not allow dynamic web page text for meeting passwords (like site name, host's name, username, meeting topic).
+                disallowList:
+                  type: boolean
+                  description: Specifies if passwords from the `disallowValues` list are to be allowed.
+                disallowValues:
+                  type: array
+                  items:
+                    type: string
+                  description: Sets password values that are not allowed, and cannot type repeated items in it.
+              description: Criteria of a strong password, which cannot be specified when `requireStrongPassword` was `false`.
           description: Security Options on Webex Administration.
   securitySchemes:
     oauth2:

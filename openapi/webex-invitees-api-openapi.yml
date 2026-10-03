@@ -560,24 +560,14 @@ paths:
       x-operation-id-original: Delete a Meeting Invitee
 components:
   schemas:
-    CreateInviteesObject:
+    CreateInviteesResponse:
       type: object
-      required:
-      - meetingId
       properties:
-        meetingId:
-          type: string
-          example: 870f51ff287b41be84648412901e0402
-          description: Unique identifier for the meeting to which the people are being invited. This attribute only applies to meeting series and scheduled meetings. If it's a meeting series, the meeting invitees are invited to the entire meeting series; if it's a scheduled meeting, the meeting invitees are invited to this individual scheduled meeting. It doesn't apply to an ended or ongoing meeting instance. The meeting ID of a scheduled [personal room](https://help.webex.com/en-us/article/nul0wut/Webex-Personal-Rooms-in-Webex-Meetings) meeting is not supported for this API.
-        hostEmail:
-          type: string
-          example: brenda.song@example.com
-          description: Email address for the meeting host. This attribute should only be set if the user or application calling the API has the admin on-behalf-of scopes. When used, the admin may specify the email of a user in a site they manage to be the meeting host.
         items:
           type: array
           items:
-            $ref: '#/components/schemas/CreateInviteesItemObject'
-          description: Meeting invitees to be inserted.
+            $ref: '#/components/schemas/CreateInviteesItemResponseObject'
+          description: Meeting invitees inserted.
     GetInviteeObject:
       type: object
       required:
@@ -608,6 +598,34 @@ components:
         panelist:
           type: boolean
           description: If `true`, the invitee is a designated panelist for the event meeting.
+    CreateInviteesItemResponseObject:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 870f51ff287b41be84648412901e0402_2628962
+          description: Unique identifier for meeting invitee.
+        meetingId:
+          type: string
+          example: 870f51ff287b41be84648412901e0402
+          description: Unique identifier for the meeting to which a person is being invited. This attribute only applies to meeting series and scheduled meeting. If it's a meeting series, the meeting invitee is invited to the entire meeting series; if it's a scheduled meeting, the meeting invitee is invited to this individual scheduled meeting. It doesn't apply to an ended or ongoing meeting instance.
+        email:
+          type: string
+          example: john.andersen@example.com
+          description: Email address for meeting invitee.
+        displayName:
+          type: string
+          example: John Andersen
+          description: 'Display name for meeting invitee. The maximum length of `displayName` is 128 characters. In the Webex App, if the email has been associated with an existing Webex account, the display name associated with the Webex account will be used; otherwise, the `email` will be used as `displayName`. In Webex site, if `displayName` is specified, it will show `displayName`. If `displayName` is not specified, and the `email` has been associated with an existing Webex account, the display name associated with the Webex account will be used; otherwise, the `email` will be used as `displayName`.
+
+
+            If the invitee has an existing Webex account, the `displayName` shown in the meeting will be the `displayName` associated with the Webex account; otherwise, `displayName` shown in the meeting will be the `displayName` which is specified by the invitee who does not have a Webex account.'
+        coHost:
+          type: boolean
+          description: Whether or not the invitee is a designated alternate host for the meeting. See [Add Alternate Hosts for Cisco Webex Meetings](https://help.webex.com/b5z6he/) for more details.
+        panelist:
+          type: boolean
+          description: If `true`, the invitee is a designated panelist for the event meeting.
     CreateInviteesItemObject:
       type: object
       required:
@@ -627,6 +645,36 @@ components:
         coHost:
           type: boolean
           description: Whether or not invitee is a designated alternate host for the meeting. See [Add Alternate Hosts for Cisco Webex Meetings](https://help.webex.com/b5z6he/) for more details.
+        sendEmail:
+          type: boolean
+          example: true
+          description: If `true`, send an email to the invitee.
+        panelist:
+          type: boolean
+          description: If `true`, the invitee is a designated panelist for the event meeting.
+    UpdateInviteeObject:
+      type: object
+      required:
+      - email
+      properties:
+        email:
+          type: string
+          example: john.andersen@example.com
+          description: Email address for meeting invitee.
+        displayName:
+          type: string
+          example: John Andersen
+          description: 'Display name for meeting invitee. The maximum length of `displayName` is 128 characters. In the Webex app, if the email has been associated with an existing Webex account, the display name associated with the Webex account will be used; otherwise, the `email` will be used as `displayName`. In a Webex site, if `displayName` is specified, it will show `displayName`. If `displayName` is not specified, and the `email` has been associated with an existing Webex account, the display name associated with the Webex account will be used; otherwise, the `email` will be used as `displayName`.
+
+
+            If the invitee has an existing Webex account, the `displayName` shown in the meeting will be the `displayName` associated with the Webex account; otherwise, `displayName` shown in the meeting will be the `displayName` which is specified by the invitee who does not have a Webex account.'
+        coHost:
+          type: boolean
+          description: Whether or not the invitee is a designated alternate host for the meeting. See [Add Alternate Hosts for Cisco Webex Meetings](https://help.webex.com/b5z6he/) for more details.
+        hostEmail:
+          type: string
+          example: brenda.song@example.com
+          description: Email address for the meeting host. This attribute should only be set if the user or application calling the API has the admin on-behalf-of scopes. When used, the admin may specify the email of a user in a site they manage to be the meeting host.
         sendEmail:
           type: boolean
           example: true
@@ -669,72 +717,24 @@ components:
         panelist:
           type: boolean
           description: If `true`, the invitee is a designated panelist for the event meeting.
-    CreateInviteesResponse:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/CreateInviteesItemResponseObject'
-          description: Meeting invitees inserted.
-    UpdateInviteeObject:
+    CreateInviteesObject:
       type: object
       required:
-      - email
+      - meetingId
       properties:
-        email:
+        meetingId:
           type: string
-          example: john.andersen@example.com
-          description: Email address for meeting invitee.
-        displayName:
-          type: string
-          example: John Andersen
-          description: 'Display name for meeting invitee. The maximum length of `displayName` is 128 characters. In the Webex app, if the email has been associated with an existing Webex account, the display name associated with the Webex account will be used; otherwise, the `email` will be used as `displayName`. In a Webex site, if `displayName` is specified, it will show `displayName`. If `displayName` is not specified, and the `email` has been associated with an existing Webex account, the display name associated with the Webex account will be used; otherwise, the `email` will be used as `displayName`.
-
-
-            If the invitee has an existing Webex account, the `displayName` shown in the meeting will be the `displayName` associated with the Webex account; otherwise, `displayName` shown in the meeting will be the `displayName` which is specified by the invitee who does not have a Webex account.'
-        coHost:
-          type: boolean
-          description: Whether or not the invitee is a designated alternate host for the meeting. See [Add Alternate Hosts for Cisco Webex Meetings](https://help.webex.com/b5z6he/) for more details.
+          example: 870f51ff287b41be84648412901e0402
+          description: Unique identifier for the meeting to which the people are being invited. This attribute only applies to meeting series and scheduled meetings. If it's a meeting series, the meeting invitees are invited to the entire meeting series; if it's a scheduled meeting, the meeting invitees are invited to this individual scheduled meeting. It doesn't apply to an ended or ongoing meeting instance. The meeting ID of a scheduled [personal room](https://help.webex.com/en-us/article/nul0wut/Webex-Personal-Rooms-in-Webex-Meetings) meeting is not supported for this API.
         hostEmail:
           type: string
           example: brenda.song@example.com
           description: Email address for the meeting host. This attribute should only be set if the user or application calling the API has the admin on-behalf-of scopes. When used, the admin may specify the email of a user in a site they manage to be the meeting host.
-        sendEmail:
-          type: boolean
-          example: true
-          description: If `true`, send an email to the invitee.
-        panelist:
-          type: boolean
-          description: If `true`, the invitee is a designated panelist for the event meeting.
-    CreateInviteesItemResponseObject:
-      type: object
-      properties:
-        id:
-          type: string
-          example: 870f51ff287b41be84648412901e0402_2628962
-          description: Unique identifier for meeting invitee.
-        meetingId:
-          type: string
-          example: 870f51ff287b41be84648412901e0402
-          description: Unique identifier for the meeting to which a person is being invited. This attribute only applies to meeting series and scheduled meeting. If it's a meeting series, the meeting invitee is invited to the entire meeting series; if it's a scheduled meeting, the meeting invitee is invited to this individual scheduled meeting. It doesn't apply to an ended or ongoing meeting instance.
-        email:
-          type: string
-          example: john.andersen@example.com
-          description: Email address for meeting invitee.
-        displayName:
-          type: string
-          example: John Andersen
-          description: 'Display name for meeting invitee. The maximum length of `displayName` is 128 characters. In the Webex App, if the email has been associated with an existing Webex account, the display name associated with the Webex account will be used; otherwise, the `email` will be used as `displayName`. In Webex site, if `displayName` is specified, it will show `displayName`. If `displayName` is not specified, and the `email` has been associated with an existing Webex account, the display name associated with the Webex account will be used; otherwise, the `email` will be used as `displayName`.
-
-
-            If the invitee has an existing Webex account, the `displayName` shown in the meeting will be the `displayName` associated with the Webex account; otherwise, `displayName` shown in the meeting will be the `displayName` which is specified by the invitee who does not have a Webex account.'
-        coHost:
-          type: boolean
-          description: Whether or not the invitee is a designated alternate host for the meeting. See [Add Alternate Hosts for Cisco Webex Meetings](https://help.webex.com/b5z6he/) for more details.
-        panelist:
-          type: boolean
-          description: If `true`, the invitee is a designated panelist for the event meeting.
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateInviteesItemObject'
+          description: Meeting invitees to be inserted.
   securitySchemes:
     oauth2:
       flows:

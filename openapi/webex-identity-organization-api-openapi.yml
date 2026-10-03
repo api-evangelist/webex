@@ -508,6 +508,86 @@ paths:
       x-operation-id-original: Generate OTP
 components:
   schemas:
+    metaObject:
+      type: object
+      required:
+      - created
+      - lastModified
+      - version
+      properties:
+        created:
+          type: string
+          example: '"2021-05-13T15:51:09.736Z"'
+          description: The date and time the organization was created.
+        lastModified:
+          type: string
+          example: '2024-05-16T12:25:16.739Z'
+          description: The last modification time of the organization.
+        version:
+          type: string
+          example: W/\"67863103533\"
+          description: The version information of the organization.
+    GenerateOtp:
+      type: object
+      required:
+      - oneTimePassword
+      - expiresIn
+      properties:
+        oneTimePassword:
+          type: string
+          example: '283489'
+          description: The One-Time Password generated for the user.
+        expiresIn:
+          type: number
+          example: 604800
+          description: 'The expiration time for the OTP in seconds (default: 7 days).'
+    AuthenticationConfigResponse:
+      type: object
+      example:
+        schemas:
+        - urn:cisco:codev:identity:idbroker:authnconfig:schemas:1.0
+        LockoutDuration: 1
+        LockoutDurationMultiplier: 1
+        LockoutFailureCount: 5
+        LockoutFailureDuration: 5
+        RememberMyLoginId: false
+        RememberMyLoginIdDuration: 30
+        mfaEnabled: true
+      properties:
+        schemas:
+          type: array
+          items:
+            type: string
+            example: urn:cisco:codev:identity:idbroker:authnconfig:schemas:1.0
+          description: Output JSON schemas.
+        LockoutDuration:
+          type: number
+          example: 1
+          description: The number of minutes that an account will be locked out.
+        LockoutDurationMultiplier:
+          type: number
+          example: 1
+          description: The multiplier of the LockoutDuration. Each subsequent lockout will be multiplied by this value.
+        LockoutFailureCount:
+          type: number
+          example: 5
+          description: Number of failed login attempts that will trigger account lockout.
+        LockoutFailureDuration:
+          type: number
+          example: 5
+          description: Number of minutes that a login failure will be recorded.
+        RememberMyLoginId:
+          type: boolean
+          example: true
+          description: True to remember the user's Login Id.
+        mfaEnabled:
+          type: boolean
+          example: true
+          description: True, if multi factor authentication is enabled on an organization.
+        RememberMyLoginIdDuration:
+          type: number
+          example: 30
+          description: Specifies the number of days the user's login ID is remembered. Must be between 1 and 120 (inclusive).
     AuthenticationConfigPatchObject:
       type: object
       required:
@@ -531,6 +611,26 @@ components:
           type: boolean
           example: true
           description: Enable/ Disable multi-factor authentication on an organization.
+    updateOrgObject:
+      type: object
+      required:
+      - schemas
+      - displayName
+      properties:
+        schemas:
+          type: array
+          items:
+            type: string
+            example: urn:cisco:codev:identity:organization:core:1.0
+          description: Input JSON schemas.
+        displayName:
+          type: string
+          example: Acme_New, Inc.
+          description: New full name of the organization.
+        preferredLanguage:
+          type: string
+          example: en_US
+          description: It is the default preferredLanguage for user creation in this org. It is set in ISO639 format.
     GetOrgResponse:
       type: object
       required:
@@ -559,70 +659,6 @@ components:
         meta:
           $ref: '#/components/schemas/metaObject'
           description: Meta data information of organization.
-    PasswordPolicyResponse:
-      type: object
-      example:
-        minimumNumeric: '1'
-        minimumCapAlpha: '1'
-        minimumLowAlpha: '1'
-        minimumSpecial: '1'
-        minimumLength: '8'
-        historyCount: '3'
-        maxPasswordAge: '1825'
-        notAcceptableStrings: password,passwd,pass,webex,cisco,xebew,ocsic
-      properties:
-        minimumNumeric:
-          type: string
-          example: '8'
-          description: Minimum number of numeric characters in password.
-        minimumCapAlpha:
-          type: string
-          example: '1'
-          description: Minimum number of uppercase alphabetic character letters in a password.
-        minimumLowAlpha:
-          type: string
-          example: '1'
-          description: Minimum number of lowercase alphabetic character letters in a password.
-        minimumSpecial:
-          type: string
-          example: '1'
-          description: Minimum number of special character included "~!@#$%^&*()-_=+[]{}|;:,.<>/?" in a password.
-        minimumLength:
-          type: string
-          example: '8'
-          description: Minimum length of password. Must be between 8 and 256, inclusive.
-        historyCount:
-          type: string
-          example: '3'
-          description: The number of former password in history, the new password can't be any one of them. Must be between 1 and 5, inclusive.
-        maxPasswordAge:
-          type: string
-          example: '90'
-          description: 'The password expired time, unit: day, that means user need to change password every "X" days. Must be between 90 and 1825, inclusive.'
-        notAcceptableStrings:
-          type: string
-          example: password,passwd,pass,webex,cisco,xebew,ocsic
-          description: The password can not be any one in this string list.
-    updateOrgObject:
-      type: object
-      required:
-      - schemas
-      - displayName
-      properties:
-        schemas:
-          type: array
-          items:
-            type: string
-            example: urn:cisco:codev:identity:organization:core:1.0
-          description: Input JSON schemas.
-        displayName:
-          type: string
-          example: Acme_New, Inc.
-          description: New full name of the organization.
-        preferredLanguage:
-          type: string
-          example: en_US
-          description: It is the default preferredLanguage for user creation in this org. It is set in ISO639 format.
     PasswordPolicyObject:
       type: object
       required:
@@ -673,86 +709,50 @@ components:
           type: string
           example: ''
           description: The password can not be any one in this string list.
-    metaObject:
-      type: object
-      required:
-      - created
-      - lastModified
-      - version
-      properties:
-        created:
-          type: string
-          example: '"2021-05-13T15:51:09.736Z"'
-          description: The date and time the organization was created.
-        lastModified:
-          type: string
-          example: '2024-05-16T12:25:16.739Z'
-          description: The last modification time of the organization.
-        version:
-          type: string
-          example: W/\"67863103533\"
-          description: The version information of the organization.
-    AuthenticationConfigResponse:
+    PasswordPolicyResponse:
       type: object
       example:
-        schemas:
-        - urn:cisco:codev:identity:idbroker:authnconfig:schemas:1.0
-        LockoutDuration: 1
-        LockoutDurationMultiplier: 1
-        LockoutFailureCount: 5
-        LockoutFailureDuration: 5
-        RememberMyLoginId: false
-        RememberMyLoginIdDuration: 30
-        mfaEnabled: true
+        minimumNumeric: '1'
+        minimumCapAlpha: '1'
+        minimumLowAlpha: '1'
+        minimumSpecial: '1'
+        minimumLength: '8'
+        historyCount: '3'
+        maxPasswordAge: '1825'
+        notAcceptableStrings: password,passwd,pass,webex,cisco,xebew,ocsic
       properties:
-        schemas:
-          type: array
-          items:
-            type: string
-            example: urn:cisco:codev:identity:idbroker:authnconfig:schemas:1.0
-          description: Output JSON schemas.
-        LockoutDuration:
-          type: number
-          example: 1
-          description: The number of minutes that an account will be locked out.
-        LockoutDurationMultiplier:
-          type: number
-          example: 1
-          description: The multiplier of the LockoutDuration. Each subsequent lockout will be multiplied by this value.
-        LockoutFailureCount:
-          type: number
-          example: 5
-          description: Number of failed login attempts that will trigger account lockout.
-        LockoutFailureDuration:
-          type: number
-          example: 5
-          description: Number of minutes that a login failure will be recorded.
-        RememberMyLoginId:
-          type: boolean
-          example: true
-          description: True to remember the user's Login Id.
-        mfaEnabled:
-          type: boolean
-          example: true
-          description: True, if multi factor authentication is enabled on an organization.
-        RememberMyLoginIdDuration:
-          type: number
-          example: 30
-          description: Specifies the number of days the user's login ID is remembered. Must be between 1 and 120 (inclusive).
-    GenerateOtp:
-      type: object
-      required:
-      - oneTimePassword
-      - expiresIn
-      properties:
-        oneTimePassword:
+        minimumNumeric:
           type: string
-          example: '283489'
-          description: The One-Time Password generated for the user.
-        expiresIn:
-          type: number
-          example: 604800
-          description: 'The expiration time for the OTP in seconds (default: 7 days).'
+          example: '8'
+          description: Minimum number of numeric characters in password.
+        minimumCapAlpha:
+          type: string
+          example: '1'
+          description: Minimum number of uppercase alphabetic character letters in a password.
+        minimumLowAlpha:
+          type: string
+          example: '1'
+          description: Minimum number of lowercase alphabetic character letters in a password.
+        minimumSpecial:
+          type: string
+          example: '1'
+          description: Minimum number of special character included "~!@#$%^&*()-_=+[]{}|;:,.<>/?" in a password.
+        minimumLength:
+          type: string
+          example: '8'
+          description: Minimum length of password. Must be between 8 and 256, inclusive.
+        historyCount:
+          type: string
+          example: '3'
+          description: The number of former password in history, the new password can't be any one of them. Must be between 1 and 5, inclusive.
+        maxPasswordAge:
+          type: string
+          example: '90'
+          description: 'The password expired time, unit: day, that means user need to change password every "X" days. Must be between 90 and 1825, inclusive.'
+        notAcceptableStrings:
+          type: string
+          example: password,passwd,pass,webex,cisco,xebew,ocsic
+          description: The password can not be any one in this string list.
   securitySchemes:
     oauth2:
       flows:

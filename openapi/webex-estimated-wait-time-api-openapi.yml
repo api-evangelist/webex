@@ -123,14 +123,17 @@ paths:
             application/json: {}
 components:
   schemas:
-    EWTApiResponse:
+    ApiErrorResponse:
+      description: Response body for an API error.
       type: object
       properties:
-        estimatedWaitTime:
-          type: number
-          description: The estimated wait time in milli seconds.
-          format: double
-          example: 20349.12
+        trackingId:
+          type: string
+          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
+          example: c1a4fcef-aee2-4dea-8977-29f594760552
+        error:
+          description: An object containing details about the error.
+          $ref: '#/components/schemas/ErrorDetails'
     ErrorDetails:
       description: Details of an error.
       type: object
@@ -144,17 +147,6 @@ components:
           description: A message providing details about the error.
           items:
             $ref: '#/components/schemas/OperationError'
-    ApiErrorResponse:
-      description: Response body for an API error.
-      type: object
-      properties:
-        trackingId:
-          type: string
-          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
-          example: c1a4fcef-aee2-4dea-8977-29f594760552
-        error:
-          description: An object containing details about the error.
-          $ref: '#/components/schemas/ErrorDetails'
     OperationError:
       description: An error message providing details about the operation failure.
       type: object
@@ -163,6 +155,14 @@ components:
           type: string
           description: A human readable explanation for the occurrence of an error.
           example: Incorrect Credentials.
+    EWTApiResponse:
+      type: object
+      properties:
+        estimatedWaitTime:
+          type: number
+          description: The estimated wait time in milli seconds.
+          format: double
+          example: 20349.12
   securitySchemes:
     oauth2:
       flows:

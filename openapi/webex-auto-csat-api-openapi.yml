@@ -1062,64 +1062,13 @@ paths:
       deprecated: true
 components:
   schemas:
-    BulkRequestItemDTOAutoCSATQuestionDTO:
-      type: object
-      description: List of items in the bulk request.
-      properties:
-        itemIdentifier:
-          type: integer
-          format: int32
-          description: Unique item identifier for a bulk operation.
-          example: 10
-        item:
-          $ref: '#/components/schemas/AutoCSATQuestionDTO'
-        requestAction:
-          type: string
-          description: Identifier for action type. Possible values are `SAVE` and `DELETE`.
-          example: SAVE
-    AutoCSATQuestionDTO:
+    BulkResponseDTO:
       type: object
       properties:
-        organizationId:
-          type: string
-          format: uuid
-          description: ID of the contact center organization. This field is required for all bulk save operations.
-          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
-          maxLength: 36
-          minLength: 32
-          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
-        id:
-          type: string
-          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
-          example: 93912f11-6017-404b-bf14-5331890b1797
-        version:
-          type: integer
-          format: int32
-          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
-          example: 1
-        questionId:
-          type: string
-          description: Question ID that is mapped for Auto CSAT configuration
-          example: 93912f11-6017-404b-bf14-5331890b1797
-          minLength: 1
-        questionnaireId:
-          type: string
-          description: Questionnaire ID corresponding to the Question ID that is mapped for Auto CSAT configuration
-          example: 93912f11-6017-404b-bf14-5331890b1797
-          minLength: 1
-        createdTime:
-          type: integer
-          format: int64
-          description: This is the created time of the entity.
-          example: 123456789
-        lastUpdatedTime:
-          type: integer
-          format: int64
-          description: This is the updated time of the entity.
-          example: 123456789
-      required:
-      - questionId
-      - questionnaireId
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BulkResponseItemDTO'
     ErrorDetails:
       description: Details of an error.
       type: object
@@ -1133,6 +1082,16 @@ components:
           description: A message providing details about the error.
           items:
             $ref: '#/components/schemas/OperationError'
+    ResponseEnvelopeAutoCSATDTO:
+      type: object
+      properties:
+        meta:
+          type: object
+          additionalProperties: {}
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/AutoCSATDTO'
     ApiErrorResponse:
       description: Response body for an API error.
       type: object
@@ -1144,67 +1103,6 @@ components:
         error:
           description: An object containing details about the error.
           $ref: '#/components/schemas/ErrorDetails'
-    BulkResponseDTO:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/BulkResponseItemDTO'
-    ResponseEnvelopeAutoCSATQuestionDTO:
-      type: object
-      properties:
-        meta:
-          type: object
-          additionalProperties: {}
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/AutoCSATQuestionDTO'
-    BulkResponseItemDTO:
-      type: object
-      properties:
-        itemIdentifier:
-          type: integer
-          description: Unique item identifier for a bulk operation.
-          format: int32
-          example: 10
-        status:
-          type: integer
-          description: Indicates the error status code.
-          format: int32
-          example: 400
-        operationType:
-          type: string
-          description: The kind of operation desired of an entity.
-          example: CREATE
-          enum:
-          - CREATE
-          - UPDATE
-          - DELETE
-          - GET
-        href:
-          type: string
-          description: The resource URI of an entity.
-          example: /api/organization/6705c69d-4585-42ad-bfc3-79cc485dfb15/team/7b26d174-0016-4682-9858-65918e05f85
-        apiError:
-          $ref: '#/components/schemas/ApiErrorResponse'
-      example:
-        apiError:
-          error:
-            key: '400'
-            message:
-            - description: 'siteId: not found for given orgId.'
-              entity: string
-              references:
-              - id: string
-                name: string
-            reason: dependency exists
-          trackingId: ccconfig_c1a4fcef-aee2-4dea-8977-29f594760552
-        href: /api/organization/6705c69d-4585-42ad-bfc3-79cc485dfb15/team/7b26d174-0016-4682-9858-65918e05f85
-        itemIdentifier: 10
-        operationType: CREATE
-        status: 400
     AutoCSATDTO:
       type: object
       properties:
@@ -1262,6 +1160,75 @@ components:
       - enabled
       - selectedGlobalVariableId
       - surveyDataSource
+    BulkRequestItemDTOAutoCSATQuestionDTO:
+      type: object
+      description: List of items in the bulk request.
+      properties:
+        itemIdentifier:
+          type: integer
+          format: int32
+          description: Unique item identifier for a bulk operation.
+          example: 10
+        item:
+          $ref: '#/components/schemas/AutoCSATQuestionDTO'
+        requestAction:
+          type: string
+          description: Identifier for action type. Possible values are `SAVE` and `DELETE`.
+          example: SAVE
+    ResponseEnvelopeAutoCSATQuestionDTO:
+      type: object
+      properties:
+        meta:
+          type: object
+          additionalProperties: {}
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/AutoCSATQuestionDTO'
+    BulkResponseItemDTO:
+      type: object
+      properties:
+        itemIdentifier:
+          type: integer
+          description: Unique item identifier for a bulk operation.
+          format: int32
+          example: 10
+        status:
+          type: integer
+          description: Indicates the error status code.
+          format: int32
+          example: 400
+        operationType:
+          type: string
+          description: The kind of operation desired of an entity.
+          example: CREATE
+          enum:
+          - CREATE
+          - UPDATE
+          - DELETE
+          - GET
+        href:
+          type: string
+          description: The resource URI of an entity.
+          example: /api/organization/6705c69d-4585-42ad-bfc3-79cc485dfb15/team/7b26d174-0016-4682-9858-65918e05f85
+        apiError:
+          $ref: '#/components/schemas/ApiErrorResponse'
+      example:
+        apiError:
+          error:
+            key: '400'
+            message:
+            - description: 'siteId: not found for given orgId.'
+              entity: string
+              references:
+              - id: string
+                name: string
+            reason: dependency exists
+          trackingId: ccconfig_c1a4fcef-aee2-4dea-8977-29f594760552
+        href: /api/organization/6705c69d-4585-42ad-bfc3-79cc485dfb15/team/7b26d174-0016-4682-9858-65918e05f85
+        itemIdentifier: 10
+        operationType: CREATE
+        status: 400
     BulkRequestDTOAutoCSATQuestionDTO:
       type: object
       properties:
@@ -1278,16 +1245,49 @@ components:
           type: string
           description: A human readable explanation for the occurrence of an error.
           example: Incorrect Credentials.
-    ResponseEnvelopeAutoCSATDTO:
+    AutoCSATQuestionDTO:
       type: object
       properties:
-        meta:
-          type: object
-          additionalProperties: {}
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/AutoCSATDTO'
+        organizationId:
+          type: string
+          format: uuid
+          description: ID of the contact center organization. This field is required for all bulk save operations.
+          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+          maxLength: 36
+          minLength: 32
+          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
+        id:
+          type: string
+          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
+          example: 93912f11-6017-404b-bf14-5331890b1797
+        version:
+          type: integer
+          format: int32
+          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
+          example: 1
+        questionId:
+          type: string
+          description: Question ID that is mapped for Auto CSAT configuration
+          example: 93912f11-6017-404b-bf14-5331890b1797
+          minLength: 1
+        questionnaireId:
+          type: string
+          description: Questionnaire ID corresponding to the Question ID that is mapped for Auto CSAT configuration
+          example: 93912f11-6017-404b-bf14-5331890b1797
+          minLength: 1
+        createdTime:
+          type: integer
+          format: int64
+          description: This is the created time of the entity.
+          example: 123456789
+        lastUpdatedTime:
+          type: integer
+          format: int64
+          description: This is the updated time of the entity.
+          example: 123456789
+      required:
+      - questionId
+      - questionnaireId
   securitySchemes:
     oauth2:
       flows:

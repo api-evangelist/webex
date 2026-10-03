@@ -533,131 +533,6 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
-    UpdateContactStatusWithinCampaignChainRequest:
-      type: object
-      required:
-      - contactStatus
-      properties:
-        contactStatus:
-          type: string
-          enum:
-          - CLOSED
-          description: Contact status to apply. Only CLOSED is supported.
-          example: CLOSED
-        searchAcrossTheCampaignChain:
-          type: string
-          description: Whether to close the contact across all campaigns in the chain. When omitted, all campaigns in the chain are included by default. Set to `no` to close only in the campaign specified in the request path.
-          enum:
-          - 'yes'
-          - 'no'
-          example: 'yes'
-    GetContactListsResponse:
-      type: object
-      description: Response containing contact lists within a campaign, including contact counts and dialer status breakdown for each list.
-      required:
-      - outcome
-      - statusCode
-      - contactLists
-      properties:
-        outcome:
-          type: string
-          enum:
-          - Success
-          - Failure
-          description: Outcome of the operation
-        statusCode:
-          type: integer
-          description: 0 for success, non-zero for failure or validation failure
-        contactLists:
-          type: array
-          description: List of contact lists
-          items:
-            $ref: '#/components/schemas/ContactListInfo'
-    CreateContactResponse:
-      type: object
-      properties:
-        outcome:
-          type: string
-          enum:
-          - Queued
-          - Failed
-          description: Outcome of the operation
-          example: Queued
-        statusCode:
-          type: integer
-          description: 0 for Queued, non-zero for Failed
-          example: 0
-        summary:
-          type: string
-          description: Summary of the operation
-          example: Queued for adding to the contact list
-      example:
-        outcome: Queued
-        statusCode: 0
-        summary: Queued for adding to the contact list
-    UpdateContactListStatusResponse:
-      type: object
-      properties:
-        outcome:
-          type: string
-          enum:
-          - Success
-          - Failure
-          description: Outcome of the operation
-        statusCode:
-          type: integer
-          description: 0 for success, non-zero for failure or validation failure
-        contactLists:
-          type: array
-          description: List of contact lists
-          items:
-            type: object
-            properties:
-              contactListId:
-                type: string
-                description: Contact List ID
-                example: '501'
-              contactListStatus:
-                type: string
-                description: Contact List Status
-                example: Active
-              contactListRecordCount:
-                type: integer
-                description: Number of records in the contact list
-                example: 100
-              contactListSource:
-                type: string
-                description: Source of the contact list
-                example: API
-              dateOfCreation:
-                type: string
-                format: date-time
-                description: Date of creation
-                example: '2025-08-01T10:00:00Z'
-              dateOfActivation:
-                type: string
-                format: date-time
-                description: Date of activation
-                example: '2025-08-01T12:00:00Z'
-              dateOfExpiry:
-                type: string
-                format: date-time
-                description: Date of expiry
-                example: '2025-09-01T00:00:00Z'
-      example:
-        success:
-          summary: Contact list status updated successfully
-          value:
-            outcome: Success
-            statusCode: 0
-        failure:
-          summary: Failed to update contact list status
-          value:
-            outcome: Failure
-            statusCode: 400
-            error:
-              code: InvalidStatus
-              message: Contact list status is invalid
     ContactListInfo:
       type: object
       description: Contact list details and contact counts by processing and dialer status. Count fields are `0` when counts are not yet available for a newly created list.
@@ -750,33 +625,6 @@ components:
           format: date-time
           description: Date and time the contact list expires.
           example: '2025-09-01T00:00:00'
-    CreateContactListRequest:
-      type: object
-      required:
-      - supportedChannels
-      properties:
-        supportedChannels:
-          type: array
-          items:
-            type: string
-            enum:
-            - Voice
-            - SMS
-            - Email
-          description: Supported channels for the contact list
-        activationTimeLagMinutes:
-          type: integer
-          description: Contact list activation time lag in minutes (0 = immediate activation, 180 = 3 hours delay). Required if activationDateTime is not provided.
-          example: 180
-        activationDateTime:
-          type: string
-          description: 'Contact list activation DateTimeStamp (format: YYYY-MM-DDTHH:MM). Required if activationTimeLagMinutes is not provided.'
-          example: 2025-09-24T18:47
-      example:
-        supportedChannels:
-        - Voice
-        activationTimeLagMinutes: 180
-        activationDateTime: '2025-09-24T18:47:00Z'
     ContactCampaignUpdateResult:
       type: object
       description: Close outcome for one campaign.
@@ -823,48 +671,157 @@ components:
           type: string
           description: 'Contact List Status (e.g., EXPIRED). Note: This value is not case-sensitive.'
           example: EXPIRED
-    CreateContactRequest:
+    UpdateContactListStatusResponse:
       type: object
       properties:
-        contacts:
+        outcome:
+          type: string
+          enum:
+          - Success
+          - Failure
+          description: Outcome of the operation
+        statusCode:
+          type: integer
+          description: 0 for success, non-zero for failure or validation failure
+        contactLists:
           type: array
-          description: Array of contact attributes, max 10 contacts per request
+          description: List of contact lists
           items:
             type: object
-            required:
-            - contactAttributes
             properties:
-              contactAttributes:
-                type: array
-                description: Array of field mapping field name & value pairs.
-                items:
-                  type: object
-                  properties:
-                    fieldName:
-                      type: string
-                      description: Field name
-                    value:
-                      type: string
-                      description: Field value
-                  example:
-                    fieldName: FirstName
-                    value: John
-                example:
-                - fieldName: FirstName
-                  value: John
-                - fieldName: LastName
-                  value: Doe
-                - fieldName: AccountStatus
-                  value: Active
-    UpdateContactRequest:
+              contactListId:
+                type: string
+                description: Contact List ID
+                example: '501'
+              contactListStatus:
+                type: string
+                description: Contact List Status
+                example: Active
+              contactListRecordCount:
+                type: integer
+                description: Number of records in the contact list
+                example: 100
+              contactListSource:
+                type: string
+                description: Source of the contact list
+                example: API
+              dateOfCreation:
+                type: string
+                format: date-time
+                description: Date of creation
+                example: '2025-08-01T10:00:00Z'
+              dateOfActivation:
+                type: string
+                format: date-time
+                description: Date of activation
+                example: '2025-08-01T12:00:00Z'
+              dateOfExpiry:
+                type: string
+                format: date-time
+                description: Date of expiry
+                example: '2025-09-01T00:00:00Z'
+      example:
+        success:
+          summary: Contact list status updated successfully
+          value:
+            outcome: Success
+            statusCode: 0
+        failure:
+          summary: Failed to update contact list status
+          value:
+            outcome: Failure
+            statusCode: 400
+            error:
+              code: InvalidStatus
+              message: Contact list status is invalid
+    CreateContactResponse:
       type: object
+      properties:
+        outcome:
+          type: string
+          enum:
+          - Queued
+          - Failed
+          description: Outcome of the operation
+          example: Queued
+        statusCode:
+          type: integer
+          description: 0 for Queued, non-zero for Failed
+          example: 0
+        summary:
+          type: string
+          description: Summary of the operation
+          example: Queued for adding to the contact list
+      example:
+        outcome: Queued
+        statusCode: 0
+        summary: Queued for adding to the contact list
+    UpdateContactStatusResponse:
+      type: object
+      description: Result of the "close contact record" request. Each item in `records` describes the outcome in the target campaign where the contact was found.
+      required:
+      - outcome
+      - statusCode
+      - records
+      properties:
+        outcome:
+          type: string
+          description: 'Overall result: `Success` if closed everywhere a match was found; `PartialSuccess` if some matching contact records were closed but others were non-closeable; `NoChange` if none of the matching contact records could be closed; `Matching contact record not found.` if no match (HTTP 404).'
+          enum:
+          - Success
+          - PartialSuccess
+          - NoChange
+          - Matching contact record not found.
+          example: Success
+        statusCode:
+          type: integer
+          description: 0 for a completed API response.
+          example: 0
+        records:
+          type: array
+          description: Per-campaign close outcome.
+          items:
+            $ref: '#/components/schemas/ContactCampaignUpdateResult'
+    GetContactListsResponse:
+      type: object
+      description: Response containing contact lists within a campaign, including contact counts and dialer status breakdown for each list.
+      required:
+      - outcome
+      - statusCode
+      - contactLists
+      properties:
+        outcome:
+          type: string
+          enum:
+          - Success
+          - Failure
+          description: Outcome of the operation
+        statusCode:
+          type: integer
+          description: 0 for success, non-zero for failure or validation failure
+        contactLists:
+          type: array
+          description: List of contact lists
+          items:
+            $ref: '#/components/schemas/ContactListInfo'
+    UpdateContactStatusWithinCampaignChainRequest:
+      type: object
+      required:
+      - contactStatus
       properties:
         contactStatus:
           type: string
           enum:
           - CLOSED
-          description: Contact status (CLOSED)
+          description: Contact status to apply. Only CLOSED is supported.
           example: CLOSED
+        searchAcrossTheCampaignChain:
+          type: string
+          description: Whether to close the contact across all campaigns in the chain. When omitted, all campaigns in the chain are included by default. Set to `no` to close only in the campaign specified in the request path.
+          enum:
+          - 'yes'
+          - 'no'
+          example: 'yes'
     CreateContactListResponse:
       type: object
       properties:
@@ -898,6 +855,88 @@ components:
             error:
               code: InvalidRequest
               message: Invalid request parameters
+    CreateContactRequest:
+      type: object
+      properties:
+        contacts:
+          type: array
+          description: Array of contact attributes, max 10 contacts per request
+          items:
+            type: object
+            required:
+            - contactAttributes
+            properties:
+              contactAttributes:
+                type: array
+                description: Array of field mapping field name & value pairs.
+                items:
+                  type: object
+                  properties:
+                    fieldName:
+                      type: string
+                      description: Field name
+                    value:
+                      type: string
+                      description: Field value
+                  example:
+                    fieldName: FirstName
+                    value: John
+                example:
+                - fieldName: FirstName
+                  value: John
+                - fieldName: LastName
+                  value: Doe
+                - fieldName: AccountStatus
+                  value: Active
+    CreateContactListRequest:
+      type: object
+      required:
+      - supportedChannels
+      properties:
+        supportedChannels:
+          type: array
+          items:
+            type: string
+            enum:
+            - Voice
+            - SMS
+            - Email
+          description: Supported channels for the contact list
+        activationTimeLagMinutes:
+          type: integer
+          description: Contact list activation time lag in minutes (0 = immediate activation, 180 = 3 hours delay). Required if activationDateTime is not provided.
+          example: 180
+        activationDateTime:
+          type: string
+          description: 'Contact list activation DateTimeStamp (format: YYYY-MM-DDTHH:MM). Required if activationTimeLagMinutes is not provided.'
+          example: 2025-09-24T18:47
+      example:
+        supportedChannels:
+        - Voice
+        activationTimeLagMinutes: 180
+        activationDateTime: '2025-09-24T18:47:00Z'
+    UpdateContactRequest:
+      type: object
+      properties:
+        contactStatus:
+          type: string
+          enum:
+          - CLOSED
+          description: Contact status (CLOSED)
+          example: CLOSED
+    ErrorResponse:
+      type: object
+      description: Error response
+      properties:
+        code:
+          type: string
+          description: Error code
+        message:
+          type: string
+          description: Error description
+      example:
+        code: InvalidRequest
+        message: The campaign ID is missing
     UpdateContactResponse:
       type: object
       properties:
@@ -920,45 +959,6 @@ components:
         outcome: Queued
         statusCode: 0
         summary: Queued for updating the contact status
-    UpdateContactStatusResponse:
-      type: object
-      description: Result of the "close contact record" request. Each item in `records` describes the outcome in the target campaign where the contact was found.
-      required:
-      - outcome
-      - statusCode
-      - records
-      properties:
-        outcome:
-          type: string
-          description: 'Overall result: `Success` if closed everywhere a match was found; `PartialSuccess` if some matching contact records were closed but others were non-closeable; `NoChange` if none of the matching contact records could be closed; `Matching contact record not found.` if no match (HTTP 404).'
-          enum:
-          - Success
-          - PartialSuccess
-          - NoChange
-          - Matching contact record not found.
-          example: Success
-        statusCode:
-          type: integer
-          description: 0 for a completed API response.
-          example: 0
-        records:
-          type: array
-          description: Per-campaign close outcome.
-          items:
-            $ref: '#/components/schemas/ContactCampaignUpdateResult'
-    ErrorResponse:
-      type: object
-      description: Error response
-      properties:
-        code:
-          type: string
-          description: Error code
-        message:
-          type: string
-          description: Error description
-      example:
-        code: InvalidRequest
-        message: The campaign ID is missing
   securitySchemes:
     oauth2:
       flows:

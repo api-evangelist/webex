@@ -1015,14 +1015,91 @@ paths:
           type: number
 components:
   schemas:
-    LocationParentLevel:
-      type: string
-      enum:
-      - SYSTEM_DEFAULT
-      - REGIONAL_DEFAULT
-      - ORGANIZATION
-      - LOCATION
-      description: The level from which the tag's parent value is inherited. If there is no parent level for this tag, this field will not be included in the response.
+    LocationDeviceDynamicSettingsListPostResponse:
+      type: object
+      example:
+        tags:
+        - familyOrModelDisplayName: Poly
+          tag: '%G711U_ORDER%'
+          value: '4'
+          parentValue: '3'
+          parentLevel: ORGANIZATION
+        lastUpdateTime: 1651396800000
+        updateInProgress: false
+      properties:
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocationDevicePostResponseTag'
+          description: Array of device setting values matching the requested tags.
+        lastUpdateTime:
+          type: integer
+          format: int64
+          description: Timestamp of the last update to these settings.
+        updateInProgress:
+          type: boolean
+          description: Flag indicating if an update to these settings is currently in progress.
+    ErrorMessageObject:
+      type: object
+      properties:
+        description:
+          type: string
+          description: Error message.
+        code:
+          type: string
+          description: Internal error code.
+        locationId:
+          type: string
+          description: Error messages describing the location ID in which the error occurs. For a move operation, this is the target location ID.
+    ItemObject:
+      type: object
+      properties:
+        item:
+          type: string
+          description: Phone number
+        itemNumber:
+          type: number
+          description: Index of error number.
+        trackingId:
+          type: string
+          description: Unique identifier to track the HTTP requests.
+        error:
+          $ref: '#/components/schemas/ErrorObject'
+    DeviceSettingsGroupTag:
+      type: object
+      properties:
+        tagBlock:
+          type: array
+          items:
+            type: string
+          description: Array of tags associated with the settings group.
+          example:
+          - '%G711U_ORDER%'
+    DynamicDeviceSettingsJobListResponse:
+      type: object
+      required:
+      - items
+      example:
+        items:
+        - name: dynamicdevicesettings
+          id: Y2lzY29zcGFyazovL3VzL0pPQl9JRC8wZTJjNmI5NC1hNDdlLTQxZGUtODE5ZS04YTcwNTZjMTc5MDk
+          trackingId: NA_a9ef6908-60cf-40e6-b56f-461abffd6fa3
+          sourceUserId: Y2lzY29zcGFyazovL3VzL1BFT1BMRS85OThhMThhYi1kZjY5LTQ5MWYtYmViZi03MzUxMGE3ODI5N2I
+          sourceCustomerId: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi9hNDVkNmNkYS1hZTVhLTQwYzMtYTdhZC01NjUwZmRkZGQ1M2M
+          targetCustomerId: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi9hNDVkNmNkYS1hZTVhLTQwYzMtYTdhZC01NjUwZmRkZGQ1M2M
+          instanceId: 0
+          jobExecutionStatus: []
+          latestExecutionStatus: COMPLETED
+          latestExecutionExitCode: COMPLETED
+          target: LOCATION
+          locationId: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzgwZmUxMzdkLTg5NDgtNDlhYS1iODdiLTk4MGMxN2I2YzdiYg
+          percentageComplete: 100
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PostDynamicDeviceSettingsJobResponse'
+          description: Lists all jobs for the customer of type `dynamicdevicesettings` in order of most recent one to oldest one irrespective of its status.
     CustomerDeviceDynamicSettingsListPostResponse:
       type: object
       example:
@@ -1047,6 +1124,94 @@ components:
         updateInProgress:
           type: boolean
           description: Flag indicating if an update to these settings is currently in progress.
+    DeviceDynamicSettingsListPostRequest:
+      type: object
+      properties:
+        tags:
+          type: array
+          items:
+            type: string
+          description: Optional array of tag identifiers representing specific settings to fetch. If omitted or provided as an empty array, all settings for the device will be returned.
+          minItems: 0
+    MemberType:
+      type: string
+      enum:
+      - PEOPLE
+      - PLACE
+      description: " * `PEOPLE` - Indicates the associated member is a person.\n * `PLACE` - Indicates the associated member is a workspace.\n"
+    ErrorObject:
+      type: object
+      properties:
+        key:
+          type: string
+          description: HTTP error code.
+        message:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorMessageObject'
+          description: Message string with further error information.
+    DeviceParentLevel:
+      type: string
+      enum:
+      - SYSTEM_DEFAULT
+      - REGIONAL_DEFAULT
+      - ORGANIZATION
+      - LOCATION
+      description: The level from which the tag's parent value is inherited. If there is no parent level for this tag, this field will not be included in the response.
+    DeviceDynamicSettingsListPostResponse:
+      type: object
+      required:
+      - tags
+      example:
+        tags:
+        - familyOrModelDisplayName: Poly
+          tag: '%G711U_ORDER%'
+          value: '4'
+          parentValue: '3'
+          parentLevel: ORGANIZATION
+        lastUpdateTime: 1651396800000
+      properties:
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/DevicePostResponseTag'
+          description: Array of device setting values matching the requested tags.
+        lastUpdateTime:
+          type: integer
+          format: int64
+          description: Timestamp of the last update to these settings.
+    LocationParentLevel:
+      type: string
+      enum:
+      - SYSTEM_DEFAULT
+      - REGIONAL_DEFAULT
+      - ORGANIZATION
+      - LOCATION
+      description: The level from which the tag's parent value is inherited. If there is no parent level for this tag, this field will not be included in the response.
+    DevicePostResponseTag:
+      type: object
+      required:
+      - familyOrModelDisplayName
+      - tag
+      properties:
+        familyOrModelDisplayName:
+          type: string
+          description: The display name of the device family or model associated with the returned tag.
+          example: Poly
+        tag:
+          type: string
+          description: The unique identifier for the device setting.
+          example: '%G711U_ORDER%'
+        value:
+          type: string
+          description: The current value of the setting at device level. If the tag value is not set at the device level, this field will not be included in the response.
+          example: '4'
+        parentValue:
+          type: string
+          description: The setting value at the next available `parentLevel`. It is used if `value` is not set and is omitted when no parent level exists for the tag.
+          example: '3'
+        parentLevel:
+          $ref: '#/components/schemas/DeviceParentLevel'
     DynamicSettingsUpdateJobDevicePostItem:
       type: object
       required:
@@ -1074,25 +1239,14 @@ components:
           example: '4'
           minLength: 1
           maxLength: 256
-    CustomerDeviceDynamicSettingsListPostRequest:
-      type: object
-      properties:
-        tags:
-          type: array
-          items:
-            type: string
-            minLength: 1
-            maxLength: 64
-          description: Optional array of device tag identifiers to request settings for. Each identifier must have a length between 1 and 64 characters.
-          minItems: 0
-    UpgradeChannelObject:
+    LatestExecutionStatus:
       type: string
       enum:
-      - STABLE
-      - STABLE_DELAY
-      - PREVIEW
-      - BETA
-      - TESTING
+      - STARTING
+      - STARTED
+      - COMPLETED
+      - FAILED
+      description: " * `STARTING` - Job has started.\n * `STARTED` - Job is in progress.\n * `COMPLETED` - Job has been completed.\n * `FAILED` - Job has failed.\n"
     PostDynamicSettingsUpdateStartJobRequest:
       type: object
       required:
@@ -1108,39 +1262,31 @@ components:
             $ref: '#/components/schemas/DynamicSettingsUpdateJobDevicePostItem'
           description: Array of tag identifiers for settings to be updated. Each setting is identified by a `familyOrModelDisplayName` and `tag`. Supports updating multiple settings across different device families in a single request.
           minItems: 1
-    LocationDevicePostResponseTag:
+    DeviceDynamicSettingsSettingsGroupsGet:
       type: object
+      example:
+        settingsGroups:
+        - path: Voice.Codec Preferences
+          friendlyName: voice.codecPref.G711Mu
+          tab: Poly
+          familyOrModelDisplayName: Poly
+          tags:
+          - tagBlock:
+            - '%G711U_ORDER%'
+        settingsTabs:
+        - Poly
+        - MPP
       properties:
-        familyOrModelDisplayName:
-          type: string
-          description: The `familyOrModelDisplayName` of the device.
-          example: Poly
-        tag:
-          type: string
-          description: The unique identifier for the setting.
-          example: '%G711U_ORDER%'
-        value:
-          type: string
-          description: The current value of the setting at `LOCATION` level. If the tag value is not set at the `LOCATION` level, this field will not be included in the response.
-          example: '4'
-        parentValue:
-          type: string
-          description: The value inherited from the immediate parent level above `LOCATION`. It can be `SYSTEM_DEFAULT`, `REGIONAL_DEFAULT`, `ORGANIZATION`, or `LOCATION`, depending on which level the setting is actually configured at. If there is no parent level for this tag, this field will not be included in the response.
-          example: '3'
-        parentLevel:
-          $ref: '#/components/schemas/LocationParentLevel'
-    ErrorMessageObject:
-      type: object
-      properties:
-        description:
-          type: string
-          description: Error message.
-        code:
-          type: string
-          description: Internal error code.
-        locationId:
-          type: string
-          description: Error messages describing the location ID in which the error occurs. For a move operation, this is the target location ID.
+        settingsGroups:
+          type: array
+          items:
+            $ref: '#/components/schemas/DeviceSettingsGroup'
+          description: Array of settings groups defining structure and association of tags.
+        settingsTabs:
+          type: array
+          items:
+            type: string
+          description: Array of settings tabs names. Can be filtered using the `includeSettingsType` parameter.
     JobExecutionStatusObject:
       type: object
       required:
@@ -1199,35 +1345,30 @@ components:
           items:
             $ref: '#/components/schemas/stepExecutionStatusesObject'
           description: Status of each step within a job.
-    MemberType:
-      type: string
-      enum:
-      - PEOPLE
-      - PLACE
-      description: " * `PEOPLE` - Indicates the associated member is a person.\n * `PLACE` - Indicates the associated member is a workspace.\n"
-    LatestExecutionStatus:
-      type: string
-      enum:
-      - STARTING
-      - STARTED
-      - COMPLETED
-      - FAILED
-      description: " * `STARTING` - Job has started.\n * `STARTED` - Job is in progress.\n * `COMPLETED` - Job has been completed.\n * `FAILED` - Job has failed.\n"
-    DeviceDynamicSettingsListPostRequest:
+    DeviceSettingsGroup:
       type: object
       properties:
+        path:
+          type: string
+          description: Path of the settings group. Creates an easily navigable settings hierarchy.
+          example: Voice.Codec Preferences
+        friendlyName:
+          type: string
+          description: Friendly name of the settings group.
+          example: voice.codecPref.G711Mu
+        tab:
+          type: string
+          description: Tab name associated with the settings group.
+          example: Poly
+        familyOrModelDisplayName:
+          type: string
+          description: Family or model display name associated with the settings group.
+          example: Poly
         tags:
           type: array
           items:
-            type: string
-          description: Optional array of tag identifiers representing specific settings to fetch. If omitted or provided as an empty array, all settings for the device will be returned.
-          minItems: 0
-    Action:
-      type: string
-      enum:
-      - ADD
-      - DELETE
-      description: " * `ADD` - Add action.\n * `DELETE` - Delete action.\n"
+            $ref: '#/components/schemas/DeviceSettingsGroupTag'
+          description: List of `tagBlock` objects associated with the settings group.
     DevicePutItem:
       type: object
       required:
@@ -1248,6 +1389,80 @@ components:
           example: '4'
           minLength: 1
           maxLength: 256
+    stepExecutionStatusesObject:
+      type: object
+      required:
+      - id
+      - lastUpdated
+      - statusMessage
+      - name
+      - timeElapsed
+      properties:
+        id:
+          type: number
+          example: 3624681
+          description: Unique identifier that identifies each step in a job.
+        startTime:
+          type: string
+          example: '2023-05-30T13:04:00.469Z'
+          description: The date and time with seconds, the step execution has started in UTC format.
+        endTime:
+          type: string
+          example: '2023-05-30T13:04:03.245Z'
+          description: The date and time with seconds, the step execution has ended in UTC format.
+        lastUpdated:
+          type: string
+          example: '2023-05-30T13:04:03.574Z'
+          description: The date and time with seconds, the step has last updated in UTC format.
+        statusMessage:
+          type: string
+          enum:
+          - STARTING
+          - STARTED
+          - COMPLETED
+          - FAILED
+          - UNKNOWN
+          - ABANDONED
+          description: "Displays status for a step.\n * `STARTING` - Job has started.\n * `STARTED` - Job is in progress.\n * `COMPLETED` - Job has completed.\n * `FAILED` - Job has failed.\n * `UNKNOWN` - Job status is unknown.\n * `ABANDONED` - Job has been abandoned (manually stopped).\n"
+        exitCode:
+          type: string
+          enum:
+          - UNKNOWN
+          - COMPLETED
+          - FAILED
+          - STOPPED
+          - COMPLETED_WITH_ERRORS
+          - COMPLETED_WITH_PENDING_ORDERS
+          description: "Exit Code for a step.\n * `UNKNOWN` - Job is in progress.\n * `COMPLETED` - Job has completed successfully.\n * `FAILED` - Job has failed.\n * `STOPPED` - Job has been stopped.\n * `COMPLETED_WITH_ERRORS` - Job has completed with errors.\n * `COMPLETED_WITH_PENDING_ORDERS` - Job has completed with pending number orders.\n"
+        name:
+          type: string
+          example: moveusersvalidateAndMove
+          description: Step name.
+        timeElapsed:
+          type: string
+          example: PT2.752S
+          description: Time lapsed in seconds since the job execution started.
+    LocationDevicePostResponseTag:
+      type: object
+      properties:
+        familyOrModelDisplayName:
+          type: string
+          description: The `familyOrModelDisplayName` of the device.
+          example: Poly
+        tag:
+          type: string
+          description: The unique identifier for the setting.
+          example: '%G711U_ORDER%'
+        value:
+          type: string
+          description: The current value of the setting at `LOCATION` level. If the tag value is not set at the `LOCATION` level, this field will not be included in the response.
+          example: '4'
+        parentValue:
+          type: string
+          description: The value inherited from the immediate parent level above `LOCATION`. It can be `SYSTEM_DEFAULT`, `REGIONAL_DEFAULT`, `ORGANIZATION`, or `LOCATION`, depending on which level the setting is actually configured at. If there is no parent level for this tag, this field will not be included in the response.
+          example: '3'
+        parentLevel:
+          $ref: '#/components/schemas/LocationParentLevel'
     ErrorResponseObject:
       type: object
       properties:
@@ -1255,24 +1470,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ItemObject'
-    ErrorObject:
-      type: object
-      properties:
-        key:
-          type: string
-          description: HTTP error code.
-        message:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorMessageObject'
-          description: Message string with further error information.
-    DeviceActivationStates:
-      type: string
-      enum:
-      - ACTIVATING
-      - ACTIVATED
-      - DEACTIVATED
-      description: " * `ACTIVATING` - Indicates a device is activating.\n * `ACTIVATED` - Indicates a device is activated.\n * `DEACTIVATED` - Indicates a device is deactivated.\n"
     DeviceObject:
       type: object
       required:
@@ -1328,69 +1525,6 @@ components:
               example: Main Location Test
               description: Name of location associated with virtual line.
           description: Location details of virtual line.
-    DeviceSettingsGroupTag:
-      type: object
-      properties:
-        tagBlock:
-          type: array
-          items:
-            type: string
-          description: Array of tags associated with the settings group.
-          example:
-          - '%G711U_ORDER%'
-    stepExecutionStatusesObject:
-      type: object
-      required:
-      - id
-      - lastUpdated
-      - statusMessage
-      - name
-      - timeElapsed
-      properties:
-        id:
-          type: number
-          example: 3624681
-          description: Unique identifier that identifies each step in a job.
-        startTime:
-          type: string
-          example: '2023-05-30T13:04:00.469Z'
-          description: The date and time with seconds, the step execution has started in UTC format.
-        endTime:
-          type: string
-          example: '2023-05-30T13:04:03.245Z'
-          description: The date and time with seconds, the step execution has ended in UTC format.
-        lastUpdated:
-          type: string
-          example: '2023-05-30T13:04:03.574Z'
-          description: The date and time with seconds, the step has last updated in UTC format.
-        statusMessage:
-          type: string
-          enum:
-          - STARTING
-          - STARTED
-          - COMPLETED
-          - FAILED
-          - UNKNOWN
-          - ABANDONED
-          description: "Displays status for a step.\n * `STARTING` - Job has started.\n * `STARTED` - Job is in progress.\n * `COMPLETED` - Job has completed.\n * `FAILED` - Job has failed.\n * `UNKNOWN` - Job status is unknown.\n * `ABANDONED` - Job has been abandoned (manually stopped).\n"
-        exitCode:
-          type: string
-          enum:
-          - UNKNOWN
-          - COMPLETED
-          - FAILED
-          - STOPPED
-          - COMPLETED_WITH_ERRORS
-          - COMPLETED_WITH_PENDING_ORDERS
-          description: "Exit Code for a step.\n * `UNKNOWN` - Job is in progress.\n * `COMPLETED` - Job has completed successfully.\n * `FAILED` - Job has failed.\n * `STOPPED` - Job has been stopped.\n * `COMPLETED_WITH_ERRORS` - Job has completed with errors.\n * `COMPLETED_WITH_PENDING_ORDERS` - Job has completed with pending number orders.\n"
-        name:
-          type: string
-          example: moveusersvalidateAndMove
-          description: Step name.
-        timeElapsed:
-          type: string
-          example: PT2.752S
-          description: Time lapsed in seconds since the job execution started.
     deviceOwner:
       type: object
       required:
@@ -1412,60 +1546,155 @@ components:
           type: string
           example: Smith
           description: The last name of the device owner.
-    LocationDeviceDynamicSettingsListPostResponse:
+    CustomerDeviceDynamicSettingsListPostRequest:
       type: object
-      example:
-        tags:
-        - familyOrModelDisplayName: Poly
-          tag: '%G711U_ORDER%'
-          value: '4'
-          parentValue: '3'
-          parentLevel: ORGANIZATION
-        lastUpdateTime: 1651396800000
-        updateInProgress: false
       properties:
         tags:
           type: array
           items:
-            $ref: '#/components/schemas/LocationDevicePostResponseTag'
-          description: Array of device setting values matching the requested tags.
-        lastUpdateTime:
-          type: integer
-          format: int64
-          description: Timestamp of the last update to these settings.
-        updateInProgress:
-          type: boolean
-          description: Flag indicating if an update to these settings is currently in progress.
-    DeviceDynamicSettingsListPostResponse:
+            type: string
+            minLength: 1
+            maxLength: 64
+          description: Optional array of device tag identifiers to request settings for. Each identifier must have a length between 1 and 64 characters.
+          minItems: 0
+    DeviceDynamicSettingsPutRequest:
+      type: object
+      properties:
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/DevicePutItem'
+          description: Optional array of `tag` identifiers representing specific settings to update. If omitted or provided as an empty array, the request will have no effect.
+          minItems: 0
+    supportedDevicesObject:
       type: object
       required:
-      - tags
+      - devices
+      - upgradeChannelList
       example:
-        tags:
-        - familyOrModelDisplayName: Poly
-          tag: '%G711U_ORDER%'
-          value: '4'
-          parentValue: '3'
-          parentLevel: ORGANIZATION
-        lastUpdateTime: 1651396800000
+        upgradeChannelList:
+        - STABLE
+        - STABLE_DELAY
+        - PREVIEW
+        - BETA
+        - TESTING
+        devices:
+        - model: 2N Customer Managed
+          displayName: 2N Customer Managed
+          type: GENERIC_SIP
+          manufacturer: THIRD_PARTY
+          managedBy: CUSTOMER
+          supportedFor:
+          - PEOPLE
+          - PLACE
+          onboardingMethod:
+          - MAC_ADDRESS
+          allowConfigureLayoutEnabled: false
+          numberOfLinePorts: 20
+          kemSupportEnabled: true
+          kemModuleCount: 1
+          kemLinesSupportEnabled: false
+          kemModuleType:
+          - KEM_20_KEYS
+          upgradeChannelEnabled: false
+          additionalPrimaryLineAppearancesEnabled: false
+          basicEmergencyNomadicEnabled: false
+          customizedBehaviorsEnabled: false
+          allowConfigurePortsEnabled: false
+          customizableLineLabelEnabled: false
+          supportsLinePortReorderingEnabled: false
+          portNumberSupportEnabled: false
+          t38Enabled: false
+          callDeclinedEnabled: false
+          touchScreenPhone: false
+          numberOfLineKeyButtons: 0
+          deviceSettingsConfiguration: NONE
+          allowHotelingHostEnabled: false
+          supportsLogCollection: NONE
+          supportsApplyChangesEnabled: false
+          allowConfigureLinesEnabled: true
+          allowConfigurePhoneSettingsEnabled: false
+          supportsHotlineEnabled: false
+        - model: DMS Polycom EE400
+          displayName: Polycom EE400
+          familyDisplayName: Poly
+          type: GENERIC_SIP
+          manufacturer: THIRD_PARTY
+          managedBy: CISCO
+          supportedFor:
+          - PEOPLE
+          - PLACE
+          onboardingMethod:
+          - MAC_ADDRESS
+          allowConfigureLayoutEnabled: false
+          numberOfLinePorts: 14
+          kemSupportEnabled: false
+          kemLinesSupportEnabled: false
+          upgradeChannelEnabled: false
+          additionalPrimaryLineAppearancesEnabled: true
+          basicEmergencyNomadicEnabled: false
+          customizedBehaviorsEnabled: true
+          allowConfigurePortsEnabled: false
+          customizableLineLabelEnabled: false
+          supportsLinePortReorderingEnabled: true
+          portNumberSupportEnabled: false
+          t38Enabled: false
+          callDeclinedEnabled: true
+          touchScreenPhone: false
+          numberOfLineKeyButtons: 0
+          deviceSettingsConfiguration: WEBEX_CALLING_DYNAMIC_DEVICE_CONFIGURATION
+          allowHotelingHostEnabled: true
+          supportsLogCollection: NONE
+          supportsApplyChangesEnabled: true
+          allowConfigureLinesEnabled: true
+          allowConfigurePhoneSettingsEnabled: true
+          supportsHotlineEnabled: true
       properties:
-        tags:
+        upgradeChannelList:
           type: array
           items:
-            $ref: '#/components/schemas/DevicePostResponseTag'
-          description: Array of device setting values matching the requested tags.
-        lastUpdateTime:
-          type: integer
-          format: int64
-          description: Timestamp of the last update to these settings.
-    DeviceParentLevel:
+            $ref: '#/components/schemas/UpgradeChannelObject'
+          description: "List of available upgrade channels.\n * `STABLE` - These are standard stable releases.\n * `STABLE_DELAY` - These are delayed stable releases.\n * `PREVIEW` - These are Preview/pre-release versions.\n * `BETA` - These are Beta testing versions.\n * `TESTING` - These are testing versions.\n"
+        devices:
+          type: array
+          items:
+            $ref: '#/components/schemas/DeviceObject'
+          description: List of supported devices.
+    DynamicDeviceSettingsCustomerParentLevel:
       type: string
       enum:
       - SYSTEM_DEFAULT
       - REGIONAL_DEFAULT
       - ORGANIZATION
-      - LOCATION
       description: The level from which the tag's parent value is inherited. If there is no parent level for this tag, this field will not be included in the response.
+    CustomerDevicePostTag:
+      type: object
+      properties:
+        familyOrModelDisplayName:
+          type: string
+          description: The `familyOrModelDisplayName` of the device.
+          example: Poly
+        tag:
+          type: string
+          description: The unique identifier for the setting.
+          example: '%G711U_ORDER%'
+        value:
+          type: string
+          description: The current value of the setting at `ORGANIZATION` level. If the tag value is not set at the `ORGANIZATION` level, this field will not be included in the response.
+          example: '4'
+        parentValue:
+          type: string
+          description: The value inherited from the immediate parent level above `ORGANIZATION`. It can be `SYSTEM_DEFAULT`, `REGIONAL_DEFAULT`, or `ORGANIZATION`, depending on which level the setting is actually configured at. If there is no parent level for this tag, this field will not be included in the response.
+          example: '3'
+        parentLevel:
+          $ref: '#/components/schemas/DynamicDeviceSettingsCustomerParentLevel'
+    DeviceActivationStates:
+      type: string
+      enum:
+      - ACTIVATING
+      - ACTIVATED
+      - DEACTIVATED
+      description: " * `ACTIVATING` - Indicates a device is activating.\n * `ACTIVATED` - Indicates a device is activated.\n * `DEACTIVATED` - Indicates a device is deactivated.\n"
     LocationDeviceDynamicSettingsListPostRequest:
       type: object
       properties:
@@ -1577,276 +1806,26 @@ components:
           type: integer
           example: 10
           description: Indicates the progress of the job.
-    DynamicDeviceSettingsJobListResponse:
-      type: object
-      required:
-      - items
-      example:
-        items:
-        - name: dynamicdevicesettings
-          id: Y2lzY29zcGFyazovL3VzL0pPQl9JRC8wZTJjNmI5NC1hNDdlLTQxZGUtODE5ZS04YTcwNTZjMTc5MDk
-          trackingId: NA_a9ef6908-60cf-40e6-b56f-461abffd6fa3
-          sourceUserId: Y2lzY29zcGFyazovL3VzL1BFT1BMRS85OThhMThhYi1kZjY5LTQ5MWYtYmViZi03MzUxMGE3ODI5N2I
-          sourceCustomerId: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi9hNDVkNmNkYS1hZTVhLTQwYzMtYTdhZC01NjUwZmRkZGQ1M2M
-          targetCustomerId: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi9hNDVkNmNkYS1hZTVhLTQwYzMtYTdhZC01NjUwZmRkZGQ1M2M
-          instanceId: 0
-          jobExecutionStatus: []
-          latestExecutionStatus: COMPLETED
-          latestExecutionExitCode: COMPLETED
-          target: LOCATION
-          locationId: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzgwZmUxMzdkLTg5NDgtNDlhYS1iODdiLTk4MGMxN2I2YzdiYg
-          percentageComplete: 100
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/PostDynamicDeviceSettingsJobResponse'
-          description: Lists all jobs for the customer of type `dynamicdevicesettings` in order of most recent one to oldest one irrespective of its status.
-    DeviceDynamicSettingsSettingsGroupsGet:
-      type: object
-      example:
-        settingsGroups:
-        - path: Voice.Codec Preferences
-          friendlyName: voice.codecPref.G711Mu
-          tab: Poly
-          familyOrModelDisplayName: Poly
-          tags:
-          - tagBlock:
-            - '%G711U_ORDER%'
-        settingsTabs:
-        - Poly
-        - MPP
-      properties:
-        settingsGroups:
-          type: array
-          items:
-            $ref: '#/components/schemas/DeviceSettingsGroup'
-          description: Array of settings groups defining structure and association of tags.
-        settingsTabs:
-          type: array
-          items:
-            type: string
-          description: Array of settings tabs names. Can be filtered using the `includeSettingsType` parameter.
-    CustomerDevicePostTag:
-      type: object
-      properties:
-        familyOrModelDisplayName:
-          type: string
-          description: The `familyOrModelDisplayName` of the device.
-          example: Poly
-        tag:
-          type: string
-          description: The unique identifier for the setting.
-          example: '%G711U_ORDER%'
-        value:
-          type: string
-          description: The current value of the setting at `ORGANIZATION` level. If the tag value is not set at the `ORGANIZATION` level, this field will not be included in the response.
-          example: '4'
-        parentValue:
-          type: string
-          description: The value inherited from the immediate parent level above `ORGANIZATION`. It can be `SYSTEM_DEFAULT`, `REGIONAL_DEFAULT`, or `ORGANIZATION`, depending on which level the setting is actually configured at. If there is no parent level for this tag, this field will not be included in the response.
-          example: '3'
-        parentLevel:
-          $ref: '#/components/schemas/DynamicDeviceSettingsCustomerParentLevel'
-    supportedDevicesObject:
-      type: object
-      required:
-      - devices
-      - upgradeChannelList
-      example:
-        upgradeChannelList:
-        - STABLE
-        - STABLE_DELAY
-        - PREVIEW
-        - BETA
-        - TESTING
-        devices:
-        - model: 2N Customer Managed
-          displayName: 2N Customer Managed
-          type: GENERIC_SIP
-          manufacturer: THIRD_PARTY
-          managedBy: CUSTOMER
-          supportedFor:
-          - PEOPLE
-          - PLACE
-          onboardingMethod:
-          - MAC_ADDRESS
-          allowConfigureLayoutEnabled: false
-          numberOfLinePorts: 20
-          kemSupportEnabled: true
-          kemModuleCount: 1
-          kemLinesSupportEnabled: false
-          kemModuleType:
-          - KEM_20_KEYS
-          upgradeChannelEnabled: false
-          additionalPrimaryLineAppearancesEnabled: false
-          basicEmergencyNomadicEnabled: false
-          customizedBehaviorsEnabled: false
-          allowConfigurePortsEnabled: false
-          customizableLineLabelEnabled: false
-          supportsLinePortReorderingEnabled: false
-          portNumberSupportEnabled: false
-          t38Enabled: false
-          callDeclinedEnabled: false
-          touchScreenPhone: false
-          numberOfLineKeyButtons: 0
-          deviceSettingsConfiguration: NONE
-          allowHotelingHostEnabled: false
-          supportsLogCollection: NONE
-          supportsApplyChangesEnabled: false
-          allowConfigureLinesEnabled: true
-          allowConfigurePhoneSettingsEnabled: false
-          supportsHotlineEnabled: false
-        - model: DMS Polycom EE400
-          displayName: Polycom EE400
-          familyDisplayName: Poly
-          type: GENERIC_SIP
-          manufacturer: THIRD_PARTY
-          managedBy: CISCO
-          supportedFor:
-          - PEOPLE
-          - PLACE
-          onboardingMethod:
-          - MAC_ADDRESS
-          allowConfigureLayoutEnabled: false
-          numberOfLinePorts: 14
-          kemSupportEnabled: false
-          kemLinesSupportEnabled: false
-          upgradeChannelEnabled: false
-          additionalPrimaryLineAppearancesEnabled: true
-          basicEmergencyNomadicEnabled: false
-          customizedBehaviorsEnabled: true
-          allowConfigurePortsEnabled: false
-          customizableLineLabelEnabled: false
-          supportsLinePortReorderingEnabled: true
-          portNumberSupportEnabled: false
-          t38Enabled: false
-          callDeclinedEnabled: true
-          touchScreenPhone: false
-          numberOfLineKeyButtons: 0
-          deviceSettingsConfiguration: WEBEX_CALLING_DYNAMIC_DEVICE_CONFIGURATION
-          allowHotelingHostEnabled: true
-          supportsLogCollection: NONE
-          supportsApplyChangesEnabled: true
-          allowConfigureLinesEnabled: true
-          allowConfigurePhoneSettingsEnabled: true
-          supportsHotlineEnabled: true
-      properties:
-        upgradeChannelList:
-          type: array
-          items:
-            $ref: '#/components/schemas/UpgradeChannelObject'
-          description: "List of available upgrade channels.\n * `STABLE` - These are standard stable releases.\n * `STABLE_DELAY` - These are delayed stable releases.\n * `PREVIEW` - These are Preview/pre-release versions.\n * `BETA` - These are Beta testing versions.\n * `TESTING` - These are testing versions.\n"
-        devices:
-          type: array
-          items:
-            $ref: '#/components/schemas/DeviceObject'
-          description: List of supported devices.
     LineType:
       type: string
       enum:
       - PRIMARY
       - SHARED_CALL_APPEARANCE
       description: " * `PRIMARY` - Primary line for the member.\n * `SHARED_CALL_APPEARANCE` - Shared line for the member. A shared line allows users to receive and place calls to and from another user's extension, using their own device.\n"
-    DeviceDynamicSettingsPutRequest:
-      type: object
-      properties:
-        tags:
-          type: array
-          items:
-            $ref: '#/components/schemas/DevicePutItem'
-          description: Optional array of `tag` identifiers representing specific settings to update. If omitted or provided as an empty array, the request will have no effect.
-          minItems: 0
-    DevicePostResponseTag:
-      type: object
-      required:
-      - familyOrModelDisplayName
-      - tag
-      properties:
-        familyOrModelDisplayName:
-          type: string
-          description: The display name of the device family or model associated with the returned tag.
-          example: Poly
-        tag:
-          type: string
-          description: The unique identifier for the device setting.
-          example: '%G711U_ORDER%'
-        value:
-          type: string
-          description: The current value of the setting at device level. If the tag value is not set at the device level, this field will not be included in the response.
-          example: '4'
-        parentValue:
-          type: string
-          description: The setting value at the next available `parentLevel`. It is used if `value` is not set and is omitted when no parent level exists for the tag.
-          example: '3'
-        parentLevel:
-          $ref: '#/components/schemas/DeviceParentLevel'
-    DynamicDeviceSettingsCustomerParentLevel:
+    UpgradeChannelObject:
       type: string
       enum:
-      - SYSTEM_DEFAULT
-      - REGIONAL_DEFAULT
-      - ORGANIZATION
-      description: The level from which the tag's parent value is inherited. If there is no parent level for this tag, this field will not be included in the response.
-    DeviceSettingsGroup:
-      type: object
-      properties:
-        path:
-          type: string
-          description: Path of the settings group. Creates an easily navigable settings hierarchy.
-          example: Voice.Codec Preferences
-        friendlyName:
-          type: string
-          description: Friendly name of the settings group.
-          example: voice.codecPref.G711Mu
-        tab:
-          type: string
-          description: Tab name associated with the settings group.
-          example: Poly
-        familyOrModelDisplayName:
-          type: string
-          description: Family or model display name associated with the settings group.
-          example: Poly
-        tags:
-          type: array
-          items:
-            $ref: '#/components/schemas/DeviceSettingsGroupTag'
-          description: List of `tagBlock` objects associated with the settings group.
-    ItemObject:
-      type: object
-      properties:
-        item:
-          type: string
-          description: Phone number
-        itemNumber:
-          type: number
-          description: Index of error number.
-        trackingId:
-          type: string
-          description: Unique identifier to track the HTTP requests.
-        error:
-          $ref: '#/components/schemas/ErrorObject'
-    OnboardingMethodObject:
+      - STABLE
+      - STABLE_DELAY
+      - PREVIEW
+      - BETA
+      - TESTING
+    Action:
       type: string
       enum:
-      - MAC_ADDRESS
-      - ACTIVATION_CODE
-      - NONE
-    ManagedByObject:
-      type: string
-      enum:
-      - CISCO
-      - CUSTOMER
-      description: " * `CISCO` - Devices managed by Cisco.\n * `CUSTOMER` - Devices managed by a customer that are approved by a Cisco account manager to be enabled for provisioning in the control hub.\n"
-    TypeObject:
-      type: string
-      enum:
-      - MPP
-      - ATA
-      - GENERIC_SIP
-      - ESIM
-      - DESK_PHONE
-      description: " * `MPP` - Cisco Multiplatform Phone\n * `ATA` - Analog Telephone Adapters\n * `GENERIC_SIP` - GENERIC Session Initiation Protocol\n * `ESIM` - Esim Supported Webex Go\n * `DESK_PHONE` - Desk Phone\n"
+      - ADD
+      - DELETE
+      description: " * `ADD` - Add action.\n * `DELETE` - Delete action.\n"
     ErrorMessageObject_2:
       type: object
       properties:
@@ -1859,6 +1838,58 @@ components:
         locationId:
           type: string
           description: Error messages describing the location ID in which the error occurs.
+    ItemObject_2:
+      type: object
+      properties:
+        itemNumber:
+          type: number
+          description: Index of error number.
+        trackingId:
+          type: string
+          description: Unique identifier to track the HTTP requests.
+        error:
+          $ref: '#/components/schemas/ErrorObject_2'
+    ErrorObject_2:
+      type: object
+      description: Error details object containing error information.
+      properties:
+        key:
+          type: string
+          description: HTTP error code.
+        message:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorMessageObject_2'
+          description: Message string with further error information.
+    ManufacturerObject:
+      type: string
+      enum:
+      - CISCO
+      - THIRD_PARTY
+      description: " * `CISCO` - Devices manufactured by Cisco.\n * `THIRD_PARTY` - Devices manufactured by a third-party that are approved by a Cisco account manager to be enabled for provisioning in the control hub.\n"
+    LatestExecutionStatus_2:
+      type: string
+      enum:
+      - STARTING
+      - STARTED
+      - COMPLETED
+      - FAILED
+      description: " * `STARTING` - Indicates the job has started.\n * `STARTED` - Indicates the job is in progress.\n * `COMPLETED` - Indicates the job has completed.\n * `FAILED` - Indicates the job has failed.\n"
+    TypeObject:
+      type: string
+      enum:
+      - MPP
+      - ATA
+      - GENERIC_SIP
+      - ESIM
+      - DESK_PHONE
+      description: " * `MPP` - Cisco Multiplatform Phone\n * `ATA` - Analog Telephone Adapters\n * `GENERIC_SIP` - GENERIC Session Initiation Protocol\n * `ESIM` - Esim Supported Webex Go\n * `DESK_PHONE` - Desk Phone\n"
+    OnboardingMethodObject:
+      type: string
+      enum:
+      - MAC_ADDRESS
+      - ACTIVATION_CODE
+      - NONE
     JobExecutionStatusObject_2:
       type: object
       required:
@@ -1901,28 +1932,43 @@ components:
           items:
             $ref: '#/components/schemas/stepExecutionStatusesObject_2'
           description: Status of each step within a job.
-    SupportsLogCollectionObject:
-      type: string
-      enum:
-      - NONE
-      - CISCO_PRT
-      - CISCO_ROOMOS
-      description: " * `NONE` - Devices which does not support log collection.\n * `CISCO_PRT` - Devices which supports Cisco PRT log collection.\n * `CISCO_ROOMOS` - Devices which supports Cisco RoomOS log collection.\n"
-    LatestExecutionStatus_2:
-      type: string
-      enum:
-      - STARTING
-      - STARTED
-      - COMPLETED
-      - FAILED
-      description: " * `STARTING` - Indicates the job has started.\n * `STARTED` - Indicates the job is in progress.\n * `COMPLETED` - Indicates the job has completed.\n * `FAILED` - Indicates the job has failed.\n"
-    Action_2:
-      type: string
-      enum:
-      - SET
-      - CLEAR
-      description: The action to perform on the setting. When action is `SET`, `tag` is updated to specified value. When action is `CLEAR`, the `tag` value at device level is removed, and the device will inherit the value from the parent level, if it exists.
-      example: SET
+    stepExecutionStatusesObject_2:
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          type: number
+          example: 1998857
+          description: Unique identifier that identifies each step in a job.
+        startTime:
+          type: string
+          example: '2024-03-13T03:58:36.886Z'
+          description: Step execution start time in UTC format.
+        endTime:
+          type: string
+          example: '2024-03-13T03:58:48.471Z'
+          description: Step execution end time in UTC format.
+        lastUpdated:
+          type: string
+          example: '2024-03-13T03:58:48.472Z'
+          description: Last updated time for a step in UTC format.
+        statusMessage:
+          type: string
+          example: COMPLETED
+          description: Displays the status of a step.
+        exitCode:
+          type: string
+          example: COMPLETED
+          description: Exit Code for a step.
+        name:
+          type: string
+          example: dynamicdevicesettingsUpdate
+          description: Name of different steps the job goes through.
+        timeElapsed:
+          type: string
+          example: PT11.585S
+          description: Time lapsed since the step execution started.
     ErrorResponseObject_2:
       type: object
       example:
@@ -1944,18 +1990,6 @@ components:
           example:
           - itemNumber: 0
             trackingId: ROUTER_62F66055-8D70-01BB-0137-AC10A8310137
-    ErrorObject_2:
-      type: object
-      description: Error details object containing error information.
-      properties:
-        key:
-          type: string
-          description: HTTP error code.
-        message:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorMessageObject_2'
-          description: Message string with further error information.
     DeviceObject_2:
       type: object
       required:
@@ -2098,43 +2132,26 @@ components:
         maxNumberOfLineAppearances:
           type: number
           description: Maximum number of line appearances available on the device.
-    stepExecutionStatusesObject_2:
-      type: object
-      required:
-      - id
-      properties:
-        id:
-          type: number
-          example: 1998857
-          description: Unique identifier that identifies each step in a job.
-        startTime:
-          type: string
-          example: '2024-03-13T03:58:36.886Z'
-          description: Step execution start time in UTC format.
-        endTime:
-          type: string
-          example: '2024-03-13T03:58:48.471Z'
-          description: Step execution end time in UTC format.
-        lastUpdated:
-          type: string
-          example: '2024-03-13T03:58:48.472Z'
-          description: Last updated time for a step in UTC format.
-        statusMessage:
-          type: string
-          example: COMPLETED
-          description: Displays the status of a step.
-        exitCode:
-          type: string
-          example: COMPLETED
-          description: Exit Code for a step.
-        name:
-          type: string
-          example: dynamicdevicesettingsUpdate
-          description: Name of different steps the job goes through.
-        timeElapsed:
-          type: string
-          example: PT11.585S
-          description: Time lapsed since the step execution started.
+    ManagedByObject:
+      type: string
+      enum:
+      - CISCO
+      - CUSTOMER
+      description: " * `CISCO` - Devices managed by Cisco.\n * `CUSTOMER` - Devices managed by a customer that are approved by a Cisco account manager to be enabled for provisioning in the control hub.\n"
+    SupportsLogCollectionObject:
+      type: string
+      enum:
+      - NONE
+      - CISCO_PRT
+      - CISCO_ROOMOS
+      description: " * `NONE` - Devices which does not support log collection.\n * `CISCO_PRT` - Devices which supports Cisco PRT log collection.\n * `CISCO_ROOMOS` - Devices which supports Cisco RoomOS log collection.\n"
+    KemModuleType:
+      type: string
+      enum:
+      - KEM_14_KEYS
+      - KEM_18_KEYS
+      - KEM_20_KEYS
+      description: " * `KEM_14_KEYS` - Extension module has 14 line keys that can be configured.\n * `KEM_18_KEYS` - Extension module has 18 line keys that can be configured.\n * `KEM_20_KEYS` - Extension module has 20 line keys that can be configured.\n"
     DeviceSettingsConfigurationObject:
       type: string
       enum:
@@ -2143,35 +2160,18 @@ components:
       - WEBEX_CALLING_DYNAMIC_DEVICE_CONFIGURATION
       - NONE
       description: " * `WEBEX_CALLING_DEVICE_CONFIGURATION` - Devices which supports Webex Calling Device Settings Configuration.\n * `WEBEX_DEVICE_CONFIGURATION` - Devices which supports Webex Device Settings Configuration.\n * `WEBEX_CALLING_DYNAMIC_DEVICE_CONFIGURATION` - Devices which supports Webex Calling dynamic Settings Configuration.\n * `NONE` - Devices does not support any configuration.\n"
-    KemModuleType:
-      type: string
-      enum:
-      - KEM_14_KEYS
-      - KEM_18_KEYS
-      - KEM_20_KEYS
-      description: " * `KEM_14_KEYS` - Extension module has 14 line keys that can be configured.\n * `KEM_18_KEYS` - Extension module has 18 line keys that can be configured.\n * `KEM_20_KEYS` - Extension module has 20 line keys that can be configured.\n"
-    ManufacturerObject:
-      type: string
-      enum:
-      - CISCO
-      - THIRD_PARTY
-      description: " * `CISCO` - Devices manufactured by Cisco.\n * `THIRD_PARTY` - Devices manufactured by a third-party that are approved by a Cisco account manager to be enabled for provisioning in the control hub.\n"
     SupportedForObject:
       type: string
       enum:
       - PEOPLE
       - PLACE
-    ItemObject_2:
-      type: object
-      properties:
-        itemNumber:
-          type: number
-          description: Index of error number.
-        trackingId:
-          type: string
-          description: Unique identifier to track the HTTP requests.
-        error:
-          $ref: '#/components/schemas/ErrorObject_2'
+    Action_2:
+      type: string
+      enum:
+      - SET
+      - CLEAR
+      description: The action to perform on the setting. When action is `SET`, `tag` is updated to specified value. When action is `CLEAR`, the `tag` value at device level is removed, and the device will inherit the value from the parent level, if it exists.
+      example: SET
   securitySchemes:
     oauth2:
       flows:

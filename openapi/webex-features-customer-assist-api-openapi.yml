@@ -963,7 +963,7 @@ paths:
       x-operation-id-original: List Available Agents
 components:
   schemas:
-    ValidateWrapUpReasonPayload:
+    CreateWrapUpReasonPayload:
       type: object
       required:
       - name
@@ -972,6 +972,26 @@ components:
           type: string
           example: Wrap up reason 1
           description: Name of the wrap-up reason.
+        description:
+          type: string
+          example: This is a description for wrap-up reason 1
+          description: Description of the wrap-up reason.
+        queues:
+          type: array
+          items:
+            type: string
+            example: Y2lzY29zcGFyazovL3VzL0NBTExfUVVFVUUvOGY1MDI2ZjMtMDZjYi00OTU3LWE0MDQtNDYyM2UzYjJjYzVi
+          description: List of queue IDs assigned to the wrap-up reason.
+        assignAllQueuesEnabled:
+          type: boolean
+          description: Denotes whether all queues are assigned to the wrap-up reason.
+    UserType:
+      type: string
+      enum:
+      - PEOPLE
+      - PLACE
+      - VIRTUAL_LINE
+      description: " * `PEOPLE` - The associated member is a person.\n * `PLACE` - The associated member is a workspace.\n * `VIRTUAL_LINE` - The associated member is a virtual line.\n"
     GetAvailableAgentsCallQueueObject:
       type: object
       required:
@@ -1017,121 +1037,6 @@ components:
               example: '23234'
               description: Extension of the agent.
           description: Phone number and extension of the agent.
-    UpdateWrapUpReasonPayload:
-      type: object
-      properties:
-        name:
-          type: string
-          example: Wrap up reason 1
-          description: Name of the wrap-up reason.
-        description:
-          type: string
-          example: This is a description for wrap-up reason 1
-          description: Description of the wrap-up reason.
-        queuesToAssign:
-          type: array
-          items:
-            type: string
-            example: Y2lzY29zcGFyazovL3VzL0NBTExfUVVFVUUvOGY1MDI2ZjMtMDZjYi00OTU3LWE0MDQtNDYyM2UzYjJjYzVi
-          description: List of queue IDs to assign to the wrap-up reason.
-        queuesToUnassign:
-          type: array
-          items:
-            type: string
-            example: Y2lzY29zcGFyazovL3VzL0NBTExfUVVFVUUvMTM1NDg0YTMtN2Y0Yi00MTlhLWI2ZGQtMTk4NmY5MmQwYWQ1
-          description: List of queue IDs to unassign from the wrap-up reason.
-        assignAllQueuesEnabled:
-          type: boolean
-          description: Denotes whether all queues are assigned to the wrap-up reason.
-        unassignAllQueuesEnabled:
-          type: boolean
-          description: Denotes whether all queues are unassigned from the wrap-up reason.
-    ModifyScreenPopConfigurationPayload:
-      type: object
-      properties:
-        enabled:
-          type: boolean
-          example: true
-          description: Enable/disable screen pop.
-        screenPopUrl:
-          type: string
-          example: https://www.salesforce.com/page
-          description: The screen pop URL that integrates Webex calls with other business apps like CRM, ticketing tools, and order entry systems.
-        desktopLabel:
-          type: string
-          example: CRM Integration with Webex CallQueue screen pop
-          description: A label for the screen pop configuration.
-        queryParams:
-          $ref: '#/components/schemas/QueryParamsObject'
-          description: The additional user-defined key-value pairs that must be sent to the agent.
-    GetScreenPopConfigurationObject:
-      type: object
-      properties:
-        enabled:
-          type: boolean
-          example: true
-          description: Enable/disable screen pop.
-        screenPopUrl:
-          type: string
-          example: https://www.salesforce.com/page
-          description: The screen pop URL that integrates Webex calls with other business apps like CRM, ticketing tools, and order entry systems.
-        desktopLabel:
-          type: string
-          example: CRM Integration with Webex CallQueue screen pop
-          description: A label for the screen pop configuration.
-        queryParams:
-          $ref: '#/components/schemas/QueryParamsObject'
-          description: The additional user-defined key-value pairs that must be sent to the agent.
-    UpdateWrapUpReasonByLocationQueuePayload:
-      type: object
-      properties:
-        wrapupReasons:
-          type: array
-          items:
-            type: string
-            example: Y2lzY29zcGFyazovL3VzL1dSQVBVUF9SRUFTT05fSUQvOGVmNzM4OTctMmQzNS00ZjgwLWJkOGQtYzRjNmRhNWNlZjA2
-          description: List of wrap-up reason IDs.
-        defaultWrapupReasonId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1dSQVBVUF9SRUFTT05fSUQvOGVmNzM4OTctMmQzNS00ZjgwLWJkOGQtYzRjNmRhNWNlZjA2
-          description: Unique wrap-up identifier.
-        wrapupTimerEnabled:
-          type: boolean
-          example: true
-          description: Denotes whether the wrap-up timer is enabled.
-        wrapupTimer:
-          type: number
-          example: 60
-          description: Wrap up timer value in seconds.
-    CreateWrapUpReasonPayload:
-      type: object
-      required:
-      - name
-      properties:
-        name:
-          type: string
-          example: Wrap up reason 1
-          description: Name of the wrap-up reason.
-        description:
-          type: string
-          example: This is a description for wrap-up reason 1
-          description: Description of the wrap-up reason.
-        queues:
-          type: array
-          items:
-            type: string
-            example: Y2lzY29zcGFyazovL3VzL0NBTExfUVVFVUUvOGY1MDI2ZjMtMDZjYi00OTU3LWE0MDQtNDYyM2UzYjJjYzVi
-          description: List of queue IDs assigned to the wrap-up reason.
-        assignAllQueuesEnabled:
-          type: boolean
-          description: Denotes whether all queues are assigned to the wrap-up reason.
-    UserType:
-      type: string
-      enum:
-      - PEOPLE
-      - PLACE
-      - VIRTUAL_LINE
-      description: " * `PEOPLE` - The associated member is a person.\n * `PLACE` - The associated member is a workspace.\n * `VIRTUAL_LINE` - The associated member is a virtual line.\n"
     WrapUpReasonDetailsObject:
       type: object
       required:
@@ -1156,6 +1061,29 @@ components:
           items:
             $ref: '#/components/schemas/QueueObjectWithDefaultEnabled'
           description: List of queues assigned to the wrap-up reason.
+    QueueWrapUpReasonObject:
+      type: object
+      required:
+      - id
+      - name
+      - isDefaultEnabled
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1dSQVBVUF9SRUFTT05fSUQvOGVmNzM4OTctMmQzNS00ZjgwLWJkOGQtYzRjNmRhNWNlZjA2
+          description: Unique wrap-up identifier.
+        name:
+          type: string
+          example: Wrap up reason 1
+          description: Name of the wrap-up reason.
+        description:
+          type: string
+          example: This is a description for wrap-up reason 1
+          description: Description of the wrap-up reason.
+        isDefaultEnabled:
+          type: boolean
+          example: true
+          description: Denotes whether the default wrap-up is enabled for the queue.
     WrapUpReasonObject:
       type: object
       required:
@@ -1179,6 +1107,21 @@ components:
           type: number
           example: 1
           description: Number of queues assigned to the wrap-up reason.
+    QueryParamsObject:
+      type: object
+      properties:
+        example_param_1:
+          type: string
+          example: example_value_1
+          description: An example key-value pair that will be sent to the agent.
+        example_param_2:
+          type: string
+          example: example_value_2
+          description: Another example key-value pair that will be sent to the agent.
+        example_param_3:
+          type: string
+          example: example_value_3
+          description: Another example key-value pair that will be sent to the agent.
     QueueObjectWithDefaultEnabled:
       type: object
       required:
@@ -1216,17 +1159,27 @@ components:
         defaultWrapupEnabled:
           type: boolean
           description: Denotes whether the default wrap-up is enabled for the queue.
-    QueueWrapUpReasonObject:
+    GetScreenPopConfigurationObject:
       type: object
-      required:
-      - id
-      - name
-      - isDefaultEnabled
       properties:
-        id:
+        enabled:
+          type: boolean
+          example: true
+          description: Enable/disable screen pop.
+        screenPopUrl:
           type: string
-          example: Y2lzY29zcGFyazovL3VzL1dSQVBVUF9SRUFTT05fSUQvOGVmNzM4OTctMmQzNS00ZjgwLWJkOGQtYzRjNmRhNWNlZjA2
-          description: Unique wrap-up identifier.
+          example: https://www.salesforce.com/page
+          description: The screen pop URL that integrates Webex calls with other business apps like CRM, ticketing tools, and order entry systems.
+        desktopLabel:
+          type: string
+          example: CRM Integration with Webex CallQueue screen pop
+          description: A label for the screen pop configuration.
+        queryParams:
+          $ref: '#/components/schemas/QueryParamsObject'
+          description: The additional user-defined key-value pairs that must be sent to the agent.
+    UpdateWrapUpReasonPayload:
+      type: object
+      properties:
         name:
           type: string
           example: Wrap up reason 1
@@ -1235,25 +1188,54 @@ components:
           type: string
           example: This is a description for wrap-up reason 1
           description: Description of the wrap-up reason.
-        isDefaultEnabled:
+        queuesToAssign:
+          type: array
+          items:
+            type: string
+            example: Y2lzY29zcGFyazovL3VzL0NBTExfUVVFVUUvOGY1MDI2ZjMtMDZjYi00OTU3LWE0MDQtNDYyM2UzYjJjYzVi
+          description: List of queue IDs to assign to the wrap-up reason.
+        queuesToUnassign:
+          type: array
+          items:
+            type: string
+            example: Y2lzY29zcGFyazovL3VzL0NBTExfUVVFVUUvMTM1NDg0YTMtN2Y0Yi00MTlhLWI2ZGQtMTk4NmY5MmQwYWQ1
+          description: List of queue IDs to unassign from the wrap-up reason.
+        assignAllQueuesEnabled:
           type: boolean
-          example: true
-          description: Denotes whether the default wrap-up is enabled for the queue.
-    QueryParamsObject:
+          description: Denotes whether all queues are assigned to the wrap-up reason.
+        unassignAllQueuesEnabled:
+          type: boolean
+          description: Denotes whether all queues are unassigned from the wrap-up reason.
+    ValidateWrapUpReasonPayload:
+      type: object
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          example: Wrap up reason 1
+          description: Name of the wrap-up reason.
+    UpdateWrapUpReasonByLocationQueuePayload:
       type: object
       properties:
-        example_param_1:
+        wrapupReasons:
+          type: array
+          items:
+            type: string
+            example: Y2lzY29zcGFyazovL3VzL1dSQVBVUF9SRUFTT05fSUQvOGVmNzM4OTctMmQzNS00ZjgwLWJkOGQtYzRjNmRhNWNlZjA2
+          description: List of wrap-up reason IDs.
+        defaultWrapupReasonId:
           type: string
-          example: example_value_1
-          description: An example key-value pair that will be sent to the agent.
-        example_param_2:
-          type: string
-          example: example_value_2
-          description: Another example key-value pair that will be sent to the agent.
-        example_param_3:
-          type: string
-          example: example_value_3
-          description: Another example key-value pair that will be sent to the agent.
+          example: Y2lzY29zcGFyazovL3VzL1dSQVBVUF9SRUFTT05fSUQvOGVmNzM4OTctMmQzNS00ZjgwLWJkOGQtYzRjNmRhNWNlZjA2
+          description: Unique wrap-up identifier.
+        wrapupTimerEnabled:
+          type: boolean
+          example: true
+          description: Denotes whether the wrap-up timer is enabled.
+        wrapupTimer:
+          type: number
+          example: 60
+          description: Wrap up timer value in seconds.
     QueueObject:
       type: object
       required:
@@ -1287,6 +1269,24 @@ components:
           type: number
           example: 1234
           description: Extension of the queue.
+    ModifyScreenPopConfigurationPayload:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          example: true
+          description: Enable/disable screen pop.
+        screenPopUrl:
+          type: string
+          example: https://www.salesforce.com/page
+          description: The screen pop URL that integrates Webex calls with other business apps like CRM, ticketing tools, and order entry systems.
+        desktopLabel:
+          type: string
+          example: CRM Integration with Webex CallQueue screen pop
+          description: A label for the screen pop configuration.
+        queryParams:
+          $ref: '#/components/schemas/QueryParamsObject'
+          description: The additional user-defined key-value pairs that must be sent to the agent.
   securitySchemes:
     oauth2:
       flows:

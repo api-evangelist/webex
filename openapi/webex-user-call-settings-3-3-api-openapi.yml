@@ -1065,16 +1065,26 @@ paths:
         $ref: '#/components/requestBodies/OutboundBillingPlanRequest'
 components:
   responses:
-    NotFound:
-      description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
-    InternalServerError:
-      description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
     GatewayTimeout:
       description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
-    BadGateway:
-      description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+    Conflict:
+      description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
     Locked:
       description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+    TooManyRequests:
+      description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+    ServiceUnavailable:
+      description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+    MethodNotAllowed:
+      description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+    NoContent:
+      description: No Content
+    Forbidden:
+      description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+    Gone:
+      description: 'Gone: The requested resource is no longer available.'
+    NotFound:
+      description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
     OutboundBillingPlanResponse:
       description: OK
       content:
@@ -1083,29 +1093,283 @@ components:
             $ref: '#/components/schemas/OutboundBillingPlan'
           example:
             enabled: true
-    Unauthorized:
-      description: 'Unauthorized: Authentication credentials were missing or incorrect.'
-    TooManyRequests:
-      description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
-    MethodNotAllowed:
-      description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
-    ServiceUnavailable:
-      description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
-    Gone:
-      description: 'Gone: The requested resource is no longer available.'
     BadRequest:
       description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
     PreconditionRequired:
       description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
-    NoContent:
-      description: No Content
-    Conflict:
-      description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+    InternalServerError:
+      description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+    BadGateway:
+      description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
     UnsupportedMediaType:
       description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
-    Forbidden:
-      description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+    Unauthorized:
+      description: 'Unauthorized: Authentication credentials were missing or incorrect.'
   schemas:
+    PersonSimultaneousRingCriteriaPut:
+      type: object
+      properties:
+        scheduleName:
+          type: string
+          example: Business_1
+          description: Name of the schedule which determines when the simultaneous ring is in effect.
+        scheduleType:
+          $ref: '#/components/schemas/PersonScheduleType'
+        scheduleLevel:
+          $ref: '#/components/schemas/PersonScheduleLevel'
+        callsFrom:
+          $ref: '#/components/schemas/PersonCallsFromType'
+        anonymousCallersEnabled:
+          type: boolean
+          example: true
+          description: When `true`, the criteria applies to calls from anonymous callers. Value for this attribute is required if `callsFrom` is `SELECT_PHONE_NUMBERS`.
+        unavailableCallersEnabled:
+          type: boolean
+          example: true
+          description: When `true`, the criteria applies to calls from unavailable callers. Value for this attribute is required if `callsFrom` is `SELECT_PHONE_NUMBERS`.
+        phoneNumbers:
+          type: array
+          items:
+            type: string
+            example: '+19064441748'
+          description: The list of phone numbers that will be checked against incoming calls for a match. Value for this attribute is required if `callsFrom` is `SELECT_PHONE_NUMBERS`.
+        ringEnabled:
+          type: boolean
+          example: true
+          description: When set to `true` simultaneous ringing is enabled for calls that meet this criteria. Criteria with `ringEnabled` set to `false` take priority.
+    PersonSimultaneousRingCriteriaSummary:
+      type: object
+      required:
+      - id
+      - scheduleName
+      - source
+      - ringEnabled
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0NSSVRFUklBLzg2NTAxZDFlLTg1MWMtNDgwYi1hZmE2LTA5MTU4NzQ3NzdmZQ
+          description: Unique identifier for criteria.
+        scheduleName:
+          type: string
+          example: Business Vacation
+          description: Name of the schedule which determines when the simultaneous ring is in effect.
+        source:
+          $ref: '#/components/schemas/PersonSimultaneousRingSource'
+        ringEnabled:
+          type: boolean
+          example: true
+          description: When set to `true` simultaneous ringing is enabled for calls that meet this criteria. Criteria with `ringEnabled` set to `false` take priority.
+    HotDeskingLineType:
+      type: string
+      description: "Line type for the hot desking guest profile member.\n * `HOTDESKING_GUEST` - Primary hot desking guest profile line.\n * `SHARED_CALL_APPEARANCE` - Shared line assigned to the hot desking guest profile.\n * `PRIMARY` - Primary line.\n * `MOBILITY` - Mobility line."
+      enum:
+      - HOTDESKING_GUEST
+      - SHARED_CALL_APPEARANCE
+      - PRIMARY
+      - MOBILITY
+      example: HOTDESKING_GUEST
+    PersonSimultaneousRingCriteriaPost:
+      type: object
+      required:
+      - callsFrom
+      - ringEnabled
+      properties:
+        scheduleName:
+          type: string
+          example: Business Vacation
+          description: Name of the schedule which determines when the simultaneous ring is in effect.
+        scheduleType:
+          $ref: '#/components/schemas/PersonScheduleType'
+        scheduleLevel:
+          $ref: '#/components/schemas/PersonScheduleLevel'
+        callsFrom:
+          $ref: '#/components/schemas/PersonCallsFromType'
+        anonymousCallersEnabled:
+          type: boolean
+          example: true
+          description: When `true`, the criteria applies to calls from anonymous callers. Value for this attribute is required if `callsFrom` is `SELECT_PHONE_NUMBERS`.
+        unavailableCallersEnabled:
+          type: boolean
+          example: true
+          description: When `true`, the criteria applies to calls from unavailable callers. Value for this attribute is required if `callsFrom` is `SELECT_PHONE_NUMBERS`.
+        phoneNumbers:
+          type: array
+          items:
+            type: string
+            example: '+19064441748'
+          description: The list of phone numbers that will be checked against incoming calls for a match. Value for this attribute is required if `callsFrom` is `SELECT_PHONE_NUMBERS`.
+        ringEnabled:
+          type: boolean
+          example: true
+          description: When set to `true` simultaneous ringing is enabled for calls that meet this criteria. Criteria with `ringEnabled` set to `false` take priority.
+    HotDeskingAvailableMember:
+      type: object
+      required:
+      - id
+      - lineType
+      - memberType
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the available member.
+          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9jODhiZGIwNC1jZjU5LTRjMjMtODQ4OC00NTNhOTE3ZDFlMjk
+        firstName:
+          type: string
+          description: First name of the available member.
+          example: John
+        lastName:
+          type: string
+          description: Last name of the available member.
+          example: Smith
+        phoneNumber:
+          type: string
+          description: Phone number of the available member.
+          example: '+12055552221'
+        extension:
+          type: string
+          description: Extension of the available member.
+          example: '2221'
+        routingPrefix:
+          type: string
+          description: Routing prefix of the member's location.
+          example: '1234'
+        esn:
+          type: string
+          description: Enterprise significant number for the available member.
+          example: '12342221'
+        lineType:
+          $ref: '#/components/schemas/HotDeskingLineType'
+        memberType:
+          $ref: '#/components/schemas/HotDeskingResponseMemberType'
+        location:
+          $ref: '#/components/schemas/Location'
+    PersonSimultaneousRingNumberPut:
+      type: object
+      required:
+      - phoneNumber
+      - answerConfirmationEnabled
+      properties:
+        phoneNumber:
+          type: string
+          example: '+12324556740'
+          description: Phone number set for simultaneous ring.
+        answerConfirmationEnabled:
+          type: boolean
+          example: false
+          description: When set to `true`, the called party is required to press 1 on the keypad to confirm answer for the call.
+    HotDeskingMembers:
+      type: object
+      description: Response containing the primary and shared-line members assigned to a person's hot desking guest profile.
+      required:
+      - members
+      properties:
+        model:
+          type: string
+          description: Name of the hot desking guest profile endpoint.
+          example: Business Communicator - PC
+        members:
+          type: array
+          description: List of primary and shared-line members assigned to the person's hot desking guest profile.
+          items:
+            $ref: '#/components/schemas/HotDeskingMember'
+          example:
+          - id: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8wZTQ5NjAzNC1lNTQ1LTRmMmEtODI4ZC03MjhjYjJlNjNlMWQ
+            firstName: Alice
+            lastName: Gomez
+            phoneNumber: '+12055552220'
+            extension: '2220'
+            primaryOwner: true
+            port: 1
+            lineType: HOTDESKING_GUEST
+            lineWeight: 1
+            allowCallDeclineEnabled: true
+            memberType: PEOPLE
+        maxLineCount:
+          type: integer
+          description: Maximum number of lines that can be configured on the hot desking guest profile endpoint.
+          example: 10
+      example:
+        model: Business Communicator - PC
+        members:
+        - id: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8wZTQ5NjAzNC1lNTQ1LTRmMmEtODI4ZC03MjhjYjJlNjNlMWQ
+          firstName: Alice
+          lastName: Gomez
+          phoneNumber: '+12055552220'
+          extension: '2220'
+          primaryOwner: true
+          port: 1
+          lineType: HOTDESKING_GUEST
+          lineWeight: 1
+          allowCallDeclineEnabled: true
+          memberType: PEOPLE
+        maxLineCount: 10
+    OutboundBillingPlan:
+      type: object
+      example:
+        enabled: true
+      required:
+      - enabled
+      properties:
+        enabled:
+          type: boolean
+          description: Set to `true` when Cisco Calling Plan outbound billing is enabled for the workspace.
+          example: true
+      description: Cisco Calling Plan outbound billing setting for the workspace.
+    PersonSimultaneousRingNumber:
+      type: object
+      required:
+      - phoneNumber
+      - answerConfirmationEnabled
+      properties:
+        phoneNumber:
+          type: string
+          example: '+19075552859'
+          description: Phone number set for simultaneous ring.
+        answerConfirmationEnabled:
+          type: boolean
+          example: true
+          description: When set to `true`, the called party is required to press 1 on the keypad to confirm answer for the call.
+    PersonSimultaneousRingCriteriaCreated:
+      type: object
+      example:
+        id: Y2lzY29zcGFyazovL3VzL0NSSVRFUklBLzg2NTAxZDFlLTg1MWMtNDgwYi1hZmE2LTA5MTU4NzQ3NzdmZQ
+      required:
+      - id
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0NSSVRFUklBLzg2NTAxZDFlLTg1MWMtNDgwYi1hZmE2LTA5MTU4NzQ3NzdmZQ
+          description: Unique identifier for the newly created criteria.
+    HotDeskingResponseMemberType:
+      type: string
+      description: "Type of assigned or available member.\n * `PEOPLE` - The member is a person.\n * `PLACE` - The member is a workspace.\n * `VIRTUAL_LINE` - The member is a virtual line."
+      enum:
+      - PEOPLE
+      - PLACE
+      - VIRTUAL_LINE
+      example: PEOPLE
+    PersonScheduleLevel:
+      type: string
+      enum:
+      - LOCATION
+      - PEOPLE
+      description: " * `LOCATION` - Indicates the schedule is configured at the location level.\n * `PEOPLE` - Indicates the schedule is configured at the person level.\n"
+      example: LOCATION
+    HotDeskingPutMemberType:
+      type: string
+      description: "Type of member in the update request. Include this field when the member ID needs an explicit resource type for decoding.\n * `USER` - The member is a person.\n * `PLACE` - The member is a workspace.\n * `VIRTUAL_PROFILE` - The member is a virtual line."
+      enum:
+      - USER
+      - PLACE
+      - VIRTUAL_PROFILE
+      example: USER
+    PersonCallsFromType:
+      type: string
+      enum:
+      - ANY_PHONE_NUMBER
+      - SELECT_PHONE_NUMBERS
+      description: " * `ANY_PHONE_NUMBER` - The Schedule applies to any phone number.\n * `SELECT_PHONE_NUMBERS` - Indicates the schedule applies to select phone number defined in the `phoneNumbers` property.\n"
+      example: ANY_PHONE_NUMBER
     PersonAnonymousCallRejectGet:
       type: object
       example:
@@ -1117,13 +1381,24 @@ components:
           type: boolean
           example: true
           description: Indicates whether Anonymous Call Rejection is enabled. When true, incoming calls from callers who have blocked their caller ID will be automatically rejected.
-    PersonScheduleType:
-      type: string
-      enum:
-      - businessHours
-      - holidays
-      description: " * `businessHours` - The Schedule type that specifies the business or working hours during the day.\n * `holidays` - The Schedule type that specifies the day when your organization is not open.\n"
-      example: businessHours
+    Location:
+      type: object
+      description: Location associated with the hot desking member.
+      required:
+      - id
+      - name
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the location.
+          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzJiNDkyZmZkLTRjNGItNGVmNS04YzAzLWE1MDYyYzM4NDA5Mw
+        name:
+          type: string
+          description: Name of the location.
+          example: Main Office
+      example:
+        id: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzJiNDkyZmZkLTRjNGItNGVmNS04YzAzLWE1MDYyYzM4NDA5Mw
+        name: Main Office
     HotDeskingPutMember:
       type: object
       required:
@@ -1169,125 +1444,6 @@ components:
           example: true
         memberType:
           $ref: '#/components/schemas/HotDeskingPutMemberType'
-    Location:
-      type: object
-      description: Location associated with the hot desking member.
-      required:
-      - id
-      - name
-      properties:
-        id:
-          type: string
-          description: Unique identifier for the location.
-          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzJiNDkyZmZkLTRjNGItNGVmNS04YzAzLWE1MDYyYzM4NDA5Mw
-        name:
-          type: string
-          description: Name of the location.
-          example: Main Office
-      example:
-        id: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzJiNDkyZmZkLTRjNGItNGVmNS04YzAzLWE1MDYyYzM4NDA5Mw
-        name: Main Office
-    PersonSimultaneousRingSource:
-      type: string
-      enum:
-      - ALL_NUMBERS
-      - SPECIFIC_NUMBERS
-      description: " * `ALL_NUMBERS` - Criteria applies to all incoming numbers.\n * `SPECIFIC_NUMBERS` - Criteria applies only for specific incoming numbers.\n"
-      example: ALL_NUMBERS
-    PersonScheduleLevel:
-      type: string
-      enum:
-      - LOCATION
-      - PEOPLE
-      description: " * `LOCATION` - Indicates the schedule is configured at the location level.\n * `PEOPLE` - Indicates the schedule is configured at the person level.\n"
-      example: LOCATION
-    OutboundBillingPlan:
-      type: object
-      example:
-        enabled: true
-      required:
-      - enabled
-      properties:
-        enabled:
-          type: boolean
-          description: Set to `true` when Cisco Calling Plan outbound billing is enabled for the workspace.
-          example: true
-      description: Cisco Calling Plan outbound billing setting for the workspace.
-    PersonSimultaneousRingNumberPut:
-      type: object
-      required:
-      - phoneNumber
-      - answerConfirmationEnabled
-      properties:
-        phoneNumber:
-          type: string
-          example: '+12324556740'
-          description: Phone number set for simultaneous ring.
-        answerConfirmationEnabled:
-          type: boolean
-          example: false
-          description: When set to `true`, the called party is required to press 1 on the keypad to confirm answer for the call.
-    PersonSimultaneousRingCriteriaPut:
-      type: object
-      properties:
-        scheduleName:
-          type: string
-          example: Business_1
-          description: Name of the schedule which determines when the simultaneous ring is in effect.
-        scheduleType:
-          $ref: '#/components/schemas/PersonScheduleType'
-        scheduleLevel:
-          $ref: '#/components/schemas/PersonScheduleLevel'
-        callsFrom:
-          $ref: '#/components/schemas/PersonCallsFromType'
-        anonymousCallersEnabled:
-          type: boolean
-          example: true
-          description: When `true`, the criteria applies to calls from anonymous callers. Value for this attribute is required if `callsFrom` is `SELECT_PHONE_NUMBERS`.
-        unavailableCallersEnabled:
-          type: boolean
-          example: true
-          description: When `true`, the criteria applies to calls from unavailable callers. Value for this attribute is required if `callsFrom` is `SELECT_PHONE_NUMBERS`.
-        phoneNumbers:
-          type: array
-          items:
-            type: string
-            example: '+19064441748'
-          description: The list of phone numbers that will be checked against incoming calls for a match. Value for this attribute is required if `callsFrom` is `SELECT_PHONE_NUMBERS`.
-        ringEnabled:
-          type: boolean
-          example: true
-          description: When set to `true` simultaneous ringing is enabled for calls that meet this criteria. Criteria with `ringEnabled` set to `false` take priority.
-    HotDeskingResponseMemberType:
-      type: string
-      description: "Type of assigned or available member.\n * `PEOPLE` - The member is a person.\n * `PLACE` - The member is a workspace.\n * `VIRTUAL_LINE` - The member is a virtual line."
-      enum:
-      - PEOPLE
-      - PLACE
-      - VIRTUAL_LINE
-      example: PEOPLE
-    PersonSimultaneousRingCriteriaSummary:
-      type: object
-      required:
-      - id
-      - scheduleName
-      - source
-      - ringEnabled
-      properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0NSSVRFUklBLzg2NTAxZDFlLTg1MWMtNDgwYi1hZmE2LTA5MTU4NzQ3NzdmZQ
-          description: Unique identifier for criteria.
-        scheduleName:
-          type: string
-          example: Business Vacation
-          description: Name of the schedule which determines when the simultaneous ring is in effect.
-        source:
-          $ref: '#/components/schemas/PersonSimultaneousRingSource'
-        ringEnabled:
-          type: boolean
-          example: true
-          description: When set to `true` simultaneous ringing is enabled for calls that meet this criteria. Criteria with `ringEnabled` set to `false` take priority.
     PersonSimultaneousRingCriteriaGet:
       type: object
       example:
@@ -1340,44 +1496,6 @@ components:
           type: boolean
           example: false
           description: When set to `true` simultaneous ringing is enabled for calls that meet this criteria. Criteria with `ringEnabled` set to `false` take priority.
-    HotDeskingAvailableMembers:
-      type: object
-      description: Response containing members that can be assigned to a person's hot desking guest profile.
-      required:
-      - members
-      properties:
-        members:
-          type: array
-          description: List of members that can be assigned to the person's hot desking guest profile.
-          items:
-            $ref: '#/components/schemas/HotDeskingAvailableMember'
-          example:
-          - id: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9jODhiZGIwNC1jZjU5LTRjMjMtODQ4OC00NTNhOTE3ZDFlMjk
-            firstName: John
-            lastName: Smith
-            phoneNumber: '+12055552221'
-            extension: '2221'
-            routingPrefix: '1234'
-            esn: '12342221'
-            lineType: SHARED_CALL_APPEARANCE
-            memberType: PEOPLE
-            location:
-              id: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzJiNDkyZmZkLTRjNGItNGVmNS04YzAzLWE1MDYyYzM4NDA5Mw
-              name: Main Office
-      example:
-        members:
-        - id: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9jODhiZGIwNC1jZjU5LTRjMjMtODQ4OC00NTNhOTE3ZDFlMjk
-          firstName: John
-          lastName: Smith
-          phoneNumber: '+12055552221'
-          extension: '2221'
-          routingPrefix: '1234'
-          esn: '12342221'
-          lineType: SHARED_CALL_APPEARANCE
-          memberType: PEOPLE
-          location:
-            id: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzJiNDkyZmZkLTRjNGItNGVmNS04YzAzLWE1MDYyYzM4NDA5Mw
-            name: Main Office
     PersonSimultaneousRingGet:
       type: object
       example:
@@ -1419,6 +1537,50 @@ components:
           items:
             $ref: '#/components/schemas/PersonSimultaneousRingCriteriaSummary'
           description: A list of criteria specifying conditions when simultaneous ring is in effect.
+    PersonSimultaneousRingSource:
+      type: string
+      enum:
+      - ALL_NUMBERS
+      - SPECIFIC_NUMBERS
+      description: " * `ALL_NUMBERS` - Criteria applies to all incoming numbers.\n * `SPECIFIC_NUMBERS` - Criteria applies only for specific incoming numbers.\n"
+      example: ALL_NUMBERS
+    PersonScheduleType:
+      type: string
+      enum:
+      - businessHours
+      - holidays
+      description: " * `businessHours` - The Schedule type that specifies the business or working hours during the day.\n * `holidays` - The Schedule type that specifies the day when your organization is not open.\n"
+      example: businessHours
+    HotDeskingMembersPut:
+      type: object
+      description: Request body used to update the members assigned to a person's hot desking guest profile.
+      required:
+      - members
+      properties:
+        members:
+          type: array
+          description: Members to assign to the person's hot desking guest profile.
+          items:
+            $ref: '#/components/schemas/HotDeskingPutMember'
+          example:
+          - id: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8wZTQ5NjAzNC1lNTQ1LTRmMmEtODI4ZC03MjhjYjJlNjNlMWQ
+            port: 1
+            primaryOwner: true
+            lineType: HOTDESKING_GUEST
+            lineWeight: 1
+            hotlineEnabled: false
+            allowCallDeclineEnabled: true
+            memberType: USER
+      example:
+        members:
+        - id: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8wZTQ5NjAzNC1lNTQ1LTRmMmEtODI4ZC03MjhjYjJlNjNlMWQ
+          port: 1
+          primaryOwner: true
+          lineType: HOTDESKING_GUEST
+          lineWeight: 1
+          hotlineEnabled: false
+          allowCallDeclineEnabled: true
+          memberType: USER
     PersonServicesGet:
       type: object
       example:
@@ -1436,6 +1598,64 @@ components:
           example:
           - Anonymous Call Rejection
           - Call Forwarding Always
+    HotDeskingAvailableMembers:
+      type: object
+      description: Response containing members that can be assigned to a person's hot desking guest profile.
+      required:
+      - members
+      properties:
+        members:
+          type: array
+          description: List of members that can be assigned to the person's hot desking guest profile.
+          items:
+            $ref: '#/components/schemas/HotDeskingAvailableMember'
+          example:
+          - id: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9jODhiZGIwNC1jZjU5LTRjMjMtODQ4OC00NTNhOTE3ZDFlMjk
+            firstName: John
+            lastName: Smith
+            phoneNumber: '+12055552221'
+            extension: '2221'
+            routingPrefix: '1234'
+            esn: '12342221'
+            lineType: SHARED_CALL_APPEARANCE
+            memberType: PEOPLE
+            location:
+              id: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzJiNDkyZmZkLTRjNGItNGVmNS04YzAzLWE1MDYyYzM4NDA5Mw
+              name: Main Office
+      example:
+        members:
+        - id: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9jODhiZGIwNC1jZjU5LTRjMjMtODQ4OC00NTNhOTE3ZDFlMjk
+          firstName: John
+          lastName: Smith
+          phoneNumber: '+12055552221'
+          extension: '2221'
+          routingPrefix: '1234'
+          esn: '12342221'
+          lineType: SHARED_CALL_APPEARANCE
+          memberType: PEOPLE
+          location:
+            id: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzJiNDkyZmZkLTRjNGItNGVmNS04YzAzLWE1MDYyYzM4NDA5Mw
+            name: Main Office
+    PersonSimultaneousRingPut:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          example: true
+          description: When set to `true`, simultaneous ring is enabled for this person.
+        doNotRingIfOnCallEnabled:
+          type: boolean
+          example: true
+          description: When set to `true`, the configured phone numbers won't ring when you are on a call.
+        criteriasEnabled:
+          type: boolean
+          example: true
+          description: When `true`, enables the selected schedule for simultaneous ring.
+        phoneNumbers:
+          type: array
+          items:
+            $ref: '#/components/schemas/PersonSimultaneousRingNumberPut'
+          description: Enter up to 10 phone numbers to ring simultaneously when you receive an incoming call.
     PersonAnonymousCallRejectPut:
       type: object
       required:
@@ -1445,86 +1665,6 @@ components:
           type: boolean
           example: true
           description: Enable or disable Anonymous Call Rejection. When set to true, incoming calls from callers who have blocked their caller ID will be automatically rejected.
-    PersonSimultaneousRingCriteriaPost:
-      type: object
-      required:
-      - callsFrom
-      - ringEnabled
-      properties:
-        scheduleName:
-          type: string
-          example: Business Vacation
-          description: Name of the schedule which determines when the simultaneous ring is in effect.
-        scheduleType:
-          $ref: '#/components/schemas/PersonScheduleType'
-        scheduleLevel:
-          $ref: '#/components/schemas/PersonScheduleLevel'
-        callsFrom:
-          $ref: '#/components/schemas/PersonCallsFromType'
-        anonymousCallersEnabled:
-          type: boolean
-          example: true
-          description: When `true`, the criteria applies to calls from anonymous callers. Value for this attribute is required if `callsFrom` is `SELECT_PHONE_NUMBERS`.
-        unavailableCallersEnabled:
-          type: boolean
-          example: true
-          description: When `true`, the criteria applies to calls from unavailable callers. Value for this attribute is required if `callsFrom` is `SELECT_PHONE_NUMBERS`.
-        phoneNumbers:
-          type: array
-          items:
-            type: string
-            example: '+19064441748'
-          description: The list of phone numbers that will be checked against incoming calls for a match. Value for this attribute is required if `callsFrom` is `SELECT_PHONE_NUMBERS`.
-        ringEnabled:
-          type: boolean
-          example: true
-          description: When set to `true` simultaneous ringing is enabled for calls that meet this criteria. Criteria with `ringEnabled` set to `false` take priority.
-    HotDeskingMembers:
-      type: object
-      description: Response containing the primary and shared-line members assigned to a person's hot desking guest profile.
-      required:
-      - members
-      properties:
-        model:
-          type: string
-          description: Name of the hot desking guest profile endpoint.
-          example: Business Communicator - PC
-        members:
-          type: array
-          description: List of primary and shared-line members assigned to the person's hot desking guest profile.
-          items:
-            $ref: '#/components/schemas/HotDeskingMember'
-          example:
-          - id: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8wZTQ5NjAzNC1lNTQ1LTRmMmEtODI4ZC03MjhjYjJlNjNlMWQ
-            firstName: Alice
-            lastName: Gomez
-            phoneNumber: '+12055552220'
-            extension: '2220'
-            primaryOwner: true
-            port: 1
-            lineType: HOTDESKING_GUEST
-            lineWeight: 1
-            allowCallDeclineEnabled: true
-            memberType: PEOPLE
-        maxLineCount:
-          type: integer
-          description: Maximum number of lines that can be configured on the hot desking guest profile endpoint.
-          example: 10
-      example:
-        model: Business Communicator - PC
-        members:
-        - id: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8wZTQ5NjAzNC1lNTQ1LTRmMmEtODI4ZC03MjhjYjJlNjNlMWQ
-          firstName: Alice
-          lastName: Gomez
-          phoneNumber: '+12055552220'
-          extension: '2220'
-          primaryOwner: true
-          port: 1
-          lineType: HOTDESKING_GUEST
-          lineWeight: 1
-          allowCallDeclineEnabled: true
-          memberType: PEOPLE
-        maxLineCount: 10
     HotDeskingMember:
       type: object
       required:
@@ -1605,188 +1745,28 @@ components:
           $ref: '#/components/schemas/HotDeskingResponseMemberType'
         location:
           $ref: '#/components/schemas/Location'
-    PersonSimultaneousRingCriteriaCreated:
-      type: object
-      example:
-        id: Y2lzY29zcGFyazovL3VzL0NSSVRFUklBLzg2NTAxZDFlLTg1MWMtNDgwYi1hZmE2LTA5MTU4NzQ3NzdmZQ
-      required:
-      - id
-      properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0NSSVRFUklBLzg2NTAxZDFlLTg1MWMtNDgwYi1hZmE2LTA5MTU4NzQ3NzdmZQ
-          description: Unique identifier for the newly created criteria.
-    PersonSimultaneousRingNumber:
-      type: object
-      required:
-      - phoneNumber
-      - answerConfirmationEnabled
-      properties:
-        phoneNumber:
-          type: string
-          example: '+19075552859'
-          description: Phone number set for simultaneous ring.
-        answerConfirmationEnabled:
-          type: boolean
-          example: true
-          description: When set to `true`, the called party is required to press 1 on the keypad to confirm answer for the call.
-    PersonSimultaneousRingPut:
-      type: object
-      properties:
-        enabled:
-          type: boolean
-          example: true
-          description: When set to `true`, simultaneous ring is enabled for this person.
-        doNotRingIfOnCallEnabled:
-          type: boolean
-          example: true
-          description: When set to `true`, the configured phone numbers won't ring when you are on a call.
-        criteriasEnabled:
-          type: boolean
-          example: true
-          description: When `true`, enables the selected schedule for simultaneous ring.
-        phoneNumbers:
-          type: array
-          items:
-            $ref: '#/components/schemas/PersonSimultaneousRingNumberPut'
-          description: Enter up to 10 phone numbers to ring simultaneously when you receive an incoming call.
-    HotDeskingLineType:
-      type: string
-      description: "Line type for the hot desking guest profile member.\n * `HOTDESKING_GUEST` - Primary hot desking guest profile line.\n * `SHARED_CALL_APPEARANCE` - Shared line assigned to the hot desking guest profile.\n * `PRIMARY` - Primary line.\n * `MOBILITY` - Mobility line."
-      enum:
-      - HOTDESKING_GUEST
-      - SHARED_CALL_APPEARANCE
-      - PRIMARY
-      - MOBILITY
-      example: HOTDESKING_GUEST
-    HotDeskingAvailableMember:
-      type: object
-      required:
-      - id
-      - lineType
-      - memberType
-      properties:
-        id:
-          type: string
-          description: Unique identifier for the available member.
-          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9jODhiZGIwNC1jZjU5LTRjMjMtODQ4OC00NTNhOTE3ZDFlMjk
-        firstName:
-          type: string
-          description: First name of the available member.
-          example: John
-        lastName:
-          type: string
-          description: Last name of the available member.
-          example: Smith
-        phoneNumber:
-          type: string
-          description: Phone number of the available member.
-          example: '+12055552221'
-        extension:
-          type: string
-          description: Extension of the available member.
-          example: '2221'
-        routingPrefix:
-          type: string
-          description: Routing prefix of the member's location.
-          example: '1234'
-        esn:
-          type: string
-          description: Enterprise significant number for the available member.
-          example: '12342221'
-        lineType:
-          $ref: '#/components/schemas/HotDeskingLineType'
-        memberType:
-          $ref: '#/components/schemas/HotDeskingResponseMemberType'
-        location:
-          $ref: '#/components/schemas/Location'
-    HotDeskingPutMemberType:
-      type: string
-      description: "Type of member in the update request. Include this field when the member ID needs an explicit resource type for decoding.\n * `USER` - The member is a person.\n * `PLACE` - The member is a workspace.\n * `VIRTUAL_PROFILE` - The member is a virtual line."
-      enum:
-      - USER
-      - PLACE
-      - VIRTUAL_PROFILE
-      example: USER
-    PersonCallsFromType:
-      type: string
-      enum:
-      - ANY_PHONE_NUMBER
-      - SELECT_PHONE_NUMBERS
-      description: " * `ANY_PHONE_NUMBER` - The Schedule applies to any phone number.\n * `SELECT_PHONE_NUMBERS` - Indicates the schedule applies to select phone number defined in the `phoneNumbers` property.\n"
-      example: ANY_PHONE_NUMBER
-    HotDeskingMembersPut:
-      type: object
-      description: Request body used to update the members assigned to a person's hot desking guest profile.
-      required:
-      - members
-      properties:
-        members:
-          type: array
-          description: Members to assign to the person's hot desking guest profile.
-          items:
-            $ref: '#/components/schemas/HotDeskingPutMember'
-          example:
-          - id: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8wZTQ5NjAzNC1lNTQ1LTRmMmEtODI4ZC03MjhjYjJlNjNlMWQ
-            port: 1
-            primaryOwner: true
-            lineType: HOTDESKING_GUEST
-            lineWeight: 1
-            hotlineEnabled: false
-            allowCallDeclineEnabled: true
-            memberType: USER
-      example:
-        members:
-        - id: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8wZTQ5NjAzNC1lNTQ1LTRmMmEtODI4ZC03MjhjYjJlNjNlMWQ
-          port: 1
-          primaryOwner: true
-          lineType: HOTDESKING_GUEST
-          lineWeight: 1
-          hotlineEnabled: false
-          allowCallDeclineEnabled: true
-          memberType: USER
   parameters:
-    orgId:
-      name: orgId
+    locationId:
+      name: locationId
       in: query
-      description: ID of the organization in which the person resides. Only admin users of another organization, such as partners, may use this parameter. If not specified, the organization from the OAuth token is used.
+      description: Return only available members in this location.
       required: false
-      example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE
+      example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzJiNDkyZmZkLTRjNGItNGVmNS04YzAzLWE1MDYyYzM4NDA5Mw
       schema:
         type: string
         minLength: 1
         maxLength: 1024
-    personId:
-      name: personId
-      in: path
-      description: Unique identifier for the person.
-      required: true
-      example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8wZTQ5NjAzNC1lNTQ1LTRmMmEtODI4ZC03MjhjYjJlNjNlMWQ
-      schema:
-        type: string
-        minLength: 1
-        maxLength: 1024
-    start:
-      name: start
+    max:
+      name: max
       in: query
-      description: Offset from the first result to fetch.
+      description: Maximum number of records to return.
       required: false
-      example: 0
+      example: 100
       schema:
         type: integer
-        default: 0
-        minimum: 0
-        maximum: 100000
-    memberName:
-      name: memberName
-      in: query
-      description: Search for available members by name.
-      required: false
-      example: John
-      schema:
-        type: string
-        minLength: 1
-        maxLength: 128
+        default: 2000
+        minimum: 1
+        maximum: 2000
     phoneNumber:
       name: phoneNumber
       in: query
@@ -1807,17 +1787,16 @@ components:
         type: string
         minLength: 1
         maxLength: 30
-    max:
-      name: max
-      in: query
-      description: Maximum number of records to return.
-      required: false
-      example: 100
+    personId:
+      name: personId
+      in: path
+      description: Unique identifier for the person.
+      required: true
+      example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8wZTQ5NjAzNC1lNTQ1LTRmMmEtODI4ZC03MjhjYjJlNjNlMWQ
       schema:
-        type: integer
-        default: 2000
-        minimum: 1
-        maximum: 2000
+        type: string
+        minLength: 1
+        maxLength: 1024
     order:
       name: order
       in: query
@@ -1834,16 +1813,37 @@ components:
           minLength: 1
           maxLength: 64
           example: lastName-asc
-    locationId:
-      name: locationId
+    memberName:
+      name: memberName
       in: query
-      description: Return only available members in this location.
+      description: Search for available members by name.
       required: false
-      example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzJiNDkyZmZkLTRjNGItNGVmNS04YzAzLWE1MDYyYzM4NDA5Mw
+      example: John
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 128
+    orgId:
+      name: orgId
+      in: query
+      description: ID of the organization in which the person resides. Only admin users of another organization, such as partners, may use this parameter. If not specified, the organization from the OAuth token is used.
+      required: false
+      example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE
       schema:
         type: string
         minLength: 1
         maxLength: 1024
+    start:
+      name: start
+      in: query
+      description: Offset from the first result to fetch.
+      required: false
+      example: 0
+      schema:
+        type: integer
+        default: 0
+        minimum: 0
+        maximum: 100000
   requestBodies:
     OutboundBillingPlanRequest:
       required: true

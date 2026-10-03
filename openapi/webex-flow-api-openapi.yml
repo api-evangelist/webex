@@ -192,32 +192,93 @@ paths:
       x-codegen-request-body-name: PublishParameters
 components:
   schemas:
-    FlowTagRes:
-      title: FlowTagRes
+    EventFlowRes:
+      title: EventFlowRes
       type: object
-      description: Represents a tag
       properties:
-        default:
-          type: boolean
-          description: Determines whether the tag is a default tag
-          example: false
-        displayName:
+        description:
           type: string
-          description: Display name of the tag. It is one of 'Live', 'Test', 'Dev', 'Latest'
-          example: Live
-        flowVersionId:
-          type: string
-          description: Flow Version object ID to with which the tag is currently associated.
-          example: 65c28d9db2a2375974066579
+          description: Description of the event pane
+          example: description
+        diagram:
+          $ref: '#/components/schemas/DiagramRes'
         id:
           type: string
-          description: Identifier of the tag. It is one of 'Live', 'Test', 'Dev', 'Latest
-          example: Live
-        versionNumber:
-          type: integer
-          description: Associated Flow Version object's version number
-          format: int32
-          example: 1
+          description: Identifier of the event pane
+          example: GLOBAL_EVENTS
+        name:
+          type: string
+          description: Name of the event pane
+          example: name
+        onEvents:
+          type: object
+          additionalProperties:
+            type: string
+            description: Holds event IDs
+            example: 13ae6d9e-e607-4e43-aab7-a1af579953a7
+          description: List of events to which the flow version subscribes
+          example:
+            GlobalErrorHandling: 13ae6d9e-e607-4e43-aab7-a1af579953a7
+        process:
+          $ref: '#/components/schemas/ProcRes'
+    EventDiagramRes:
+      title: EventDiagramRes
+      type: object
+      properties:
+        eventsMap:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/EventFlowRes'
+          description: Holds global events
+          example:
+            GLOBAL_EVENTS:
+              id: GLOBAL_EVENTS
+              name: name
+              description: description
+              process:
+                activities:
+                  13ae6d9e-e607-4e43-aab7-a1af579953a7:
+                    id: 13ae6d9e-e607-4e43-aab7-a1af579953a7
+                    name: GlobalErrorHandling
+                    group: event
+                    properties:
+                      displayName: OnGlobalError
+                      name: GlobalErrorHandling
+                      event: OnGlobalError
+                links:
+                - id: db8170a0-ab4f-4415-8a3b-4561807a5287
+                  sourceActivityId: 493751c9-7b87-4e93-9999-084f89f9e17b
+                  targetActivityId: e1e7266d-699b-4420-8ba1-109d5d97f144
+                  conditionExpr: out
+                  properties:
+                    value: out
+              onEvents:
+                GlobalErrorHandling: 13ae6d9e-e607-4e43-aab7-a1af579953a7
+              diagram:
+                widgets:
+                  13ae6d9e-e607-4e43-aab7-a1af579953a7:
+                    id: 14fd05ea-62f8-4003-8ad4-9599b8434dd7
+                    type: event
+                    widgetType: activity
+                    label: New Activity Widget in Diagram
+        properties:
+          type: object
+          properties: {}
+          description: Holds information on additional properties
+          example:
+            offsetX: '0'
+    VariableOrderRes:
+      title: VariableOrderRes
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the variable in the flow version object
+          example: var1
+        variableSeq:
+          type: string
+          description: Sequence number of the variable
+          example: '1'
     ValidationResultRes:
       title: ValidationResultRes
       type: object
@@ -246,6 +307,135 @@ components:
           type: string
           description: Severity of the error. Either ERROR or RECOMMENDATION
           example: ERROR
+    LinkRes:
+      title: LinkRes
+      type: object
+      properties:
+        conditionExpr:
+          type: string
+          description: Condition expression. It is one of 'out', and 'default'
+          example: out
+        id:
+          type: string
+          description: Link ID
+          example: dea7d650-9734-4fa3-bfc9-2c669415c9e3
+        properties:
+          type: object
+          properties: {}
+          description: Additional properties are stored here
+          example:
+            value: out
+        sourceActivityId:
+          type: string
+          description: Activity from which the link originates
+          example: 1330315f-7012-479a-8126-c767258004e6
+        targetActivityId:
+          type: string
+          description: Activity to which the link connects
+          example: 22a8930c-0770-4ab9-8e29-3a5ff1000e81
+    FlowPreferenceRes:
+      title: FlowPreferenceRes
+      type: object
+      properties:
+        name:
+          type: string
+          description: The flow preference name.
+          example: hideSecureCADWarning
+        type:
+          type: string
+          description: The preference type.
+          example: Boolean
+        value:
+          type: string
+          description: The preference value.
+          example: 'true'
+    DiagramRes:
+      title: DiagramRes
+      type: object
+      properties:
+        properties:
+          type: object
+          description: Additional properties are listed here
+          properties: {}
+          example:
+            activityId: http-request-v2
+        widgets:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Widget'
+          description: Holds the activities and links
+          example:
+            493751c9-7b87-4e93-9999-084f89f9e17b:
+              id: 6a59e2f5-3d3d-475a-91f7-d24ac25a614b
+              type: start
+              widgetType: activity
+              label: New Activity Widget in Diagram
+    FlowTagRes:
+      title: FlowTagRes
+      type: object
+      description: Represents a tag
+      properties:
+        default:
+          type: boolean
+          description: Determines whether the tag is a default tag
+          example: false
+        displayName:
+          type: string
+          description: Display name of the tag. It is one of 'Live', 'Test', 'Dev', 'Latest'
+          example: Live
+        flowVersionId:
+          type: string
+          description: Flow Version object ID to with which the tag is currently associated.
+          example: 65c28d9db2a2375974066579
+        id:
+          type: string
+          description: Identifier of the tag. It is one of 'Live', 'Test', 'Dev', 'Latest
+          example: Live
+        versionNumber:
+          type: integer
+          description: Associated Flow Version object's version number
+          format: int32
+          example: 1
+    UiRuntimeVariableRes:
+      title: UiRuntimeVariableRes
+      type: object
+      properties:
+        activityName:
+          type: string
+          description: Name of the activity
+          example: http-request-v2
+        description:
+          type: string
+          description: Determines whether the variable needs to be visible on the UI
+          example: HTTPRequest_7sz
+        displayName:
+          type: string
+          description: Display name of the activity
+          example: HTTPRequest_7sz
+        isSecure:
+          type: boolean
+          description: Determines whether a variable is marked sensitive
+          example: false
+        name:
+          type: string
+          description: Name of the runtime variable
+          example: NewPhoneContact.ANI
+        path:
+          type: string
+          description: Path of the runtime variable
+          example: HTTPRequest_7sz.httpResponseBody
+        source:
+          type: string
+          description: Source of the runtime variable. Either 'Event' or 'Activity'
+          example: Activity
+        type:
+          type: string
+          description: Data type of the runtime variable
+          example: string
+        uiVisible:
+          type: boolean
+          description: Determines whether the variable needs to be visible on the UI
+          example: false
     PublishParameters:
       title: PublishParameters
       type: object
@@ -262,46 +452,58 @@ components:
           - Live
           items:
             type: string
-    Widget:
-      title: Widget
+    FlowVariablesRes:
+      title: FlowVariablesRes
       type: object
       properties:
+        description:
+          type: string
+          description: Description for the variable
+          example: var1 is meant for loop counter
+        desktopLabel:
+          type: string
+          description: Variable name shown on Agent Desktop
+          example: var1
         id:
           type: string
-          description: Widget ID of the entity
-          example: 6a59e2f5-3d3d-475a-91f7-d24ac25a614b
-        type:
-          type: string
-          description: Type of the widget. One of 'start', 'action', and 'end'
-          example: start
-        label:
-          type: string
-          description: Label of the widget
-          example: New Activity Widget in Diagram
-        widgetType:
-          type: string
-          description: Either 'activity' or 'link'
-          example: activity
-    FlowVersionSettingRes:
-      title: FlowVersionSettingRes
-      type: object
-      properties:
-        group:
-          type: string
-          description: The group the setting belongs to.
-          example: activityWait
+          description: Identifier for the variable
+          example: 04b302a9-6d92-4365-8902-9b04bc3bf5f9
+        isAgentEditable:
+          type: boolean
+          description: Determines whether is eligible for desktop agent to edit
+          example: false
+        isCAD:
+          type: boolean
+          description: Determines whether variable is agent viewable
+          example: false
+        isReportable:
+          type: boolean
+          description: Determines whether a variable is reportable
+          example: false
+        isSecure:
+          type: boolean
+          description: Determines whether a variable is marked sensitive
+          example: false
         name:
           type: string
-          description: The name of the flow version setting
-          example: delayTime
+          description: Name of the variable
+          example: var1
+        overwrite:
+          type: boolean
+          description: Determines whether a global variable has been overwritten
+          example: false
+        source:
+          type: string
+          description: Source of the variable (GLOBAL, SUBFLOW_INPUT, SUBFLOW_OUTPUT, an empty string ). It's left empty for subflow local or flow variables
+          example: GLOBAL
         type:
           type: string
-          description: The setting type.
-          example: INTEGER
+          description: Data type of the variable (STRING, INTEGER, DATETIME, DECIMAL, JSON, BOOLEAN)
+          example: STRING
         value:
           type: string
-          description: The setting value.
-          example: '2000'
+          description: Value of the variable
+          example: hello world!
     FlowRes:
       title: FlowRes
       type: object
@@ -407,6 +609,42 @@ components:
           description: Version Number.
           format: int32
           example: 1
+    FlowProgressionRes:
+      title: FlowProgressionRes
+      type: object
+      properties:
+        forkFrom:
+          type: string
+          description: Previous Flow Version holding the tag
+          example: 65c28d9db2a2375974066579
+        fvId:
+          type: string
+          description: Flow Version object ID
+          example: 65c28d9db2a2375974066579
+        fvName:
+          type: string
+          description: Name of the Flow Version object
+          example: TestFlow
+    FlowVersionSettingRes:
+      title: FlowVersionSettingRes
+      type: object
+      properties:
+        group:
+          type: string
+          description: The group the setting belongs to.
+          example: activityWait
+        name:
+          type: string
+          description: The name of the flow version setting
+          example: delayTime
+        type:
+          type: string
+          description: The setting type.
+          example: INTEGER
+        value:
+          type: string
+          description: The setting value.
+          example: '2000'
     FlowVersionRes:
       title: FlowVersionRes
       type: object
@@ -525,172 +763,28 @@ components:
           description: Version Number
           format: int32
           example: 1
-    VariableOrderRes:
-      title: VariableOrderRes
+    ActivityRes:
+      title: ActivityRes
       type: object
       properties:
+        group:
+          type: string
+          description: Group of the activity. It is one of 'start', 'action', 'event', and 'end'.
+          example: start
+        id:
+          type: string
+          description: Activity ID
+          example: 9813529a-b01a-4eee-a79c-5016f7b0c772
         name:
           type: string
-          description: Name of the variable in the flow version object
-          example: var1
-        variableSeq:
-          type: string
-          description: Sequence number of the variable
-          example: '1'
-    ProcRes:
-      title: ProcRes
-      type: object
-      properties:
-        activities:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/ActivityRes'
-          description: Stores list of activities/events
-          example:
-            493751c9-7b87-4e93-9999-084f89f9e17b:
-              id: 493751c9-7b87-4e93-9999-084f89f9e17b
-              name: NewPhoneContact
-              group: start
-              properties:
-                name: NewPhoneContact
-                event: NewPhoneContact
-                activityId: start
-        links:
-          type: array
-          description: Stores list of links
-          items:
-            $ref: '#/components/schemas/LinkRes'
-    EventDiagramRes:
-      title: EventDiagramRes
-      type: object
-      properties:
-        eventsMap:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/EventFlowRes'
-          description: Holds global events
-          example:
-            GLOBAL_EVENTS:
-              id: GLOBAL_EVENTS
-              name: name
-              description: description
-              process:
-                activities:
-                  13ae6d9e-e607-4e43-aab7-a1af579953a7:
-                    id: 13ae6d9e-e607-4e43-aab7-a1af579953a7
-                    name: GlobalErrorHandling
-                    group: event
-                    properties:
-                      displayName: OnGlobalError
-                      name: GlobalErrorHandling
-                      event: OnGlobalError
-                links:
-                - id: db8170a0-ab4f-4415-8a3b-4561807a5287
-                  sourceActivityId: 493751c9-7b87-4e93-9999-084f89f9e17b
-                  targetActivityId: e1e7266d-699b-4420-8ba1-109d5d97f144
-                  conditionExpr: out
-                  properties:
-                    value: out
-              onEvents:
-                GlobalErrorHandling: 13ae6d9e-e607-4e43-aab7-a1af579953a7
-              diagram:
-                widgets:
-                  13ae6d9e-e607-4e43-aab7-a1af579953a7:
-                    id: 14fd05ea-62f8-4003-8ad4-9599b8434dd7
-                    type: event
-                    widgetType: activity
-                    label: New Activity Widget in Diagram
+          description: Activity label
+          example: NewPhoneContact
         properties:
           type: object
           properties: {}
-          description: Holds information on additional properties
+          description: Additional properties are stored here
           example:
-            offsetX: '0'
-    EventFlowRes:
-      title: EventFlowRes
-      type: object
-      properties:
-        description:
-          type: string
-          description: Description of the event pane
-          example: description
-        diagram:
-          $ref: '#/components/schemas/DiagramRes'
-        id:
-          type: string
-          description: Identifier of the event pane
-          example: GLOBAL_EVENTS
-        name:
-          type: string
-          description: Name of the event pane
-          example: name
-        onEvents:
-          type: object
-          additionalProperties:
-            type: string
-            description: Holds event IDs
-            example: 13ae6d9e-e607-4e43-aab7-a1af579953a7
-          description: List of events to which the flow version subscribes
-          example:
-            GlobalErrorHandling: 13ae6d9e-e607-4e43-aab7-a1af579953a7
-        process:
-          $ref: '#/components/schemas/ProcRes'
-    FlowProgressionRes:
-      title: FlowProgressionRes
-      type: object
-      properties:
-        forkFrom:
-          type: string
-          description: Previous Flow Version holding the tag
-          example: 65c28d9db2a2375974066579
-        fvId:
-          type: string
-          description: Flow Version object ID
-          example: 65c28d9db2a2375974066579
-        fvName:
-          type: string
-          description: Name of the Flow Version object
-          example: TestFlow
-    UiRuntimeVariableRes:
-      title: UiRuntimeVariableRes
-      type: object
-      properties:
-        activityName:
-          type: string
-          description: Name of the activity
-          example: http-request-v2
-        description:
-          type: string
-          description: Determines whether the variable needs to be visible on the UI
-          example: HTTPRequest_7sz
-        displayName:
-          type: string
-          description: Display name of the activity
-          example: HTTPRequest_7sz
-        isSecure:
-          type: boolean
-          description: Determines whether a variable is marked sensitive
-          example: false
-        name:
-          type: string
-          description: Name of the runtime variable
-          example: NewPhoneContact.ANI
-        path:
-          type: string
-          description: Path of the runtime variable
-          example: HTTPRequest_7sz.httpResponseBody
-        source:
-          type: string
-          description: Source of the runtime variable. Either 'Event' or 'Activity'
-          example: Activity
-        type:
-          type: string
-          description: Data type of the runtime variable
-          example: string
-        uiVisible:
-          type: boolean
-          description: Determines whether the variable needs to be visible on the UI
-          example: false
+            displayName: NewPhoneContact
     BasicFlowDTO:
       title: BasicFlowDTO
       type: object
@@ -776,143 +870,49 @@ components:
           description: Version Number
           format: int32
           example: 1
-    DiagramRes:
-      title: DiagramRes
+    ProcRes:
+      title: ProcRes
       type: object
       properties:
-        properties:
-          type: object
-          description: Additional properties are listed here
-          properties: {}
-          example:
-            activityId: http-request-v2
-        widgets:
+        activities:
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/Widget'
-          description: Holds the activities and links
+            $ref: '#/components/schemas/ActivityRes'
+          description: Stores list of activities/events
           example:
             493751c9-7b87-4e93-9999-084f89f9e17b:
-              id: 6a59e2f5-3d3d-475a-91f7-d24ac25a614b
-              type: start
-              widgetType: activity
-              label: New Activity Widget in Diagram
-    FlowPreferenceRes:
-      title: FlowPreferenceRes
+              id: 493751c9-7b87-4e93-9999-084f89f9e17b
+              name: NewPhoneContact
+              group: start
+              properties:
+                name: NewPhoneContact
+                event: NewPhoneContact
+                activityId: start
+        links:
+          type: array
+          description: Stores list of links
+          items:
+            $ref: '#/components/schemas/LinkRes'
+    Widget:
+      title: Widget
       type: object
       properties:
-        name:
-          type: string
-          description: The flow preference name.
-          example: hideSecureCADWarning
-        type:
-          type: string
-          description: The preference type.
-          example: Boolean
-        value:
-          type: string
-          description: The preference value.
-          example: 'true'
-    FlowVariablesRes:
-      title: FlowVariablesRes
-      type: object
-      properties:
-        description:
-          type: string
-          description: Description for the variable
-          example: var1 is meant for loop counter
-        desktopLabel:
-          type: string
-          description: Variable name shown on Agent Desktop
-          example: var1
         id:
           type: string
-          description: Identifier for the variable
-          example: 04b302a9-6d92-4365-8902-9b04bc3bf5f9
-        isAgentEditable:
-          type: boolean
-          description: Determines whether is eligible for desktop agent to edit
-          example: false
-        isCAD:
-          type: boolean
-          description: Determines whether variable is agent viewable
-          example: false
-        isReportable:
-          type: boolean
-          description: Determines whether a variable is reportable
-          example: false
-        isSecure:
-          type: boolean
-          description: Determines whether a variable is marked sensitive
-          example: false
-        name:
-          type: string
-          description: Name of the variable
-          example: var1
-        overwrite:
-          type: boolean
-          description: Determines whether a global variable has been overwritten
-          example: false
-        source:
-          type: string
-          description: Source of the variable (GLOBAL, SUBFLOW_INPUT, SUBFLOW_OUTPUT, an empty string ). It's left empty for subflow local or flow variables
-          example: GLOBAL
+          description: Widget ID of the entity
+          example: 6a59e2f5-3d3d-475a-91f7-d24ac25a614b
         type:
           type: string
-          description: Data type of the variable (STRING, INTEGER, DATETIME, DECIMAL, JSON, BOOLEAN)
-          example: STRING
-        value:
-          type: string
-          description: Value of the variable
-          example: hello world!
-    ActivityRes:
-      title: ActivityRes
-      type: object
-      properties:
-        group:
-          type: string
-          description: Group of the activity. It is one of 'start', 'action', 'event', and 'end'.
+          description: Type of the widget. One of 'start', 'action', and 'end'
           example: start
-        id:
+        label:
           type: string
-          description: Activity ID
-          example: 9813529a-b01a-4eee-a79c-5016f7b0c772
-        name:
+          description: Label of the widget
+          example: New Activity Widget in Diagram
+        widgetType:
           type: string
-          description: Activity label
-          example: NewPhoneContact
-        properties:
-          type: object
-          properties: {}
-          description: Additional properties are stored here
-          example:
-            displayName: NewPhoneContact
-    LinkRes:
-      title: LinkRes
-      type: object
-      properties:
-        conditionExpr:
-          type: string
-          description: Condition expression. It is one of 'out', and 'default'
-          example: out
-        id:
-          type: string
-          description: Link ID
-          example: dea7d650-9734-4fa3-bfc9-2c669415c9e3
-        properties:
-          type: object
-          properties: {}
-          description: Additional properties are stored here
-          example:
-            value: out
-        sourceActivityId:
-          type: string
-          description: Activity from which the link originates
-          example: 1330315f-7012-479a-8126-c767258004e6
-        targetActivityId:
-          type: string
-          description: Activity to which the link connects
-          example: 22a8930c-0770-4ab9-8e29-3a5ff1000e81
+          description: Either 'activity' or 'link'
+          example: activity
   securitySchemes:
     oauth2:
       flows:

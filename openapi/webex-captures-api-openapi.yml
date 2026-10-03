@@ -117,6 +117,41 @@ paths:
           description: An Unexpected Error Occurred
 components:
   schemas:
+    TranscriptMulti:
+      type: object
+      properties:
+        Source:
+          type: string
+          description: Source of the transcription
+          example: recording|realtime-voice|chat|sms|{{ <WorkItem> channel name }}|{{ <CustomMessaging> channel name }} etc.
+        Provider:
+          type: string
+          description: Provider of the generated transcription
+          example: CISCO
+        id:
+          type: string
+          description: 'Voice Channel Transcript: Ccai ConfigId, Digital Channel Transcript: Conversation Id'
+          example: cfg-id-101|CSRKT4K37D9OM2567
+        fileName:
+          type: string
+          description: The file name of the transcript.
+          example: voiceTranscript.json|emailTranscript.json|facebookTranscript.json etc.
+        filePath:
+          type: string
+          description: Capture download url. Please refer [Transcript Details Guide](/docs/digital-transcript-json-details) for more details.
+          example: https://cjp-ccone-devus1-media-storage-recording.s3.amazonaws.com/9e4895c9-787b-4615-b15f-f1b3b12c3091/
+        startTime:
+          type: string
+          description: Begin time of capture(epoch timestamp)
+          example: '1617373126000'
+        languageCode:
+          type: string
+          description: Language of the transcript
+          example: en-US
+        createTime:
+          type: string
+          description: Create time of capture(epoch timestamp)
+          example: '1617373126000'
     RecordingAttributes:
       type: object
       properties:
@@ -162,96 +197,6 @@ components:
           type: boolean
           description: Applicable only to virtual agent recordings. Flag; (true) indicates the virtual agent recording may contain sensitive information, (false) otherwise.
           example: true
-    RecordingBodyParams:
-      required:
-      - query
-      type: object
-      properties:
-        query:
-          $ref: '#/components/schemas/RecordingQuery'
-    ScreenRecordingAttributes:
-      required:
-      - fileName
-      - filePath
-      - startTime
-      - stopTime
-      - agentId
-      - screenId
-      type: object
-      properties:
-        fileName:
-          type: string
-          description: The file name of the screen recording.
-          example: 3305322a-630c-4791-a068-4a751529c4d7-segment.wav
-        filePath:
-          type: string
-          description: Screen recording download URL.
-          example: https://cjp-ccone-intgus1-media-storage-recording.s3.amazonaws.com/470c589d-ce3f-4afe-adec-575c73c0e472
-        startTime:
-          type: integer
-          description: Begin time of screen recording (epoch timestamp)
-          format: int64
-          example: 1617373126000
-        stopTime:
-          type: integer
-          description: End time of screen recording (epoch timestamp).
-          format: int64
-          example: 1627373126000
-        agentId:
-          type: string
-          description: The ID of the agent whose screen was recorded.
-          example: e890a591-63f0-4984-a8f2-00e631368fb4
-        screenId:
-          type: string
-          description: The ID of the screen being recorded.
-          example: 2e8f4a19-7b35-4c6d-93a1-d5f0b7c2e855
-    ScreenRecordingMulti:
-      required:
-      - id
-      - attributes
-      type: object
-      properties:
-        id:
-          type: string
-          description: The ID of the screen recording.
-          example: f13b9c64-0d72-4e8a-b5f1-9a6d3c2e7b15
-        attributes:
-          $ref: '#/components/schemas/ScreenRecordingAttributes'
-    TranscriptMulti:
-      type: object
-      properties:
-        Source:
-          type: string
-          description: Source of the transcription
-          example: recording|realtime-voice|chat|sms|{{ <WorkItem> channel name }}|{{ <CustomMessaging> channel name }} etc.
-        Provider:
-          type: string
-          description: Provider of the generated transcription
-          example: CISCO
-        id:
-          type: string
-          description: 'Voice Channel Transcript: Ccai ConfigId, Digital Channel Transcript: Conversation Id'
-          example: cfg-id-101|CSRKT4K37D9OM2567
-        fileName:
-          type: string
-          description: The file name of the transcript.
-          example: voiceTranscript.json|emailTranscript.json|facebookTranscript.json etc.
-        filePath:
-          type: string
-          description: Capture download url. Please refer [Transcript Details Guide](/docs/digital-transcript-json-details) for more details.
-          example: https://cjp-ccone-devus1-media-storage-recording.s3.amazonaws.com/9e4895c9-787b-4615-b15f-f1b3b12c3091/
-        startTime:
-          type: string
-          description: Begin time of capture(epoch timestamp)
-          example: '1617373126000'
-        languageCode:
-          type: string
-          description: Language of the transcript
-          example: en-US
-        createTime:
-          type: string
-          description: Create time of capture(epoch timestamp)
-          example: '1617373126000'
     RecordingQuery:
       required:
       - taskIds
@@ -293,6 +238,42 @@ components:
           type: boolean
           description: Flag; (true) returns all available digital transcript artifacts for each requested task, including both legacy and schema-versioned digital transcript artifacts when both exist. (false) or omitted returns the default Captures behavior. This field applies only to digital transcript artifacts and does not change recording or voice transcript retrieval.
           example: true
+    ScreenRecordingAttributes:
+      required:
+      - fileName
+      - filePath
+      - startTime
+      - stopTime
+      - agentId
+      - screenId
+      type: object
+      properties:
+        fileName:
+          type: string
+          description: The file name of the screen recording.
+          example: 3305322a-630c-4791-a068-4a751529c4d7-segment.wav
+        filePath:
+          type: string
+          description: Screen recording download URL.
+          example: https://cjp-ccone-intgus1-media-storage-recording.s3.amazonaws.com/470c589d-ce3f-4afe-adec-575c73c0e472
+        startTime:
+          type: integer
+          description: Begin time of screen recording (epoch timestamp)
+          format: int64
+          example: 1617373126000
+        stopTime:
+          type: integer
+          description: End time of screen recording (epoch timestamp).
+          format: int64
+          example: 1627373126000
+        agentId:
+          type: string
+          description: The ID of the agent whose screen was recorded.
+          example: e890a591-63f0-4984-a8f2-00e631368fb4
+        screenId:
+          type: string
+          description: The ID of the screen being recorded.
+          example: 2e8f4a19-7b35-4c6d-93a1-d5f0b7c2e855
     RecordingMulti:
       required:
       - attributes
@@ -343,6 +324,25 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/MultipleInteractionsRecording'
+    RecordingBodyParams:
+      required:
+      - query
+      type: object
+      properties:
+        query:
+          $ref: '#/components/schemas/RecordingQuery'
+    ScreenRecordingMulti:
+      required:
+      - id
+      - attributes
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the screen recording.
+          example: f13b9c64-0d72-4e8a-b5f1-9a6d3c2e7b15
+        attributes:
+          $ref: '#/components/schemas/ScreenRecordingAttributes'
     RecordingMetaData:
       type: object
       properties:

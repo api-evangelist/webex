@@ -586,19 +586,17 @@ paths:
       deprecated: false
 components:
   schemas:
-    EntityReferenceInfoDTO:
+    ResponseEnvelopeAudioFileInfoDTO:
       type: object
       properties:
-        description:
-          type: string
-          description: Description about reference info.
-          example: list of referenced entities
         meta:
-          $ref: '#/components/schemas/MetaDataReferencesPagingInfo'
+          type: object
+          additionalProperties:
+            type: object
         data:
           type: array
           items:
-            $ref: '#/components/schemas/EntityInfo'
+            $ref: '#/components/schemas/AudioFileInfoDTO'
     ErrorDetails:
       description: Details of an error.
       type: object
@@ -623,6 +621,15 @@ components:
         error:
           description: An object containing details about the error.
           $ref: '#/components/schemas/ErrorDetails'
+    AudioFileInfoPatchDTO:
+      type: object
+      properties:
+        description:
+          maxLength: 255
+          minLength: 0
+          type: string
+          description: A short description of the dial plan.
+          example: Required for transferring calls to Queues
     MetaDataReferencesPagingInfo:
       title: MetaDataReferencesPagingInfo
       type: object
@@ -677,15 +684,47 @@ components:
           description: Name of current entity
           example: entity_name
       description: Metadata of response for references with paging information
-    AudioFileInfoPatchDTO:
+    EntityReferenceInfoDTO:
       type: object
       properties:
         description:
-          maxLength: 255
-          minLength: 0
           type: string
-          description: A short description of the dial plan.
-          example: Required for transferring calls to Queues
+          description: Description about reference info.
+          example: list of referenced entities
+        meta:
+          $ref: '#/components/schemas/MetaDataReferencesPagingInfo'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityInfo'
+    EntityInfo:
+      type: object
+      properties:
+        id:
+          type: string
+          description: id
+          example: id.
+        name:
+          type: string
+          description: name
+          example: name.
+        additionalAttributes:
+          type: object
+          additionalProperties:
+            type: string
+            description: A map containing additional attributes of entity where both the key and value are Strings.
+            example: '{"key1":"value1","key2":"value2"}'
+          description: A map containing additional attributes of entity where both the key and value are Strings.
+          example:
+            key1: value1
+            key2: value2
+        createdDate:
+          type: string
+        lastModifiedDate:
+          type: string
+        version:
+          type: integer
+          format: int32
     AudioFileInfoDTO:
       required:
       - contentType
@@ -760,45 +799,6 @@ components:
           format: int64
           readOnly: true
           example: 1617536244000
-    ResponseEnvelopeAudioFileInfoDTO:
-      type: object
-      properties:
-        meta:
-          type: object
-          additionalProperties:
-            type: object
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/AudioFileInfoDTO'
-    EntityInfo:
-      type: object
-      properties:
-        id:
-          type: string
-          description: id
-          example: id.
-        name:
-          type: string
-          description: name
-          example: name.
-        additionalAttributes:
-          type: object
-          additionalProperties:
-            type: string
-            description: A map containing additional attributes of entity where both the key and value are Strings.
-            example: '{"key1":"value1","key2":"value2"}'
-          description: A map containing additional attributes of entity where both the key and value are Strings.
-          example:
-            key1: value1
-            key2: value2
-        createdDate:
-          type: string
-        lastModifiedDate:
-          type: string
-        version:
-          type: integer
-          format: int32
     OperationError:
       description: An error message providing details about the operation failure.
       type: object

@@ -116,13 +116,13 @@ components:
         type:
           $ref: '#/components/schemas/EndpointType'
           description: Type of the endpoint.
-    LineOwnerType:
+    EndpointType:
       type: string
       enum:
-      - PEOPLE
-      - PLACE
-      - VIRTUAL_LINE
-      description: " * `PEOPLE` - The line is owned by a person.\n * `PLACE` - The line is owned by a workspace.\n * `VIRTUAL_LINE` - The line is owned by a virtual line.\n"
+      - CALLING_DEVICE
+      - APPLICATION
+      - HOTDESKING_GUEST
+      description: " * `CALLING_DEVICE` - Endpoint is a calling device.\n * `APPLICATION` - Endpoint is an application.\n * `HOTDESKING_GUEST` - Endpoint is a hotdesking guest.\n"
     UserEndpoints:
       type: object
       required:
@@ -145,13 +145,41 @@ components:
         status:
           $ref: '#/components/schemas/EndpointStatus'
           description: SIP Registration status of the device.
-    EndpointType:
+    LineOwnerType:
       type: string
       enum:
-      - CALLING_DEVICE
-      - APPLICATION
-      - HOTDESKING_GUEST
-      description: " * `CALLING_DEVICE` - Endpoint is a calling device.\n * `APPLICATION` - Endpoint is an application.\n * `HOTDESKING_GUEST` - Endpoint is a hotdesking guest.\n"
+      - PEOPLE
+      - PLACE
+      - VIRTUAL_LINE
+      description: " * `PEOPLE` - The line is owned by a person.\n * `PLACE` - The line is owned by a workspace.\n * `VIRTUAL_LINE` - The line is owned by a virtual line.\n"
+    EndpointStatus:
+      type: string
+      enum:
+      - CONNECTED
+      - NOT_CONNECTED
+      description: " * `CONNECTED` - Device is connected.\n * `NOT_CONNECTED` - Device is not connected.\n"
+    ContactCenterExtensionsGetObject:
+      type: object
+      required:
+      - ccExtensions
+      - endpoints
+      properties:
+        ccExtensions:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserExtensions'
+          description: List of user extensions.
+        endpoints:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserEndpoints'
+          description: List of user endpoints details.
+    ExtensionType:
+      type: string
+      enum:
+      - PRIMARY
+      - SECONDARY
+      description: " * `PRIMARY` - Indicates that the extension is owned by the user.\n * `SECONDARY` - Indicates that the extension is not owned by the user and is a secondary line on one of the users devices.\n"
     UserExtensions:
       type: object
       required:
@@ -192,34 +220,6 @@ components:
           items:
             $ref: '#/components/schemas/UserEndpointType'
           description: List of user endpoints with type.
-    ExtensionType:
-      type: string
-      enum:
-      - PRIMARY
-      - SECONDARY
-      description: " * `PRIMARY` - Indicates that the extension is owned by the user.\n * `SECONDARY` - Indicates that the extension is not owned by the user and is a secondary line on one of the users devices.\n"
-    ContactCenterExtensionsGetObject:
-      type: object
-      required:
-      - ccExtensions
-      - endpoints
-      properties:
-        ccExtensions:
-          type: array
-          items:
-            $ref: '#/components/schemas/UserExtensions'
-          description: List of user extensions.
-        endpoints:
-          type: array
-          items:
-            $ref: '#/components/schemas/UserEndpoints'
-          description: List of user endpoints details.
-    EndpointStatus:
-      type: string
-      enum:
-      - CONNECTED
-      - NOT_CONNECTED
-      description: " * `CONNECTED` - Device is connected.\n * `NOT_CONNECTED` - Device is not connected.\n"
   securitySchemes:
     oauth2:
       flows:

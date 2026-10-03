@@ -140,115 +140,6 @@ paths:
           description: An Unexpected Error Occurred
 components:
   schemas:
-    MidCallSummary:
-      type: object
-      properties:
-        reasonForTransferOrConsult:
-          type: string
-          description: The specific reason the interaction is being transferred or consulted.
-        additionalContext:
-          type: string
-          description: Important information already gathered that the next agent needs to continue smoothly.
-        keyActionsTaken:
-          type: string
-          description: Steps completed so far in the interaction before the transfer or consult occurred.
-    SummaryListByAgentRequest:
-      type: object
-      required:
-      - orgId
-      - agentCiUserId
-      - searchType
-      properties:
-        orgId:
-          type: string
-          description: The unique identifier of the organization to which the summarized interactions belong.
-        agentCiUserId:
-          type: string
-          description: The CI (Common Identity) user ID of the agent associated with the summaries.
-        searchType:
-          type: string
-          enum:
-          - AGENT
-          description: The type of search to be performed.
-    ProposedWrapUpCode:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The name of the proposed wrap-up reason.
-    PostCallSummary:
-      type: object
-      properties:
-        initialContactReason:
-          type: string
-          description: The primary issue or request the customer contacted you about at the start of the interaction.
-        additionalContext:
-          type: string
-          description: Relevant background details shared during the conversation that help explain the situation.
-        additionalContactReasons:
-          type: string
-          description: Any new or secondary issues raised after the initial reason for contact.
-        keyActionsTaken:
-          type: string
-          description: The main steps the agent took to investigate, resolve, or address the customer's request.
-        nextSteps:
-          type: string
-          description: Clear follow-up actions and expected outcomes agreed upon before ending the interaction.
-        chosenWrapUpCode:
-          type: string
-          description: The wrap-up reason code that was ultimately selected by the agent at the end of the interaction.
-        proposedWrapUpCodes:
-          type:
-          - array
-          - 'null'
-          description: A list of wrap-up reasons suggested by the AI based on the interaction content. Each object contains a name field. Can return null, 1, or 2 objects.
-          items:
-            $ref: '#/components/schemas/ProposedWrapUpCode'
-    SearchType:
-      type: string
-      description: The type of search to be performed.
-      enum:
-      - ORGANIZATION
-      - INTERACTION
-      - AGENT
-    SummaryListByOrganizationRequest:
-      type: object
-      required:
-      - orgId
-      - searchType
-      properties:
-        orgId:
-          type: string
-          description: The unique identifier of the organization to which the summarized interactions belong.
-        searchType:
-          type: string
-          enum:
-          - ORGANIZATION
-          description: The type of search to be performed.
-    SummaryListRequest:
-      description: List summaries based on the given search type.
-      oneOf:
-      - $ref: '#/components/schemas/SummaryListByOrganizationRequest'
-      - $ref: '#/components/schemas/SummaryListByInteractionRequest'
-      - $ref: '#/components/schemas/SummaryListByAgentRequest'
-    SummaryListByInteractionRequest:
-      type: object
-      required:
-      - orgId
-      - interactionId
-      - searchType
-      properties:
-        orgId:
-          type: string
-          description: The unique identifier of the organization to which the summarized interactions belong.
-        interactionId:
-          type: string
-          description: The unique identifier of a specific interaction.
-        searchType:
-          type: string
-          enum:
-          - INTERACTION
-          description: The type of search to be performed.
     SummaryListResponse:
       type: object
       properties:
@@ -309,6 +200,115 @@ components:
               additionalContext: The match will take place next weekend at 6 PM, and the caller is part of a group looking to buy a large number of tickets.
               keyActionsTaken: Checked the match schedule\nInquired about the number of tickets needed\nInitiated a transfer to check ticket availability with teammates
         queueId: null
+    SummaryListRequest:
+      description: List summaries based on the given search type.
+      oneOf:
+      - $ref: '#/components/schemas/SummaryListByOrganizationRequest'
+      - $ref: '#/components/schemas/SummaryListByInteractionRequest'
+      - $ref: '#/components/schemas/SummaryListByAgentRequest'
+    SummaryListByInteractionRequest:
+      type: object
+      required:
+      - orgId
+      - interactionId
+      - searchType
+      properties:
+        orgId:
+          type: string
+          description: The unique identifier of the organization to which the summarized interactions belong.
+        interactionId:
+          type: string
+          description: The unique identifier of a specific interaction.
+        searchType:
+          type: string
+          enum:
+          - INTERACTION
+          description: The type of search to be performed.
+    PostCallSummary:
+      type: object
+      properties:
+        initialContactReason:
+          type: string
+          description: The primary issue or request the customer contacted you about at the start of the interaction.
+        additionalContext:
+          type: string
+          description: Relevant background details shared during the conversation that help explain the situation.
+        additionalContactReasons:
+          type: string
+          description: Any new or secondary issues raised after the initial reason for contact.
+        keyActionsTaken:
+          type: string
+          description: The main steps the agent took to investigate, resolve, or address the customer's request.
+        nextSteps:
+          type: string
+          description: Clear follow-up actions and expected outcomes agreed upon before ending the interaction.
+        chosenWrapUpCode:
+          type: string
+          description: The wrap-up reason code that was ultimately selected by the agent at the end of the interaction.
+        proposedWrapUpCodes:
+          type:
+          - array
+          - 'null'
+          description: A list of wrap-up reasons suggested by the AI based on the interaction content. Each object contains a name field. Can return null, 1, or 2 objects.
+          items:
+            $ref: '#/components/schemas/ProposedWrapUpCode'
+    SummaryListByAgentRequest:
+      type: object
+      required:
+      - orgId
+      - agentCiUserId
+      - searchType
+      properties:
+        orgId:
+          type: string
+          description: The unique identifier of the organization to which the summarized interactions belong.
+        agentCiUserId:
+          type: string
+          description: The CI (Common Identity) user ID of the agent associated with the summaries.
+        searchType:
+          type: string
+          enum:
+          - AGENT
+          description: The type of search to be performed.
+    ProposedWrapUpCode:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the proposed wrap-up reason.
+    MidCallSummary:
+      type: object
+      properties:
+        reasonForTransferOrConsult:
+          type: string
+          description: The specific reason the interaction is being transferred or consulted.
+        additionalContext:
+          type: string
+          description: Important information already gathered that the next agent needs to continue smoothly.
+        keyActionsTaken:
+          type: string
+          description: Steps completed so far in the interaction before the transfer or consult occurred.
+    SummaryListByOrganizationRequest:
+      type: object
+      required:
+      - orgId
+      - searchType
+      properties:
+        orgId:
+          type: string
+          description: The unique identifier of the organization to which the summarized interactions belong.
+        searchType:
+          type: string
+          enum:
+          - ORGANIZATION
+          description: The type of search to be performed.
+    SearchType:
+      type: string
+      description: The type of search to be performed.
+      enum:
+      - ORGANIZATION
+      - INTERACTION
+      - AGENT
   securitySchemes:
     oauth2:
       flows:

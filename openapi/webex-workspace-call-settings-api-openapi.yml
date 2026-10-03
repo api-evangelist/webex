@@ -450,48 +450,19 @@ paths:
         example: 100
 components:
   schemas:
-    GetAvailableMembersForMonitoringResponse:
+    WorkspaceMonitoringPatch:
       type: object
       properties:
-        members:
+        enableCallParkNotification:
+          type: boolean
+          example: true
+          description: Call park notification is enabled or disabled.
+        monitoredElements:
           type: array
+          maxItems: 50
           items:
-            $ref: '#/components/schemas/AvailableMemberObject'
-          description: List of available members.
-    MonitoredElementSpeedDial:
-      type: object
-      properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS80NDVkMzMzMC1mNjE3LTExZWItOWQyZS01NzViODE3ZGE2NmE
-          description: The identifier of the speed dial.
-        displayName:
-          type: string
-          example: John Brown
-          description: The display name of the speed dial.
-        type:
-          type: string
-          enum:
-          - PEOPLE
-          - PLACE
-          - VIRTUAL_LINE
-          description: "The type of the speed dial.\n * `PEOPLE` - Object is a user.\n * `PLACE` - Object is a workspace.\n * `VIRTUAL_LINE` - Object is a virtual line.\n"
-        lineKeyLabel:
-          type: string
-          example: Manager
-          description: Customizable line key label for speed dial.
-        phoneNumber:
-          type: string
-          example: '+19075552859'
-          description: The phone number of the speed dial.
-        location:
-          type: string
-          example: Richardson
-          description: The location name where the speed dial is.
-        locationId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzEyMzQ1
-          description: The ID for the location.
+            $ref: '#/components/schemas/MonitoredElementItemPatch'
+          description: Array of monitored elements. Maximum 50 elements.
     AvailableMemberObject:
       type: object
       properties:
@@ -529,64 +500,14 @@ components:
         location:
           $ref: '#/components/schemas/LocationObject'
           description: The location of the available member.
-    MonitoredElementUser:
+    GetAvailableMembersForMonitoringResponse:
       type: object
       properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS80NDVkMzMzMC1mNjE3LTExZWItOWQyZS01NzViODE3ZGE2NmE
-          description: The identifier of the monitored person or workspace.
-        firstName:
-          type: string
-          example: John
-          description: The first name of the monitored person, place, or virtual line.
-        lastName:
-          type: string
-          example: Brown
-          description: The last name of the monitored person, place, or virtual line.
-        displayName:
-          type: string
-          example: John Brown
-          description: The display name of the monitored person, place, or virtual line.
-        type:
-          type: string
-          enum:
-          - PEOPLE
-          - PLACE
-          description: "The type of the monitored person, place, or virtual line.\n * `PEOPLE` - Object is a user.\n * `PLACE` - Object is a workspace.\n"
-        email:
-          type: string
-          example: john.brown@gmail.com
-          description: The email address of the monitored person, place, or virtual line.
-        numbers:
+        members:
           type: array
           items:
-            $ref: '#/components/schemas/UserNumberItem'
-          description: The list of phone numbers of the monitored person, place, or virtual line.
-        location:
-          type: string
-          example: Alaska
-          description: The location name where the line is.
-        locationId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzEyMzQ1
-          description: The ID for the location.
-        lineKeyLabel:
-          type: string
-          example: Member Label
-          description: Customizable line key label for monitored member.
-    MonitoredElementItem:
-      type: object
-      properties:
-        callparkextension:
-          $ref: '#/components/schemas/MonitoredElementCallParkExtension'
-          description: Monitored Call Park extension.
-        member:
-          $ref: '#/components/schemas/MonitoredElementUser'
-          description: Monitored member for this workspace.
-        speedDial:
-          $ref: '#/components/schemas/MonitoredElementSpeedDial'
-          description: Monitored Speed Dial.
+            $ref: '#/components/schemas/AvailableMemberObject'
+          description: List of available members.
     LocationObject:
       type: object
       properties:
@@ -598,6 +519,40 @@ components:
           type: string
           example: San Jose
           description: The name of the location.
+    MonitoredElementSpeedDial:
+      type: object
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS80NDVkMzMzMC1mNjE3LTExZWItOWQyZS01NzViODE3ZGE2NmE
+          description: The identifier of the speed dial.
+        displayName:
+          type: string
+          example: John Brown
+          description: The display name of the speed dial.
+        type:
+          type: string
+          enum:
+          - PEOPLE
+          - PLACE
+          - VIRTUAL_LINE
+          description: "The type of the speed dial.\n * `PEOPLE` - Object is a user.\n * `PLACE` - Object is a workspace.\n * `VIRTUAL_LINE` - Object is a virtual line.\n"
+        lineKeyLabel:
+          type: string
+          example: Manager
+          description: Customizable line key label for speed dial.
+        phoneNumber:
+          type: string
+          example: '+19075552859'
+          description: The phone number of the speed dial.
+        location:
+          type: string
+          example: Richardson
+          description: The location name where the speed dial is.
+        locationId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzEyMzQ1
+          description: The ID for the location.
     MonitoredElementItemPatch:
       type: object
       properties:
@@ -679,19 +634,18 @@ components:
           items:
             $ref: '#/components/schemas/MonitoredElementItem'
           description: Monitored element items.
-    WorkspaceMonitoringPatch:
+    MonitoredElementItem:
       type: object
       properties:
-        enableCallParkNotification:
-          type: boolean
-          example: true
-          description: Call park notification is enabled or disabled.
-        monitoredElements:
-          type: array
-          maxItems: 50
-          items:
-            $ref: '#/components/schemas/MonitoredElementItemPatch'
-          description: Array of monitored elements. Maximum 50 elements.
+        callparkextension:
+          $ref: '#/components/schemas/MonitoredElementCallParkExtension'
+          description: Monitored Call Park extension.
+        member:
+          $ref: '#/components/schemas/MonitoredElementUser'
+          description: Monitored member for this workspace.
+        speedDial:
+          $ref: '#/components/schemas/MonitoredElementSpeedDial'
+          description: Monitored Speed Dial.
     UserNumberItem:
       type: object
       required:
@@ -721,6 +675,52 @@ components:
           type: boolean
           example: true
           description: Flag to indicate toll free number.
+    MonitoredElementUser:
+      type: object
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS80NDVkMzMzMC1mNjE3LTExZWItOWQyZS01NzViODE3ZGE2NmE
+          description: The identifier of the monitored person or workspace.
+        firstName:
+          type: string
+          example: John
+          description: The first name of the monitored person, place, or virtual line.
+        lastName:
+          type: string
+          example: Brown
+          description: The last name of the monitored person, place, or virtual line.
+        displayName:
+          type: string
+          example: John Brown
+          description: The display name of the monitored person, place, or virtual line.
+        type:
+          type: string
+          enum:
+          - PEOPLE
+          - PLACE
+          description: "The type of the monitored person, place, or virtual line.\n * `PEOPLE` - Object is a user.\n * `PLACE` - Object is a workspace.\n"
+        email:
+          type: string
+          example: john.brown@gmail.com
+          description: The email address of the monitored person, place, or virtual line.
+        numbers:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserNumberItem'
+          description: The list of phone numbers of the monitored person, place, or virtual line.
+        location:
+          type: string
+          example: Alaska
+          description: The location name where the line is.
+        locationId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzEyMzQ1
+          description: The ID for the location.
+        lineKeyLabel:
+          type: string
+          example: Member Label
+          description: Customizable line key label for monitored member.
   securitySchemes:
     oauth2:
       flows:

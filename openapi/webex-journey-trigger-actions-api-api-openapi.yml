@@ -428,72 +428,23 @@ paths:
       - bearerAuth: []
 components:
   schemas:
-    Rules:
-      type: object
-      description: Configuration details of the Rules
-      properties:
-        logic:
-          type: string
-          description: logic
-          example: OR
-        args:
-          type: array
-          description: Arguments
-          example:
-          - item buy,price,integer,Sum GT 100
-          - item buy,sku,integer,Count GT 5
-          items:
-            type: string
-    JourneyActionConfigResponseModel:
+    JourneyActionConfigurationUpsertRequestModel:
+      required:
+      - name
+      - rules
       type: object
       properties:
-        createdAt:
-          type: string
-          description: Created Timestamp
-          example: '2022-10-18T04:21:34.124Z'
-        createdBy:
-          type: string
-          description: Created By
-          example: 1eb65fdf-9643-417f-9974-ad72cae0e10f
-        updatedAt:
-          type: string
-          description: Updated Timestamp
-          example: '2022-10-18T04:21:34.124Z'
-        updatedBy:
-          type: string
-          description: Updated By
-          example: 1eb65fdf-9643-417f-9974-ad72cae0e10f
-        id:
-          type: string
-          description: Journey Action Id
-          example: 638505f32332c8200dac025e
         name:
           type: string
-          description: Journey Action Name
+          description: Name
           example: sample-action
-        organizationId:
-          type: string
-          description: Organization Id
-          example: 1eb65fdf-9643-417f-9974-ad72cae0e10f
-        workspaceId:
-          type: string
-          description: Workspace Id
-          example: 6384d9021f6a5331f6cc4cf9
-        isActive:
-          type: boolean
-          description: Is Journey Action Configuration Active
-          example: true
-        templateId:
-          type: string
-          description: Profile View Template ID
-          example: 637e72bc474c2a5b5f0eeeer
         cooldownPeriodInMinutes:
           type: integer
           description: Cooldown Period In Minutes
           format: int32
           example: 10
         rules:
-          $ref: '#/components/schemas/RulesDocument'
+          $ref: '#/components/schemas/Rules'
         actionTriggers:
           type: array
           example:
@@ -504,115 +455,11 @@ components:
               requestbody: '{"SMS":"12263762551","callID":"","MessageToSend":"Hello there!"}'
           items:
             $ref: '#/components/schemas/JourneyActionTriggerConfig'
-      description: Journey Action Configuration Response Model
-    JourneyActionTriggerConfig:
-      required:
-      - type
-      type: object
-      properties:
-        type:
-          type: string
-          description: Type
-          example: Webhook
-    ApiError500:
-      required:
-      - trackingId
-      type: object
-      properties:
-        status:
-          type: string
-          description: Http Status Description
-          example: 500 INTERNAL_SERVER_ERROR
-          enum:
-          - 100 CONTINUE
-          - 101 SWITCHING_PROTOCOLS
-          - 102 PROCESSING
-          - 103 EARLY_HINTS
-          - 103 CHECKPOINT
-          - 200 OK
-          - 201 CREATED
-          - 202 ACCEPTED
-          - 203 NON_AUTHORITATIVE_INFORMATION
-          - 204 NO_CONTENT
-          - 205 RESET_CONTENT
-          - 206 PARTIAL_CONTENT
-          - 207 MULTI_STATUS
-          - 208 ALREADY_REPORTED
-          - 226 IM_USED
-          - 300 MULTIPLE_CHOICES
-          - 301 MOVED_PERMANENTLY
-          - 302 FOUND
-          - 302 MOVED_TEMPORARILY
-          - 303 SEE_OTHER
-          - 304 NOT_MODIFIED
-          - 305 USE_PROXY
-          - 307 TEMPORARY_REDIRECT
-          - 308 PERMANENT_REDIRECT
-          - 400 BAD_REQUEST
-          - 401 UNAUTHORIZED
-          - 402 PAYMENT_REQUIRED
-          - 403 FORBIDDEN
-          - 404 NOT_FOUND
-          - 405 METHOD_NOT_ALLOWED
-          - 406 NOT_ACCEPTABLE
-          - 407 PROXY_AUTHENTICATION_REQUIRED
-          - 408 REQUEST_TIMEOUT
-          - 409 CONFLICT
-          - 410 GONE
-          - 411 LENGTH_REQUIRED
-          - 412 PRECONDITION_FAILED
-          - 413 PAYLOAD_TOO_LARGE
-          - 413 REQUEST_ENTITY_TOO_LARGE
-          - 414 URI_TOO_LONG
-          - 414 REQUEST_URI_TOO_LONG
-          - 415 UNSUPPORTED_MEDIA_TYPE
-          - 416 REQUESTED_RANGE_NOT_SATISFIABLE
-          - 417 EXPECTATION_FAILED
-          - 418 I_AM_A_TEAPOT
-          - 419 INSUFFICIENT_SPACE_ON_RESOURCE
-          - 420 METHOD_FAILURE
-          - 421 DESTINATION_LOCKED
-          - 422 UNPROCESSABLE_ENTITY
-          - 423 LOCKED
-          - 424 FAILED_DEPENDENCY
-          - 425 TOO_EARLY
-          - 426 UPGRADE_REQUIRED
-          - 428 PRECONDITION_REQUIRED
-          - 429 TOO_MANY_REQUESTS
-          - 431 REQUEST_HEADER_FIELDS_TOO_LARGE
-          - 451 UNAVAILABLE_FOR_LEGAL_REASONS
-          - 500 INTERNAL_SERVER_ERROR
-          - 501 NOT_IMPLEMENTED
-          - 502 BAD_GATEWAY
-          - 503 SERVICE_UNAVAILABLE
-          - 504 GATEWAY_TIMEOUT
-          - 505 HTTP_VERSION_NOT_SUPPORTED
-          - 506 VARIANT_ALSO_NEGOTIATES
-          - 507 INSUFFICIENT_STORAGE
-          - 508 LOOP_DETECTED
-          - 509 BANDWIDTH_LIMIT_EXCEEDED
-          - 510 NOT_EXTENDED
-          - 511 NETWORK_AUTHENTICATION_REQUIRED
-        message:
-          type: string
-          description: Error Message
-          example: Internal server error
-        errors:
-          type: array
-          description: Internal server error
-          example:
-          - 'Internal server error '
-          items:
-            type: string
-        timestamp:
-          type: string
-          description: Occurred timestamp
-          format: date-time
-          example: '2023-03-27T20:59:32.376Z'
-        trackingId:
-          type: string
-          description: Unique ID by which a request can be debugged. Please provide if opening a support case.
-          example: 76cd71d0e678a8bb
+        isActive:
+          type: boolean
+          description: Is Journey Action Configuration Active
+          example: true
+      description: Create a new, or Update and existing Journey Action
     ApiError400:
       required:
       - trackingId
@@ -712,48 +559,6 @@ components:
           type: string
           description: Unique ID by which a request can be debugged. Please provide if opening a support case.
           example: 76cd71d0e678a8bb
-    BaseMetaResponseEnvelope:
-      type: object
-      properties:
-        organizationId:
-          type: string
-          description: Organization ID
-          example: 1eb65fdf-9643-417f-9974-ad72cae0e10f
-      description: Meta information of the response
-      example:
-        organizationId: 1eb65fdf-9643-417f-9974-ad72cae0e10f
-    JourneyActionConfigurationUpsertRequestModel:
-      required:
-      - name
-      - rules
-      type: object
-      properties:
-        name:
-          type: string
-          description: Name
-          example: sample-action
-        cooldownPeriodInMinutes:
-          type: integer
-          description: Cooldown Period In Minutes
-          format: int32
-          example: 10
-        rules:
-          $ref: '#/components/schemas/Rules'
-        actionTriggers:
-          type: array
-          example:
-          - type: Webhook
-            webhookURL: https://hooks.us.webexconnect.io/events/6M347NJ6
-            attributes:
-              httpverb: post
-              requestbody: '{"SMS":"12263762551","callID":"","MessageToSend":"Hello there!"}'
-          items:
-            $ref: '#/components/schemas/JourneyActionTriggerConfig'
-        isActive:
-          type: boolean
-          description: Is Journey Action Configuration Active
-          example: true
-      description: Create a new, or Update and existing Journey Action
     RulesDocument:
       type: object
       properties:
@@ -779,6 +584,16 @@ components:
         - item buy,sku,integer,Count GT 5
       discriminator:
         propertyName: type
+    BaseMetaResponseEnvelope:
+      type: object
+      properties:
+        organizationId:
+          type: string
+          description: Organization ID
+          example: 1eb65fdf-9643-417f-9974-ad72cae0e10f
+      description: Meta information of the response
+      example:
+        organizationId: 1eb65fdf-9643-417f-9974-ad72cae0e10f
     JourneyActionGetResponse:
       type: object
       properties:
@@ -789,6 +604,76 @@ components:
           description: Data part of the response
           items:
             $ref: '#/components/schemas/JourneyActionConfigResponseModel'
+    JourneyActionTriggerConfig:
+      required:
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type
+          example: Webhook
+    JourneyActionConfigResponseModel:
+      type: object
+      properties:
+        createdAt:
+          type: string
+          description: Created Timestamp
+          example: '2022-10-18T04:21:34.124Z'
+        createdBy:
+          type: string
+          description: Created By
+          example: 1eb65fdf-9643-417f-9974-ad72cae0e10f
+        updatedAt:
+          type: string
+          description: Updated Timestamp
+          example: '2022-10-18T04:21:34.124Z'
+        updatedBy:
+          type: string
+          description: Updated By
+          example: 1eb65fdf-9643-417f-9974-ad72cae0e10f
+        id:
+          type: string
+          description: Journey Action Id
+          example: 638505f32332c8200dac025e
+        name:
+          type: string
+          description: Journey Action Name
+          example: sample-action
+        organizationId:
+          type: string
+          description: Organization Id
+          example: 1eb65fdf-9643-417f-9974-ad72cae0e10f
+        workspaceId:
+          type: string
+          description: Workspace Id
+          example: 6384d9021f6a5331f6cc4cf9
+        isActive:
+          type: boolean
+          description: Is Journey Action Configuration Active
+          example: true
+        templateId:
+          type: string
+          description: Profile View Template ID
+          example: 637e72bc474c2a5b5f0eeeer
+        cooldownPeriodInMinutes:
+          type: integer
+          description: Cooldown Period In Minutes
+          format: int32
+          example: 10
+        rules:
+          $ref: '#/components/schemas/RulesDocument'
+        actionTriggers:
+          type: array
+          example:
+          - type: Webhook
+            webhookURL: https://hooks.us.webexconnect.io/events/6M347NJ6
+            attributes:
+              httpverb: post
+              requestbody: '{"SMS":"12263762551","callID":"","MessageToSend":"Hello there!"}'
+          items:
+            $ref: '#/components/schemas/JourneyActionTriggerConfig'
+      description: Journey Action Configuration Response Model
     JourneyActionResponse:
       type: object
       properties:
@@ -796,6 +681,121 @@ components:
           $ref: '#/components/schemas/BaseMetaResponseEnvelope'
         data:
           $ref: '#/components/schemas/JourneyActionConfigResponseModel'
+    ApiError500:
+      required:
+      - trackingId
+      type: object
+      properties:
+        status:
+          type: string
+          description: Http Status Description
+          example: 500 INTERNAL_SERVER_ERROR
+          enum:
+          - 100 CONTINUE
+          - 101 SWITCHING_PROTOCOLS
+          - 102 PROCESSING
+          - 103 EARLY_HINTS
+          - 103 CHECKPOINT
+          - 200 OK
+          - 201 CREATED
+          - 202 ACCEPTED
+          - 203 NON_AUTHORITATIVE_INFORMATION
+          - 204 NO_CONTENT
+          - 205 RESET_CONTENT
+          - 206 PARTIAL_CONTENT
+          - 207 MULTI_STATUS
+          - 208 ALREADY_REPORTED
+          - 226 IM_USED
+          - 300 MULTIPLE_CHOICES
+          - 301 MOVED_PERMANENTLY
+          - 302 FOUND
+          - 302 MOVED_TEMPORARILY
+          - 303 SEE_OTHER
+          - 304 NOT_MODIFIED
+          - 305 USE_PROXY
+          - 307 TEMPORARY_REDIRECT
+          - 308 PERMANENT_REDIRECT
+          - 400 BAD_REQUEST
+          - 401 UNAUTHORIZED
+          - 402 PAYMENT_REQUIRED
+          - 403 FORBIDDEN
+          - 404 NOT_FOUND
+          - 405 METHOD_NOT_ALLOWED
+          - 406 NOT_ACCEPTABLE
+          - 407 PROXY_AUTHENTICATION_REQUIRED
+          - 408 REQUEST_TIMEOUT
+          - 409 CONFLICT
+          - 410 GONE
+          - 411 LENGTH_REQUIRED
+          - 412 PRECONDITION_FAILED
+          - 413 PAYLOAD_TOO_LARGE
+          - 413 REQUEST_ENTITY_TOO_LARGE
+          - 414 URI_TOO_LONG
+          - 414 REQUEST_URI_TOO_LONG
+          - 415 UNSUPPORTED_MEDIA_TYPE
+          - 416 REQUESTED_RANGE_NOT_SATISFIABLE
+          - 417 EXPECTATION_FAILED
+          - 418 I_AM_A_TEAPOT
+          - 419 INSUFFICIENT_SPACE_ON_RESOURCE
+          - 420 METHOD_FAILURE
+          - 421 DESTINATION_LOCKED
+          - 422 UNPROCESSABLE_ENTITY
+          - 423 LOCKED
+          - 424 FAILED_DEPENDENCY
+          - 425 TOO_EARLY
+          - 426 UPGRADE_REQUIRED
+          - 428 PRECONDITION_REQUIRED
+          - 429 TOO_MANY_REQUESTS
+          - 431 REQUEST_HEADER_FIELDS_TOO_LARGE
+          - 451 UNAVAILABLE_FOR_LEGAL_REASONS
+          - 500 INTERNAL_SERVER_ERROR
+          - 501 NOT_IMPLEMENTED
+          - 502 BAD_GATEWAY
+          - 503 SERVICE_UNAVAILABLE
+          - 504 GATEWAY_TIMEOUT
+          - 505 HTTP_VERSION_NOT_SUPPORTED
+          - 506 VARIANT_ALSO_NEGOTIATES
+          - 507 INSUFFICIENT_STORAGE
+          - 508 LOOP_DETECTED
+          - 509 BANDWIDTH_LIMIT_EXCEEDED
+          - 510 NOT_EXTENDED
+          - 511 NETWORK_AUTHENTICATION_REQUIRED
+        message:
+          type: string
+          description: Error Message
+          example: Internal server error
+        errors:
+          type: array
+          description: Internal server error
+          example:
+          - 'Internal server error '
+          items:
+            type: string
+        timestamp:
+          type: string
+          description: Occurred timestamp
+          format: date-time
+          example: '2023-03-27T20:59:32.376Z'
+        trackingId:
+          type: string
+          description: Unique ID by which a request can be debugged. Please provide if opening a support case.
+          example: 76cd71d0e678a8bb
+    Rules:
+      type: object
+      description: Configuration details of the Rules
+      properties:
+        logic:
+          type: string
+          description: logic
+          example: OR
+        args:
+          type: array
+          description: Arguments
+          example:
+          - item buy,price,integer,Sum GT 100
+          - item buy,sku,integer,Count GT 5
+          items:
+            type: string
   securitySchemes:
     oauth2:
       flows:

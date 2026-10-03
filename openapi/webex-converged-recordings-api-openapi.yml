@@ -1242,18 +1242,174 @@ paths:
               $ref: '#/components/schemas/BulkPurgeRecordingObject'
 components:
   schemas:
-    DeleteRecordingObject:
+    BulkRestoreRecordingObject:
       type: object
-      description: Delete Recording details
+      description: Bulk Restore Recording details
       properties:
-        reason:
+        restoreAll:
+          type: boolean
+          example: false
+          description: If not specified or `false`, restores the recordings specified by `recordingIds` from the recycle bin. If `true`, restores all recordings owned by the caller in case of `user`, and all recordings owned by `ownerEmail` in case of `administrator` from the recycle bin.
+        ownerEmail:
           type: string
-          example: audit
-          description: Reason for deleting a recording. Only required when a Compliance Officer is operating on another user's recording.
-        comment:
+          example: john.andersen@example.com
+          description: Email address for the recording owner. This parameter is only used if `restoreAll` is set to `true` and the user or application calling the API has the required administrator scope `spark-admin:recordings_write`. The administrator may specify the email of a user from an org they manage and the API will restore all the recordings of that user from the recycle bin.
+        recordingIds:
+          type: array
+          items:
+            type: string
+            example: 81bb582c-e93e-40aa-abf6-962b620f6db4, 81bb582c-e93e-40aa-abf6-962b620f6db5
+          description: Recording IDs for restoring recordings from the recycle bin in batch.
+    BulkPurgeRecordingObject:
+      type: object
+      description: Bulk Purge Recording details
+      properties:
+        purgeAll:
+          type: boolean
+          example: false
+          description: If not specified or `false`, purges the recordings specified by `recordingIds` from the recycle bin. If `true`, purges all recordings owned by the caller in case of `user`, and all recordings owned by `ownerEmail` in case of `administrator` from the recycle bin.
+        ownerEmail:
           type: string
-          example: Maintain data privacy
-          description: Compliance Officer's explanation for deleting a recording. The comment can be a maximum of 255 characters long.
+          example: john.andersen@example.com
+          description: Email address for the recording owner. This parameter is only used if `purgeAll` is set to `true` and the user or application calling the API has the required administrator scope `spark-admin:recordings_write`. The administrator may specify the email of a user from an org they manage and the API will purge all the recordings of that user from the recycle bin.
+        recordingIds:
+          type: array
+          items:
+            type: string
+            example: 81bb582c-e93e-40aa-abf6-962b620f6db4, 81bb582c-e93e-40aa-abf6-962b620f6db5
+          description: Recording IDs for purging recordings from the recycle bin in batch.
+    BulkSoftDeleteRecordingObject:
+      description: Bulk Soft Delete Recording details
+      type: object
+      properties:
+        trashAll:
+          type: boolean
+          description: If not specified or `false`, moves the recordings specified by `recordingIds` to the recycle bin. If `true`, moves all recordings owned by the caller in case of `user`, and all recordings owned by `ownerEmail` in case of `administrator` to the recycle bin.
+        ownerEmail:
+          type: string
+          example: john.andersen@example.com
+          description: Email address for the recording owner. This parameter is only used if `trashAll` is set to `true` and the user or application calling the API has the required administrator scope `spark-admin:recordings_write`. The administrator may specify the email of a user from an org they manage and the API will move all the recordings of that user into the recycle bin.
+        recordingIds:
+          type: array
+          items:
+            type: string
+            example: 81bb582c-e93e-40aa-abf6-962b620f6db4, 81bb582c-e93e-40aa-abf6-962b620f6db5
+          description: Recording IDs for moving recordings to the recycle bin in batch.
+    RecordingObject:
+      type: object
+      description: Recording details
+      required:
+      - id
+      - topic
+      - createTime
+      - timeRecorded
+      - format
+      - serviceType
+      - durationSeconds
+      - sizeBytes
+      - status
+      - ownerId
+      - ownerEmail
+      - ownerType
+      - storageRegion
+      properties:
+        id:
+          type: string
+          example: 4f914b1dfe3c4d11a61730f18c0f5387
+          description: A unique identifier for the recording.
+        topic:
+          type: string
+          example: John's Meeting
+          description: The recording's topic.
+        createTime:
+          type: string
+          example: '2019-01-27T17:43:24Z'
+          description: The date and time recording was created in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant format. Please note that it's not the time the record button was clicked in meeting but the time the recording file was generated offline.
+        timeRecorded:
+          type: string
+          example: '2019-01-27T17:40:20Z'
+          description: The date and time recording started in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant format. It indicates when the record button was clicked in the meeting.
+        format:
+          type: string
+          enum:
+          - MP3
+          description: ' * `MP3` - Recording file format is MP3.
+
+            '
+        serviceType:
+          type: string
+          enum:
+          - calling
+          - customerAssist
+          description: " * `calling` - Recording service type is Webex Call.\n * `customerAssist` - Call Recordings of a Customer Assist Queue.\n"
+        durationSeconds:
+          type: number
+          example: 4472
+          description: The duration of the recording, in seconds.
+        sizeBytes:
+          type: number
+          example: 248023188
+          description: The size of the recording file, in bytes.
+        status:
+          type: string
+          enum:
+          - available
+          - deleted
+          description: " * `available` - Recording is available.\n * `deleted` - Recording has been moved into recycle bin.\n"
+        ownerId:
+          type: string
+          example: 24683d6c-5529-4b60-a6c7-91e8b293bbab
+          description: Webex UUID for recording owner/host.
+        ownerEmail:
+          type: string
+          example: nshtestwebex+crctestuser1@gmail.com
+          description: Webex email for recording owner/host.
+        ownerType:
+          type: string
+          enum:
+          - user
+          - place
+          - virtualLine
+          - callQueue
+          description: " * `user` - Recording belongs to a user.\n * `place` - Recording belongs to a workspace device.\n * `virtualLine` - Recording belongs to a workspace device.\n"
+        storageRegion:
+          type: string
+          example: United States
+          description: Storage location for recording within Webex datacenters.
+        serviceData:
+          type: object
+          properties:
+            locationId:
+              type: string
+              description: Webex calling location for recording user.
+            callSessionId:
+              type: string
+              description: Call ID for which recording was done.
+          description: Fields relevant to each service Type.
+    ReassignRecordingObject:
+      type: object
+      description: Reassign Recording details
+      required:
+      - reassignOwnerEmail
+      properties:
+        ownerEmail:
+          type: string
+          example: john.andersen@example.com
+          description: Recording owner email.
+        ownerID:
+          type: string
+          example: 3c6aa94c-e1f9-4f10-579f-e5582de5374f
+          description: Recording owner ID. Can be a user, a virtual line, or a workspace.
+        recordingIds:
+          type: array
+          items:
+            type: string
+            example: 81bb582c-e93e-40aa-abf6-962b620f6db4,81bb582c-e93e-40aa-abf6-962b620f6db5
+          description: List of recording identifiers to be reassigned.
+        reassignOwnerEmail:
+          type: string
+          example: brenda.song@example.com
+          description: New owner of the recordings.
     RecordingObjectWithDirectDownloadLinks:
       type: object
       description: Recording details by ID
@@ -1368,174 +1524,18 @@ components:
               type: string
               description: Call ID for which recording was done.
           description: Fields relevant to each service Type.
-    BulkSoftDeleteRecordingObject:
-      description: Bulk Soft Delete Recording details
+    DeleteRecordingObject:
       type: object
+      description: Delete Recording details
       properties:
-        trashAll:
-          type: boolean
-          description: If not specified or `false`, moves the recordings specified by `recordingIds` to the recycle bin. If `true`, moves all recordings owned by the caller in case of `user`, and all recordings owned by `ownerEmail` in case of `administrator` to the recycle bin.
-        ownerEmail:
+        reason:
           type: string
-          example: john.andersen@example.com
-          description: Email address for the recording owner. This parameter is only used if `trashAll` is set to `true` and the user or application calling the API has the required administrator scope `spark-admin:recordings_write`. The administrator may specify the email of a user from an org they manage and the API will move all the recordings of that user into the recycle bin.
-        recordingIds:
-          type: array
-          items:
-            type: string
-            example: 81bb582c-e93e-40aa-abf6-962b620f6db4, 81bb582c-e93e-40aa-abf6-962b620f6db5
-          description: Recording IDs for moving recordings to the recycle bin in batch.
-    RecordingObject:
-      type: object
-      description: Recording details
-      required:
-      - id
-      - topic
-      - createTime
-      - timeRecorded
-      - format
-      - serviceType
-      - durationSeconds
-      - sizeBytes
-      - status
-      - ownerId
-      - ownerEmail
-      - ownerType
-      - storageRegion
-      properties:
-        id:
+          example: audit
+          description: Reason for deleting a recording. Only required when a Compliance Officer is operating on another user's recording.
+        comment:
           type: string
-          example: 4f914b1dfe3c4d11a61730f18c0f5387
-          description: A unique identifier for the recording.
-        topic:
-          type: string
-          example: John's Meeting
-          description: The recording's topic.
-        createTime:
-          type: string
-          example: '2019-01-27T17:43:24Z'
-          description: The date and time recording was created in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant format. Please note that it's not the time the record button was clicked in meeting but the time the recording file was generated offline.
-        timeRecorded:
-          type: string
-          example: '2019-01-27T17:40:20Z'
-          description: The date and time recording started in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant format. It indicates when the record button was clicked in the meeting.
-        format:
-          type: string
-          enum:
-          - MP3
-          description: ' * `MP3` - Recording file format is MP3.
-
-            '
-        serviceType:
-          type: string
-          enum:
-          - calling
-          - customerAssist
-          description: " * `calling` - Recording service type is Webex Call.\n * `customerAssist` - Call Recordings of a Customer Assist Queue.\n"
-        durationSeconds:
-          type: number
-          example: 4472
-          description: The duration of the recording, in seconds.
-        sizeBytes:
-          type: number
-          example: 248023188
-          description: The size of the recording file, in bytes.
-        status:
-          type: string
-          enum:
-          - available
-          - deleted
-          description: " * `available` - Recording is available.\n * `deleted` - Recording has been moved into recycle bin.\n"
-        ownerId:
-          type: string
-          example: 24683d6c-5529-4b60-a6c7-91e8b293bbab
-          description: Webex UUID for recording owner/host.
-        ownerEmail:
-          type: string
-          example: nshtestwebex+crctestuser1@gmail.com
-          description: Webex email for recording owner/host.
-        ownerType:
-          type: string
-          enum:
-          - user
-          - place
-          - virtualLine
-          - callQueue
-          description: " * `user` - Recording belongs to a user.\n * `place` - Recording belongs to a workspace device.\n * `virtualLine` - Recording belongs to a workspace device.\n"
-        storageRegion:
-          type: string
-          example: United States
-          description: Storage location for recording within Webex datacenters.
-        serviceData:
-          type: object
-          properties:
-            locationId:
-              type: string
-              description: Webex calling location for recording user.
-            callSessionId:
-              type: string
-              description: Call ID for which recording was done.
-          description: Fields relevant to each service Type.
-    BulkRestoreRecordingObject:
-      type: object
-      description: Bulk Restore Recording details
-      properties:
-        restoreAll:
-          type: boolean
-          example: false
-          description: If not specified or `false`, restores the recordings specified by `recordingIds` from the recycle bin. If `true`, restores all recordings owned by the caller in case of `user`, and all recordings owned by `ownerEmail` in case of `administrator` from the recycle bin.
-        ownerEmail:
-          type: string
-          example: john.andersen@example.com
-          description: Email address for the recording owner. This parameter is only used if `restoreAll` is set to `true` and the user or application calling the API has the required administrator scope `spark-admin:recordings_write`. The administrator may specify the email of a user from an org they manage and the API will restore all the recordings of that user from the recycle bin.
-        recordingIds:
-          type: array
-          items:
-            type: string
-            example: 81bb582c-e93e-40aa-abf6-962b620f6db4, 81bb582c-e93e-40aa-abf6-962b620f6db5
-          description: Recording IDs for restoring recordings from the recycle bin in batch.
-    ReassignRecordingObject:
-      type: object
-      description: Reassign Recording details
-      required:
-      - reassignOwnerEmail
-      properties:
-        ownerEmail:
-          type: string
-          example: john.andersen@example.com
-          description: Recording owner email.
-        ownerID:
-          type: string
-          example: 3c6aa94c-e1f9-4f10-579f-e5582de5374f
-          description: Recording owner ID. Can be a user, a virtual line, or a workspace.
-        recordingIds:
-          type: array
-          items:
-            type: string
-            example: 81bb582c-e93e-40aa-abf6-962b620f6db4,81bb582c-e93e-40aa-abf6-962b620f6db5
-          description: List of recording identifiers to be reassigned.
-        reassignOwnerEmail:
-          type: string
-          example: brenda.song@example.com
-          description: New owner of the recordings.
-    BulkPurgeRecordingObject:
-      type: object
-      description: Bulk Purge Recording details
-      properties:
-        purgeAll:
-          type: boolean
-          example: false
-          description: If not specified or `false`, purges the recordings specified by `recordingIds` from the recycle bin. If `true`, purges all recordings owned by the caller in case of `user`, and all recordings owned by `ownerEmail` in case of `administrator` from the recycle bin.
-        ownerEmail:
-          type: string
-          example: john.andersen@example.com
-          description: Email address for the recording owner. This parameter is only used if `purgeAll` is set to `true` and the user or application calling the API has the required administrator scope `spark-admin:recordings_write`. The administrator may specify the email of a user from an org they manage and the API will purge all the recordings of that user from the recycle bin.
-        recordingIds:
-          type: array
-          items:
-            type: string
-            example: 81bb582c-e93e-40aa-abf6-962b620f6db4, 81bb582c-e93e-40aa-abf6-962b620f6db5
-          description: Recording IDs for purging recordings from the recycle bin in batch.
+          example: Maintain data privacy
+          description: Compliance Officer's explanation for deleting a recording. The comment can be a maximum of 255 characters long.
   securitySchemes:
     oauth2:
       flows:

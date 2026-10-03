@@ -105,6 +105,81 @@ paths:
           content: {}
 components:
   schemas:
+    FlowV2Variable:
+      title: FlowV2Variable
+      type: object
+      description: A flow variable.
+      additionalProperties: true
+      properties:
+        name:
+          type: string
+          description: Variable name.
+          example: FlowVar1
+        type:
+          type: string
+          description: Variable data type (for example, `STRING`, `INTEGER`, `BOOLEAN`).
+          example: STRING
+        value:
+          type: string
+          description: Default value as a string.
+          example: var1
+        description:
+          type: string
+          description: Human-readable description of the variable.
+          example: ''
+        isCAD:
+          type: boolean
+          description: True if this variable is exposed as Call-Associated Data.
+          example: true
+        isAgentEditable:
+          type: boolean
+          description: True if agents can edit the variable value at runtime.
+          example: true
+        isReportable:
+          type: boolean
+          description: True if the variable is included in reporting.
+          example: false
+        isSecure:
+          type: boolean
+          description: True if the variable holds sensitive data and must be masked in logs and reports.
+          example: false
+    FlowV2Node:
+      title: FlowV2Node
+      type: object
+      description: A node in a flow process graph. Each node represents one activity instance.
+      additionalProperties: true
+      properties:
+        name:
+          type: string
+          description: Stable, unique node name within the flow. Used as the patch-merge key for `upsert_nodes` and `remove_node_names`.
+          example: PlayMessage_1
+        activityName:
+          type: string
+          description: Activity type this node instantiates. Must match an `activityName` returned by `listActivityDefinitions`.
+          example: PlayMessage
+        inputs:
+          type: object
+          description: Input values for the activity, keyed by input name. Shape depends on the activity definition.
+          additionalProperties: true
+          example:
+            audioFile: welcome.wav
+        outputs:
+          type: object
+          description: Declared output bindings for the activity, keyed by output name. Used to map activity outputs to flow variables.
+          additionalProperties: true
+          example: {}
+        position:
+          type: object
+          description: Node position on the flow canvas.
+          properties:
+            x:
+              type: number
+              description: Horizontal coordinate in pixels.
+              example: 300
+            y:
+              type: number
+              description: Vertical coordinate in pixels.
+              example: 200
     FlowTemplate:
       title: FlowTemplate
       type: object
@@ -137,6 +212,26 @@ components:
           example: flow
         flow:
           $ref: '#/components/schemas/FlowV2'
+    FlowV2EventFlow:
+      title: FlowV2EventFlow
+      type: object
+      description: An event-handler subflow bound to a specific event. The subflow runs when its bound event fires.
+      additionalProperties: true
+      properties:
+        event:
+          type: string
+          description: Name of the event this subflow handles. Must reference an event from `listEventSpecifications`.
+          example: AgentDisconnected
+        nodes:
+          type: array
+          description: Activity nodes in the event-handler process.
+          items:
+            $ref: '#/components/schemas/FlowV2Node'
+        edges:
+          type: array
+          description: Edges in the event-handler process.
+          items:
+            $ref: '#/components/schemas/FlowV2Edge'
     FlowV2Preference:
       title: FlowV2Preference
       type: object
@@ -260,63 +355,6 @@ components:
         - name: hideSecureCADWarning
           type: Boolean
           value: 'true'
-    FlowV2Node:
-      title: FlowV2Node
-      type: object
-      description: A node in a flow process graph. Each node represents one activity instance.
-      additionalProperties: true
-      properties:
-        name:
-          type: string
-          description: Stable, unique node name within the flow. Used as the patch-merge key for `upsert_nodes` and `remove_node_names`.
-          example: PlayMessage_1
-        activityName:
-          type: string
-          description: Activity type this node instantiates. Must match an `activityName` returned by `listActivityDefinitions`.
-          example: PlayMessage
-        inputs:
-          type: object
-          description: Input values for the activity, keyed by input name. Shape depends on the activity definition.
-          additionalProperties: true
-          example:
-            audioFile: welcome.wav
-        outputs:
-          type: object
-          description: Declared output bindings for the activity, keyed by output name. Used to map activity outputs to flow variables.
-          additionalProperties: true
-          example: {}
-        position:
-          type: object
-          description: Node position on the flow canvas.
-          properties:
-            x:
-              type: number
-              description: Horizontal coordinate in pixels.
-              example: 300
-            y:
-              type: number
-              description: Vertical coordinate in pixels.
-              example: 200
-    FlowV2EventFlow:
-      title: FlowV2EventFlow
-      type: object
-      description: An event-handler subflow bound to a specific event. The subflow runs when its bound event fires.
-      additionalProperties: true
-      properties:
-        event:
-          type: string
-          description: Name of the event this subflow handles. Must reference an event from `listEventSpecifications`.
-          example: AgentDisconnected
-        nodes:
-          type: array
-          description: Activity nodes in the event-handler process.
-          items:
-            $ref: '#/components/schemas/FlowV2Node'
-        edges:
-          type: array
-          description: Edges in the event-handler process.
-          items:
-            $ref: '#/components/schemas/FlowV2Edge'
     FlowV2Edge:
       title: FlowV2Edge
       type: object
@@ -343,44 +381,6 @@ components:
           type: string
           description: 'Branch condition this edge fires on. Aliases: `done` -> `out`, `NewPhoneContact` -> `out`, `defaultBranch` -> `default`.'
           example: out
-    FlowV2Variable:
-      title: FlowV2Variable
-      type: object
-      description: A flow variable.
-      additionalProperties: true
-      properties:
-        name:
-          type: string
-          description: Variable name.
-          example: FlowVar1
-        type:
-          type: string
-          description: Variable data type (for example, `STRING`, `INTEGER`, `BOOLEAN`).
-          example: STRING
-        value:
-          type: string
-          description: Default value as a string.
-          example: var1
-        description:
-          type: string
-          description: Human-readable description of the variable.
-          example: ''
-        isCAD:
-          type: boolean
-          description: True if this variable is exposed as Call-Associated Data.
-          example: true
-        isAgentEditable:
-          type: boolean
-          description: True if agents can edit the variable value at runtime.
-          example: true
-        isReportable:
-          type: boolean
-          description: True if the variable is included in reporting.
-          example: false
-        isSecure:
-          type: boolean
-          description: True if the variable holds sensitive data and must be masked in logs and reports.
-          example: false
   securitySchemes:
     oauth2:
       flows:

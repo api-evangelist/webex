@@ -1256,19 +1256,42 @@ paths:
                     references: []
 components:
   schemas:
-    EntityReferenceInfoDTO:
+    BulkResponseDTO:
       type: object
       properties:
-        description:
-          type: string
-          description: Description about reference info.
-          example: list of referenced entities
-        meta:
-          $ref: '#/components/schemas/MetaDataReferencesPagingInfo'
-        data:
+        items:
           type: array
           items:
-            $ref: '#/components/schemas/EntityInfo'
+            $ref: '#/components/schemas/BulkResponseItemDTO'
+    Link:
+      type: object
+      properties:
+        href:
+          type: string
+        hreflang:
+          type: string
+        title:
+          type: string
+        type:
+          type: string
+        deprecation:
+          type: string
+        profile:
+          type: string
+        name:
+          type: string
+        templated:
+          type: boolean
+    BulkRequestDTOTeamDTO:
+      type: object
+      description: Bulk Request Team schema.
+      properties:
+        items:
+          type: array
+          description: List of items in the bulk request.
+          items:
+            $ref: '#/components/schemas/BulkRequestItemDTOTeamDTO'
+            description: Item.
     ErrorDetails:
       description: Details of an error.
       type: object
@@ -1282,6 +1305,14 @@ components:
           description: A message providing details about the error.
           items:
             $ref: '#/components/schemas/OperationError'
+    OperationError:
+      description: An error message providing details about the operation failure.
+      type: object
+      properties:
+        description:
+          type: string
+          description: A human readable explanation for the occurrence of an error.
+          example: Incorrect Credentials.
     ApiErrorResponse:
       description: Response body for an API error.
       type: object
@@ -1293,9 +1324,25 @@ components:
         error:
           description: An object containing details about the error.
           $ref: '#/components/schemas/ErrorDetails'
-    TeamResponseDTO:
+    BulkRequestItemDTOTeamDTO:
       type: object
-      description: Team Response schema.
+      description: List of items in the bulk request.
+      properties:
+        itemIdentifier:
+          type: integer
+          format: int32
+          description: Unique item identifier for a bulk operation.
+          example: 10
+        item:
+          $ref: '#/components/schemas/TeamDTO'
+          description: Item.
+        requestAction:
+          type: string
+          description: Identifier for action type. Possible values are `SAVE` and `DELETE`.
+          example: SAVE
+    QueueRankingDTO:
+      type: object
+      description: Queue Ranking schema.
       properties:
         organizationId:
           type: string
@@ -1314,100 +1361,15 @@ components:
           format: int32
           description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
           example: 1
-        name:
+        queueId:
           type: string
-          description: Indicates the name of the team such as Billing or Customer Support
-          example: Customer Support
-        teamType:
-          type: string
-          description: 'Team type can be the following:
-
-
-            AGENT: A specific number of agents are assigned to the team.
-
-
-            CAPACITY: Specific number of agents not assigned to the team. Capacity-based teams for voice mailboxes or agent groups that are not managed by the Webex Contact Center system.'
-          enum:
-          - AGENT
-          - CAPACITY
-          example: AGENT
-        teamStatus:
-          type: string
-          description: 'Indicates whether the team is available to handle customer contacts.
-
-            Can be one of: IN_SERVICE/NOT_AVAILABLE.
-
-            '
-          enum:
-          - IN_SERVICE
-          - NOT_AVAILABLE
-          example: IN_SERVICE
-        dialedNumber:
-          type: string
-          description: "The dial number where the system distributes the calls for this team. \nThis setting is applicable only for capacity-based teams."
-          example: '+14085550123'
-        capacity:
+          description: Queue Id.
+          minLength: 1
+        rank:
           type: integer
           format: int32
-          description: 'The maximum number of simultaneous contacts that this team can handle.
-
-            This setting is applicable only for capacity-based teams.'
-          example: 1
-        active:
-          type: boolean
-          description: Indicates whether the team is active(when true) or not active(when false).
-          example: true
-        siteId:
-          type: string
-          description: Identifier for a site which is a physical contact center location under the control of your enterprise.
-          example: 8e6bb6da-2a78-4768-bef9-7e229f92af22
-        desktopLayoutId:
-          type: string
-          description: Identifier for an agent desktop layout which  a Contact Center administrator has configured.
-          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
-        siteName:
-          type: string
-          description: The name of the site this team belongs to.
-          example: New_York
-        skillProfileId:
-          type: string
-          description: Id of the skill profile for this team if your enterprise uses the optional Skills-Based Routing feature.
-          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
-        multiMediaProfileId:
-          type: string
-          description: Id of the multimedia profile for this team.
-          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
-        userIds:
-          type: array
-          description: Indicates the agents id(s) who are part of this team.
-          example:
-          - f53c8b54-46ca-43f6-ba05-08426a46e23d
-          - a53c8b54-46ca-43f6-ba05-08426a46e23f
-          items:
-            type: string
-            description: Indicates the agents id(s) who are part of this team.
-            example:
-            - f53c8b54-46ca-43f6-ba05-08426a46e23d
-            - a53c8b54-46ca-43f6-ba05-08426a46e23f
-          uniqueItems: true
-        description:
-          type: string
-          description: Indicates the team
-          example: Capacity based team
-        systemDefault:
-          type: boolean
-          description: Indicates whether the created resource is system created or not
-          example: false
-        rankQueuesForTeam:
-          type: boolean
-          description: Rank Queues For Team.
-        queueRankings:
-          type: array
-          description: List of Queue Rankings.
-          items:
-            $ref: '#/components/schemas/QueueRankingDTO'
-            description: Queue Ranking.
-          uniqueItems: true
+          description: Rank.
+          maximum: 50
         createdTime:
           type: integer
           format: int64
@@ -1418,141 +1380,9 @@ components:
           format: int64
           description: This is the updated time of the entity.
           example: 123456789
-    BulkResponseDTO:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/BulkResponseItemDTO'
-    MetaDataReferencesPagingInfo:
-      title: MetaDataReferencesPagingInfo
-      type: object
-      properties:
-        orgid:
-          maxLength: 36
-          minLength: 32
-          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
-          type: string
-          description: Org ID
-          format: uuid
-          example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
-        page:
-          type: integer
-          description: Current page number
-          format: int32
-          example: 1
-        pageSize:
-          type: integer
-          description: Page size for current data set
-          format: int32
-          example: 100
-        totalPages:
-          type: integer
-          description: Number of pages
-          format: int32
-          example: 1
-        totalRecords:
-          type: integer
-          description: Total number of items
-          format: int32
-          example: 1000
-        links:
-          type: object
-          description: Map of pagination links with self, next, prev, last and first
-          example:
-            next: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=2&pageSize=10
-            last: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=3&pageSize=10
-            prev: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=0&pageSize=10
-            self: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=1&pageSize=10
-            first: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=0&pageSize=10
-        referencedEntities:
-          type: array
-          description: List of referenced entities
-          example:
-          - agent-profile
-          - entrypoint
-          items:
-            type: string
-        currentEntity:
-          type: string
-          description: Name of current entity
-          example: entity_name
-      description: Metadata of response for references with paging information
-    BulkRequestItemDTOTeamDTO:
-      type: object
-      description: List of items in the bulk request.
-      properties:
-        itemIdentifier:
-          type: integer
-          format: int32
-          description: Unique item identifier for a bulk operation.
-          example: 10
-        item:
-          $ref: '#/components/schemas/TeamDTO'
-          description: Item.
-        requestAction:
-          type: string
-          description: Identifier for action type. Possible values are `SAVE` and `DELETE`.
-          example: SAVE
-    Response:
-      type: object
-      properties:
-        code:
-          type: integer
-          format: int32
-        details:
-          type: object
-          additionalProperties:
-            type: object
-        links:
-          type: array
-          items:
-            $ref: '#/components/schemas/Link'
-    BulkResponseItemDTO:
-      type: object
-      properties:
-        itemIdentifier:
-          type: integer
-          description: Unique item identifier for a bulk operation.
-          format: int32
-          example: 10
-        status:
-          type: integer
-          description: Indicates the error status code.
-          format: int32
-          example: 400
-        operationType:
-          type: string
-          description: The kind of operation desired of an entity.
-          example: CREATE
-          enum:
-          - CREATE
-          - UPDATE
-          - DELETE
-          - GET
-        href:
-          type: string
-          description: The resource URI of an entity.
-          example: /api/organization/6705c69d-4585-42ad-bfc3-79cc485dfb15/team/7b26d174-0016-4682-9858-65918e05f85
-        apiError:
-          $ref: '#/components/schemas/ApiErrorResponse'
-      example:
-        apiError:
-          error:
-            key: '400'
-            message:
-            - description: 'siteId: not found for given orgId.'
-              entity: string
-              references:
-              - id: string
-                name: string
-            reason: dependency exists
-          trackingId: ccconfig_c1a4fcef-aee2-4dea-8977-29f594760552
-        href: /api/organization/6705c69d-4585-42ad-bfc3-79cc485dfb15/team/7b26d174-0016-4682-9858-65918e05f85
-        itemIdentifier: 10
-        operationType: CREATE
-        status: 400
+      required:
+      - queueId
+      - rank
     TeamDTO:
       type: object
       description: Team schema.
@@ -1685,21 +1515,117 @@ components:
       - siteId
       - teamStatus
       - teamType
-    ResponseEnvelopeTeamResponseDTO:
+    MetaDataReferencesPagingInfo:
+      title: MetaDataReferencesPagingInfo
       type: object
-      description: Response Envelope Team Response schema.
       properties:
-        meta:
+        orgid:
+          maxLength: 36
+          minLength: 32
+          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
+          type: string
+          description: Org ID
+          format: uuid
+          example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+        page:
+          type: integer
+          description: Current page number
+          format: int32
+          example: 1
+        pageSize:
+          type: integer
+          description: Page size for current data set
+          format: int32
+          example: 100
+        totalPages:
+          type: integer
+          description: Number of pages
+          format: int32
+          example: 1
+        totalRecords:
+          type: integer
+          description: Total number of items
+          format: int32
+          example: 1000
+        links:
           type: object
-          additionalProperties:
-            description: Meta additional property.
-          description: Additional properties for Meta.
+          description: Map of pagination links with self, next, prev, last and first
+          example:
+            next: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=2&pageSize=10
+            last: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=3&pageSize=10
+            prev: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=0&pageSize=10
+            self: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=1&pageSize=10
+            first: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=0&pageSize=10
+        referencedEntities:
+          type: array
+          description: List of referenced entities
+          example:
+          - agent-profile
+          - entrypoint
+          items:
+            type: string
+        currentEntity:
+          type: string
+          description: Name of current entity
+          example: entity_name
+      description: Metadata of response for references with paging information
+    BulkResponseItemDTO:
+      type: object
+      properties:
+        itemIdentifier:
+          type: integer
+          description: Unique item identifier for a bulk operation.
+          format: int32
+          example: 10
+        status:
+          type: integer
+          description: Indicates the error status code.
+          format: int32
+          example: 400
+        operationType:
+          type: string
+          description: The kind of operation desired of an entity.
+          example: CREATE
+          enum:
+          - CREATE
+          - UPDATE
+          - DELETE
+          - GET
+        href:
+          type: string
+          description: The resource URI of an entity.
+          example: /api/organization/6705c69d-4585-42ad-bfc3-79cc485dfb15/team/7b26d174-0016-4682-9858-65918e05f85
+        apiError:
+          $ref: '#/components/schemas/ApiErrorResponse'
+      example:
+        apiError:
+          error:
+            key: '400'
+            message:
+            - description: 'siteId: not found for given orgId.'
+              entity: string
+              references:
+              - id: string
+                name: string
+            reason: dependency exists
+          trackingId: ccconfig_c1a4fcef-aee2-4dea-8977-29f594760552
+        href: /api/organization/6705c69d-4585-42ad-bfc3-79cc485dfb15/team/7b26d174-0016-4682-9858-65918e05f85
+        itemIdentifier: 10
+        operationType: CREATE
+        status: 400
+    EntityReferenceInfoDTO:
+      type: object
+      properties:
+        description:
+          type: string
+          description: Description about reference info.
+          example: list of referenced entities
+        meta:
+          $ref: '#/components/schemas/MetaDataReferencesPagingInfo'
         data:
           type: array
-          description: List of Data.
           items:
-            $ref: '#/components/schemas/TeamResponseDTO'
-            description: Data item.
+            $ref: '#/components/schemas/EntityInfo'
     EntityInfo:
       type: object
       properties:
@@ -1728,46 +1654,9 @@ components:
         version:
           type: integer
           format: int32
-    BulkRequestDTOTeamDTO:
+    TeamResponseDTO:
       type: object
-      description: Bulk Request Team schema.
-      properties:
-        items:
-          type: array
-          description: List of items in the bulk request.
-          items:
-            $ref: '#/components/schemas/BulkRequestItemDTOTeamDTO'
-            description: Item.
-    Link:
-      type: object
-      properties:
-        href:
-          type: string
-        hreflang:
-          type: string
-        title:
-          type: string
-        type:
-          type: string
-        deprecation:
-          type: string
-        profile:
-          type: string
-        name:
-          type: string
-        templated:
-          type: boolean
-    OperationError:
-      description: An error message providing details about the operation failure.
-      type: object
-      properties:
-        description:
-          type: string
-          description: A human readable explanation for the occurrence of an error.
-          example: Incorrect Credentials.
-    QueueRankingDTO:
-      type: object
-      description: Queue Ranking schema.
+      description: Team Response schema.
       properties:
         organizationId:
           type: string
@@ -1786,15 +1675,100 @@ components:
           format: int32
           description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
           example: 1
-        queueId:
+        name:
           type: string
-          description: Queue Id.
-          minLength: 1
-        rank:
+          description: Indicates the name of the team such as Billing or Customer Support
+          example: Customer Support
+        teamType:
+          type: string
+          description: 'Team type can be the following:
+
+
+            AGENT: A specific number of agents are assigned to the team.
+
+
+            CAPACITY: Specific number of agents not assigned to the team. Capacity-based teams for voice mailboxes or agent groups that are not managed by the Webex Contact Center system.'
+          enum:
+          - AGENT
+          - CAPACITY
+          example: AGENT
+        teamStatus:
+          type: string
+          description: 'Indicates whether the team is available to handle customer contacts.
+
+            Can be one of: IN_SERVICE/NOT_AVAILABLE.
+
+            '
+          enum:
+          - IN_SERVICE
+          - NOT_AVAILABLE
+          example: IN_SERVICE
+        dialedNumber:
+          type: string
+          description: "The dial number where the system distributes the calls for this team. \nThis setting is applicable only for capacity-based teams."
+          example: '+14085550123'
+        capacity:
           type: integer
           format: int32
-          description: Rank.
-          maximum: 50
+          description: 'The maximum number of simultaneous contacts that this team can handle.
+
+            This setting is applicable only for capacity-based teams.'
+          example: 1
+        active:
+          type: boolean
+          description: Indicates whether the team is active(when true) or not active(when false).
+          example: true
+        siteId:
+          type: string
+          description: Identifier for a site which is a physical contact center location under the control of your enterprise.
+          example: 8e6bb6da-2a78-4768-bef9-7e229f92af22
+        desktopLayoutId:
+          type: string
+          description: Identifier for an agent desktop layout which  a Contact Center administrator has configured.
+          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+        siteName:
+          type: string
+          description: The name of the site this team belongs to.
+          example: New_York
+        skillProfileId:
+          type: string
+          description: Id of the skill profile for this team if your enterprise uses the optional Skills-Based Routing feature.
+          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+        multiMediaProfileId:
+          type: string
+          description: Id of the multimedia profile for this team.
+          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+        userIds:
+          type: array
+          description: Indicates the agents id(s) who are part of this team.
+          example:
+          - f53c8b54-46ca-43f6-ba05-08426a46e23d
+          - a53c8b54-46ca-43f6-ba05-08426a46e23f
+          items:
+            type: string
+            description: Indicates the agents id(s) who are part of this team.
+            example:
+            - f53c8b54-46ca-43f6-ba05-08426a46e23d
+            - a53c8b54-46ca-43f6-ba05-08426a46e23f
+          uniqueItems: true
+        description:
+          type: string
+          description: Indicates the team
+          example: Capacity based team
+        systemDefault:
+          type: boolean
+          description: Indicates whether the created resource is system created or not
+          example: false
+        rankQueuesForTeam:
+          type: boolean
+          description: Rank Queues For Team.
+        queueRankings:
+          type: array
+          description: List of Queue Rankings.
+          items:
+            $ref: '#/components/schemas/QueueRankingDTO'
+            description: Queue Ranking.
+          uniqueItems: true
         createdTime:
           type: integer
           format: int64
@@ -1805,9 +1779,35 @@ components:
           format: int64
           description: This is the updated time of the entity.
           example: 123456789
-      required:
-      - queueId
-      - rank
+    ResponseEnvelopeTeamResponseDTO:
+      type: object
+      description: Response Envelope Team Response schema.
+      properties:
+        meta:
+          type: object
+          additionalProperties:
+            description: Meta additional property.
+          description: Additional properties for Meta.
+        data:
+          type: array
+          description: List of Data.
+          items:
+            $ref: '#/components/schemas/TeamResponseDTO'
+            description: Data item.
+    Response:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        details:
+          type: object
+          additionalProperties:
+            type: object
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'
   securitySchemes:
     oauth2:
       flows:

@@ -1532,24 +1532,6 @@ components:
           type: boolean
           example: true
           description: Indicates if the restriction is enforced by the system for the corresponding call type and cannot be changed. For example, certain call types (such as `INTERNATIONAL`) may be permanently blocked and this field will be `true` to reflect that the restriction is system-controlled and not editable.
-    RouteIdentity:
-      type: object
-      required:
-      - id
-      - name
-      - type
-      properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1JPVVRFX0dST1VQLzA1OWEyNzNlLWJiYjAtMTFlYy04NDIyLTAyNDJhYzEyMDAwMg
-          description: ID of the route type.
-        name:
-          type: string
-          example: route_identity_name
-          description: A unique name for the route identity.
-        type:
-          $ref: '#/components/schemas/RouteType'
-          description: Type associated with the identity.
     LocationOutgoingPermissionDigitPatternPostObject:
       type: object
       required:
@@ -1580,9 +1562,115 @@ components:
           type: boolean
           example: true
           description: If `true`, allows transfer and forwarding for the call type.
-    LocationOutgoingPermissionDigitPatternPatchObject:
+    LocationOutgoingPermissionDigitPatternGetListObject:
+      type: object
+      required:
+      - digitPatterns
+      properties:
+        digitPatterns:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocationDigitPatternObject'
+          description: List of digit pattern information.
+    RouteIdentity:
+      type: object
+      required:
+      - id
+      - name
+      - type
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1JPVVRFX0dST1VQLzA1OWEyNzNlLWJiYjAtMTFlYy04NDIyLTAyNDJhYzEyMDAwMg
+          description: ID of the route type.
+        name:
+          type: string
+          example: route_identity_name
+          description: A unique name for the route identity.
+        type:
+          $ref: '#/components/schemas/RouteType'
+          description: Type associated with the identity.
+    InternalDialingGet:
       type: object
       properties:
+        enableUnknownExtensionRoutePolicy:
+          type: boolean
+          example: true
+          description: When enabled, calls made by users at the location to an unknown extension (between 2-6 digits) are routed to the selected route group/trunk as premises calls.
+        unknownExtensionRouteIdentity:
+          $ref: '#/components/schemas/RouteIdentity'
+          description: The selected route group/trunk as premises calls.
+    UnknownExtensionRouteIdentity:
+      type: object
+      required:
+      - id
+      - type
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1JPVVRFX0dST1VQLzA1OWEyNzNlLWJiYjAtMTFlYy04NDIyLTAyNDJhYzEyMDAwMg
+          description: ID of the route type.
+        type:
+          $ref: '#/components/schemas/RouteType'
+          description: Type associated with the identity.
+    PutAccessCodeLocationObject:
+      type: object
+      required:
+      - deleteCodes
+      properties:
+        deleteCodes:
+          type: array
+          items:
+            type: string
+          description: Array of string to delete access codes. For example, ["1234","2345"]
+    CallingPermissionPatchObject:
+      type: object
+      required:
+      - callType
+      - action
+      - transferEnabled
+      properties:
+        callType:
+          type: string
+          enum:
+          - INTERNAL_CALL
+          - TOLL_FREE
+          - INTERNATIONAL
+          - OPERATOR_ASSISTED
+          - CHARGEABLE_DIRECTORY_ASSISTED
+          - SPECIAL_SERVICES_I
+          - SPECIAL_SERVICES_II
+          - PREMIUM_SERVICES_I
+          - PREMIUM_SERVICES_II
+          - NATIONAL
+          description: "Below are the call type values.\n * `INTERNAL_CALL` - Controls calls within your own company.\n * `TOLL_FREE` - Controls calls to a telephone number that is billed for all arriving calls instead of incurring charges to the originating caller, usually free of charge from a landline.\n * `INTERNATIONAL` - Controls calls to locations outside of the Long Distance areas that require an international calling code before the number is dialed.\n * `OPERATOR_ASSISTED` - Controls calls requiring Operator Assistance.\n * `CHARGEABLE_DIRECTORY_ASSISTED` - Controls calls to Directory Assistant companies that require a charge to connect the call.\n * `SPECIAL_SERVICES_I` - Controls calls to carrier-specific number assignments to special services or destinations.\n * `SPECIAL_SERVICES_II` - Controls calls to carrier-specific number assignments to special services or destinations.\n * `PREMIUM_SERVICES_I` - Controls calls used to provide information or entertainment for a fee charged directly to the caller.\n * `PREMIUM_SERVICES_II` - Controls calls used to provide information or entertainment for a fee charged directly to the caller.\n * `NATIONAL` - Controls calls that are National.\n"
+        action:
+          type: string
+          enum:
+          - ALLOW
+          - BLOCK
+          - AUTH_CODE
+          - TRANSFER_NUMBER_1
+          - TRANSFER_NUMBER_2
+          - TRANSFER_NUMBER_3
+          description: "Allows to configure settings for each call type.\n * `ALLOW` - Callers at this location can make these types of calls.\n * `BLOCK` - Callers at this location can't make these types of calls.\n * `AUTH_CODE` - Callers must enter the authorization code that you set before placing an outgoing call.\n * `TRANSFER_NUMBER_1` - Calls are transferred automatically to the configured auto transfer number `autoTransferNumber1`.\n * `TRANSFER_NUMBER_2` - Calls are transferred automatically to the configured auto transfer number. `autoTransferNumber2`.\n * `TRANSFER_NUMBER_3` - Calls are transferred automatically to the configured auto transfer number. `autoTransferNumber3`.\n"
+        transferEnabled:
+          type: boolean
+          example: true
+          description: If `true`, allows transfer and forwarding for the call type.
+    LocationDigitPatternObject:
+      type: object
+      required:
+      - id
+      - name
+      - pattern
+      - action
+      - transferEnabled
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1NDSEVEVUxFL1FWVlVUMEZVVkVWT1JFRk9WQzFDVlZOSlRrVlRVeTFJVDFWU1V3
+          description: A unique identifier for the digit pattern.
         name:
           type: string
           example: DigitPattern1
@@ -1605,17 +1693,7 @@ components:
           type: boolean
           example: true
           description: If `true`, allows transfer and forwarding for the call type.
-    InternalDialingGet:
-      type: object
-      properties:
-        enableUnknownExtensionRoutePolicy:
-          type: boolean
-          example: true
-          description: When enabled, calls made by users at the location to an unknown extension (between 2-6 digits) are routed to the selected route group/trunk as premises calls.
-        unknownExtensionRouteIdentity:
-          $ref: '#/components/schemas/RouteIdentity'
-          description: The selected route group/trunk as premises calls.
-    PostLocationAccessCodeObject:
+    GetLocationAccessCodeObject:
       type: object
       properties:
         accessCodes:
@@ -1627,33 +1705,12 @@ components:
             code:
               type: string
               example: '123'
-              description: Create new access code number.
+              description: Access code number.
             description:
               type: string
               example: Main Access Code
-              description: Set access code description.
+              description: Access code description.
           description: Access code details
-    PutAutoTransferNumberObject:
-      type: object
-      properties:
-        autoTransferNumber1:
-          type: string
-          example: '1234456789'
-          description: Calls placed meeting the criteria in an outbound rule whose `action` is `TRANSFER_NUMBER_1` will be transferred to this number.
-        autoTransferNumber2:
-          type: string
-          example: '2234567891'
-          description: Calls placed meeting the criteria in an outbound rule whose `action` is `TRANSFER_NUMBER_2` will be transferred to this number.
-        autoTransferNumber3:
-          type: string
-          example: '3234567891'
-          description: Calls placed meeting the criteria in an outbound rule whose `action` is `TRANSFER_NUMBER_3` will be transferred to this number.
-    RouteType:
-      type: string
-      enum:
-      - ROUTE_GROUP
-      - TRUNK
-      description: " * `ROUTE_GROUP` - Route group must include at least one trunk with a maximum of 10 trunks per route group.\n * `TRUNK` - Connection between Webex Calling and the premises.\n"
     PutLocationInterceptObject:
       type: object
       required:
@@ -1733,19 +1790,25 @@ components:
               example: '2147691007'
               description: If enabled, set valid outgoing destination phone number.
           description: Outbound Call details
-    LocationDigitPatternObject:
+    InternalDialingPut:
       type: object
-      required:
-      - id
-      - name
-      - pattern
-      - action
-      - transferEnabled
       properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1NDSEVEVUxFL1FWVlVUMEZVVkVWT1JFRk9WQzFDVlZOSlRrVlRVeTFJVDFWU1V3
-          description: A unique identifier for the digit pattern.
+        enableUnknownExtensionRoutePolicy:
+          type: boolean
+          example: true
+          description: When enabled, calls made by users at the location to an unknown extension (between 2-6 digits) are routed to the selected route group/trunk as premises calls.
+        unknownExtensionRouteIdentity:
+          $ref: '#/components/schemas/UnknownExtensionRouteIdentity'
+          description: Type associated with the identity.
+    RouteType:
+      type: string
+      enum:
+      - ROUTE_GROUP
+      - TRUNK
+      description: " * `ROUTE_GROUP` - Route group must include at least one trunk with a maximum of 10 trunks per route group.\n * `TRUNK` - Connection between Webex Calling and the premises.\n"
+    LocationOutgoingPermissionDigitPatternPatchObject:
+      type: object
+      properties:
         name:
           type: string
           example: DigitPattern1
@@ -1768,69 +1831,21 @@ components:
           type: boolean
           example: true
           description: If `true`, allows transfer and forwarding for the call type.
-    GetLocationAccessCodeObject:
+    PutAutoTransferNumberObject:
       type: object
       properties:
-        accessCodes:
-          type: object
-          required:
-          - code
-          - description
-          properties:
-            code:
-              type: string
-              example: '123'
-              description: Access code number.
-            description:
-              type: string
-              example: Main Access Code
-              description: Access code description.
-          description: Access code details
-    CallingPermissionPatchObject:
-      type: object
-      required:
-      - callType
-      - action
-      - transferEnabled
-      properties:
-        callType:
+        autoTransferNumber1:
           type: string
-          enum:
-          - INTERNAL_CALL
-          - TOLL_FREE
-          - INTERNATIONAL
-          - OPERATOR_ASSISTED
-          - CHARGEABLE_DIRECTORY_ASSISTED
-          - SPECIAL_SERVICES_I
-          - SPECIAL_SERVICES_II
-          - PREMIUM_SERVICES_I
-          - PREMIUM_SERVICES_II
-          - NATIONAL
-          description: "Below are the call type values.\n * `INTERNAL_CALL` - Controls calls within your own company.\n * `TOLL_FREE` - Controls calls to a telephone number that is billed for all arriving calls instead of incurring charges to the originating caller, usually free of charge from a landline.\n * `INTERNATIONAL` - Controls calls to locations outside of the Long Distance areas that require an international calling code before the number is dialed.\n * `OPERATOR_ASSISTED` - Controls calls requiring Operator Assistance.\n * `CHARGEABLE_DIRECTORY_ASSISTED` - Controls calls to Directory Assistant companies that require a charge to connect the call.\n * `SPECIAL_SERVICES_I` - Controls calls to carrier-specific number assignments to special services or destinations.\n * `SPECIAL_SERVICES_II` - Controls calls to carrier-specific number assignments to special services or destinations.\n * `PREMIUM_SERVICES_I` - Controls calls used to provide information or entertainment for a fee charged directly to the caller.\n * `PREMIUM_SERVICES_II` - Controls calls used to provide information or entertainment for a fee charged directly to the caller.\n * `NATIONAL` - Controls calls that are National.\n"
-        action:
+          example: '1234456789'
+          description: Calls placed meeting the criteria in an outbound rule whose `action` is `TRANSFER_NUMBER_1` will be transferred to this number.
+        autoTransferNumber2:
           type: string
-          enum:
-          - ALLOW
-          - BLOCK
-          - AUTH_CODE
-          - TRANSFER_NUMBER_1
-          - TRANSFER_NUMBER_2
-          - TRANSFER_NUMBER_3
-          description: "Allows to configure settings for each call type.\n * `ALLOW` - Callers at this location can make these types of calls.\n * `BLOCK` - Callers at this location can't make these types of calls.\n * `AUTH_CODE` - Callers must enter the authorization code that you set before placing an outgoing call.\n * `TRANSFER_NUMBER_1` - Calls are transferred automatically to the configured auto transfer number `autoTransferNumber1`.\n * `TRANSFER_NUMBER_2` - Calls are transferred automatically to the configured auto transfer number. `autoTransferNumber2`.\n * `TRANSFER_NUMBER_3` - Calls are transferred automatically to the configured auto transfer number. `autoTransferNumber3`.\n"
-        transferEnabled:
-          type: boolean
-          example: true
-          description: If `true`, allows transfer and forwarding for the call type.
-    InternalDialingPut:
-      type: object
-      properties:
-        enableUnknownExtensionRoutePolicy:
-          type: boolean
-          example: true
-          description: When enabled, calls made by users at the location to an unknown extension (between 2-6 digits) are routed to the selected route group/trunk as premises calls.
-        unknownExtensionRouteIdentity:
-          $ref: '#/components/schemas/UnknownExtensionRouteIdentity'
-          description: Type associated with the identity.
+          example: '2234567891'
+          description: Calls placed meeting the criteria in an outbound rule whose `action` is `TRANSFER_NUMBER_2` will be transferred to this number.
+        autoTransferNumber3:
+          type: string
+          example: '3234567891'
+          description: Calls placed meeting the criteria in an outbound rule whose `action` is `TRANSFER_NUMBER_3` will be transferred to this number.
     GetAutoTransferNumberObject:
       type: object
       properties:
@@ -1846,23 +1861,6 @@ components:
           type: string
           example: '3234567891'
           description: Calls placed meeting the criteria in an outbound rule whose `action` is `TRANSFER_NUMBER_3` will be transferred to this number.
-    LocationOutgoingPermissionDigitPatternGetListObject:
-      type: object
-      required:
-      - digitPatterns
-      properties:
-        digitPatterns:
-          type: array
-          items:
-            $ref: '#/components/schemas/LocationDigitPatternObject'
-          description: List of digit pattern information.
-    GeneratePasswordPostResponse:
-      type: object
-      properties:
-        exampleSipPassword:
-          type: string
-          example: xyz123!
-          description: Example password.
     PasswordGenerate:
       type: string
       enum:
@@ -1870,19 +1868,13 @@ components:
       description: ' * `sip` - SIP password setting
 
         '
-    UnknownExtensionRouteIdentity:
+    GeneratePasswordPostResponse:
       type: object
-      required:
-      - id
-      - type
       properties:
-        id:
+        exampleSipPassword:
           type: string
-          example: Y2lzY29zcGFyazovL3VzL1JPVVRFX0dST1VQLzA1OWEyNzNlLWJiYjAtMTFlYy04NDIyLTAyNDJhYzEyMDAwMg
-          description: ID of the route type.
-        type:
-          $ref: '#/components/schemas/RouteType'
-          description: Type associated with the identity.
+          example: xyz123!
+          description: Example password.
     GetLocationInterceptObject:
       type: object
       required:
@@ -1962,16 +1954,24 @@ components:
               example: '2147691007'
               description: If enabled, set outgoing destination phone number.
           description: Outbound Call details
-    PutAccessCodeLocationObject:
+    PostLocationAccessCodeObject:
       type: object
-      required:
-      - deleteCodes
       properties:
-        deleteCodes:
-          type: array
-          items:
-            type: string
-          description: Array of string to delete access codes. For example, ["1234","2345"]
+        accessCodes:
+          type: object
+          required:
+          - code
+          - description
+          properties:
+            code:
+              type: string
+              example: '123'
+              description: Create new access code number.
+            description:
+              type: string
+              example: Main Access Code
+              description: Set access code description.
+          description: Access code details
   securitySchemes:
     oauth2:
       flows:

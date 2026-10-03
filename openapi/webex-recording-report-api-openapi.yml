@@ -571,29 +571,37 @@ paths:
       x-operation-id-original: Get Meeting Archive Details
 components:
   schemas:
-    RecordingAchriveSummaryObject:
+    RecordingReportObject:
       type: object
       properties:
-        archiveId:
+        recordingId:
           type: string
-          example: 7d7ea5f42b921eace05386ca24ad730e_R_1000634462
-          description: A unique identifier for the meeting archive summary.
-        serviceType:
-          type: string
-          enum:
-          - MeetingCenter
-          - EventCenter
-          - TrainingCenter
-          - SupportCenter
-          description: Recording achrive summary's service-type.
-        title:
+          example: 4f914b1dfe3c4d11a61730f18c0f5387
+          description: A unique identifier for the recording.
+        topic:
           type: string
           example: John's Meeting
-          description: Meeting title.
-        createTime:
+          description: The recording's topic.
+        name:
           type: string
-          example: '2019-01-27T17:43:24Z'
-          description: The date and time in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant format that when the archive was created by the system.
+          example: John Andersen
+          description: The name of the person who accessed the recording.
+        email:
+          type: string
+          example: john.andersen@example.com
+          description: The email address of the person who accessed the recording.
+        accessTime:
+          type: string
+          example: '2019-01-27T17:40:20Z'
+          description: The date and time the recording was accessed in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant format.
+        viewed:
+          type: boolean
+          example: true
+          description: Whether or not the recording was viewed by the person.
+        downloaded:
+          type: boolean
+          example: true
+          description: Whether or not the recording was downloaded by the person.
     MeetingRecordingArchivePollAnswerSummary:
       type: object
       properties:
@@ -637,29 +645,6 @@ components:
           type: string
           example: It's nice to meet you
           description: The text of the chat snippet.
-    MeetingRecordingArchiveParticipant:
-      type: object
-      properties:
-        correlationId:
-          type: number
-          example: 28208023
-          description: An internal ID that is associated with each join.
-        displayName:
-          type: string
-          example: John Andersen
-          description: Display name for the meeting participant.
-        joinedTime:
-          type: string
-          example: '2022-07-20T07:01:31Z'
-          description: The time the participant joined the meeting.
-        leftTime:
-          type: string
-          example: '2022-07-20T07:01:31Z'
-          description: The time the participant left the meeting.
-        email:
-          type: string
-          example: john.andersen@example.com
-          description: Email address for the meeting participant.
     RecordingArchiveReportObject:
       type: object
       properties:
@@ -720,37 +705,91 @@ components:
           items:
             $ref: '#/components/schemas/MeetingRecordingArchiveSystemInfo'
           description: The system Information of the meeting archive, which can be only supported when serviceType is `SupportCenter`.
-    RecordingReportObject:
+    MeetingRecordingArchiveQAAnswer:
       type: object
       properties:
-        recordingId:
+        responseMode:
           type: string
-          example: 4f914b1dfe3c4d11a61730f18c0f5387
-          description: A unique identifier for the recording.
-        topic:
-          type: string
-          example: John's Meeting
-          description: The recording's topic.
-        name:
+          example: private
+          description: The answer's response mode.
+        displayName:
           type: string
           example: John Andersen
-          description: The name of the person who accessed the recording.
+          description: The name of the person who answered the question.
+        correlationId:
+          type: number
+          example: 10947662
+          description: An internal ID that is associated with the answer's each join.
+        email:
+          type: string
+          example: alex.green@example.com
+          description: The email of the person who answered the question.
+        answerTime:
+          type: string
+          example: '2021-07-06T09:52:34Z'
+          description: The date and time the question answered in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant format.
+        text:
+          type: string
+          example: Yes, I am.
+          description: The text of the answer.
+    MeetingRecordingArchiveParticipant:
+      type: object
+      properties:
+        correlationId:
+          type: number
+          example: 28208023
+          description: An internal ID that is associated with each join.
+        displayName:
+          type: string
+          example: John Andersen
+          description: Display name for the meeting participant.
+        joinedTime:
+          type: string
+          example: '2022-07-20T07:01:31Z'
+          description: The time the participant joined the meeting.
+        leftTime:
+          type: string
+          example: '2022-07-20T07:01:31Z'
+          description: The time the participant left the meeting.
         email:
           type: string
           example: john.andersen@example.com
-          description: The email address of the person who accessed the recording.
-        accessTime:
+          description: Email address for the meeting participant.
+    RecordingAchriveSummaryObject:
+      type: object
+      properties:
+        archiveId:
           type: string
-          example: '2019-01-27T17:40:20Z'
-          description: The date and time the recording was accessed in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant format.
-        viewed:
-          type: boolean
-          example: true
-          description: Whether or not the recording was viewed by the person.
-        downloaded:
-          type: boolean
-          example: true
-          description: Whether or not the recording was downloaded by the person.
+          example: 7d7ea5f42b921eace05386ca24ad730e_R_1000634462
+          description: A unique identifier for the meeting archive summary.
+        serviceType:
+          type: string
+          enum:
+          - MeetingCenter
+          - EventCenter
+          - TrainingCenter
+          - SupportCenter
+          description: Recording achrive summary's service-type.
+        title:
+          type: string
+          example: John's Meeting
+          description: Meeting title.
+        createTime:
+          type: string
+          example: '2019-01-27T17:43:24Z'
+          description: The date and time in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant format that when the archive was created by the system.
+    MeetingRecordingArchiveSystemInfo:
+      type: object
+      properties:
+        displayName:
+          type: string
+          example: John Andersen
+          description: The name of the person who accessed the meeting archive.
+        catalogs:
+          type: array
+          items:
+            $ref: '#/components/schemas/SystemInfoCatalog'
+          description: The catalogs of system information.
     RecordingReportSummaryObject:
       type: object
       properties:
@@ -782,18 +821,128 @@ components:
           type: number
           example: 20
           description: The number of times the recording was downloaded.
-    MeetingRecordingArchiveSystemInfo:
+    MeetingRecordingArchivePoll:
       type: object
       properties:
+        type:
+          type: string
+          example: single
+          description: The type of the question.
+        startTime:
+          type: string
+          example: '2021-07-06T09:25:34Z'
+          description: The date and time the poll started in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant format.
+        endTime:
+          type: string
+          example: '2021-07-06T09:28:34Z'
+          description: The date and time the poll ended in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant format.
+        content:
+          type: object
+          properties:
+            questionCount:
+              type: number
+              example: 10
+              description: The total number of questions.
+            userCount:
+              type: number
+              example: 10
+              description: The total number of users.
+            votedUserCount:
+              type: number
+              example: 3
+              description: The number of voters among users.
+            questions:
+              type: array
+              items:
+                $ref: '#/components/schemas/MeetingRecordingArchivePollQuestion'
+              description: Poll's questions.
+          description: The content of the meeting archive poll;
+    MeetingRecordingArchivePollRespondent:
+      type: object
+      properties:
+        correlationId:
+          type: number
+          example: 28208023
+          description: An internal ID that is associated with the respondent's each join.
         displayName:
           type: string
-          example: John Andersen
-          description: The name of the person who accessed the meeting archive.
-        catalogs:
+          example: Alex Green
+          description: Display name for the poll respondent.
+        email:
+          type: string
+          example: alex.green@example.com
+          description: Email address for the poll respondent.
+        answers:
           type: array
           items:
-            $ref: '#/components/schemas/SystemInfoCatalog'
-          description: The catalogs of system information.
+            type: string
+          description: An array of answers to the question.
+    MeetingRecordingArchiveQA:
+      type: object
+      properties:
+        priority:
+          type: string
+          example: NA
+          description: The priority of the Q and A.
+        type:
+          type: string
+          example: private
+          description: Whether the type of the Q and A is private, public, or group. Private Q and A is for the 1:1 chat. Public Q and A are for the message which is sent to all the people in the meeting. Group Q and A are for the message which is sent to a small group of people, like a Q and A to "host and presenter".
+        displayName:
+          type: string
+          example: john.andersen@example.com`
+          description: The email of the user who asked the question.
+        questionTime:
+          type: string
+          example: '2021-07-06T09:22:34Z'
+          description: The date and time the question was created in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant format.
+        target:
+          type: string
+          example: All Participants
+          description: Information of the user who asked the question.
+        question:
+          type: string
+          example: Are you ok?
+          description: The question that was asked.
+        answers:
+          type: array
+          items:
+            $ref: '#/components/schemas/MeetingRecordingArchiveQAAnswer'
+          description: Question's answers.
+    MeetingRecordingArchivePollQuestion:
+      type: object
+      properties:
+        voteUsers:
+          type: array
+          items:
+            $ref: '#/components/schemas/MeetingRecordingArchiveUser'
+          description: The voters among users.
+        question:
+          type: object
+          properties:
+            choiceCount:
+              type: number
+              example: 3
+              description: The number of choices in the questions.
+            type:
+              type: string
+              example: single
+              description: The type of the question.
+            text:
+              type: string
+              example: Do you like this API?
+              description: The text of the question.
+          description: The poll's question.
+        answerSummary:
+          type: array
+          items:
+            $ref: '#/components/schemas/MeetingRecordingArchivePollAnswerSummary'
+          description: The answer summary of the archive poll.
+        respondents:
+          type: array
+          items:
+            $ref: '#/components/schemas/MeetingRecordingArchivePollRespondent'
+          description: The question's respondents.
     SystemInfoCatalog:
       type: object
       properties:
@@ -873,135 +1022,6 @@ components:
           type: string
           example: AwardBIOS
           description: The basic input and output system.
-    MeetingRecordingArchivePollQuestion:
-      type: object
-      properties:
-        voteUsers:
-          type: array
-          items:
-            $ref: '#/components/schemas/MeetingRecordingArchiveUser'
-          description: The voters among users.
-        question:
-          type: object
-          properties:
-            choiceCount:
-              type: number
-              example: 3
-              description: The number of choices in the questions.
-            type:
-              type: string
-              example: single
-              description: The type of the question.
-            text:
-              type: string
-              example: Do you like this API?
-              description: The text of the question.
-          description: The poll's question.
-        answerSummary:
-          type: array
-          items:
-            $ref: '#/components/schemas/MeetingRecordingArchivePollAnswerSummary'
-          description: The answer summary of the archive poll.
-        respondents:
-          type: array
-          items:
-            $ref: '#/components/schemas/MeetingRecordingArchivePollRespondent'
-          description: The question's respondents.
-    MeetingRecordingArchivePoll:
-      type: object
-      properties:
-        type:
-          type: string
-          example: single
-          description: The type of the question.
-        startTime:
-          type: string
-          example: '2021-07-06T09:25:34Z'
-          description: The date and time the poll started in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant format.
-        endTime:
-          type: string
-          example: '2021-07-06T09:28:34Z'
-          description: The date and time the poll ended in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant format.
-        content:
-          type: object
-          properties:
-            questionCount:
-              type: number
-              example: 10
-              description: The total number of questions.
-            userCount:
-              type: number
-              example: 10
-              description: The total number of users.
-            votedUserCount:
-              type: number
-              example: 3
-              description: The number of voters among users.
-            questions:
-              type: array
-              items:
-                $ref: '#/components/schemas/MeetingRecordingArchivePollQuestion'
-              description: Poll's questions.
-          description: The content of the meeting archive poll;
-    MeetingRecordingArchiveQA:
-      type: object
-      properties:
-        priority:
-          type: string
-          example: NA
-          description: The priority of the Q and A.
-        type:
-          type: string
-          example: private
-          description: Whether the type of the Q and A is private, public, or group. Private Q and A is for the 1:1 chat. Public Q and A are for the message which is sent to all the people in the meeting. Group Q and A are for the message which is sent to a small group of people, like a Q and A to "host and presenter".
-        displayName:
-          type: string
-          example: john.andersen@example.com`
-          description: The email of the user who asked the question.
-        questionTime:
-          type: string
-          example: '2021-07-06T09:22:34Z'
-          description: The date and time the question was created in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant format.
-        target:
-          type: string
-          example: All Participants
-          description: Information of the user who asked the question.
-        question:
-          type: string
-          example: Are you ok?
-          description: The question that was asked.
-        answers:
-          type: array
-          items:
-            $ref: '#/components/schemas/MeetingRecordingArchiveQAAnswer'
-          description: Question's answers.
-    MeetingRecordingArchiveQAAnswer:
-      type: object
-      properties:
-        responseMode:
-          type: string
-          example: private
-          description: The answer's response mode.
-        displayName:
-          type: string
-          example: John Andersen
-          description: The name of the person who answered the question.
-        correlationId:
-          type: number
-          example: 10947662
-          description: An internal ID that is associated with the answer's each join.
-        email:
-          type: string
-          example: alex.green@example.com
-          description: The email of the person who answered the question.
-        answerTime:
-          type: string
-          example: '2021-07-06T09:52:34Z'
-          description: The date and time the question answered in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant format.
-        text:
-          type: string
-          example: Yes, I am.
-          description: The text of the answer.
     MeetingRecordingArchiveUser:
       type: object
       properties:
@@ -1017,26 +1037,6 @@ components:
           type: string
           example: john.andersen@example.com
           description: Email address for the meeting participant.
-    MeetingRecordingArchivePollRespondent:
-      type: object
-      properties:
-        correlationId:
-          type: number
-          example: 28208023
-          description: An internal ID that is associated with the respondent's each join.
-        displayName:
-          type: string
-          example: Alex Green
-          description: Display name for the poll respondent.
-        email:
-          type: string
-          example: alex.green@example.com
-          description: Email address for the poll respondent.
-        answers:
-          type: array
-          items:
-            type: string
-          description: An array of answers to the question.
   securitySchemes:
     oauth2:
       flows:

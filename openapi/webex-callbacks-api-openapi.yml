@@ -286,6 +286,60 @@ paths:
           description: Service Unavailable
 components:
   schemas:
+    CallbackScheduleMetadata:
+      type: object
+      properties:
+        orgId:
+          type: string
+          format: uuid
+          description: Unique identifier for the organization.
+          example: 123e4567-e89b-12d3-a456-426614174000
+        page:
+          type: integer
+          description: Current page number.
+          example: 1
+        pageSize:
+          type: integer
+          description: Number of items per page.
+          example: 10
+        totalPages:
+          type: integer
+          description: Total number of pages.
+          example: 5
+        totalRecords:
+          type: integer
+          description: Total number of items.
+          example: 50
+        links:
+          $ref: '#/components/schemas/PaginationLinks'
+      required:
+      - orgId
+      - page
+      - pageSize
+      - totalPages
+      - totalRecords
+      - links
+    CallbackSchedulesResponse:
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/CallbackScheduleMetadata'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/CallbackSchedule'
+    CallbackScheduleUpdateRequest:
+      allOf:
+      - type: object
+        properties:
+          id:
+            type: string
+            format: uuid
+            description: Unique identifier for the scheduled callback.
+            example: 123e4567-e89b-12d3-a456-426614174000
+        required:
+        - id
+      - $ref: '#/components/schemas/ScheduleCallbackRequest'
     ScheduleCallbackRequest:
       required:
       - customerName
@@ -342,63 +396,31 @@ components:
           format: uuid
           description: The unique identifier of the specific agent (CI userId), who should be assigned to handle the callback. This field is optional and is primarily used for personal callbacks.
           example: 123e4567-e89b-12d3-a456-426614174000
-    CallbackScheduleUpdateRequest:
-      allOf:
-      - type: object
-        properties:
-          id:
-            type: string
-            format: uuid
-            description: Unique identifier for the scheduled callback.
-            example: 123e4567-e89b-12d3-a456-426614174000
-        required:
-        - id
-      - $ref: '#/components/schemas/ScheduleCallbackRequest'
-    CallbackScheduleMetadata:
+    PaginationLinks:
       type: object
       properties:
-        orgId:
+        self:
           type: string
-          format: uuid
-          description: Unique identifier for the organization.
-          example: 123e4567-e89b-12d3-a456-426614174000
-        page:
-          type: integer
-          description: Current page number.
-          example: 1
-        pageSize:
-          type: integer
-          description: Number of items per page.
-          example: 10
-        totalPages:
-          type: integer
-          description: Total number of pages.
-          example: 5
-        totalRecords:
-          type: integer
-          description: Total number of items.
-          example: 50
-        links:
-          $ref: '#/components/schemas/PaginationLinks'
+          description: Link to the current page.
+          example: /v1/callbacks/organization/${orgId}/scheduled-callback?page=1&pageSize=10
+        first:
+          type: string
+          description: Link to the first page.
+          example: /v1/callbacks/organization/${orgId}/scheduled-callback?page=0&pageSize=10
+        last:
+          type: string
+          description: Link to the last page.
+          example: /v1/callbacks/organization/${orgId}/scheduled-callback?page=4&pageSize=10
+        next:
+          type: string
+          description: Link to the next page.
+          example: /v1/callbacks/organization/${orgId}/scheduled-callback?page=2&pageSize=10
+        prev:
+          type: string
+          description: Link to the previous page.
+          example: /v1/callbacks/organization/${orgId}/scheduled-callback?page=0&pageSize=10
       required:
-      - orgId
-      - page
-      - pageSize
-      - totalPages
-      - totalRecords
-      - links
-    CallbackSchedulesResponse:
-      type: object
-      properties:
-        meta:
-          $ref: '#/components/schemas/CallbackScheduleMetadata'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/CallbackSchedule'
-    ScheduleCallbackResponse:
-      type: object
-      $ref: '#/components/schemas/CallbackSchedule'
+      - self
     CallbackSchedule:
       type: object
       properties:
@@ -489,31 +511,9 @@ components:
       - createdTimestamp
       - lastUpdatedTimestamp
       - orgId
-    PaginationLinks:
+    ScheduleCallbackResponse:
       type: object
-      properties:
-        self:
-          type: string
-          description: Link to the current page.
-          example: /v1/callbacks/organization/${orgId}/scheduled-callback?page=1&pageSize=10
-        first:
-          type: string
-          description: Link to the first page.
-          example: /v1/callbacks/organization/${orgId}/scheduled-callback?page=0&pageSize=10
-        last:
-          type: string
-          description: Link to the last page.
-          example: /v1/callbacks/organization/${orgId}/scheduled-callback?page=4&pageSize=10
-        next:
-          type: string
-          description: Link to the next page.
-          example: /v1/callbacks/organization/${orgId}/scheduled-callback?page=2&pageSize=10
-        prev:
-          type: string
-          description: Link to the previous page.
-          example: /v1/callbacks/organization/${orgId}/scheduled-callback?page=0&pageSize=10
-      required:
-      - self
+      $ref: '#/components/schemas/CallbackSchedule'
   securitySchemes:
     oauth2:
       flows:

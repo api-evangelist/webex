@@ -312,6 +312,156 @@ paths:
           type: string
 components:
   schemas:
+    CallerReputationProviderRegion:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the region.
+          example: region-1
+        name:
+          type: string
+          description: Name of the region.
+          example: US East
+        type:
+          type: string
+          description: Type of the region (e.g., primary, secondary).
+          example: primary
+        visible:
+          type: boolean
+          description: Indicates if the region is visible.
+          example: true
+        environmentType:
+          type: string
+          description: Environment type of the region (e.g., production, staging).
+          example: production
+      example:
+        id: region-1
+        name: US East
+        type: primary
+        visible: true
+        environmentType: production
+    CallerReputationProviderProvidersResponse:
+      type: object
+      properties:
+        providers:
+          type: array
+          items:
+            $ref: '#/components/schemas/CallerReputationProviderProvider'
+          description: List of caller reputation providers.
+      example:
+        providers:
+        - id: provider-123
+          enabled: true
+          name: Acme Reputation Provider
+          regions:
+          - id: region-1
+            name: US East
+            type: primary
+            visible: true
+            environmentType: production
+    CallerReputationProviderSettings:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the reputation provider.
+          example: Acme Reputation Provider
+        id:
+          type: string
+          description: Unique identifier for the reputation provider.
+          example: provider-123
+        clientId:
+          type: string
+          description: Client ID used for integration with the reputation provider.
+          example: client-456
+        enabled:
+          type: boolean
+          description: Indicates if the caller reputation provider service is enabled.
+          example: true
+        callBlockScoreThreshold:
+          type: string
+          description: Score threshold for blocking calls.
+          example: '0.7'
+        callAllowScoreThreshold:
+          type: string
+          description: Score threshold for allowing calls.
+          example: '0.3'
+      example:
+        name: Acme Reputation Provider
+        id: provider-123
+        clientId: client-456
+        enabled: true
+        callBlockScoreThreshold: '0.7'
+        callAllowScoreThreshold: '0.3'
+    CallerReputationProviderProvider:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the provider.
+          example: provider-123
+        enabled:
+          type: boolean
+          description: Indicates if the provider is enabled.
+          example: true
+        name:
+          type: string
+          description: Name of the provider.
+          example: Acme Reputation Provider
+        regions:
+          type: array
+          items:
+            $ref: '#/components/schemas/CallerReputationProviderRegion'
+          description: List of regions for the provider.
+      example:
+        id: provider-123
+        enabled: true
+        name: Acme Reputation Provider
+        regions:
+        - id: region-1
+          name: US East
+          type: primary
+          visible: true
+          environmentType: production
+    CallerReputationProviderUnlockRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the reputation provider.
+          example: provider-123
+      required:
+      - id
+      example:
+        id: provider-123
+    CallerReputationProviderStatusEnum:
+      type: string
+      enum:
+      - NOT_CONNECTED
+      - CONNECTING
+      - CONNECTED
+      - ACTIVE
+      - EXPIRED
+      - AUTH_FAILED
+      - PROVIDER_DISABLED
+      description: "Status of the caller reputation provider integration.\n\n * `NOT_CONNECTED` - Provider is not connected.\n * `CONNECTING` - Provider is in the process of connecting.\n * `CONNECTED` - Provider is connected.\n * `ACTIVE` - Provider is active and operational.\n * `EXPIRED` - Provider's session or token has expired.\n * `AUTH_FAILED` - Authentication with the provider failed.\n * `PROVIDER_DISABLED` - Provider is disabled.\n"
+      example: CONNECTED
+    CallerReputationProviderStatus:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the reputation provider.
+          example: provider-123
+        status:
+          $ref: '#/components/schemas/CallerReputationProviderStatusEnum'
+      required:
+      - id
+      - status
+      example:
+        id: provider-123
+        status: CONNECTED
     CallerReputationProviderSettingsUpdate:
       type: object
       properties:
@@ -351,156 +501,6 @@ components:
         clientSecret: secret-789
         callBlockScoreThreshold: '0.7'
         callAllowScoreThreshold: '0.3'
-    CallerReputationProviderSettings:
-      type: object
-      properties:
-        name:
-          type: string
-          description: Name of the reputation provider.
-          example: Acme Reputation Provider
-        id:
-          type: string
-          description: Unique identifier for the reputation provider.
-          example: provider-123
-        clientId:
-          type: string
-          description: Client ID used for integration with the reputation provider.
-          example: client-456
-        enabled:
-          type: boolean
-          description: Indicates if the caller reputation provider service is enabled.
-          example: true
-        callBlockScoreThreshold:
-          type: string
-          description: Score threshold for blocking calls.
-          example: '0.7'
-        callAllowScoreThreshold:
-          type: string
-          description: Score threshold for allowing calls.
-          example: '0.3'
-      example:
-        name: Acme Reputation Provider
-        id: provider-123
-        clientId: client-456
-        enabled: true
-        callBlockScoreThreshold: '0.7'
-        callAllowScoreThreshold: '0.3'
-    CallerReputationProviderRegion:
-      type: object
-      properties:
-        id:
-          type: string
-          description: Unique identifier for the region.
-          example: region-1
-        name:
-          type: string
-          description: Name of the region.
-          example: US East
-        type:
-          type: string
-          description: Type of the region (e.g., primary, secondary).
-          example: primary
-        visible:
-          type: boolean
-          description: Indicates if the region is visible.
-          example: true
-        environmentType:
-          type: string
-          description: Environment type of the region (e.g., production, staging).
-          example: production
-      example:
-        id: region-1
-        name: US East
-        type: primary
-        visible: true
-        environmentType: production
-    CallerReputationProviderStatus:
-      type: object
-      properties:
-        id:
-          type: string
-          description: Unique identifier for the reputation provider.
-          example: provider-123
-        status:
-          $ref: '#/components/schemas/CallerReputationProviderStatusEnum'
-      required:
-      - id
-      - status
-      example:
-        id: provider-123
-        status: CONNECTED
-    CallerReputationProviderUnlockRequest:
-      type: object
-      properties:
-        id:
-          type: string
-          description: Unique identifier for the reputation provider.
-          example: provider-123
-      required:
-      - id
-      example:
-        id: provider-123
-    CallerReputationProviderProvider:
-      type: object
-      properties:
-        id:
-          type: string
-          description: Unique identifier for the provider.
-          example: provider-123
-        enabled:
-          type: boolean
-          description: Indicates if the provider is enabled.
-          example: true
-        name:
-          type: string
-          description: Name of the provider.
-          example: Acme Reputation Provider
-        regions:
-          type: array
-          items:
-            $ref: '#/components/schemas/CallerReputationProviderRegion'
-          description: List of regions for the provider.
-      example:
-        id: provider-123
-        enabled: true
-        name: Acme Reputation Provider
-        regions:
-        - id: region-1
-          name: US East
-          type: primary
-          visible: true
-          environmentType: production
-    CallerReputationProviderProvidersResponse:
-      type: object
-      properties:
-        providers:
-          type: array
-          items:
-            $ref: '#/components/schemas/CallerReputationProviderProvider'
-          description: List of caller reputation providers.
-      example:
-        providers:
-        - id: provider-123
-          enabled: true
-          name: Acme Reputation Provider
-          regions:
-          - id: region-1
-            name: US East
-            type: primary
-            visible: true
-            environmentType: production
-    CallerReputationProviderStatusEnum:
-      type: string
-      enum:
-      - NOT_CONNECTED
-      - CONNECTING
-      - CONNECTED
-      - ACTIVE
-      - EXPIRED
-      - AUTH_FAILED
-      - PROVIDER_DISABLED
-      description: "Status of the caller reputation provider integration.\n\n * `NOT_CONNECTED` - Provider is not connected.\n * `CONNECTING` - Provider is in the process of connecting.\n * `CONNECTED` - Provider is connected.\n * `ACTIVE` - Provider is active and operational.\n * `EXPIRED` - Provider's session or token has expired.\n * `AUTH_FAILED` - Authentication with the provider failed.\n * `PROVIDER_DISABLED` - Provider is disabled.\n"
-      example: CONNECTED
   securitySchemes:
     oauth2:
       flows:

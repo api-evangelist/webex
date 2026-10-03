@@ -1342,32 +1342,13 @@ paths:
       deprecated: false
 components:
   schemas:
-    EntityReferenceInfoDTO:
+    BulkResponseDTO:
       type: object
       properties:
-        description:
-          type: string
-          description: Description about reference info.
-          example: list of referenced entities
-        meta:
-          $ref: '#/components/schemas/MetaDataReferencesPagingInfo'
-        data:
+        items:
           type: array
           items:
-            $ref: '#/components/schemas/EntityInfo'
-    ErrorDetails:
-      description: Details of an error.
-      type: object
-      properties:
-        key:
-          type: string
-          description: An application defined error code.
-          example: '401'
-        message:
-          type: array
-          description: A message providing details about the error.
-          items:
-            $ref: '#/components/schemas/OperationError'
+            $ref: '#/components/schemas/BulkResponseItemDTO'
     EnumSkillValueDTO:
       type: object
       properties:
@@ -1417,6 +1398,46 @@ components:
           example: 123456789
       required:
       - name
+    Link:
+      type: object
+      properties:
+        href:
+          type: string
+        hreflang:
+          type: string
+        title:
+          type: string
+        type:
+          type: string
+        deprecation:
+          type: string
+        profile:
+          type: string
+        name:
+          type: string
+        templated:
+          type: boolean
+    ErrorDetails:
+      description: Details of an error.
+      type: object
+      properties:
+        key:
+          type: string
+          description: An application defined error code.
+          example: '401'
+        message:
+          type: array
+          description: A message providing details about the error.
+          items:
+            $ref: '#/components/schemas/OperationError'
+    OperationError:
+      description: An error message providing details about the operation failure.
+      type: object
+      properties:
+        description:
+          type: string
+          description: A human readable explanation for the occurrence of an error.
+          example: Incorrect Credentials.
     ApiErrorResponse:
       description: Response body for an API error.
       type: object
@@ -1428,23 +1449,14 @@ components:
         error:
           description: An object containing details about the error.
           $ref: '#/components/schemas/ErrorDetails'
-    ResponseEnvelopeSkillDTO:
-      type: object
-      properties:
-        meta:
-          type: object
-          additionalProperties: {}
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/SkillDTO'
-    BulkResponseDTO:
+    BulkRequestDTOSkillDTO:
       type: object
       properties:
         items:
           type: array
+          description: List of items in the bulk request.
           items:
-            $ref: '#/components/schemas/BulkResponseItemDTO'
+            $ref: '#/components/schemas/BulkRequestItemDTOSkillDTO'
     MetaDataReferencesPagingInfo:
       title: MetaDataReferencesPagingInfo
       type: object
@@ -1499,28 +1511,6 @@ components:
           description: Name of current entity
           example: entity_name
       description: Metadata of response for references with paging information
-    Response:
-      type: object
-      properties:
-        code:
-          type: integer
-          format: int32
-        details:
-          type: object
-          additionalProperties:
-            type: object
-        links:
-          type: array
-          items:
-            $ref: '#/components/schemas/Link'
-    BulkRequestDTOSkillDTO:
-      type: object
-      properties:
-        items:
-          type: array
-          description: List of items in the bulk request.
-          items:
-            $ref: '#/components/schemas/BulkRequestItemDTOSkillDTO'
     BulkResponseItemDTO:
       type: object
       properties:
@@ -1565,6 +1555,19 @@ components:
         itemIdentifier: 10
         operationType: CREATE
         status: 400
+    EntityReferenceInfoDTO:
+      type: object
+      properties:
+        description:
+          type: string
+          description: Description about reference info.
+          example: list of referenced entities
+        meta:
+          $ref: '#/components/schemas/MetaDataReferencesPagingInfo'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityInfo'
     EntityInfo:
       type: object
       properties:
@@ -1686,25 +1689,16 @@ components:
       - name
       - serviceLevelThreshold
       - skillType
-    Link:
+    ResponseEnvelopeSkillDTO:
       type: object
       properties:
-        href:
-          type: string
-        hreflang:
-          type: string
-        title:
-          type: string
-        type:
-          type: string
-        deprecation:
-          type: string
-        profile:
-          type: string
-        name:
-          type: string
-        templated:
-          type: boolean
+        meta:
+          type: object
+          additionalProperties: {}
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/SkillDTO'
     BulkRequestItemDTOSkillDTO:
       type: object
       description: List of items in the bulk request.
@@ -1720,14 +1714,20 @@ components:
           type: string
           description: Identifier for action type. Possible values are `SAVE` and `DELETE`.
           example: SAVE
-    OperationError:
-      description: An error message providing details about the operation failure.
+    Response:
       type: object
       properties:
-        description:
-          type: string
-          description: A human readable explanation for the occurrence of an error.
-          example: Incorrect Credentials.
+        code:
+          type: integer
+          format: int32
+        details:
+          type: object
+          additionalProperties:
+            type: object
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'
   securitySchemes:
     oauth2:
       flows:

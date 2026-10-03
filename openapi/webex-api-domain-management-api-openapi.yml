@@ -522,6 +522,68 @@ paths:
       x-operation-id-original: Unclaim Domain
 components:
   schemas:
+    Domain:
+      type: object
+      required:
+      - domain
+      properties:
+        domain:
+          type: string
+          example: cisco.com
+          description: A valid domain name that is already verified by the organization.
+    PostClaimDomain:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Domain'
+          description: A List of valid domain name that is already verified by the organization.
+        forceDomainClaim:
+          type: boolean
+          example: true
+          description: Indicate if the domain should be claimed when there are users outside the organization using the same domain. The default is true.
+        claimDomainOnly:
+          type: boolean
+          description: Indicate to just claim the domain only without searching/marking external users as transient. The default is false.
+    PostDomainVerification:
+      type: object
+      required:
+      - domain
+      properties:
+        domain:
+          type: string
+          example: cisco.com
+          description: The domain name to be verified.
+        claimDomain:
+          type: boolean
+          description: A boolean to specify whether the domain needs to be claimed. The default value is false. If false, the domain will be verified but not claimed.
+        reserveDomain:
+          type: boolean
+          description: 'For FedRAMP only: If true, add the domain to the FedRAMP reserved domain list. The default value is false.'
+    ClaimDomain:
+      type: object
+      required:
+      - domain
+      - url
+      properties:
+        domain:
+          type: string
+          example: cisco.com
+          description: A list of verified domains for a given organizations.
+        url:
+          type: string
+          example: https://identity.webex.com/organizations/bf732c85-68ca-4867-94e4-937286ad2fd4/v1/domains/ZXhhbXBsZTMuY29t
+          description: Use this location URL for the domain resource. The resource component of the URL will be the base64 encoded domain name.
+    UnclaimDomain:
+      type: object
+      required:
+      - domain
+      properties:
+        domain:
+          type: string
+          example: test.dc-01.com
+          description: A claimed domain.
     DomainVerification:
       type: object
       required:
@@ -545,30 +607,50 @@ components:
           type: string
           example: https://identity.webex.com/organization/bf732c85-68ca-4867-94e4-937286ad2fd4/v1/actions/DomainVerification/Verify/invoke
           description: Use this URL for verifying domain ownership and managing the domain lifecycle within the organization.
-    PostClaimDomain:
+    DomainUnverification:
       type: object
+      required:
+      - verifiedDomains
+      - claimedDomains
+      - url
       properties:
-        data:
+        verifiedDomains:
           type: array
           items:
-            $ref: '#/components/schemas/Domain'
-          description: A List of valid domain name that is already verified by the organization.
-        forceDomainClaim:
-          type: boolean
-          example: true
-          description: Indicate if the domain should be claimed when there are users outside the organization using the same domain. The default is true.
-        claimDomainOnly:
-          type: boolean
-          description: Indicate to just claim the domain only without searching/marking external users as transient. The default is false.
-    UnclaimDomain:
+            type: string
+            example: cisco.com,webex.com
+          description: A list of verified domains for a given organization.
+        claimedDomains:
+          type: array
+          items:
+            type: string
+            example: cisco.com,webex.com
+          description: A list of claimed domains for a given organization.
+        url:
+          type: string
+          example: https://identity.webex.com/organization/bf732c85-68ca-4867-94e4-937286ad2fd4/v1/actions/DomainVerification/Unverify/invoke
+          description: Use this URL for unverifying domain ownership and managing the domain lifecycle within the organization.
+    PostDomainUnverification:
       type: object
       required:
       - domain
       properties:
         domain:
           type: string
-          example: test.dc-01.com
-          description: A claimed domain.
+          example: abc.com
+          description: Domain name to be verified.
+        removePending:
+          type: boolean
+          description: Specify whether to remove pending domain. Default is false (backward compatibility). If true, domains will be deleted from pending domain list.
+    PostDomainVerificationToken:
+      type: object
+      required:
+      - domain
+      properties:
+        domain:
+          type: string
+          example: cisco.com
+          description: A valid domain name.
     DomainVerificationToken:
       type: object
       required:
@@ -593,88 +675,6 @@ components:
           type: string
           example: https://identity.webex.com/organization/bf732c85-68ca-4867-94e4-937286ad2fd4/v1/actions/DomainVerification/GetToken/invoke
           description: Use this URL for retrieving an authentication token needed to interact with the Domain Verification API.
-    PostDomainUnverification:
-      type: object
-      required:
-      - domain
-      properties:
-        domain:
-          type: string
-          example: abc.com
-          description: Domain name to be verified.
-        removePending:
-          type: boolean
-          description: Specify whether to remove pending domain. Default is false (backward compatibility). If true, domains will be deleted from pending domain list.
-    Domain:
-      type: object
-      required:
-      - domain
-      properties:
-        domain:
-          type: string
-          example: cisco.com
-          description: A valid domain name that is already verified by the organization.
-    ClaimDomain:
-      type: object
-      required:
-      - domain
-      - url
-      properties:
-        domain:
-          type: string
-          example: cisco.com
-          description: A list of verified domains for a given organizations.
-        url:
-          type: string
-          example: https://identity.webex.com/organizations/bf732c85-68ca-4867-94e4-937286ad2fd4/v1/domains/ZXhhbXBsZTMuY29t
-          description: Use this location URL for the domain resource. The resource component of the URL will be the base64 encoded domain name.
-    PostDomainVerification:
-      type: object
-      required:
-      - domain
-      properties:
-        domain:
-          type: string
-          example: cisco.com
-          description: The domain name to be verified.
-        claimDomain:
-          type: boolean
-          description: A boolean to specify whether the domain needs to be claimed. The default value is false. If false, the domain will be verified but not claimed.
-        reserveDomain:
-          type: boolean
-          description: 'For FedRAMP only: If true, add the domain to the FedRAMP reserved domain list. The default value is false.'
-    DomainUnverification:
-      type: object
-      required:
-      - verifiedDomains
-      - claimedDomains
-      - url
-      properties:
-        verifiedDomains:
-          type: array
-          items:
-            type: string
-            example: cisco.com,webex.com
-          description: A list of verified domains for a given organization.
-        claimedDomains:
-          type: array
-          items:
-            type: string
-            example: cisco.com,webex.com
-          description: A list of claimed domains for a given organization.
-        url:
-          type: string
-          example: https://identity.webex.com/organization/bf732c85-68ca-4867-94e4-937286ad2fd4/v1/actions/DomainVerification/Unverify/invoke
-          description: Use this URL for unverifying domain ownership and managing the domain lifecycle within the organization.
-    PostDomainVerificationToken:
-      type: object
-      required:
-      - domain
-      properties:
-        domain:
-          type: string
-          example: cisco.com
-          description: A valid domain name.
   securitySchemes:
     oauth2:
       flows:

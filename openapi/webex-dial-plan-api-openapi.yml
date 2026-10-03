@@ -1155,19 +1155,13 @@ paths:
       deprecated: true
 components:
   schemas:
-    EntityReferenceInfoDTO:
+    BulkResponseDTO:
       type: object
       properties:
-        description:
-          type: string
-          description: Description about reference info.
-          example: list of referenced entities
-        meta:
-          $ref: '#/components/schemas/MetaDataReferencesPagingInfo'
-        data:
+        items:
           type: array
           items:
-            $ref: '#/components/schemas/EntityInfo'
+            $ref: '#/components/schemas/BulkResponseItemDTO'
     ErrorDetails:
       description: Details of an error.
       type: object
@@ -1181,6 +1175,40 @@ components:
           description: A message providing details about the error.
           items:
             $ref: '#/components/schemas/OperationError'
+    OperationError:
+      description: An error message providing details about the operation failure.
+      type: object
+      properties:
+        description:
+          type: string
+          description: A human readable explanation for the occurrence of an error.
+          example: Incorrect Credentials.
+    BulkRequestItemDTODialPlanDTO:
+      type: object
+      description: List of items in the bulk request.
+      properties:
+        itemIdentifier:
+          type: integer
+          format: int32
+          description: Unique item identifier for a bulk operation.
+          example: 10
+        item:
+          $ref: '#/components/schemas/DialPlanDTO'
+          description: Item.
+        requestAction:
+          type: string
+          description: Identifier for action type. Possible values are `SAVE` and `DELETE`.
+          example: SAVE
+    BulkRequestDTODialPlanDTO:
+      type: object
+      description: Bulk Request Dial Plan schema.
+      properties:
+        items:
+          type: array
+          description: List of items in the bulk request.
+          items:
+            $ref: '#/components/schemas/BulkRequestItemDTODialPlanDTO'
+            description: Item.
     ApiErrorResponse:
       description: Response body for an API error.
       type: object
@@ -1192,23 +1220,6 @@ components:
         error:
           description: An object containing details about the error.
           $ref: '#/components/schemas/ErrorDetails'
-    BulkRequestDTODialPlanDTO:
-      type: object
-      description: Bulk Request Dial Plan schema.
-      properties:
-        items:
-          type: array
-          description: List of items in the bulk request.
-          items:
-            $ref: '#/components/schemas/BulkRequestItemDTODialPlanDTO'
-            description: Item.
-    BulkResponseDTO:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/BulkResponseItemDTO'
     MetaDataReferencesPagingInfo:
       title: MetaDataReferencesPagingInfo
       type: object
@@ -1307,6 +1318,62 @@ components:
         itemIdentifier: 10
         operationType: CREATE
         status: 400
+    EntityReferenceInfoDTO:
+      type: object
+      properties:
+        description:
+          type: string
+          description: Description about reference info.
+          example: list of referenced entities
+        meta:
+          $ref: '#/components/schemas/MetaDataReferencesPagingInfo'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityInfo'
+    EntityInfo:
+      type: object
+      properties:
+        id:
+          type: string
+          description: id
+          example: id.
+        name:
+          type: string
+          description: name
+          example: name.
+        additionalAttributes:
+          type: object
+          additionalProperties:
+            type: string
+            description: A map containing additional attributes of entity where both the key and value are Strings.
+            example: '{"key1":"value1","key2":"value2"}'
+          description: A map containing additional attributes of entity where both the key and value are Strings.
+          example:
+            key1: value1
+            key2: value2
+        createdDate:
+          type: string
+        lastModifiedDate:
+          type: string
+        version:
+          type: integer
+          format: int32
+    ResponseEnvelopeDialPlanDTO:
+      type: object
+      description: Response Envelope Dial Plan schema.
+      properties:
+        meta:
+          type: object
+          additionalProperties:
+            description: Meta additional property.
+          description: Additional properties for Meta.
+        data:
+          type: array
+          description: List of Data.
+          items:
+            $ref: '#/components/schemas/DialPlanDTO'
+            description: Data item.
     DialPlanDTO:
       type: object
       description: Dial Plan schema.
@@ -1381,73 +1448,6 @@ components:
       - active
       - name
       - regularExpression
-    EntityInfo:
-      type: object
-      properties:
-        id:
-          type: string
-          description: id
-          example: id.
-        name:
-          type: string
-          description: name
-          example: name.
-        additionalAttributes:
-          type: object
-          additionalProperties:
-            type: string
-            description: A map containing additional attributes of entity where both the key and value are Strings.
-            example: '{"key1":"value1","key2":"value2"}'
-          description: A map containing additional attributes of entity where both the key and value are Strings.
-          example:
-            key1: value1
-            key2: value2
-        createdDate:
-          type: string
-        lastModifiedDate:
-          type: string
-        version:
-          type: integer
-          format: int32
-    OperationError:
-      description: An error message providing details about the operation failure.
-      type: object
-      properties:
-        description:
-          type: string
-          description: A human readable explanation for the occurrence of an error.
-          example: Incorrect Credentials.
-    BulkRequestItemDTODialPlanDTO:
-      type: object
-      description: List of items in the bulk request.
-      properties:
-        itemIdentifier:
-          type: integer
-          format: int32
-          description: Unique item identifier for a bulk operation.
-          example: 10
-        item:
-          $ref: '#/components/schemas/DialPlanDTO'
-          description: Item.
-        requestAction:
-          type: string
-          description: Identifier for action type. Possible values are `SAVE` and `DELETE`.
-          example: SAVE
-    ResponseEnvelopeDialPlanDTO:
-      type: object
-      description: Response Envelope Dial Plan schema.
-      properties:
-        meta:
-          type: object
-          additionalProperties:
-            description: Meta additional property.
-          description: Additional properties for Meta.
-        data:
-          type: array
-          description: List of Data.
-          items:
-            $ref: '#/components/schemas/DialPlanDTO'
-            description: Data item.
     DialPlanBulkExportDTO:
       type: object
       properties:

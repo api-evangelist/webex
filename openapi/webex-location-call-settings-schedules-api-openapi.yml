@@ -1076,51 +1076,39 @@ paths:
       x-operation-id-original: Create a Schedule Event
 components:
   schemas:
-    RecurYearlyByDateObject:
+    PostScheduleEventObject:
       type: object
       required:
-      - dayOfMonth
-      - month
+      - name
+      - startDate
+      - endDate
       properties:
-        dayOfMonth:
-          type: number
-          example: 1
-          description: Schedule the event on a specific day of the month.
-        month:
+        name:
           type: string
-          enum:
-          - JANUARY
-          - FEBRUARY
-          - MARCH
-          - APRIL
-          - MAY
-          - JUNE
-          - JULY
-          - AUGUST
-          - SEPTEMBER
-          - OCTOBER
-          - NOVEMBER
-          - DECEMBER
-          description: Schedule the event on a specific month of the year.
-    RecurrenceObject:
-      type: object
-      properties:
-        recurForEver:
-          type: boolean
-          description: Flag to indicate if event will recur forever.
-        recurEndDate:
+          example: MondaySchedule
+          description: Name for the event.
+        startDate:
+          type: string
+          example: '2021-11-01'
+          description: Start Date of Event.
+        endDate:
           type: string
           example: '2021-11-30'
-          description: End date of recurrence.
-        recurWeekly:
-          $ref: '#/components/schemas/RecurWeeklyObject'
-          description: Weekly recurrence definition.
-        recurYearlyByDate:
-          $ref: '#/components/schemas/RecurYearlyByDateObject'
-          description: Recurrence definition yearly by date.
-        recurYearlyByDay:
-          $ref: '#/components/schemas/RecurYearlyByDayObject'
-          description: Recurrence definition yearly by day.
+          description: End Date of Event.
+        startTime:
+          type: string
+          example: '12:20'
+          description: Start time of event. Mandatory if the event is not all day.
+        endTime:
+          type: string
+          example: '14:20'
+          description: End time of event. Mandatory if the event is not all day.
+        allDayEnabled:
+          type: boolean
+          description: An indication of whether given event is an all-day event or not. Mandatory if the `startTime` and `endTime` are not defined.
+        recurrence:
+          $ref: '#/components/schemas/RecurrenceObject'
+          description: Recurrence definition.
     RecurYearlyByDayObject:
       type: object
       required:
@@ -1164,7 +1152,59 @@ components:
           - NOVEMBER
           - DECEMBER
           description: Schedule the event on a specific month.
-    PostScheduleEventObject:
+    RecurWeeklyObject:
+      type: object
+      required:
+      - sunday
+      properties:
+        sunday:
+          type: boolean
+          example: true
+          description: Frequency of occurrence in weeks and select the day - Sunday.
+        monday:
+          type: boolean
+          example: true
+          description: Frequency of occurrence in weeks and select the day - Monday.
+        tuesday:
+          type: boolean
+          example: true
+          description: Frequency of occurrence in weeks and select the day - Tuesday.
+        wednesday:
+          type: boolean
+          example: true
+          description: Frequency of occurrence in weeks and select the day - Wednesday.
+        thursday:
+          type: boolean
+          example: true
+          description: Frequency of occurrence in weeks and select the day - Thursday.
+        friday:
+          type: boolean
+          example: true
+          description: Frequency of occurrence in weeks and select the day - Friday.
+        saturday:
+          type: boolean
+          example: true
+          description: Frequency of occurrence in weeks and select the day - Saturday.
+    RecurrenceObject:
+      type: object
+      properties:
+        recurForEver:
+          type: boolean
+          description: Flag to indicate if event will recur forever.
+        recurEndDate:
+          type: string
+          example: '2021-11-30'
+          description: End date of recurrence.
+        recurWeekly:
+          $ref: '#/components/schemas/RecurWeeklyObject'
+          description: Weekly recurrence definition.
+        recurYearlyByDate:
+          $ref: '#/components/schemas/RecurYearlyByDateObject'
+          description: Recurrence definition yearly by date.
+        recurYearlyByDay:
+          $ref: '#/components/schemas/RecurYearlyByDayObject'
+          description: Recurrence definition yearly by day.
+    ModifyScheduleEventObject:
       type: object
       required:
       - name
@@ -1175,44 +1215,6 @@ components:
           type: string
           example: MondaySchedule
           description: Name for the event.
-        startDate:
-          type: string
-          example: '2021-11-01'
-          description: Start Date of Event.
-        endDate:
-          type: string
-          example: '2021-11-30'
-          description: End Date of Event.
-        startTime:
-          type: string
-          example: '12:20'
-          description: Start time of event. Mandatory if the event is not all day.
-        endTime:
-          type: string
-          example: '14:20'
-          description: End time of event. Mandatory if the event is not all day.
-        allDayEnabled:
-          type: boolean
-          description: An indication of whether given event is an all-day event or not. Mandatory if the `startTime` and `endTime` are not defined.
-        recurrence:
-          $ref: '#/components/schemas/RecurrenceObject'
-          description: Recurrence definition.
-    ModifyScheduleEventListObject:
-      type: object
-      required:
-      - name
-      - newName
-      - startDate
-      - endDate
-      properties:
-        name:
-          type: string
-          example: Schedule
-          description: Current name for the event.
-        newName:
-          type: string
-          example: MondaySchedule
-          description: New name for the event.
         startDate:
           type: string
           example: '2021-11-01'
@@ -1235,6 +1237,53 @@ components:
         recurrence:
           $ref: '#/components/schemas/RecurrenceObject'
           description: Recurrence definition.
+    ScheduleEventObject:
+      type: object
+      required:
+      - name
+      - startDate
+      - endDate
+      properties:
+        name:
+          type: string
+          example: MondaySchedule
+          description: Name for the event.
+        startDate:
+          type: string
+          example: '2021-11-01'
+          description: Start date of event.
+        endDate:
+          type: string
+          example: '2021-11-30'
+          description: End date of event.
+        startTime:
+          type: string
+          example: '12:20'
+          description: Start time of event. Mandatory if the event is not all day.
+        endTime:
+          type: string
+          example: '14:20'
+          description: End time of event. Mandatory if the event is not all day.
+        allDayEnabled:
+          type: boolean
+          description: An indication of whether given event is an all-day event or not. Mandatory if the `startTime` and `endTime` are not defined.
+        recurrence:
+          $ref: '#/components/schemas/RecurrenceObject'
+          description: Recurrence definition.
+    ModifyScheduleObject:
+      type: object
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          example: AUTOATTENDANT-BUSINESS-HOURS
+          description: Unique name for the schedule.
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/ModifyScheduleEventListObject'
+          description: List of schedule events.
     GetScheduleObject:
       type: object
       required:
@@ -1320,20 +1369,44 @@ components:
         recurrence:
           $ref: '#/components/schemas/RecurrenceObject'
           description: Recurrence definition.
-    ModifyScheduleObject:
+    ModifyScheduleEventListObject:
       type: object
       required:
       - name
+      - newName
+      - startDate
+      - endDate
       properties:
         name:
           type: string
-          example: AUTOATTENDANT-BUSINESS-HOURS
-          description: Unique name for the schedule.
-        events:
-          type: array
-          items:
-            $ref: '#/components/schemas/ModifyScheduleEventListObject'
-          description: List of schedule events.
+          example: Schedule
+          description: Current name for the event.
+        newName:
+          type: string
+          example: MondaySchedule
+          description: New name for the event.
+        startDate:
+          type: string
+          example: '2021-11-01'
+          description: Start date of event.
+        endDate:
+          type: string
+          example: '2021-11-30'
+          description: End date of event.
+        startTime:
+          type: string
+          example: '12:20'
+          description: Start time of event. Mandatory if the event is not all day.
+        endTime:
+          type: string
+          example: '14:20'
+          description: End time of event. Mandatory if the event is not all day.
+        allDayEnabled:
+          type: boolean
+          description: An indication of whether given event is an all-day event or not. Mandatory if the `startTime` and `endTime` are not defined.
+        recurrence:
+          $ref: '#/components/schemas/RecurrenceObject'
+          description: Recurrence definition.
     ListScheduleObject:
       type: object
       required:
@@ -1365,105 +1438,32 @@ components:
           type: string
           example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzEyMzQ1
           description: ID of the location for the schedule.
-    ScheduleEventObject:
+    RecurYearlyByDateObject:
       type: object
       required:
-      - name
-      - startDate
-      - endDate
+      - dayOfMonth
+      - month
       properties:
-        name:
+        dayOfMonth:
+          type: number
+          example: 1
+          description: Schedule the event on a specific day of the month.
+        month:
           type: string
-          example: MondaySchedule
-          description: Name for the event.
-        startDate:
-          type: string
-          example: '2021-11-01'
-          description: Start date of event.
-        endDate:
-          type: string
-          example: '2021-11-30'
-          description: End date of event.
-        startTime:
-          type: string
-          example: '12:20'
-          description: Start time of event. Mandatory if the event is not all day.
-        endTime:
-          type: string
-          example: '14:20'
-          description: End time of event. Mandatory if the event is not all day.
-        allDayEnabled:
-          type: boolean
-          description: An indication of whether given event is an all-day event or not. Mandatory if the `startTime` and `endTime` are not defined.
-        recurrence:
-          $ref: '#/components/schemas/RecurrenceObject'
-          description: Recurrence definition.
-    ModifyScheduleEventObject:
-      type: object
-      required:
-      - name
-      - startDate
-      - endDate
-      properties:
-        name:
-          type: string
-          example: MondaySchedule
-          description: Name for the event.
-        startDate:
-          type: string
-          example: '2021-11-01'
-          description: Start date of event.
-        endDate:
-          type: string
-          example: '2021-11-30'
-          description: End date of event.
-        startTime:
-          type: string
-          example: '12:20'
-          description: Start time of event. Mandatory if the event is not all day.
-        endTime:
-          type: string
-          example: '14:20'
-          description: End time of event. Mandatory if the event is not all day.
-        allDayEnabled:
-          type: boolean
-          description: An indication of whether given event is an all-day event or not. Mandatory if the `startTime` and `endTime` are not defined.
-        recurrence:
-          $ref: '#/components/schemas/RecurrenceObject'
-          description: Recurrence definition.
-    RecurWeeklyObject:
-      type: object
-      required:
-      - sunday
-      properties:
-        sunday:
-          type: boolean
-          example: true
-          description: Frequency of occurrence in weeks and select the day - Sunday.
-        monday:
-          type: boolean
-          example: true
-          description: Frequency of occurrence in weeks and select the day - Monday.
-        tuesday:
-          type: boolean
-          example: true
-          description: Frequency of occurrence in weeks and select the day - Tuesday.
-        wednesday:
-          type: boolean
-          example: true
-          description: Frequency of occurrence in weeks and select the day - Wednesday.
-        thursday:
-          type: boolean
-          example: true
-          description: Frequency of occurrence in weeks and select the day - Thursday.
-        friday:
-          type: boolean
-          example: true
-          description: Frequency of occurrence in weeks and select the day - Friday.
-        saturday:
-          type: boolean
-          example: true
-          description: Frequency of occurrence in weeks and select the day - Saturday.
+          enum:
+          - JANUARY
+          - FEBRUARY
+          - MARCH
+          - APRIL
+          - MAY
+          - JUNE
+          - JULY
+          - AUGUST
+          - SEPTEMBER
+          - OCTOBER
+          - NOVEMBER
+          - DECEMBER
+          description: Schedule the event on a specific month of the year.
   securitySchemes:
     oauth2:
       flows:
