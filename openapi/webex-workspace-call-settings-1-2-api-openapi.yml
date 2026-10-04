@@ -1,21 +1,11 @@
 openapi: 3.2.0
 info:
-  title: Webex Cloud Calling Workspace Call Settings (1/2) API
+  title: Webex Workspace Call Settings (1/2) API
   version: 1.0.0
-  description: The Webex Cloud Calling APIs enable comprehensive management of cloud-based calling services, including user provisioning, device assignment, call routing, feature configuration, and number management.
-  x-provenance:
-    method: harvested
-    authored_by: Cisco Webex
-    harvested_by: API Evangelist
-    harvested_on: '2026-08-19'
-    first_party: true
-    note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
-    provider_published: true
-  x-evidence:
-  - type: source
-    url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-cloud-calling.json
-  - type: raw
-    url: https://raw.githubusercontent.com/webex/webex-openapi-specs/main/public-spec/webex-cloud-calling.json
+  x-refined-note:
+  - x-evidence differs across the merged source definitions and was not carried
+  - x-provenance differs across the merged source definitions and was not carried
+  description: 'Operations tagged Workspace Call Settings (1/2) across 2 of this provider''s published API definitions: webex-cloud-calling-openapi.json, webex-cloud-calling-openapi.yml. Each path carries the servers of the definition it was published in.'
 tags:
 - name: Workspace Call Settings (1/2)
 paths:
@@ -1567,6 +1557,161 @@ paths:
       x-operation-id-original: Modify Transfer Numbers Settings for a Workspace
 components:
   schemas:
+    CallForwardingBusyGet:
+      type: object
+      required:
+      - enabled
+      - destinationVoicemailEnabled
+      properties:
+        enabled:
+          type: boolean
+          description: '"Busy" call forwarding is enabled or disabled.'
+        destination:
+          type: string
+          example: '+19075552859'
+          description: Destination for "Busy" call forwarding.
+        destinationVoicemailEnabled:
+          type: boolean
+          description: Enabled or disabled state of sending incoming calls to voicemail when the destination is an internal phone number and that number has the voicemail service enabled.
+    RingPattern:
+      type: string
+      enum:
+      - NORMAL
+      - LONG_LONG
+      - SHORT_SHORT_LONG
+      - SHORT_LONG_SHORT
+      description: " * `NORMAL` - Normal incoming ring pattern.\n * `LONG_LONG` - Incoming ring pattern of two long rings.\n * `SHORT_SHORT_LONG` - Incoming ring pattern of two short rings, followed by a short ring.\n * `SHORT_LONG_SHORT` - Incoming ring pattern of a short ring, followed by a long ring, followed by a short ring.\n"
+    InterceptIncomingPatch:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - INTERCEPT_ALL
+          - ALLOW_ALL
+          description: "Incoming calls are intercepted.\n * `INTERCEPT_ALL` - Incoming calls are intercepted.\n * `ALLOW_ALL` - Incoming calls are not intercepted.\n"
+        voicemailEnabled:
+          type: boolean
+          example: true
+          description: Enabled or disabled state of sending incoming calls to voicemail when the destination is an internal phone number and that number has the voicemail service enabled.
+        announcements:
+          $ref: '#/components/schemas/InterceptAnnouncementsPatch'
+          description: Settings related to how incoming calls are handled when the intercept feature is enabled.
+    DirectLineCallerIdNameObjectForPut:
+      type: object
+      properties:
+        selection:
+          $ref: '#/components/schemas/SelectionObject'
+          description: The selection of the direct line caller ID name.
+        customName:
+          type: string
+          example: Hakim Smith
+          description: Sets or clears the custom direct line caller ID name.  To clear the `customName`, the attribute must be set to null or empty string. Required if `selection` is set to `CUSTOM_NAME`.
+      description: Settings for the direct line caller ID name to be shown for this workspace.
+    InterceptPatch:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          example: true
+          description: '`true` if call interception is enabled.'
+        incoming:
+          $ref: '#/components/schemas/InterceptIncomingPatch'
+          description: Settings related to how incoming calls are handled when the intercept feature is enabled.
+        outgoing:
+          $ref: '#/components/schemas/InterceptOutGoingPatch'
+          description: Settings related to how outgoing calls are handled when the intercept feature is enabled.
+    UserOutgoingPermissionGet:
+      type: object
+      required:
+      - useCustomPermissions
+      - callingPermissions
+      properties:
+        useCustomEnabled:
+          type: boolean
+          example: true
+          description: When `true`, indicates that this workspace uses the shared control that applies to all outgoing call settings categories when placing outbound calls.
+        useCustomPermissions:
+          type: boolean
+          example: true
+          description: When `true`, indicates that this workspace uses the specified outgoing calling permissions when placing outbound calls.
+        callingPermissions:
+          type: array
+          items:
+            $ref: '#/components/schemas/CallingPermission'
+          description: Workspace's list of outgoing permissions.
+    UserOutgoingPermissionPatch:
+      type: object
+      properties:
+        useCustomEnabled:
+          type: boolean
+          example: true
+          description: When `true`, indicates that this workspace uses the shared control that applies to all outgoing call settings categories when placing outbound calls.
+        useCustomPermissions:
+          type: boolean
+          example: true
+          description: When `true`, indicates that this workspace uses the specified outgoing calling permissions when placing outbound calls.
+        callingPermissions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ModifyCallingPermission'
+          description: Workspace's list of outgoing permissions.
+    CallForwardingPlaceSettingGet:
+      type: object
+      required:
+      - always
+      - busy
+      - noAnswer
+      properties:
+        always:
+          $ref: '#/components/schemas/CallForwardingAlwaysGet'
+          description: Settings for forwarding all incoming calls to the destination you choose.
+        busy:
+          $ref: '#/components/schemas/CallForwardingBusyGet'
+          description: Settings for forwarding all incoming calls to the destination you chose while the phone is in use or the workspace is busy.
+        noAnswer:
+          $ref: '#/components/schemas/CallForwardingNoAnswerGet'
+          description: Settings for forwarding which only occurs when you are away or not answering your phone.
+    CallWaiting:
+      type: object
+      required:
+      - enabled
+      properties:
+        enabled:
+          type: boolean
+          example: true
+          description: Call Waiting state.
+    PlaceGetNumbersResponse:
+      type: object
+      required:
+      - phoneNumbers
+      properties:
+        distinctiveRingEnabled:
+          type: boolean
+          example: true
+          description: Enables a distinctive ring pattern for the person.
+        phoneNumbers:
+          type: array
+          items:
+            $ref: '#/components/schemas/PhoneNumber'
+          description: List of phone numbers that are assigned to a person.
+    InterceptGet:
+      type: object
+      required:
+      - enabled
+      - incoming
+      - outgoing
+      properties:
+        enabled:
+          type: boolean
+          example: true
+          description: '`true` if call intercept is enabled.'
+        incoming:
+          $ref: '#/components/schemas/InterceptIncomingGet'
+          description: Settings related to how incoming calls are handled when the intercept feature is enabled.
+        outgoing:
+          $ref: '#/components/schemas/InterceptOutGoingGet'
+          description: Settings related to how outgoing calls are handled when the intercept feature is enabled.
     PlaceCallerIdGet:
       type: object
       required:
@@ -1640,6 +1785,52 @@ components:
           type: string
           example: Hakim Smith
           description: The name to be used for dial by name functions.
+    BusinessContinuityPatch:
+      type: object
+      required:
+      - enabled
+      - destinationVoicemailEnabled
+      properties:
+        enabled:
+          type: boolean
+          example: true
+          description: Business Continuity is enabled or disabled.
+        destination:
+          type: string
+          example: '2225551212'
+          description: Destination for Business Continuity.
+        destinationVoicemailEnabled:
+          type: boolean
+          description: Enabled or disabled state of sending incoming calls to the destination number's voicemail if the destination is an internal phone number and that number has the voicemail service enabled.
+    Action:
+      type: string
+      enum:
+      - ADD
+      - DELETE
+      description: " * `ADD` - Add action.\n * `DELETE` - Delete action.\n"
+    ModifyCallForwardingNoAnswer:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          example: true
+          description: '"No Answer" call forwarding is enabled or disabled.'
+        destination:
+          type: string
+          example: '+19075552859'
+          description: Destination for "No Answer" call forwarding. If enabled true, destination is required.
+        numberOfRings:
+          type: number
+          example: 2
+          description: Number of rings before the call will be forwarded if unanswered. `numberOfRings` must be between 2 and 20, inclusive.
+        systemMaxNumberOfRings:
+          type: number
+          example: 20
+          description: Max number of rings before the call will be forwarded if unanswered.
+        destinationVoicemailEnabled:
+          type: boolean
+          example: true
+          description: Enables and disables sending incoming to destination number's voicemail if the destination is an internal phone number and that number has the voicemail service enabled.
     InterceptAnnouncementsPatch:
       type: object
       properties:
@@ -1655,126 +1846,7 @@ components:
         zeroTransfer:
           $ref: '#/components/schemas/InterceptNumberPatch'
           description: Information about how the call is handled if zero (0) is pressed.
-    InterceptPatch:
-      type: object
-      properties:
-        enabled:
-          type: boolean
-          example: true
-          description: '`true` if call interception is enabled.'
-        incoming:
-          $ref: '#/components/schemas/InterceptIncomingPatch'
-          description: Settings related to how incoming calls are handled when the intercept feature is enabled.
-        outgoing:
-          $ref: '#/components/schemas/InterceptOutGoingPatch'
-          description: Settings related to how outgoing calls are handled when the intercept feature is enabled.
-    RingPattern:
-      type: string
-      enum:
-      - NORMAL
-      - LONG_LONG
-      - SHORT_SHORT_LONG
-      - SHORT_LONG_SHORT
-      description: " * `NORMAL` - Normal incoming ring pattern.\n * `LONG_LONG` - Incoming ring pattern of two long rings.\n * `SHORT_SHORT_LONG` - Incoming ring pattern of two short rings, followed by a short ring.\n * `SHORT_LONG_SHORT` - Incoming ring pattern of a short ring, followed by a long ring, followed by a short ring.\n"
-    AuthorizationCode:
-      type: object
-      properties:
-        code:
-          type: string
-          example: '4856'
-          description: Access code.
-        description:
-          type: string
-          example: Marketing's access code
-          description: The description of the access code.
-    CLIDPolicySelection:
-      type: string
-      enum:
-      - DIRECT_LINE
-      - LOCATION_NUMBER
-      - CUSTOM
-      description: " * `DIRECT_LINE` - Outgoing caller ID will show the caller's direct line number\n * `LOCATION_NUMBER` - Outgoing caller ID will show the main number for the location.\n * `CUSTOM` - Outgoing caller ID will show the value from the customNumber field.\n"
-    InterceptNumberPatch:
-      type: object
-      properties:
-        enabled:
-          type: boolean
-          example: true
-          description: If `true`, the caller hears this new number when the call is intercepted.
-        destination:
-          type: string
-          example: '+12225551212'
-          description: New number the caller hears announced.
-    CallForwardingBusyGet:
-      type: object
-      required:
-      - enabled
-      - destinationVoicemailEnabled
-      properties:
-        enabled:
-          type: boolean
-          description: '"Busy" call forwarding is enabled or disabled.'
-        destination:
-          type: string
-          example: '+19075552859'
-          description: Destination for "Busy" call forwarding.
-        destinationVoicemailEnabled:
-          type: boolean
-          description: Enabled or disabled state of sending incoming calls to voicemail when the destination is an internal phone number and that number has the voicemail service enabled.
-    InterceptAnnouncementsGet:
-      type: object
-      required:
-      - greeting
-      - newNumber
-      - zeroTransfer
-      properties:
-        greeting:
-          type: string
-          enum:
-          - CUSTOM
-          - DEFAULT
-          description: "System default message places when incoming calls are intercepted.\n * `CUSTOM` - A custom greeting is played when incoming calls are intercepted.\n * `DEFAULT` - A System default greeting is played when incoming calls are intercepted.\n"
-        filename:
-          type: string
-          example: incoming.wav
-          description: Filename of the custom greeting; this is an empty string if no custom greeting has been uploaded.
-        newNumber:
-          $ref: '#/components/schemas/InterceptNumberGet'
-          description: Information about the new number announcement.
-        zeroTransfer:
-          $ref: '#/components/schemas/InterceptNumberGet'
-          description: Information about how the call is handled if zero (0) is pressed.
-    CallWaiting:
-      type: object
-      required:
-      - enabled
-      properties:
-        enabled:
-          type: boolean
-          example: true
-          description: Call Waiting state.
-    CallForwardingAlwaysGet:
-      type: object
-      required:
-      - enabled
-      - ringReminderEnabled
-      - destinationVoicemailEnabled
-      properties:
-        enabled:
-          type: boolean
-          example: true
-          description: '"Always" call forwarding is enabled or disabled.'
-        destination:
-          type: string
-          example: '2225551212'
-          description: Destination for "Always" call forwarding.
-        ringReminderEnabled:
-          type: boolean
-          description: If `true`, a brief tone will be played on the person's phone when a call has been forwarded.
-        destinationVoicemailEnabled:
-          type: boolean
-          description: Enabled or disabled state of sending incoming calls to voicemail when the destination is an internal phone number and that number has the voicemail service enabled.
-    TransferNumberGet:
+    TransferNumberPatch:
       type: object
       required:
       - useCustomTransferNumbers
@@ -1785,16 +1857,159 @@ components:
           description: When `true`, use custom settings for the transfer numbers category of outbound permissions.
         autoTransferNumber1:
           type: string
-          example: '"+1205553650"'
+          example: '"+1201203650"'
           description: When calling a specific call type, this workspace will be automatically transferred to another number.
         autoTransferNumber2:
           type: string
-          example: '"+1205553651"'
+          example: '"+1201203651"'
           description: When calling a specific call type, this workspace will be automatically transferred to another number.
         autoTransferNumber3:
           type: string
-          example: '"+1205553652"'
+          example: '"+1201203652"'
           description: When calling a specific call type, this workspace will be automatically transferred to another number.
+    UserInboundPermissionGet:
+      type: object
+      required:
+      - useCustomEnabled
+      - externalTransfer
+      - internalCallsEnabled
+      - collectCallsEnabled
+      properties:
+        useCustomEnabled:
+          type: boolean
+          example: true
+          description: Incoming Permission state. If disabled, the default settings are used.
+        externalTransfer:
+          type: string
+          enum:
+          - ALLOW_ALL_EXTERNAL
+          - ALLOW_ONLY_TRANSFERRED_EXTERNAL
+          - BLOCK_ALL_EXTERNAL
+          description: "Call transfer setting.\n * `ALLOW_ALL_EXTERNAL` - All external calls are allowed.\n * `ALLOW_ONLY_TRANSFERRED_EXTERNAL` - Only externally transferred external calls are allowed.\n * `BLOCK_ALL_EXTERNAL` - All external calls are blocked.\n"
+        internalCallsEnabled:
+          type: boolean
+          example: true
+          description: Flag to indicate if workspace can receive internal calls.
+        collectCallsEnabled:
+          type: boolean
+          example: true
+          description: Flag to indicate if workspace can receive collect calls.
+    CLIDPolicySelection:
+      type: string
+      enum:
+      - DIRECT_LINE
+      - LOCATION_NUMBER
+      - CUSTOM
+      description: " * `DIRECT_LINE` - Outgoing caller ID will show the caller's direct line number\n * `LOCATION_NUMBER` - Outgoing caller ID will show the main number for the location.\n * `CUSTOM` - Outgoing caller ID will show the value from the customNumber field.\n"
+    PlaceCallForwardingGet:
+      type: object
+      required:
+      - callForwarding
+      - businessContinuity
+      properties:
+        callForwarding:
+          $ref: '#/components/schemas/CallForwardingPlaceSettingGet'
+          description: Call forwarding settings for a Workspace.
+        businessContinuity:
+          $ref: '#/components/schemas/BusinessContinuityGet'
+          description: Settings for sending calls to a destination of your choice if your phone is not connected to the network for any reason, such as power outage, failed Internet connection, or wiring problem.
+    UserPlaceAuthorizationCodeAdd:
+      type: object
+      required:
+      - code
+      - description
+      properties:
+        code:
+          type: string
+          example: '4856'
+          description: An Access code.
+        description:
+          type: string
+          example: Marketing's access code
+          description: The description of the access code.
+    ModifyCallingPermission:
+      type: object
+      properties:
+        callType:
+          type: string
+          enum:
+          - INTERNAL_CALL
+          - TOLL_FREE
+          - INTERNATIONAL
+          - OPERATOR_ASSISTED
+          - CHARGEABLE_DIRECTORY_ASSISTED
+          - SPECIAL_SERVICES_I
+          - SPECIAL_SERVICES_II
+          - PREMIUM_SERVICES_I
+          - PREMIUM_SERVICES_II
+          - NATIONAL
+          description: "Types for outgoing calls.\n * `INTERNAL_CALL` - Internal call type.\n * `TOLL_FREE` - Toll Free call type.\n * `INTERNATIONAL` - International call type.\n * `OPERATOR_ASSISTED` - Operator Assisted call type.\n * `CHARGEABLE_DIRECTORY_ASSISTED` - Chargeable Directory assisted call type.\n * `SPECIAL_SERVICES_I` - Special Services I call type.\n * `SPECIAL_SERVICES_II` - Special Services II call type.\n * `PREMIUM_SERVICES_I` - Premium Services I call type.\n * `PREMIUM_SERVICES_II` - Premium Services II call type.\n * `NATIONAL` - National call type.\n"
+        action:
+          type: string
+          enum:
+          - ALLOW
+          - BLOCK
+          - AUTH_CODE
+          - TRANSFER_NUMBER_1
+          - TRANSFER_NUMBER_2
+          - TRANSFER_NUMBER_3
+          description: "Permission for call types.\n * `ALLOW` - The call type is allowed.\n * `BLOCK` - The call type is blocked.\n * `AUTH_CODE` - Access Code action for the specified call type.\n * `TRANSFER_NUMBER_1` - Transfer to Auto Transfer Number 1. The answering person can then approve the call and send it through or reject the call.\n * `TRANSFER_NUMBER_2` - Transfer to Auto Transfer Number 2. The answering person can then approve the call and send it through or reject the call.\n * `TRANSFER_NUMBER_3` - Transfer to Auto Transfer Number 3. The answering person can then approve the call and send it through or reject the call.\n"
+        transferEnabled:
+          type: boolean
+          example: true
+          description: If `true`, allows transfer and forwarding for the call type.
+    InterceptNumberGet:
+      type: object
+      required:
+      - enabled
+      properties:
+        enabled:
+          type: boolean
+          example: true
+          description: If `true`, the caller hears this new number when the call is intercepted.
+        destination:
+          type: string
+          example: '+12225551212'
+          description: New number the caller hears announced.
+    CallForwardingPlaceSettingPatch:
+      type: object
+      required:
+      - always
+      properties:
+        always:
+          $ref: '#/components/schemas/CallForwardingAlwaysGet'
+          description: Settings for forwarding all incoming calls to the destination you choose.
+        busy:
+          $ref: '#/components/schemas/CallForwardingBusyGet'
+          description: Settings for forwarding all incoming calls to the destination you chose while the phone is in use or the workspace is busy.
+        noAnswer:
+          $ref: '#/components/schemas/ModifyCallForwardingNoAnswer'
+          description: Settings for forwarding which only occurs when you are away or not answering your phone.
+    PhoneNumber:
+      type: object
+      required:
+      - primary
+      - action
+      - directNumber
+      properties:
+        primary:
+          type: boolean
+          example: true
+          description: If `true` marks the phone number as primary.
+        action:
+          $ref: '#/components/schemas/Action'
+          description: Either 'ADD' to add phone numbers or 'DELETE' to remove phone numbers.
+        directNumber:
+          type: string
+          example: '+12145553567'
+          description: Phone numbers that are assigned.
+        extension:
+          type: string
+          example: '1234'
+          description: Extension that is assigned.
+        ringPattern:
+          $ref: '#/components/schemas/RingPattern'
+          description: Ring Pattern of this number.
     CallingPermission:
       type: object
       required:
@@ -1835,110 +2050,17 @@ components:
           type: boolean
           example: true
           description: Indicates if the restriction is enforced by the system for the corresponding call type and cannot be changed. For example, certain call types (such as `INTERNATIONAL`) may be permanently blocked and this field will be `true` to reflect that the restriction is system-controlled and not editable.
-    PhoneNumber:
+    DirectLineCallerIdNameObject:
       type: object
-      required:
-      - primary
-      - action
-      - directNumber
       properties:
-        primary:
-          type: boolean
-          example: true
-          description: If `true` marks the phone number as primary.
-        action:
-          $ref: '#/components/schemas/Action'
-          description: Either 'ADD' to add phone numbers or 'DELETE' to remove phone numbers.
-        directNumber:
+        selection:
+          $ref: '#/components/schemas/SelectionObject'
+          description: The selection of the direct line caller ID name. Defaults to `DISPLAY_NAME`.
+        customName:
           type: string
-          example: '+12145553567'
-          description: Phone numbers that are assigned.
-        extension:
-          type: string
-          example: '1234'
-          description: Extension that is assigned.
-        ringPattern:
-          $ref: '#/components/schemas/RingPattern'
-          description: Ring Pattern of this number.
-    UserPlaceAuthorizationCodeListPatch:
-      type: object
-      properties:
-        deleteCodes:
-          type: array
-          items:
-            type: string
-          description: Access Codes to delete.
-    InterceptNumberGet:
-      type: object
-      required:
-      - enabled
-      properties:
-        enabled:
-          type: boolean
-          example: true
-          description: If `true`, the caller hears this new number when the call is intercepted.
-        destination:
-          type: string
-          example: '+12225551212'
-          description: New number the caller hears announced.
-    UserOutgoingPermissionGet:
-      type: object
-      required:
-      - useCustomPermissions
-      - callingPermissions
-      properties:
-        useCustomEnabled:
-          type: boolean
-          example: true
-          description: When `true`, indicates that this workspace uses the shared control that applies to all outgoing call settings categories when placing outbound calls.
-        useCustomPermissions:
-          type: boolean
-          example: true
-          description: When `true`, indicates that this workspace uses the specified outgoing calling permissions when placing outbound calls.
-        callingPermissions:
-          type: array
-          items:
-            $ref: '#/components/schemas/CallingPermission'
-          description: Workspace's list of outgoing permissions.
-    PlaceCallForwardingGet:
-      type: object
-      required:
-      - callForwarding
-      - businessContinuity
-      properties:
-        callForwarding:
-          $ref: '#/components/schemas/CallForwardingPlaceSettingGet'
-          description: Call forwarding settings for a Workspace.
-        businessContinuity:
-          $ref: '#/components/schemas/BusinessContinuityGet'
-          description: Settings for sending calls to a destination of your choice if your phone is not connected to the network for any reason, such as power outage, failed Internet connection, or wiring problem.
-    UserInboundPermissionGet:
-      type: object
-      required:
-      - useCustomEnabled
-      - externalTransfer
-      - internalCallsEnabled
-      - collectCallsEnabled
-      properties:
-        useCustomEnabled:
-          type: boolean
-          example: true
-          description: Incoming Permission state. If disabled, the default settings are used.
-        externalTransfer:
-          type: string
-          enum:
-          - ALLOW_ALL_EXTERNAL
-          - ALLOW_ONLY_TRANSFERRED_EXTERNAL
-          - BLOCK_ALL_EXTERNAL
-          description: "Call transfer setting.\n * `ALLOW_ALL_EXTERNAL` - All external calls are allowed.\n * `ALLOW_ONLY_TRANSFERRED_EXTERNAL` - Only externally transferred external calls are allowed.\n * `BLOCK_ALL_EXTERNAL` - All external calls are blocked.\n"
-        internalCallsEnabled:
-          type: boolean
-          example: true
-          description: Flag to indicate if workspace can receive internal calls.
-        collectCallsEnabled:
-          type: boolean
-          example: true
-          description: Flag to indicate if workspace can receive collect calls.
+          example: Hakim Smith
+          description: The custom direct line caller ID name. Required if `selection` is set to `CUSTOM_NAME`.
+      description: Settings for the direct line caller ID name to be shown for this workspace.
     InterceptIncomingGet:
       type: object
       required:
@@ -1958,22 +2080,107 @@ components:
         announcements:
           $ref: '#/components/schemas/InterceptAnnouncementsGet'
           description: Settings related to how incoming calls are handled when the intercept feature is enabled.
-    UserOutgoingPermissionPatch:
+    ModifyCallWaiting:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          example: true
+          description: Call Waiting state.
+    InterceptNumberPatch:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          example: true
+          description: If `true`, the caller hears this new number when the call is intercepted.
+        destination:
+          type: string
+          example: '+12225551212'
+          description: New number the caller hears announced.
+    ModifyPlaceCallForwardSettings:
+      type: object
+      required:
+      - callForwarding
+      - businessContinuity
+      properties:
+        callForwarding:
+          $ref: '#/components/schemas/CallForwardingPlaceSettingPatch'
+          description: Call forwarding settings for a Workspace.
+        businessContinuity:
+          $ref: '#/components/schemas/BusinessContinuityPatch'
+          description: Settings for sending calls to a destination of your choice if your phone is not connected to the network for any reason, such as power outage, failed Internet connection, or wiring problem.
+    InterceptOutGoingGet:
+      type: object
+      required:
+      - type
+      - transferEnabled
+      properties:
+        type:
+          type: string
+          enum:
+          - INTERCEPT_ALL
+          - ALLOW_LOCAL_ONLY
+          description: "All outgoing calls are intercepted.\n * `INTERCEPT_ALL` - Outgoing calls are intercepted.\n * `ALLOW_LOCAL_ONLY` - Only non-local calls are intercepted.\n"
+        transferEnabled:
+          type: boolean
+          example: true
+          description: If `true`, allows transfer and forwarding for the call type.
+        destination:
+          type: string
+          example: '`+12225551212'
+          description: Number to which the outbound call be transferred.
+    UserPlaceAuthorizationCodeListPatch:
+      type: object
+      properties:
+        deleteCodes:
+          type: array
+          items:
+            type: string
+          description: Access Codes to delete.
+    UserInboundPermissionPatch:
       type: object
       properties:
         useCustomEnabled:
           type: boolean
           example: true
-          description: When `true`, indicates that this workspace uses the shared control that applies to all outgoing call settings categories when placing outbound calls.
-        useCustomPermissions:
+          description: Incoming Permission state. If disabled, the default settings are used.
+        externalTransfer:
+          type: string
+          enum:
+          - ALLOW_ALL_EXTERNAL
+          - ALLOW_ONLY_TRANSFERRED_EXTERNAL
+          - BLOCK_ALL_EXTERNAL
+          description: "Call transfer setting.\n * `ALLOW_ALL_EXTERNAL` - All external calls are allowed.\n * `ALLOW_ONLY_TRANSFERRED_EXTERNAL` - Only externally transferred external calls are allowed.\n * `BLOCK_ALL_EXTERNAL` - All external calls are blocked.\n"
+        internalCallsEnabled:
           type: boolean
           example: true
-          description: When `true`, indicates that this workspace uses the specified outgoing calling permissions when placing outbound calls.
-        callingPermissions:
-          type: array
-          items:
-            $ref: '#/components/schemas/ModifyCallingPermission'
-          description: Workspace's list of outgoing permissions.
+          description: Flag to indicate if the workspace can receive internal calls.
+        collectCallsEnabled:
+          type: boolean
+          example: true
+          description: Flag to indicate if the workspace can receive collect calls.
+    CallForwardingAlwaysGet:
+      type: object
+      required:
+      - enabled
+      - ringReminderEnabled
+      - destinationVoicemailEnabled
+      properties:
+        enabled:
+          type: boolean
+          example: true
+          description: '"Always" call forwarding is enabled or disabled.'
+        destination:
+          type: string
+          example: '2225551212'
+          description: Destination for "Always" call forwarding.
+        ringReminderEnabled:
+          type: boolean
+          description: If `true`, a brief tone will be played on the person's phone when a call has been forwarded.
+        destinationVoicemailEnabled:
+          type: boolean
+          description: Enabled or disabled state of sending incoming calls to voicemail when the destination is an internal phone number and that number has the voicemail service enabled.
     CallForwardingNoAnswerGet:
       type: object
       required:
@@ -2002,81 +2209,40 @@ components:
           type: boolean
           example: true
           description: Enables and disables sending incoming to destination number's voicemail if the destination is an internal phone number and that number has the voicemail service enabled.
-    DirectLineCallerIdNameObjectForPut:
+    InterceptOutGoingPatch:
       type: object
       properties:
-        selection:
-          $ref: '#/components/schemas/SelectionObject'
-          description: The selection of the direct line caller ID name.
-        customName:
+        type:
           type: string
-          example: Hakim Smith
-          description: Sets or clears the custom direct line caller ID name.  To clear the `customName`, the attribute must be set to null or empty string. Required if `selection` is set to `CUSTOM_NAME`.
-      description: Settings for the direct line caller ID name to be shown for this workspace.
+          enum:
+          - INTERCEPT_ALL
+          - ALLOW_LOCAL_ONLY
+          description: "All outgoing calls are intercepted.\n * `INTERCEPT_ALL` - Outgoing calls are intercepted.\n * `ALLOW_LOCAL_ONLY` - Only non-local calls are intercepted.\n"
+        transferEnabled:
+          type: boolean
+          example: true
+          description: If `true`, allows transfer and forwarding for the call type.
+        destination:
+          type: string
+          example: '+12225551212'
+          description: Number to which the outbound call be transferred.
     SelectionObject:
       type: string
       enum:
       - CUSTOM_NAME
       - DISPLAY_NAME
       description: " * `DISPLAY_NAME` - When this option is selected, `displayName` is to be shown for this workspace.\n * `CUSTOM_NAME` - When this option is selected, `customName` is to be shown for this workspace."
-    PlaceGetNumbersResponse:
-      type: object
-      required:
-      - phoneNumbers
-      properties:
-        distinctiveRingEnabled:
-          type: boolean
-          example: true
-          description: Enables a distinctive ring pattern for the person.
-        phoneNumbers:
-          type: array
-          items:
-            $ref: '#/components/schemas/PhoneNumber'
-          description: List of phone numbers that are assigned to a person.
-    DirectLineCallerIdNameObject:
+    AuthorizationCode:
       type: object
       properties:
-        selection:
-          $ref: '#/components/schemas/SelectionObject'
-          description: The selection of the direct line caller ID name. Defaults to `DISPLAY_NAME`.
-        customName:
+        code:
           type: string
-          example: Hakim Smith
-          description: The custom direct line caller ID name. Required if `selection` is set to `CUSTOM_NAME`.
-      description: Settings for the direct line caller ID name to be shown for this workspace.
-    BusinessContinuityGet:
-      type: object
-      required:
-      - enabled
-      - destinationVoicemailEnabled
-      properties:
-        enabled:
-          type: boolean
-          example: true
-          description: Business Continuity is enabled or disabled.
-        destination:
+          example: '4856'
+          description: Access code.
+        description:
           type: string
-          example: '2225551212'
-          description: Destination for Business Continuity.
-        destinationVoicemailEnabled:
-          type: boolean
-          description: Enabled or disabled state of sending incoming calls to the destination number's voicemail if the destination is an internal phone number and that number has the voicemail service enabled.
-    CallForwardingPlaceSettingGet:
-      type: object
-      required:
-      - always
-      - busy
-      - noAnswer
-      properties:
-        always:
-          $ref: '#/components/schemas/CallForwardingAlwaysGet'
-          description: Settings for forwarding all incoming calls to the destination you choose.
-        busy:
-          $ref: '#/components/schemas/CallForwardingBusyGet'
-          description: Settings for forwarding all incoming calls to the destination you chose while the phone is in use or the workspace is busy.
-        noAnswer:
-          $ref: '#/components/schemas/CallForwardingNoAnswerGet'
-          description: Settings for forwarding which only occurs when you are away or not answering your phone.
+          example: Marketing's access code
+          description: The description of the access code.
     ModifyPlaceCallerIdGet:
       type: object
       required:
@@ -2127,29 +2293,61 @@ components:
           type: string
           example: Hakim Smith
           description: Sets or clears the name to be used for dial by name functions. To clear the `dialByName`, the attribute must be set to null or empty string. Characters of `%`,  `+`, `\`, `"` and Unicode characters are not allowed.
-    UserInboundPermissionPatch:
+    TransferNumberGet:
       type: object
+      required:
+      - useCustomTransferNumbers
       properties:
-        useCustomEnabled:
+        useCustomTransferNumbers:
           type: boolean
           example: true
-          description: Incoming Permission state. If disabled, the default settings are used.
-        externalTransfer:
+          description: When `true`, use custom settings for the transfer numbers category of outbound permissions.
+        autoTransferNumber1:
+          type: string
+          example: '"+1205553650"'
+          description: When calling a specific call type, this workspace will be automatically transferred to another number.
+        autoTransferNumber2:
+          type: string
+          example: '"+1205553651"'
+          description: When calling a specific call type, this workspace will be automatically transferred to another number.
+        autoTransferNumber3:
+          type: string
+          example: '"+1205553652"'
+          description: When calling a specific call type, this workspace will be automatically transferred to another number.
+    InterceptAnnouncementsGet:
+      type: object
+      required:
+      - greeting
+      - newNumber
+      - zeroTransfer
+      properties:
+        greeting:
           type: string
           enum:
-          - ALLOW_ALL_EXTERNAL
-          - ALLOW_ONLY_TRANSFERRED_EXTERNAL
-          - BLOCK_ALL_EXTERNAL
-          description: "Call transfer setting.\n * `ALLOW_ALL_EXTERNAL` - All external calls are allowed.\n * `ALLOW_ONLY_TRANSFERRED_EXTERNAL` - Only externally transferred external calls are allowed.\n * `BLOCK_ALL_EXTERNAL` - All external calls are blocked.\n"
-        internalCallsEnabled:
-          type: boolean
-          example: true
-          description: Flag to indicate if the workspace can receive internal calls.
-        collectCallsEnabled:
-          type: boolean
-          example: true
-          description: Flag to indicate if the workspace can receive collect calls.
-    BusinessContinuityPatch:
+          - CUSTOM
+          - DEFAULT
+          description: "System default message places when incoming calls are intercepted.\n * `CUSTOM` - A custom greeting is played when incoming calls are intercepted.\n * `DEFAULT` - A System default greeting is played when incoming calls are intercepted.\n"
+        filename:
+          type: string
+          example: incoming.wav
+          description: Filename of the custom greeting; this is an empty string if no custom greeting has been uploaded.
+        newNumber:
+          $ref: '#/components/schemas/InterceptNumberGet'
+          description: Information about the new number announcement.
+        zeroTransfer:
+          $ref: '#/components/schemas/InterceptNumberGet'
+          description: Information about how the call is handled if zero (0) is pressed.
+    UserPlaceAuthorizationCodeListGet:
+      type: object
+      required:
+      - accessCodes
+      properties:
+        accessCodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuthorizationCode'
+          description: The set of activation codes and description.
+    BusinessContinuityGet:
       type: object
       required:
       - enabled
@@ -2166,214 +2364,6 @@ components:
         destinationVoicemailEnabled:
           type: boolean
           description: Enabled or disabled state of sending incoming calls to the destination number's voicemail if the destination is an internal phone number and that number has the voicemail service enabled.
-    InterceptOutGoingGet:
-      type: object
-      required:
-      - type
-      - transferEnabled
-      properties:
-        type:
-          type: string
-          enum:
-          - INTERCEPT_ALL
-          - ALLOW_LOCAL_ONLY
-          description: "All outgoing calls are intercepted.\n * `INTERCEPT_ALL` - Outgoing calls are intercepted.\n * `ALLOW_LOCAL_ONLY` - Only non-local calls are intercepted.\n"
-        transferEnabled:
-          type: boolean
-          example: true
-          description: If `true`, allows transfer and forwarding for the call type.
-        destination:
-          type: string
-          example: '`+12225551212'
-          description: Number to which the outbound call be transferred.
-    InterceptOutGoingPatch:
-      type: object
-      properties:
-        type:
-          type: string
-          enum:
-          - INTERCEPT_ALL
-          - ALLOW_LOCAL_ONLY
-          description: "All outgoing calls are intercepted.\n * `INTERCEPT_ALL` - Outgoing calls are intercepted.\n * `ALLOW_LOCAL_ONLY` - Only non-local calls are intercepted.\n"
-        transferEnabled:
-          type: boolean
-          example: true
-          description: If `true`, allows transfer and forwarding for the call type.
-        destination:
-          type: string
-          example: '+12225551212'
-          description: Number to which the outbound call be transferred.
-    ModifyPlaceCallForwardSettings:
-      type: object
-      required:
-      - callForwarding
-      - businessContinuity
-      properties:
-        callForwarding:
-          $ref: '#/components/schemas/CallForwardingPlaceSettingPatch'
-          description: Call forwarding settings for a Workspace.
-        businessContinuity:
-          $ref: '#/components/schemas/BusinessContinuityPatch'
-          description: Settings for sending calls to a destination of your choice if your phone is not connected to the network for any reason, such as power outage, failed Internet connection, or wiring problem.
-    UserPlaceAuthorizationCodeAdd:
-      type: object
-      required:
-      - code
-      - description
-      properties:
-        code:
-          type: string
-          example: '4856'
-          description: An Access code.
-        description:
-          type: string
-          example: Marketing's access code
-          description: The description of the access code.
-    UserPlaceAuthorizationCodeListGet:
-      type: object
-      required:
-      - accessCodes
-      properties:
-        accessCodes:
-          type: array
-          items:
-            $ref: '#/components/schemas/AuthorizationCode'
-          description: The set of activation codes and description.
-    TransferNumberPatch:
-      type: object
-      required:
-      - useCustomTransferNumbers
-      properties:
-        useCustomTransferNumbers:
-          type: boolean
-          example: true
-          description: When `true`, use custom settings for the transfer numbers category of outbound permissions.
-        autoTransferNumber1:
-          type: string
-          example: '"+1201203650"'
-          description: When calling a specific call type, this workspace will be automatically transferred to another number.
-        autoTransferNumber2:
-          type: string
-          example: '"+1201203651"'
-          description: When calling a specific call type, this workspace will be automatically transferred to another number.
-        autoTransferNumber3:
-          type: string
-          example: '"+1201203652"'
-          description: When calling a specific call type, this workspace will be automatically transferred to another number.
-    InterceptGet:
-      type: object
-      required:
-      - enabled
-      - incoming
-      - outgoing
-      properties:
-        enabled:
-          type: boolean
-          example: true
-          description: '`true` if call intercept is enabled.'
-        incoming:
-          $ref: '#/components/schemas/InterceptIncomingGet'
-          description: Settings related to how incoming calls are handled when the intercept feature is enabled.
-        outgoing:
-          $ref: '#/components/schemas/InterceptOutGoingGet'
-          description: Settings related to how outgoing calls are handled when the intercept feature is enabled.
-    CallForwardingPlaceSettingPatch:
-      type: object
-      required:
-      - always
-      properties:
-        always:
-          $ref: '#/components/schemas/CallForwardingAlwaysGet'
-          description: Settings for forwarding all incoming calls to the destination you choose.
-        busy:
-          $ref: '#/components/schemas/CallForwardingBusyGet'
-          description: Settings for forwarding all incoming calls to the destination you chose while the phone is in use or the workspace is busy.
-        noAnswer:
-          $ref: '#/components/schemas/ModifyCallForwardingNoAnswer'
-          description: Settings for forwarding which only occurs when you are away or not answering your phone.
-    ModifyCallWaiting:
-      type: object
-      properties:
-        enabled:
-          type: boolean
-          example: true
-          description: Call Waiting state.
-    InterceptIncomingPatch:
-      type: object
-      properties:
-        type:
-          type: string
-          enum:
-          - INTERCEPT_ALL
-          - ALLOW_ALL
-          description: "Incoming calls are intercepted.\n * `INTERCEPT_ALL` - Incoming calls are intercepted.\n * `ALLOW_ALL` - Incoming calls are not intercepted.\n"
-        voicemailEnabled:
-          type: boolean
-          example: true
-          description: Enabled or disabled state of sending incoming calls to voicemail when the destination is an internal phone number and that number has the voicemail service enabled.
-        announcements:
-          $ref: '#/components/schemas/InterceptAnnouncementsPatch'
-          description: Settings related to how incoming calls are handled when the intercept feature is enabled.
-    ModifyCallForwardingNoAnswer:
-      type: object
-      properties:
-        enabled:
-          type: boolean
-          example: true
-          description: '"No Answer" call forwarding is enabled or disabled.'
-        destination:
-          type: string
-          example: '+19075552859'
-          description: Destination for "No Answer" call forwarding. If enabled true, destination is required.
-        numberOfRings:
-          type: number
-          example: 2
-          description: Number of rings before the call will be forwarded if unanswered. `numberOfRings` must be between 2 and 20, inclusive.
-        systemMaxNumberOfRings:
-          type: number
-          example: 20
-          description: Max number of rings before the call will be forwarded if unanswered.
-        destinationVoicemailEnabled:
-          type: boolean
-          example: true
-          description: Enables and disables sending incoming to destination number's voicemail if the destination is an internal phone number and that number has the voicemail service enabled.
-    ModifyCallingPermission:
-      type: object
-      properties:
-        callType:
-          type: string
-          enum:
-          - INTERNAL_CALL
-          - TOLL_FREE
-          - INTERNATIONAL
-          - OPERATOR_ASSISTED
-          - CHARGEABLE_DIRECTORY_ASSISTED
-          - SPECIAL_SERVICES_I
-          - SPECIAL_SERVICES_II
-          - PREMIUM_SERVICES_I
-          - PREMIUM_SERVICES_II
-          - NATIONAL
-          description: "Types for outgoing calls.\n * `INTERNAL_CALL` - Internal call type.\n * `TOLL_FREE` - Toll Free call type.\n * `INTERNATIONAL` - International call type.\n * `OPERATOR_ASSISTED` - Operator Assisted call type.\n * `CHARGEABLE_DIRECTORY_ASSISTED` - Chargeable Directory assisted call type.\n * `SPECIAL_SERVICES_I` - Special Services I call type.\n * `SPECIAL_SERVICES_II` - Special Services II call type.\n * `PREMIUM_SERVICES_I` - Premium Services I call type.\n * `PREMIUM_SERVICES_II` - Premium Services II call type.\n * `NATIONAL` - National call type.\n"
-        action:
-          type: string
-          enum:
-          - ALLOW
-          - BLOCK
-          - AUTH_CODE
-          - TRANSFER_NUMBER_1
-          - TRANSFER_NUMBER_2
-          - TRANSFER_NUMBER_3
-          description: "Permission for call types.\n * `ALLOW` - The call type is allowed.\n * `BLOCK` - The call type is blocked.\n * `AUTH_CODE` - Access Code action for the specified call type.\n * `TRANSFER_NUMBER_1` - Transfer to Auto Transfer Number 1. The answering person can then approve the call and send it through or reject the call.\n * `TRANSFER_NUMBER_2` - Transfer to Auto Transfer Number 2. The answering person can then approve the call and send it through or reject the call.\n * `TRANSFER_NUMBER_3` - Transfer to Auto Transfer Number 3. The answering person can then approve the call and send it through or reject the call.\n"
-        transferEnabled:
-          type: boolean
-          example: true
-          description: If `true`, allows transfer and forwarding for the call type.
-    Action:
-      type: string
-      enum:
-      - ADD
-      - DELETE
-      description: " * `ADD` - Add action.\n * `DELETE` - Delete action.\n"
   securitySchemes:
     oauth2:
       flows:
@@ -2392,3 +2382,6 @@ components:
       description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
       scheme: bearer
       bearerFormat: JWT
+x-refined-from:
+- webex-cloud-calling-openapi.json
+- webex-cloud-calling-openapi.yml

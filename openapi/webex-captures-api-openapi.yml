@@ -117,6 +117,42 @@ paths:
           description: An Unexpected Error Occurred
 components:
   schemas:
+    RecordingMetaData:
+      type: object
+      properties:
+        orgId:
+          type: string
+          description: Organization ID used for this operation.
+          format: uuid
+          example: f1b130da-0cad-4d8b-91dd-7a3085440e89
+        urlExpiration:
+          type: integer
+          description: Number of minutes (from now) when the signed url expires.
+          format: int32
+          example: 30
+    MultipleInteractionsRecording:
+      required:
+      - recording
+      - transcription
+      type: object
+      properties:
+        taskId:
+          type: string
+          description: The ID of the task.
+          format: uuid
+          example: e890a591-63f0-4984-a8f2-00e631368fb4
+        recording:
+          type: array
+          items:
+            $ref: '#/components/schemas/RecordingMulti'
+        transcription:
+          type: array
+          items:
+            $ref: '#/components/schemas/TranscriptMulti'
+        screenRecordings:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScreenRecordingMulti'
     TranscriptMulti:
       type: object
       properties:
@@ -152,6 +188,42 @@ components:
           type: string
           description: Create time of capture(epoch timestamp)
           example: '1617373126000'
+    ScreenRecordingAttributes:
+      required:
+      - fileName
+      - filePath
+      - startTime
+      - stopTime
+      - agentId
+      - screenId
+      type: object
+      properties:
+        fileName:
+          type: string
+          description: The file name of the screen recording.
+          example: 3305322a-630c-4791-a068-4a751529c4d7-segment.wav
+        filePath:
+          type: string
+          description: Screen recording download URL.
+          example: https://cjp-ccone-intgus1-media-storage-recording.s3.amazonaws.com/470c589d-ce3f-4afe-adec-575c73c0e472
+        startTime:
+          type: integer
+          description: Begin time of screen recording (epoch timestamp)
+          format: int64
+          example: 1617373126000
+        stopTime:
+          type: integer
+          description: End time of screen recording (epoch timestamp).
+          format: int64
+          example: 1627373126000
+        agentId:
+          type: string
+          description: The ID of the agent whose screen was recorded.
+          example: e890a591-63f0-4984-a8f2-00e631368fb4
+        screenId:
+          type: string
+          description: The ID of the screen being recorded.
+          example: 2e8f4a19-7b35-4c6d-93a1-d5f0b7c2e855
     RecordingAttributes:
       type: object
       properties:
@@ -197,6 +269,52 @@ components:
           type: boolean
           description: Applicable only to virtual agent recordings. Flag; (true) indicates the virtual agent recording may contain sensitive information, (false) otherwise.
           example: true
+    RecordingMulti:
+      required:
+      - attributes
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the recording.
+          example: f1b130da-0cad-4d8b-91dd-7a3085440e89
+        segment:
+          type: boolean
+          description: Flag; Indicates if this is the entire recording or only a segment of main recording. This flag will be always false for consult callType.
+          example: true
+        attributes:
+          $ref: '#/components/schemas/RecordingAttributes'
+    DownloadMultipleInteractionsResponse:
+      required:
+      - data
+      - meta
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/RecordingMetaData'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/MultipleInteractionsRecording'
+    ScreenRecordingMulti:
+      required:
+      - id
+      - attributes
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the screen recording.
+          example: f13b9c64-0d72-4e8a-b5f1-9a6d3c2e7b15
+        attributes:
+          $ref: '#/components/schemas/ScreenRecordingAttributes'
+    RecordingBodyParams:
+      required:
+      - query
+      type: object
+      properties:
+        query:
+          $ref: '#/components/schemas/RecordingQuery'
     RecordingQuery:
       required:
       - taskIds
@@ -238,124 +356,6 @@ components:
           type: boolean
           description: Flag; (true) returns all available digital transcript artifacts for each requested task, including both legacy and schema-versioned digital transcript artifacts when both exist. (false) or omitted returns the default Captures behavior. This field applies only to digital transcript artifacts and does not change recording or voice transcript retrieval.
           example: true
-    ScreenRecordingAttributes:
-      required:
-      - fileName
-      - filePath
-      - startTime
-      - stopTime
-      - agentId
-      - screenId
-      type: object
-      properties:
-        fileName:
-          type: string
-          description: The file name of the screen recording.
-          example: 3305322a-630c-4791-a068-4a751529c4d7-segment.wav
-        filePath:
-          type: string
-          description: Screen recording download URL.
-          example: https://cjp-ccone-intgus1-media-storage-recording.s3.amazonaws.com/470c589d-ce3f-4afe-adec-575c73c0e472
-        startTime:
-          type: integer
-          description: Begin time of screen recording (epoch timestamp)
-          format: int64
-          example: 1617373126000
-        stopTime:
-          type: integer
-          description: End time of screen recording (epoch timestamp).
-          format: int64
-          example: 1627373126000
-        agentId:
-          type: string
-          description: The ID of the agent whose screen was recorded.
-          example: e890a591-63f0-4984-a8f2-00e631368fb4
-        screenId:
-          type: string
-          description: The ID of the screen being recorded.
-          example: 2e8f4a19-7b35-4c6d-93a1-d5f0b7c2e855
-    RecordingMulti:
-      required:
-      - attributes
-      type: object
-      properties:
-        id:
-          type: string
-          description: The ID of the recording.
-          example: f1b130da-0cad-4d8b-91dd-7a3085440e89
-        segment:
-          type: boolean
-          description: Flag; Indicates if this is the entire recording or only a segment of main recording. This flag will be always false for consult callType.
-          example: true
-        attributes:
-          $ref: '#/components/schemas/RecordingAttributes'
-    MultipleInteractionsRecording:
-      required:
-      - recording
-      - transcription
-      type: object
-      properties:
-        taskId:
-          type: string
-          description: The ID of the task.
-          format: uuid
-          example: e890a591-63f0-4984-a8f2-00e631368fb4
-        recording:
-          type: array
-          items:
-            $ref: '#/components/schemas/RecordingMulti'
-        transcription:
-          type: array
-          items:
-            $ref: '#/components/schemas/TranscriptMulti'
-        screenRecordings:
-          type: array
-          items:
-            $ref: '#/components/schemas/ScreenRecordingMulti'
-    DownloadMultipleInteractionsResponse:
-      required:
-      - data
-      - meta
-      type: object
-      properties:
-        meta:
-          $ref: '#/components/schemas/RecordingMetaData'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/MultipleInteractionsRecording'
-    RecordingBodyParams:
-      required:
-      - query
-      type: object
-      properties:
-        query:
-          $ref: '#/components/schemas/RecordingQuery'
-    ScreenRecordingMulti:
-      required:
-      - id
-      - attributes
-      type: object
-      properties:
-        id:
-          type: string
-          description: The ID of the screen recording.
-          example: f13b9c64-0d72-4e8a-b5f1-9a6d3c2e7b15
-        attributes:
-          $ref: '#/components/schemas/ScreenRecordingAttributes'
-    RecordingMetaData:
-      type: object
-      properties:
-        orgId:
-          type: string
-          description: Organization ID used for this operation.
-          format: uuid
-          example: f1b130da-0cad-4d8b-91dd-7a3085440e89
-        urlExpiration:
-          type: integer
-          description: Number of minutes (from now) when the signed url expires.
-          format: int32
-          example: 30
   securitySchemes:
     oauth2:
       flows:

@@ -497,6 +497,65 @@ paths:
       deprecated: true
 components:
   schemas:
+    ErrorDetails:
+      description: Details of an error.
+      type: object
+      properties:
+        key:
+          type: string
+          description: An application defined error code.
+          example: '401'
+        message:
+          type: array
+          description: A message providing details about the error.
+          items:
+            $ref: '#/components/schemas/OperationError'
+    SubscriptionRequest:
+      required:
+      - destinationUrl
+      - eventTypes
+      - name
+      type: object
+      properties:
+        name:
+          maxLength: 64
+          minLength: 4
+          type: string
+          description: Client-defined string naming the subscription.
+          example: My Integration's Subscription
+        description:
+          maxLength: 1024
+          minLength: 0
+          type: string
+          description: Client-defined string describing the subscription.
+          example: The subscription my integration uses to synchronize with WxCC
+        eventTypes:
+          maxItems: 32
+          minItems: 1
+          type: array
+          description: Types of events to which the subscription will listen.
+          example:
+          - agent:login
+          - agent:logout
+          items:
+            type: string
+        destinationUrl:
+          pattern: ^(https?)://.*$
+          type: string
+          description: URL to which webhooks will be posted. Must be HTTPS on an IANA-listed top-level domain name (e.g. .com) with a path (at least /). No query parameters, userinfo, non-443 ports, or fragments allowed. We do not treat this field as sensitive data, so do not use secrets in this URL such as tokens or API keys.
+          format: uri
+          example: https://www.cisco.com/
+        secret:
+          maxLength: 256
+          minLength: 32
+          type: string
+          description: Secret string used to sign payloads sent to the destination URL.
+          example: my-32-plus-character-long-secret
+        orgId:
+          type: string
+          description: Organization ID to be used for this operation. If unspecified, the Organization ID is inferred from the token. The token must have permission to interact with the organization.
+          format: uuid
+          example: 97cdbf45-ebe2-4687-8341-44d5c7abf101
     ActionRequest:
       type: object
       properties:
@@ -520,19 +579,6 @@ components:
           type: object
           description: The Epoch timestamp indicating the precise time at which the action was executed.
           example: 1617536244000
-    ErrorDetails:
-      description: Details of an error.
-      type: object
-      properties:
-        key:
-          type: string
-          description: An application defined error code.
-          example: '401'
-        message:
-          type: array
-          description: A message providing details about the error.
-          items:
-            $ref: '#/components/schemas/OperationError'
     ApiErrorResponse:
       description: Response body for an API error.
       type: object
@@ -544,48 +590,6 @@ components:
         error:
           description: An object containing details about the error.
           $ref: '#/components/schemas/ErrorDetails'
-    MetaDataWithPagingInfo:
-      type: object
-      description: Metadata of response with paging information
-      properties:
-        orgid:
-          type: string
-          format: uuid
-          description: Organization ID.
-          example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
-          maxLength: 36
-          minLength: 32
-          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
-        page:
-          type: integer
-          format: int32
-          description: Current page number.
-          example: 1
-        pageSize:
-          type: integer
-          format: int32
-          description: Page size for current data set.
-          example: 100
-        totalPages:
-          type: integer
-          format: int32
-          description: Number of pages.
-          example: 1
-        totalRecords:
-          type: integer
-          format: int32
-          description: Total number of items.
-          example: 1000
-        links:
-          type: object
-          description: Map of pagination links with `self`, `next`, `prev`, `last`, and `first`.
-          example:
-            next: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=2&pageSize=10
-            last: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=3&pageSize=10
-            prev: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=0&pageSize=10
-            self: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=1&pageSize=10
-            first: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=0&pageSize=10
-      title: MetaDataWithPagingInfo
     AgentBurnoutDTO:
       type: object
       properties:
@@ -708,6 +712,14 @@ components:
           description: Email address of the user who updated the subscription most recently.
           format: email
           example: example@example.com
+    OperationError:
+      description: An error message providing details about the operation failure.
+      type: object
+      properties:
+        description:
+          type: string
+          description: A human readable explanation for the occurrence of an error.
+          example: Incorrect Credentials.
     ActionResponse:
       type: object
       properties:
@@ -753,60 +765,48 @@ components:
           type: string
           description: The unique tracking ID for this request.
           example: fb53f6d1-5535-4ac8-b081-53834e17d6f5
-    SubscriptionRequest:
-      required:
-      - destinationUrl
-      - eventTypes
-      - name
+    MetaDataWithPagingInfo:
       type: object
+      description: Metadata of response with paging information
       properties:
-        name:
-          maxLength: 64
-          minLength: 4
+        orgid:
           type: string
-          description: Client-defined string naming the subscription.
-          example: My Integration's Subscription
-        description:
-          maxLength: 1024
-          minLength: 0
-          type: string
-          description: Client-defined string describing the subscription.
-          example: The subscription my integration uses to synchronize with WxCC
-        eventTypes:
-          maxItems: 32
-          minItems: 1
-          type: array
-          description: Types of events to which the subscription will listen.
-          example:
-          - agent:login
-          - agent:logout
-          items:
-            type: string
-        destinationUrl:
-          pattern: ^(https?)://.*$
-          type: string
-          description: URL to which webhooks will be posted. Must be HTTPS on an IANA-listed top-level domain name (e.g. .com) with a path (at least /). No query parameters, userinfo, non-443 ports, or fragments allowed. We do not treat this field as sensitive data, so do not use secrets in this URL such as tokens or API keys.
-          format: uri
-          example: https://www.cisco.com/
-        secret:
-          maxLength: 256
-          minLength: 32
-          type: string
-          description: Secret string used to sign payloads sent to the destination URL.
-          example: my-32-plus-character-long-secret
-        orgId:
-          type: string
-          description: Organization ID to be used for this operation. If unspecified, the Organization ID is inferred from the token. The token must have permission to interact with the organization.
           format: uuid
-          example: 97cdbf45-ebe2-4687-8341-44d5c7abf101
-    OperationError:
-      description: An error message providing details about the operation failure.
-      type: object
-      properties:
-        description:
-          type: string
-          description: A human readable explanation for the occurrence of an error.
-          example: Incorrect Credentials.
+          description: Organization ID.
+          example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+          maxLength: 36
+          minLength: 32
+          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
+        page:
+          type: integer
+          format: int32
+          description: Current page number.
+          example: 1
+        pageSize:
+          type: integer
+          format: int32
+          description: Page size for current data set.
+          example: 100
+        totalPages:
+          type: integer
+          format: int32
+          description: Number of pages.
+          example: 1
+        totalRecords:
+          type: integer
+          format: int32
+          description: Total number of items.
+          example: 1000
+        links:
+          type: object
+          description: Map of pagination links with `self`, `next`, `prev`, `last`, and `first`.
+          example:
+            next: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=2&pageSize=10
+            last: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=3&pageSize=10
+            prev: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=0&pageSize=10
+            self: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=1&pageSize=10
+            first: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=0&pageSize=10
+      title: MetaDataWithPagingInfo
   securitySchemes:
     oauth2:
       flows:

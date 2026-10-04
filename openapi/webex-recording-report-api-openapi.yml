@@ -4,15 +4,8 @@ info:
   version: 1.0.0
   x-refined-note:
   - x-evidence differs across the merged source definitions and was not carried
-  x-provenance:
-    method: harvested
-    authored_by: Cisco Webex
-    harvested_by: API Evangelist
-    harvested_on: '2026-08-19'
-    first_party: true
-    note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
-    provider_published: true
-  description: 'Operations tagged Recording Report across 3 of this provider''s published API definitions: webex-admin-openapi.json, webex-cloud-calling-openapi.json, webex-meeting-openapi.json. Each path carries the servers of the definition it was published in.'
+  - x-provenance differs across the merged source definitions and was not carried
+  description: 'Operations tagged Recording Report across 4 of this provider''s published API definitions: webex-admin-openapi.json, webex-cloud-calling-openapi.json, webex-meeting-openapi.json, webex-cloud-calling-openapi.yml. Each path carries the servers of the definition it was published in.'
 tags:
 - name: Recording Report
 paths:
@@ -571,37 +564,6 @@ paths:
       x-operation-id-original: Get Meeting Archive Details
 components:
   schemas:
-    RecordingReportObject:
-      type: object
-      properties:
-        recordingId:
-          type: string
-          example: 4f914b1dfe3c4d11a61730f18c0f5387
-          description: A unique identifier for the recording.
-        topic:
-          type: string
-          example: John's Meeting
-          description: The recording's topic.
-        name:
-          type: string
-          example: John Andersen
-          description: The name of the person who accessed the recording.
-        email:
-          type: string
-          example: john.andersen@example.com
-          description: The email address of the person who accessed the recording.
-        accessTime:
-          type: string
-          example: '2019-01-27T17:40:20Z'
-          description: The date and time the recording was accessed in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant format.
-        viewed:
-          type: boolean
-          example: true
-          description: Whether or not the recording was viewed by the person.
-        downloaded:
-          type: boolean
-          example: true
-          description: Whether or not the recording was downloaded by the person.
     MeetingRecordingArchivePollAnswerSummary:
       type: object
       properties:
@@ -622,29 +584,129 @@ components:
           items:
             $ref: '#/components/schemas/MeetingRecordingArchiveUser'
           description: The voters among users.
-    MeetingRecordingArchiveChat:
+    MeetingRecordingArchiveQA:
       type: object
       properties:
+        priority:
+          type: string
+          example: NA
+          description: The priority of the Q and A.
         type:
           type: string
           example: private
-          description: Whether the type of the chat is private, public or group. Private chat is for the 1:1 chat. Public chat is for the message which is sent to all the people in the meeting. Group chat is for the message which is sent to a small group of people, like a message to the "host and presenter".
-        senderName:
+          description: Whether the type of the Q and A is private, public, or group. Private Q and A is for the 1:1 chat. Public Q and A are for the message which is sent to all the people in the meeting. Group Q and A are for the message which is sent to a small group of people, like a Q and A to "host and presenter".
+        displayName:
           type: string
-          example: John Andersen
-          description: Display name for the sender of the chat snippet.
-        chatTime:
+          example: john.andersen@example.com`
+          description: The email of the user who asked the question.
+        questionTime:
           type: string
           example: '2021-07-06T09:22:34Z'
-          description: Chat time for the chat snippet in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant format.
+          description: The date and time the question was created in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant format.
         target:
           type: string
           example: All Participants
-          description: Information of the receivers of the chat snippet.
-        text:
+          description: Information of the user who asked the question.
+        question:
           type: string
-          example: It's nice to meet you
-          description: The text of the chat snippet.
+          example: Are you ok?
+          description: The question that was asked.
+        answers:
+          type: array
+          items:
+            $ref: '#/components/schemas/MeetingRecordingArchiveQAAnswer'
+          description: Question's answers.
+    MeetingRecordingArchiveSystemInfo:
+      type: object
+      properties:
+        displayName:
+          type: string
+          example: John Andersen
+          description: The name of the person who accessed the meeting archive.
+        catalogs:
+          type: array
+          items:
+            $ref: '#/components/schemas/SystemInfoCatalog'
+          description: The catalogs of system information.
+    SystemInfoCatalog:
+      type: object
+      properties:
+        systemSummary:
+          type: string
+          example: 'User Name: John{*}Operating System: Mac OS X 12.6{*}User Home Directory: /Users/John{*}Date and Time: Tue Oct 18 10:38:17 CST 2022{*}'
+          description: System summary.
+        browser:
+          type: string
+          example: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36
+          description: The browser user agent of the person who acted.
+        hardware:
+          type: string
+          example: mac book
+          description: The type of hardware that the user used to attend the meeting.
+        installedSoftware:
+          type: string
+          example: webex
+          description: The software that the user used to attend the meeting.
+        runningSoftware:
+          type: string
+          example: webex
+          description: The software the user used that is running.
+        startupPrograms:
+          type: string
+          example: Macintosh HD
+          description: Startup Programs.
+        storage:
+          type: string
+          example: 16 GB 2667 MHz DDR4
+          description: The storage information of the user's device.
+        video:
+          type: string
+          example: AirPlay
+          description: The video of the user's device.
+        network:
+          type: string
+          example: Wi-Fi
+          description: The network of the user's device.
+        operatingSystem:
+          type: string
+          example: Mac OS X 10.0
+          description: The operating system of the user's device.
+        environmentVariables:
+          type: string
+          example: /usr/local/bin:$PATH
+          description: The environment variables of the user's device.
+        processes:
+          type: string
+          example: 2.6 GHz 6-Core Intel Core i7
+          description: The processes of the user's device.
+        logicalDrives:
+          type: string
+          example: webapp
+          description: The logical drives of the user's device.
+        devices:
+          type: string
+          example: device1
+          description: The device of the user.
+        services:
+          type: string
+          example: Firewall
+          description: The service of the user's device.
+        systemDrivers:
+          type: string
+          example: 32drivers
+          description: The system driver of the user's device.
+        signedDrivers:
+          type: string
+          example: 32drivers
+          description: The sign driver system of the user's device.
+        eventViewer:
+          type: string
+          example: Screen Sharing
+          description: The event viewer of the user's device.
+        bios:
+          type: string
+          example: AwardBIOS
+          description: The basic input and output system.
     RecordingArchiveReportObject:
       type: object
       properties:
@@ -732,64 +794,29 @@ components:
           type: string
           example: Yes, I am.
           description: The text of the answer.
-    MeetingRecordingArchiveParticipant:
+    MeetingRecordingArchiveChat:
       type: object
       properties:
-        correlationId:
-          type: number
-          example: 28208023
-          description: An internal ID that is associated with each join.
-        displayName:
+        type:
+          type: string
+          example: private
+          description: Whether the type of the chat is private, public or group. Private chat is for the 1:1 chat. Public chat is for the message which is sent to all the people in the meeting. Group chat is for the message which is sent to a small group of people, like a message to the "host and presenter".
+        senderName:
           type: string
           example: John Andersen
-          description: Display name for the meeting participant.
-        joinedTime:
+          description: Display name for the sender of the chat snippet.
+        chatTime:
           type: string
-          example: '2022-07-20T07:01:31Z'
-          description: The time the participant joined the meeting.
-        leftTime:
+          example: '2021-07-06T09:22:34Z'
+          description: Chat time for the chat snippet in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant format.
+        target:
           type: string
-          example: '2022-07-20T07:01:31Z'
-          description: The time the participant left the meeting.
-        email:
+          example: All Participants
+          description: Information of the receivers of the chat snippet.
+        text:
           type: string
-          example: john.andersen@example.com
-          description: Email address for the meeting participant.
-    RecordingAchriveSummaryObject:
-      type: object
-      properties:
-        archiveId:
-          type: string
-          example: 7d7ea5f42b921eace05386ca24ad730e_R_1000634462
-          description: A unique identifier for the meeting archive summary.
-        serviceType:
-          type: string
-          enum:
-          - MeetingCenter
-          - EventCenter
-          - TrainingCenter
-          - SupportCenter
-          description: Recording achrive summary's service-type.
-        title:
-          type: string
-          example: John's Meeting
-          description: Meeting title.
-        createTime:
-          type: string
-          example: '2019-01-27T17:43:24Z'
-          description: The date and time in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant format that when the archive was created by the system.
-    MeetingRecordingArchiveSystemInfo:
-      type: object
-      properties:
-        displayName:
-          type: string
-          example: John Andersen
-          description: The name of the person who accessed the meeting archive.
-        catalogs:
-          type: array
-          items:
-            $ref: '#/components/schemas/SystemInfoCatalog'
-          description: The catalogs of system information.
+          example: It's nice to meet you
+          description: The text of the chat snippet.
     RecordingReportSummaryObject:
       type: object
       properties:
@@ -821,6 +848,129 @@ components:
           type: number
           example: 20
           description: The number of times the recording was downloaded.
+    RecordingAchriveSummaryObject:
+      type: object
+      properties:
+        archiveId:
+          type: string
+          example: 7d7ea5f42b921eace05386ca24ad730e_R_1000634462
+          description: A unique identifier for the meeting archive summary.
+        serviceType:
+          type: string
+          enum:
+          - MeetingCenter
+          - EventCenter
+          - TrainingCenter
+          - SupportCenter
+          description: Recording achrive summary's service-type.
+        title:
+          type: string
+          example: John's Meeting
+          description: Meeting title.
+        createTime:
+          type: string
+          example: '2019-01-27T17:43:24Z'
+          description: The date and time in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant format that when the archive was created by the system.
+    MeetingRecordingArchiveUser:
+      type: object
+      properties:
+        correlationId:
+          type: number
+          example: 28208023
+          description: An internal ID that is associated with each join.
+        displayName:
+          type: string
+          example: John Andersen
+          description: Display name for the meeting participant.
+        email:
+          type: string
+          example: john.andersen@example.com
+          description: Email address for the meeting participant.
+    MeetingRecordingArchivePollRespondent:
+      type: object
+      properties:
+        correlationId:
+          type: number
+          example: 28208023
+          description: An internal ID that is associated with the respondent's each join.
+        displayName:
+          type: string
+          example: Alex Green
+          description: Display name for the poll respondent.
+        email:
+          type: string
+          example: alex.green@example.com
+          description: Email address for the poll respondent.
+        answers:
+          type: array
+          items:
+            type: string
+          description: An array of answers to the question.
+    MeetingRecordingArchivePollQuestion:
+      type: object
+      properties:
+        voteUsers:
+          type: array
+          items:
+            $ref: '#/components/schemas/MeetingRecordingArchiveUser'
+          description: The voters among users.
+        question:
+          type: object
+          properties:
+            choiceCount:
+              type: number
+              example: 3
+              description: The number of choices in the questions.
+            type:
+              type: string
+              example: single
+              description: The type of the question.
+            text:
+              type: string
+              example: Do you like this API?
+              description: The text of the question.
+          description: The poll's question.
+        answerSummary:
+          type: array
+          items:
+            $ref: '#/components/schemas/MeetingRecordingArchivePollAnswerSummary'
+          description: The answer summary of the archive poll.
+        respondents:
+          type: array
+          items:
+            $ref: '#/components/schemas/MeetingRecordingArchivePollRespondent'
+          description: The question's respondents.
+    RecordingReportObject:
+      type: object
+      properties:
+        recordingId:
+          type: string
+          example: 4f914b1dfe3c4d11a61730f18c0f5387
+          description: A unique identifier for the recording.
+        topic:
+          type: string
+          example: John's Meeting
+          description: The recording's topic.
+        name:
+          type: string
+          example: John Andersen
+          description: The name of the person who accessed the recording.
+        email:
+          type: string
+          example: john.andersen@example.com
+          description: The email address of the person who accessed the recording.
+        accessTime:
+          type: string
+          example: '2019-01-27T17:40:20Z'
+          description: The date and time the recording was accessed in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant format.
+        viewed:
+          type: boolean
+          example: true
+          description: Whether or not the recording was viewed by the person.
+        downloaded:
+          type: boolean
+          example: true
+          description: Whether or not the recording was downloaded by the person.
     MeetingRecordingArchivePoll:
       type: object
       properties:
@@ -857,172 +1007,7 @@ components:
                 $ref: '#/components/schemas/MeetingRecordingArchivePollQuestion'
               description: Poll's questions.
           description: The content of the meeting archive poll;
-    MeetingRecordingArchivePollRespondent:
-      type: object
-      properties:
-        correlationId:
-          type: number
-          example: 28208023
-          description: An internal ID that is associated with the respondent's each join.
-        displayName:
-          type: string
-          example: Alex Green
-          description: Display name for the poll respondent.
-        email:
-          type: string
-          example: alex.green@example.com
-          description: Email address for the poll respondent.
-        answers:
-          type: array
-          items:
-            type: string
-          description: An array of answers to the question.
-    MeetingRecordingArchiveQA:
-      type: object
-      properties:
-        priority:
-          type: string
-          example: NA
-          description: The priority of the Q and A.
-        type:
-          type: string
-          example: private
-          description: Whether the type of the Q and A is private, public, or group. Private Q and A is for the 1:1 chat. Public Q and A are for the message which is sent to all the people in the meeting. Group Q and A are for the message which is sent to a small group of people, like a Q and A to "host and presenter".
-        displayName:
-          type: string
-          example: john.andersen@example.com`
-          description: The email of the user who asked the question.
-        questionTime:
-          type: string
-          example: '2021-07-06T09:22:34Z'
-          description: The date and time the question was created in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) compliant format.
-        target:
-          type: string
-          example: All Participants
-          description: Information of the user who asked the question.
-        question:
-          type: string
-          example: Are you ok?
-          description: The question that was asked.
-        answers:
-          type: array
-          items:
-            $ref: '#/components/schemas/MeetingRecordingArchiveQAAnswer'
-          description: Question's answers.
-    MeetingRecordingArchivePollQuestion:
-      type: object
-      properties:
-        voteUsers:
-          type: array
-          items:
-            $ref: '#/components/schemas/MeetingRecordingArchiveUser'
-          description: The voters among users.
-        question:
-          type: object
-          properties:
-            choiceCount:
-              type: number
-              example: 3
-              description: The number of choices in the questions.
-            type:
-              type: string
-              example: single
-              description: The type of the question.
-            text:
-              type: string
-              example: Do you like this API?
-              description: The text of the question.
-          description: The poll's question.
-        answerSummary:
-          type: array
-          items:
-            $ref: '#/components/schemas/MeetingRecordingArchivePollAnswerSummary'
-          description: The answer summary of the archive poll.
-        respondents:
-          type: array
-          items:
-            $ref: '#/components/schemas/MeetingRecordingArchivePollRespondent'
-          description: The question's respondents.
-    SystemInfoCatalog:
-      type: object
-      properties:
-        systemSummary:
-          type: string
-          example: 'User Name: John{*}Operating System: Mac OS X 12.6{*}User Home Directory: /Users/John{*}Date and Time: Tue Oct 18 10:38:17 CST 2022{*}'
-          description: System summary.
-        browser:
-          type: string
-          example: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36
-          description: The browser user agent of the person who acted.
-        hardware:
-          type: string
-          example: mac book
-          description: The type of hardware that the user used to attend the meeting.
-        installedSoftware:
-          type: string
-          example: webex
-          description: The software that the user used to attend the meeting.
-        runningSoftware:
-          type: string
-          example: webex
-          description: The software the user used that is running.
-        startupPrograms:
-          type: string
-          example: Macintosh HD
-          description: Startup Programs.
-        storage:
-          type: string
-          example: 16 GB 2667 MHz DDR4
-          description: The storage information of the user's device.
-        video:
-          type: string
-          example: AirPlay
-          description: The video of the user's device.
-        network:
-          type: string
-          example: Wi-Fi
-          description: The network of the user's device.
-        operatingSystem:
-          type: string
-          example: Mac OS X 10.0
-          description: The operating system of the user's device.
-        environmentVariables:
-          type: string
-          example: /usr/local/bin:$PATH
-          description: The environment variables of the user's device.
-        processes:
-          type: string
-          example: 2.6 GHz 6-Core Intel Core i7
-          description: The processes of the user's device.
-        logicalDrives:
-          type: string
-          example: webapp
-          description: The logical drives of the user's device.
-        devices:
-          type: string
-          example: device1
-          description: The device of the user.
-        services:
-          type: string
-          example: Firewall
-          description: The service of the user's device.
-        systemDrivers:
-          type: string
-          example: 32drivers
-          description: The system driver of the user's device.
-        signedDrivers:
-          type: string
-          example: 32drivers
-          description: The sign driver system of the user's device.
-        eventViewer:
-          type: string
-          example: Screen Sharing
-          description: The event viewer of the user's device.
-        bios:
-          type: string
-          example: AwardBIOS
-          description: The basic input and output system.
-    MeetingRecordingArchiveUser:
+    MeetingRecordingArchiveParticipant:
       type: object
       properties:
         correlationId:
@@ -1033,6 +1018,14 @@ components:
           type: string
           example: John Andersen
           description: Display name for the meeting participant.
+        joinedTime:
+          type: string
+          example: '2022-07-20T07:01:31Z'
+          description: The time the participant joined the meeting.
+        leftTime:
+          type: string
+          example: '2022-07-20T07:01:31Z'
+          description: The time the participant left the meeting.
         email:
           type: string
           example: john.andersen@example.com
@@ -1063,3 +1056,4 @@ x-refined-from:
 - webex-admin-openapi.json
 - webex-cloud-calling-openapi.json
 - webex-meeting-openapi.json
+- webex-cloud-calling-openapi.yml

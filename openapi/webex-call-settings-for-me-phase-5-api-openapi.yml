@@ -1,21 +1,11 @@
 openapi: 3.2.0
 info:
-  title: Webex Cloud Calling Call Settings For Me Phase 5 API
+  title: Webex Call Settings For Me Phase 5 API
   version: 1.0.0
-  description: The Webex Cloud Calling APIs enable comprehensive management of cloud-based calling services, including user provisioning, device assignment, call routing, feature configuration, and number management.
-  x-provenance:
-    method: harvested
-    authored_by: Cisco Webex
-    harvested_by: API Evangelist
-    harvested_on: '2026-08-19'
-    first_party: true
-    note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
-    provider_published: true
-  x-evidence:
-  - type: source
-    url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-cloud-calling.json
-  - type: raw
-    url: https://raw.githubusercontent.com/webex/webex-openapi-specs/main/public-spec/webex-cloud-calling.json
+  x-refined-note:
+  - x-evidence differs across the merged source definitions and was not carried
+  - x-provenance differs across the merged source definitions and was not carried
+  description: 'Operations tagged Call Settings For Me Phase 5 across 2 of this provider''s published API definitions: webex-cloud-calling-openapi.json, webex-cloud-calling-openapi.yml. Each path carries the servers of the definition it was published in.'
 tags:
 - name: Call Settings For Me Phase 5
 paths:
@@ -434,6 +424,179 @@ components:
           example: 15
           description: The minimum value is 3. The maximum value is 30.
       description: Length of the passcode.
+    VoicemailRules:
+      type: object
+      required:
+      - blockRepeatedPatternsEnabled
+      - blockUserNumberEnabled
+      - blockReversedUserNumberEnabled
+      - blockPreviousPasscodes
+      - blockReversedOldPasscodeEnabled
+      - blockRepeatedDigits
+      - blockContiguousSequences
+      - length
+      properties:
+        blockRepeatedPatternsEnabled:
+          type: boolean
+          example: true
+          description: If enabled, the passcode cannot contain repeated patterns. For example, 121212 and 123123.
+        blockUserNumberEnabled:
+          type: boolean
+          example: true
+          description: If enabled, the passcode must not match the user's own phone number.
+        blockReversedUserNumberEnabled:
+          type: boolean
+          example: true
+          description: If enabled, the passcode must not match the user's phone number in reverse.
+        blockPreviousPasscodes:
+          $ref: '#/components/schemas/BlockPreviousPasscodes'
+        blockReversedOldPasscodeEnabled:
+          type: boolean
+          example: true
+          description: If enabled, the passcode must not match the user's old passcodes in reverse.
+        blockRepeatedDigits:
+          $ref: '#/components/schemas/BlockRepeatedDigits'
+        blockContiguousSequences:
+          $ref: '#/components/schemas/BlockContiguousSequences'
+        length:
+          $ref: '#/components/schemas/PasscodeLength'
+      description: Person's voicemail passcode rules and restrictions.
+      example:
+        blockRepeatedPatternsEnabled: true
+        blockUserNumberEnabled: true
+        blockReversedUserNumberEnabled: true
+        blockPreviousPasscodes:
+          enabled: true
+          numberOfPasscodes: 3
+        blockReversedOldPasscodeEnabled: true
+        blockRepeatedDigits:
+          enabled: true
+          max: 3
+        blockContiguousSequences:
+          enabled: true
+          numberOfAscendingDigits: 3
+          numberOfDescendingDigits: 3
+        length:
+          min: 6
+          max: 15
+    PersonalAssistantSettingsUpdate:
+      type: object
+      required:
+      - enabled
+      properties:
+        enabled:
+          type: boolean
+          example: true
+          description: Enable/Disable the personal assistant feature.
+        presence:
+          type: string
+          enum:
+          - BUSINESS_TRIP
+          - GONE_FOR_THE_DAY
+          - LUNCH
+          - MEETING
+          - OUT_OF_OFFICE
+          - TEMPORARILY_OUT
+          - TRAINING
+          - UNAVAILABLE
+          - VACATION
+          example: OUT_OF_OFFICE
+          description: Presence status that triggers the personal assistant.
+        untilDateTime:
+          type: string
+          format: date-time
+          example: '2026-03-28T14:30:00Z'
+          description: Date and time until which the personal assistant is active (ISO 8601 format).
+        transferEnabled:
+          type: boolean
+          example: true
+          description: Enable/Disable call transfer when personal assistant is active.
+        transferNumber:
+          type: string
+          example: '+14126525012'
+          description: Phone number to transfer calls to when transfer is enabled.
+        alerting:
+          type: string
+          enum:
+          - ALERT_ME_FIRST
+          - PLAY_RING_REMINDER
+          - NONE
+          example: ALERT_ME_FIRST
+          description: 'Alerting behavior for incoming calls when personal assistant is active. Possible values: ALERT_ME_FIRST - Ring the user''s phone first before the personal assistant takes over. PLAY_RING_REMINDER - Play a ring reminder to the user. NONE - No alerting.'
+        alertMeFirstNumberOfRings:
+          type: integer
+          minimum: 0
+          maximum: 20
+          example: 3
+          description: Number of rings before transferring the call when alerting is set to ALERT_ME_FIRST.
+      description: Personal assistant settings update request.
+      example:
+        enabled: true
+        presence: OUT_OF_OFFICE
+        untilDateTime: '2026-03-28T14:30:00Z'
+        transferEnabled: true
+        transferNumber: '+14126525012'
+        alerting: ALERT_ME_FIRST
+        alertMeFirstNumberOfRings: 3
+    BlockRepeatedDigits:
+      type: object
+      required:
+      - enabled
+      - max
+      properties:
+        enabled:
+          type: boolean
+          example: true
+          description: If enabled, checks for sequence of the same digit being repeated.
+        max:
+          type: integer
+          minimum: 1
+          maximum: 6
+          example: 3
+          description: Maximum number of repeated digit sequence allowed. The minimum value is 1. The maximum value is 6.
+      description: Settings to prevent single digits from being repeated in the passcode. For example, with a maximum value of 3, 111222 is allowed but 112222 is not allowed since it contains a repeated digit sequence longer than 3.
+    BlockPreviousPasscodes:
+      type: object
+      required:
+      - enabled
+      - numberOfPasscodes
+      properties:
+        enabled:
+          type: boolean
+          example: true
+          description: If enabled, set how many of the previous passcodes are not allowed to be re-used.
+        numberOfPasscodes:
+          type: integer
+          minimum: 1
+          maximum: 10
+          example: 3
+          description: Number of previous passcodes. The minimum value is 1. The maximum value is 10.
+      description: Settings for previous passcode usage.
+    AvailableHotelingHosts:
+      type: object
+      required:
+      - hosts
+      properties:
+        hosts:
+          type: array
+          items:
+            $ref: '#/components/schemas/AvailableHotelingHost'
+          description: List of available hoteling hosts.
+      description: List of available hoteling hosts that a person can associate with as a guest.
+      example:
+        hosts:
+        - hostId: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9hYmNkZWYxMi0zNDU2LTc4OTAtYWJjZC1lZjEyMzQ1Njc4OTA
+          firstName: John
+          lastName: Doe
+          phoneNumber: '+14085551234'
+          extension: '1234'
+          allowedAssociationDuration: 24
+        - hostId: Y2lzY29zcGFyazovL3VzL1BFT1BMRS85ODc2NTQzMi0xMjM0LTU2NzgtOTBhYi1jZGVmMTIzNDU2Nzg
+          firstName: Jane
+          lastName: Smith
+          phoneNumber: '+14085555678'
+          extension: '5678'
+          allowedAssociationDuration: 12
     AvailableHotelingHost:
       type: object
       required:
@@ -495,6 +658,15 @@ components:
           example: 3
           description: 'Specifies the maximum length of a descending numerical sequence allowed. The minimum value is 2. The maximum value is 5. Example: If this value is set to 3, then 321856 is allowed, but 432185 is not allowed (since the descending sequence 4321 exceeds 3 digits).'
       description: Settings for not allowing numerical sequence in passcode (for example, 012345 or 987654).
+    VoicemailPin:
+      type: object
+      required:
+      - passcode
+      properties:
+        passcode:
+          type: string
+          description: Person voicemail PIN. The PIN must comply with the passcode rules defined for the organization.
+          example: '27850230'
     PersonalAssistantSettings:
       type: object
       required:
@@ -554,232 +726,6 @@ components:
         transferNumber: '+14126525012'
         alerting: ALERT_ME_FIRST
         alertMeFirstNumberOfRings: 3
-    PersonalAssistantSettingsUpdate:
-      type: object
-      required:
-      - enabled
-      properties:
-        enabled:
-          type: boolean
-          example: true
-          description: Enable/Disable the personal assistant feature.
-        presence:
-          type: string
-          enum:
-          - BUSINESS_TRIP
-          - GONE_FOR_THE_DAY
-          - LUNCH
-          - MEETING
-          - OUT_OF_OFFICE
-          - TEMPORARILY_OUT
-          - TRAINING
-          - UNAVAILABLE
-          - VACATION
-          example: OUT_OF_OFFICE
-          description: Presence status that triggers the personal assistant.
-        untilDateTime:
-          type: string
-          format: date-time
-          example: '2026-03-28T14:30:00Z'
-          description: Date and time until which the personal assistant is active (ISO 8601 format).
-        transferEnabled:
-          type: boolean
-          example: true
-          description: Enable/Disable call transfer when personal assistant is active.
-        transferNumber:
-          type: string
-          example: '+14126525012'
-          description: Phone number to transfer calls to when transfer is enabled.
-        alerting:
-          type: string
-          enum:
-          - ALERT_ME_FIRST
-          - PLAY_RING_REMINDER
-          - NONE
-          example: ALERT_ME_FIRST
-          description: 'Alerting behavior for incoming calls when personal assistant is active. Possible values: ALERT_ME_FIRST - Ring the user''s phone first before the personal assistant takes over. PLAY_RING_REMINDER - Play a ring reminder to the user. NONE - No alerting.'
-        alertMeFirstNumberOfRings:
-          type: integer
-          minimum: 0
-          maximum: 20
-          example: 3
-          description: Number of rings before transferring the call when alerting is set to ALERT_ME_FIRST.
-      description: Personal assistant settings update request.
-      example:
-        enabled: true
-        presence: OUT_OF_OFFICE
-        untilDateTime: '2026-03-28T14:30:00Z'
-        transferEnabled: true
-        transferNumber: '+14126525012'
-        alerting: ALERT_ME_FIRST
-        alertMeFirstNumberOfRings: 3
-    AvailableHotelingHosts:
-      type: object
-      required:
-      - hosts
-      properties:
-        hosts:
-          type: array
-          items:
-            $ref: '#/components/schemas/AvailableHotelingHost'
-          description: List of available hoteling hosts.
-      description: List of available hoteling hosts that a person can associate with as a guest.
-      example:
-        hosts:
-        - hostId: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9hYmNkZWYxMi0zNDU2LTc4OTAtYWJjZC1lZjEyMzQ1Njc4OTA
-          firstName: John
-          lastName: Doe
-          phoneNumber: '+14085551234'
-          extension: '1234'
-          allowedAssociationDuration: 24
-        - hostId: Y2lzY29zcGFyazovL3VzL1BFT1BMRS85ODc2NTQzMi0xMjM0LTU2NzgtOTBhYi1jZGVmMTIzNDU2Nzg
-          firstName: Jane
-          lastName: Smith
-          phoneNumber: '+14085555678'
-          extension: '5678'
-          allowedAssociationDuration: 12
-    VoicemailRules:
-      type: object
-      required:
-      - blockRepeatedPatternsEnabled
-      - blockUserNumberEnabled
-      - blockReversedUserNumberEnabled
-      - blockPreviousPasscodes
-      - blockReversedOldPasscodeEnabled
-      - blockRepeatedDigits
-      - blockContiguousSequences
-      - length
-      properties:
-        blockRepeatedPatternsEnabled:
-          type: boolean
-          example: true
-          description: If enabled, the passcode cannot contain repeated patterns. For example, 121212 and 123123.
-        blockUserNumberEnabled:
-          type: boolean
-          example: true
-          description: If enabled, the passcode must not match the user's own phone number.
-        blockReversedUserNumberEnabled:
-          type: boolean
-          example: true
-          description: If enabled, the passcode must not match the user's phone number in reverse.
-        blockPreviousPasscodes:
-          $ref: '#/components/schemas/BlockPreviousPasscodes'
-        blockReversedOldPasscodeEnabled:
-          type: boolean
-          example: true
-          description: If enabled, the passcode must not match the user's old passcodes in reverse.
-        blockRepeatedDigits:
-          $ref: '#/components/schemas/BlockRepeatedDigits'
-        blockContiguousSequences:
-          $ref: '#/components/schemas/BlockContiguousSequences'
-        length:
-          $ref: '#/components/schemas/PasscodeLength'
-      description: Person's voicemail passcode rules and restrictions.
-      example:
-        blockRepeatedPatternsEnabled: true
-        blockUserNumberEnabled: true
-        blockReversedUserNumberEnabled: true
-        blockPreviousPasscodes:
-          enabled: true
-          numberOfPasscodes: 3
-        blockReversedOldPasscodeEnabled: true
-        blockRepeatedDigits:
-          enabled: true
-          max: 3
-        blockContiguousSequences:
-          enabled: true
-          numberOfAscendingDigits: 3
-          numberOfDescendingDigits: 3
-        length:
-          min: 6
-          max: 15
-    BlockPreviousPasscodes:
-      type: object
-      required:
-      - enabled
-      - numberOfPasscodes
-      properties:
-        enabled:
-          type: boolean
-          example: true
-          description: If enabled, set how many of the previous passcodes are not allowed to be re-used.
-        numberOfPasscodes:
-          type: integer
-          minimum: 1
-          maximum: 10
-          example: 3
-          description: Number of previous passcodes. The minimum value is 1. The maximum value is 10.
-      description: Settings for previous passcode usage.
-    BlockRepeatedDigits:
-      type: object
-      required:
-      - enabled
-      - max
-      properties:
-        enabled:
-          type: boolean
-          example: true
-          description: If enabled, checks for sequence of the same digit being repeated.
-        max:
-          type: integer
-          minimum: 1
-          maximum: 6
-          example: 3
-          description: Maximum number of repeated digit sequence allowed. The minimum value is 1. The maximum value is 6.
-      description: Settings to prevent single digits from being repeated in the passcode. For example, with a maximum value of 3, 111222 is allowed but 112222 is not allowed since it contains a repeated digit sequence longer than 3.
-    HotelingGuestSettingsUpdate:
-      type: object
-      required:
-      - enabled
-      properties:
-        enabled:
-          type: boolean
-          example: true
-          description: Enable/Disable hoteling guest functionality for the person. When enabled, the person can associate themselves with a hoteling host device.
-        associationLimitEnabled:
-          type: boolean
-          example: true
-          description: When enabled, the person's hoteling guest association will be automatically removed after the specified time period.
-        associationLimitHours:
-          type: integer
-          minimum: 1
-          maximum: 999
-          example: 12
-          description: Time limit in hours for the hoteling guest association (1-999). Applicable when associationLimitEnabled is true.
-        hostId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9hYmNkZWYxMi0zNDU2LTc4OTAtYWJjZC1lZjEyMzQ1Njc4OTA
-          description: Unique identifier of the hoteling host person or workspace to associate with. Required when enabling hoteling guest functionality.
-      example:
-        enabled: true
-        associationLimitEnabled: true
-        associationLimitHours: 12
-        hostId: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9hYmNkZWYxMi0zNDU2LTc4OTAtYWJjZC1lZjEyMzQ1Njc4OTA
-      description: Hoteling guest settings update request.
-    HotelingHostLocation:
-      type: object
-      required:
-      - id
-      - name
-      properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzU0MDQ5NzQzLTIwM2MtNDM5OS1iN2NjLTU4ZmNkYzIwNjA3Zg
-          description: Unique identifier of the hoteling host location.
-        name:
-          type: string
-          example: San Jose
-          description: Name of the hoteling host location.
-      description: Location information for the hoteling host.
-    VoicemailPin:
-      type: object
-      required:
-      - passcode
-      properties:
-        passcode:
-          type: string
-          description: Person voicemail PIN. The PIN must comply with the passcode rules defined for the organization.
-          example: '27850230'
     HotelingGuestSettings:
       type: object
       required:
@@ -846,6 +792,50 @@ components:
           id: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzU0MDQ5NzQzLTIwM2MtNDM5OS1iN2NjLTU4ZmNkYzIwNjA3Zg
           name: San Jose
       description: Hoteling guest settings for a person.
+    HotelingGuestSettingsUpdate:
+      type: object
+      required:
+      - enabled
+      properties:
+        enabled:
+          type: boolean
+          example: true
+          description: Enable/Disable hoteling guest functionality for the person. When enabled, the person can associate themselves with a hoteling host device.
+        associationLimitEnabled:
+          type: boolean
+          example: true
+          description: When enabled, the person's hoteling guest association will be automatically removed after the specified time period.
+        associationLimitHours:
+          type: integer
+          minimum: 1
+          maximum: 999
+          example: 12
+          description: Time limit in hours for the hoteling guest association (1-999). Applicable when associationLimitEnabled is true.
+        hostId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9hYmNkZWYxMi0zNDU2LTc4OTAtYWJjZC1lZjEyMzQ1Njc4OTA
+          description: Unique identifier of the hoteling host person or workspace to associate with. Required when enabling hoteling guest functionality.
+      example:
+        enabled: true
+        associationLimitEnabled: true
+        associationLimitHours: 12
+        hostId: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9hYmNkZWYxMi0zNDU2LTc4OTAtYWJjZC1lZjEyMzQ1Njc4OTA
+      description: Hoteling guest settings update request.
+    HotelingHostLocation:
+      type: object
+      required:
+      - id
+      - name
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzU0MDQ5NzQzLTIwM2MtNDM5OS1iN2NjLTU4ZmNkYzIwNjA3Zg
+          description: Unique identifier of the hoteling host location.
+        name:
+          type: string
+          example: San Jose
+          description: Name of the hoteling host location.
+      description: Location information for the hoteling host.
   securitySchemes:
     oauth2:
       flows:
@@ -864,3 +854,6 @@ components:
       description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
       scheme: bearer
       bearerFormat: JWT
+x-refined-from:
+- webex-cloud-calling-openapi.json
+- webex-cloud-calling-openapi.yml

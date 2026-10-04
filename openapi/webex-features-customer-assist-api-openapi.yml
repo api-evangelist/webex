@@ -1,21 +1,11 @@
 openapi: 3.2.0
 info:
-  title: 'Webex Cloud Calling Features: Customer Assist API'
+  title: 'Webex Features: Customer Assist API'
   version: 1.0.0
-  description: The Webex Cloud Calling APIs enable comprehensive management of cloud-based calling services, including user provisioning, device assignment, call routing, feature configuration, and number management.
-  x-provenance:
-    method: harvested
-    authored_by: Cisco Webex
-    harvested_by: API Evangelist
-    harvested_on: '2026-08-19'
-    first_party: true
-    note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
-    provider_published: true
-  x-evidence:
-  - type: source
-    url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-cloud-calling.json
-  - type: raw
-    url: https://raw.githubusercontent.com/webex/webex-openapi-specs/main/public-spec/webex-cloud-calling.json
+  x-refined-note:
+  - x-evidence differs across the merged source definitions and was not carried
+  - x-provenance differs across the merged source definitions and was not carried
+  description: 'Operations tagged Features: Customer Assist across 2 of this provider''s published API definitions: webex-cloud-calling-openapi.json, webex-cloud-calling-openapi.yml. Each path carries the servers of the definition it was published in.'
 tags:
 - name: 'Features: Customer Assist'
 paths:
@@ -961,13 +951,149 @@ paths:
           type: boolean
       x-operation-id-source: normalized
       x-operation-id-original: List Available Agents
+  /telephony/config/cxEssentials/agents/availableAgents:
+    get:
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AvailableAgentListGetObject'
+              example:
+                agents:
+                - id: Y2lzY29zcGFyazovL3VzL1BFT1BMRS80YzFjOWE2YS1jYjZiLTRjYjItOWJkYi02YjkyZTA1ZTI4ZmY
+                  lastName: Smith
+                  firstName: John
+                  displayName: John Smith
+                  type: PEOPLE
+                  email: john.smith@example.com
+                  hasCxEssentials: true
+                  phoneNumbers:
+                  - external: '+12165553518'
+                    extension: '5024'
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: Get Available Agents
+      operationId: getAvailableAgents
+      description: 'List eligible people who can be assigned as Customer Assist agents.
+
+
+        Returns people with a Webex Calling Professional license across all locations visible to the caller''s authorization. Workspaces and virtual lines are not included.
+
+
+        Calls from call queues are routed to assigned agents based on configuration. An agent can be assigned to one or more call queues and can be managed by supervisors.
+
+
+        Retrieving this list requires a full, read-only or location administrator auth token with a scope of `spark-admin:telephony_config_read`.'
+      tags:
+      - 'Features: Customer Assist'
+      parameters:
+      - name: locationId
+        in: query
+        description: The location ID of the call queue. Temporary mandatory query parameter, used for performance reasons only and not a filter.
+        required: true
+        example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzMxMTYx
+        schema:
+          type: string
+      - name: orgId
+        in: query
+        description: List available agents for this organization. If omitted, uses the organization associated with the OAuth token.
+        example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE
+        schema:
+          type: string
+      - name: hasCxEssentials
+        in: query
+        description: Filter agents by Customer Assist license status. When `true`, returns only agents with Customer Assist license. When `false`, returns only agents with Customer Experience Basic license. When omitted, returns all eligible agents regardless of license type.
+        example: true
+        schema:
+          type: boolean
+      - name: max
+        in: query
+        description: Limit the number of objects returned to this maximum count.
+        example: 2000
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 2000
+          default: 2000
+      - name: start
+        in: query
+        description: Start at the zero-based offset in the list of matching objects.
+        example: 0
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 9999
+          default: 0
+      - name: name
+        in: query
+        description: Filter agents by name. Supports partial matching. Multiple values can be provided to search for agents matching any of the specified names.
+        example: John
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: true
+      - name: phoneNumbers
+        in: query
+        description: Filter agents by phone number. Supports partial matching. Multiple values can be provided to search for agents matching any of the specified phone numbers.
+        example: '+1216555'
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: true
+      - name: order
+        in: query
+        description: Sort order for the results. Supported fields are `firstName`, `lastName`, `displayName`, and `extension`. Use `asc` or `desc` suffix to specify direction (e.g., `lastName asc`). Default is `lastName asc`.
+        example: lastName asc
+        schema:
+          type: string
 components:
   schemas:
-    CreateWrapUpReasonPayload:
+    WrapUpReasonObject:
       type: object
       required:
+      - id
       - name
+      - numberOfQueuesAssigned
       properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1dSQVBVUF9SRUFTT05fSUQvOGVmNzM4OTctMmQzNS00ZjgwLWJkOGQtYzRjNmRhNWNlZjA2
+          description: Unique wrap-up identifier.
         name:
           type: string
           example: Wrap up reason 1
@@ -976,22 +1102,25 @@ components:
           type: string
           example: This is a description for wrap-up reason 1
           description: Description of the wrap-up reason.
-        queues:
-          type: array
-          items:
-            type: string
-            example: Y2lzY29zcGFyazovL3VzL0NBTExfUVVFVUUvOGY1MDI2ZjMtMDZjYi00OTU3LWE0MDQtNDYyM2UzYjJjYzVi
-          description: List of queue IDs assigned to the wrap-up reason.
-        assignAllQueuesEnabled:
-          type: boolean
-          description: Denotes whether all queues are assigned to the wrap-up reason.
-    UserType:
-      type: string
-      enum:
-      - PEOPLE
-      - PLACE
-      - VIRTUAL_LINE
-      description: " * `PEOPLE` - The associated member is a person.\n * `PLACE` - The associated member is a workspace.\n * `VIRTUAL_LINE` - The associated member is a virtual line.\n"
+        numberOfQueuesAssigned:
+          type: number
+          example: 1
+          description: Number of queues assigned to the wrap-up reason.
+    QueryParamsObject:
+      type: object
+      properties:
+        example_param_1:
+          type: string
+          example: example_value_1
+          description: An example key-value pair that will be sent to the agent.
+        example_param_2:
+          type: string
+          example: example_value_2
+          description: Another example key-value pair that will be sent to the agent.
+        example_param_3:
+          type: string
+          example: example_value_3
+          description: Another example key-value pair that will be sent to the agent.
     GetAvailableAgentsCallQueueObject:
       type: object
       required:
@@ -1037,91 +1166,60 @@ components:
               example: '23234'
               description: Extension of the agent.
           description: Phone number and extension of the agent.
-    WrapUpReasonDetailsObject:
+    QueueObject:
       type: object
       required:
+      - id
       - name
-      - defaultWrapupQueuesCount
-      - queues
+      - locationName
+      - locationId
+      - phoneNumber
       properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0NBTExfUVVFVUUvOGY1MDI2ZjMtMDZjYi00OTU3LWE0MDQtNDYyM2UzYjJjYzVi
+          description: Unique queue identifier.
         name:
           type: string
-          example: Wrap up reason 1
-          description: Name of the wrap-up reason.
-        description:
+          example: Queue 1
+          description: Name of the queue.
+        locationName:
           type: string
-          example: This is a description for wrap-up reason 1
-          description: Description of the wrap-up reason.
-        defaultWrapupQueuesCount:
+          example: Location 1
+          description: Name of the location.
+        locationId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OL2M3YmRjMmI5LWFmZmUtNDE0NC1hZTNkLTI4MWZmZTFjZThlYw
+          description: Unique location identifier.
+        phoneNumber:
+          type: string
+          example: '+1234567890'
+          description: Phone number of the queue.
+        extension:
           type: number
-          example: 1
-          description: Number of queues assigned to the wrap-up reason.
-        queues:
+          example: 1234
+          description: Extension of the queue.
+    UpdateWrapUpReasonByLocationQueuePayload:
+      type: object
+      properties:
+        wrapupReasons:
           type: array
           items:
-            $ref: '#/components/schemas/QueueObjectWithDefaultEnabled'
-          description: List of queues assigned to the wrap-up reason.
-    QueueWrapUpReasonObject:
-      type: object
-      required:
-      - id
-      - name
-      - isDefaultEnabled
-      properties:
-        id:
+            type: string
+            example: Y2lzY29zcGFyazovL3VzL1dSQVBVUF9SRUFTT05fSUQvOGVmNzM4OTctMmQzNS00ZjgwLWJkOGQtYzRjNmRhNWNlZjA2
+          description: List of wrap-up reason IDs.
+        defaultWrapupReasonId:
           type: string
           example: Y2lzY29zcGFyazovL3VzL1dSQVBVUF9SRUFTT05fSUQvOGVmNzM4OTctMmQzNS00ZjgwLWJkOGQtYzRjNmRhNWNlZjA2
           description: Unique wrap-up identifier.
-        name:
-          type: string
-          example: Wrap up reason 1
-          description: Name of the wrap-up reason.
-        description:
-          type: string
-          example: This is a description for wrap-up reason 1
-          description: Description of the wrap-up reason.
-        isDefaultEnabled:
+        wrapupTimerEnabled:
           type: boolean
           example: true
-          description: Denotes whether the default wrap-up is enabled for the queue.
-    WrapUpReasonObject:
-      type: object
-      required:
-      - id
-      - name
-      - numberOfQueuesAssigned
-      properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1dSQVBVUF9SRUFTT05fSUQvOGVmNzM4OTctMmQzNS00ZjgwLWJkOGQtYzRjNmRhNWNlZjA2
-          description: Unique wrap-up identifier.
-        name:
-          type: string
-          example: Wrap up reason 1
-          description: Name of the wrap-up reason.
-        description:
-          type: string
-          example: This is a description for wrap-up reason 1
-          description: Description of the wrap-up reason.
-        numberOfQueuesAssigned:
+          description: Denotes whether the wrap-up timer is enabled.
+        wrapupTimer:
           type: number
-          example: 1
-          description: Number of queues assigned to the wrap-up reason.
-    QueryParamsObject:
-      type: object
-      properties:
-        example_param_1:
-          type: string
-          example: example_value_1
-          description: An example key-value pair that will be sent to the agent.
-        example_param_2:
-          type: string
-          example: example_value_2
-          description: Another example key-value pair that will be sent to the agent.
-        example_param_3:
-          type: string
-          example: example_value_3
-          description: Another example key-value pair that will be sent to the agent.
+          example: 60
+          description: Wrap up timer value in seconds.
     QueueObjectWithDefaultEnabled:
       type: object
       required:
@@ -1159,24 +1257,6 @@ components:
         defaultWrapupEnabled:
           type: boolean
           description: Denotes whether the default wrap-up is enabled for the queue.
-    GetScreenPopConfigurationObject:
-      type: object
-      properties:
-        enabled:
-          type: boolean
-          example: true
-          description: Enable/disable screen pop.
-        screenPopUrl:
-          type: string
-          example: https://www.salesforce.com/page
-          description: The screen pop URL that integrates Webex calls with other business apps like CRM, ticketing tools, and order entry systems.
-        desktopLabel:
-          type: string
-          example: CRM Integration with Webex CallQueue screen pop
-          description: A label for the screen pop configuration.
-        queryParams:
-          $ref: '#/components/schemas/QueryParamsObject'
-          description: The additional user-defined key-value pairs that must be sent to the agent.
     UpdateWrapUpReasonPayload:
       type: object
       properties:
@@ -1206,69 +1286,6 @@ components:
         unassignAllQueuesEnabled:
           type: boolean
           description: Denotes whether all queues are unassigned from the wrap-up reason.
-    ValidateWrapUpReasonPayload:
-      type: object
-      required:
-      - name
-      properties:
-        name:
-          type: string
-          example: Wrap up reason 1
-          description: Name of the wrap-up reason.
-    UpdateWrapUpReasonByLocationQueuePayload:
-      type: object
-      properties:
-        wrapupReasons:
-          type: array
-          items:
-            type: string
-            example: Y2lzY29zcGFyazovL3VzL1dSQVBVUF9SRUFTT05fSUQvOGVmNzM4OTctMmQzNS00ZjgwLWJkOGQtYzRjNmRhNWNlZjA2
-          description: List of wrap-up reason IDs.
-        defaultWrapupReasonId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1dSQVBVUF9SRUFTT05fSUQvOGVmNzM4OTctMmQzNS00ZjgwLWJkOGQtYzRjNmRhNWNlZjA2
-          description: Unique wrap-up identifier.
-        wrapupTimerEnabled:
-          type: boolean
-          example: true
-          description: Denotes whether the wrap-up timer is enabled.
-        wrapupTimer:
-          type: number
-          example: 60
-          description: Wrap up timer value in seconds.
-    QueueObject:
-      type: object
-      required:
-      - id
-      - name
-      - locationName
-      - locationId
-      - phoneNumber
-      properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0NBTExfUVVFVUUvOGY1MDI2ZjMtMDZjYi00OTU3LWE0MDQtNDYyM2UzYjJjYzVi
-          description: Unique queue identifier.
-        name:
-          type: string
-          example: Queue 1
-          description: Name of the queue.
-        locationName:
-          type: string
-          example: Location 1
-          description: Name of the location.
-        locationId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OL2M3YmRjMmI5LWFmZmUtNDE0NC1hZTNkLTI4MWZmZTFjZThlYw
-          description: Unique location identifier.
-        phoneNumber:
-          type: string
-          example: '+1234567890'
-          description: Phone number of the queue.
-        extension:
-          type: number
-          example: 1234
-          description: Extension of the queue.
     ModifyScreenPopConfigurationPayload:
       type: object
       properties:
@@ -1287,6 +1304,172 @@ components:
         queryParams:
           $ref: '#/components/schemas/QueryParamsObject'
           description: The additional user-defined key-value pairs that must be sent to the agent.
+    GetScreenPopConfigurationObject:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          example: true
+          description: Enable/disable screen pop.
+        screenPopUrl:
+          type: string
+          example: https://www.salesforce.com/page
+          description: The screen pop URL that integrates Webex calls with other business apps like CRM, ticketing tools, and order entry systems.
+        desktopLabel:
+          type: string
+          example: CRM Integration with Webex CallQueue screen pop
+          description: A label for the screen pop configuration.
+        queryParams:
+          $ref: '#/components/schemas/QueryParamsObject'
+          description: The additional user-defined key-value pairs that must be sent to the agent.
+    UserType:
+      type: string
+      enum:
+      - PEOPLE
+      - PLACE
+      - VIRTUAL_LINE
+      description: " * `PEOPLE` - The associated member is a person.\n * `PLACE` - The associated member is a workspace.\n * `VIRTUAL_LINE` - The associated member is a virtual line.\n"
+    ValidateWrapUpReasonPayload:
+      type: object
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          example: Wrap up reason 1
+          description: Name of the wrap-up reason.
+    WrapUpReasonDetailsObject:
+      type: object
+      required:
+      - name
+      - defaultWrapupQueuesCount
+      - queues
+      properties:
+        name:
+          type: string
+          example: Wrap up reason 1
+          description: Name of the wrap-up reason.
+        description:
+          type: string
+          example: This is a description for wrap-up reason 1
+          description: Description of the wrap-up reason.
+        defaultWrapupQueuesCount:
+          type: number
+          example: 1
+          description: Number of queues assigned to the wrap-up reason.
+        queues:
+          type: array
+          items:
+            $ref: '#/components/schemas/QueueObjectWithDefaultEnabled'
+          description: List of queues assigned to the wrap-up reason.
+    CreateWrapUpReasonPayload:
+      type: object
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          example: Wrap up reason 1
+          description: Name of the wrap-up reason.
+        description:
+          type: string
+          example: This is a description for wrap-up reason 1
+          description: Description of the wrap-up reason.
+        queues:
+          type: array
+          items:
+            type: string
+            example: Y2lzY29zcGFyazovL3VzL0NBTExfUVVFVUUvOGY1MDI2ZjMtMDZjYi00OTU3LWE0MDQtNDYyM2UzYjJjYzVi
+          description: List of queue IDs assigned to the wrap-up reason.
+        assignAllQueuesEnabled:
+          type: boolean
+          description: Denotes whether all queues are assigned to the wrap-up reason.
+    QueueWrapUpReasonObject:
+      type: object
+      required:
+      - id
+      - name
+      - isDefaultEnabled
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1dSQVBVUF9SRUFTT05fSUQvOGVmNzM4OTctMmQzNS00ZjgwLWJkOGQtYzRjNmRhNWNlZjA2
+          description: Unique wrap-up identifier.
+        name:
+          type: string
+          example: Wrap up reason 1
+          description: Name of the wrap-up reason.
+        description:
+          type: string
+          example: This is a description for wrap-up reason 1
+          description: Description of the wrap-up reason.
+        isDefaultEnabled:
+          type: boolean
+          example: true
+          description: Denotes whether the default wrap-up is enabled for the queue.
+    AvailableAgentObject:
+      type: object
+      required:
+      - id
+      - type
+      - email
+      - hasCxEssentials
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS80YzFjOWE2YS1jYjZiLTRjYjItOWJkYi02YjkyZTA1ZTI4ZmY
+          description: ID of a person.
+        lastName:
+          type: string
+          example: Smith
+          description: Last name of a person.
+        firstName:
+          type: string
+          example: John
+          description: First name of a person.
+        displayName:
+          type: string
+          example: John Smith
+          description: Display name of a person.
+        type:
+          type: string
+          enum:
+          - PEOPLE
+          description: "Type of the person.\n * `PEOPLE` - Object is a user.\n"
+        email:
+          type: string
+          example: johnsmith@gmail.com
+          description: Email of a person.
+        hasCxEssentials:
+          type: boolean
+          example: true
+          description: Person has the CX Essentials license.
+        phoneNumbers:
+          type: array
+          items:
+            $ref: '#/components/schemas/GetUserNumberItemObject'
+          description: List of phone numbers of a person.
+    GetUserNumberItemObject:
+      type: object
+      properties:
+        external:
+          type: string
+          example: '+12143456103'
+          description: Phone number of a person.
+        extension:
+          type: string
+          example: '23234'
+          description: Extension of a person.
+    AvailableAgentListGetObject:
+      type: object
+      required:
+      - agents
+      properties:
+        agents:
+          type: array
+          items:
+            $ref: '#/components/schemas/AvailableAgentObject'
+          description: Array of available agents.
   securitySchemes:
     oauth2:
       flows:
@@ -1305,3 +1488,6 @@ components:
       description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
       scheme: bearer
       bearerFormat: JWT
+x-refined-from:
+- webex-cloud-calling-openapi.json
+- webex-cloud-calling-openapi.yml

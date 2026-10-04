@@ -1,21 +1,11 @@
 openapi: 3.2.0
 info:
-  title: 'Webex Cloud Calling Features: Paging Group API'
+  title: 'Webex Features: Paging Group API'
   version: 1.0.0
-  description: The Webex Cloud Calling APIs enable comprehensive management of cloud-based calling services, including user provisioning, device assignment, call routing, feature configuration, and number management.
-  x-provenance:
-    method: harvested
-    authored_by: Cisco Webex
-    harvested_by: API Evangelist
-    harvested_on: '2026-08-19'
-    first_party: true
-    note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
-    provider_published: true
-  x-evidence:
-  - type: source
-    url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-cloud-calling.json
-  - type: raw
-    url: https://raw.githubusercontent.com/webex/webex-openapi-specs/main/public-spec/webex-cloud-calling.json
+  x-refined-note:
+  - x-evidence differs across the merged source definitions and was not carried
+  - x-provenance differs across the merged source definitions and was not carried
+  description: 'Operations tagged Features: Paging Group across 2 of this provider''s published API definitions: webex-cloud-calling-openapi.json, webex-cloud-calling-openapi.yml. Each path carries the servers of the definition it was published in.'
 tags:
 - name: 'Features:  Paging Group'
 paths:
@@ -659,6 +649,70 @@ components:
           items:
             $ref: '#/components/schemas/PagingGroupPrimaryAvailableNumberObject'
           description: Array of phone numbers.
+    STATE:
+      type: string
+      enum:
+      - ACTIVE
+      - INACTIVE
+      description: " * `ACTIVE` - Phone number is in the active state.\n * `INACTIVE` - Phone number is in the inactive state.\n"
+    GetPagingGroupAgentObject:
+      type: object
+      required:
+      - id
+      - type
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS80YTc2ZmVmNC1mZjlmLTExZWItYWYwZC00M2YwZjY1NTdjYWI
+          description: Agents ID.
+        firstName:
+          type: string
+          example: John
+          description: Agent's first name. Minimum length is 1. Maximum length is 64.
+        lastName:
+          type: string
+          example: Doe
+          description: Agent's last name. Minimum length is 1. Maximum length is 64.
+        type:
+          type: string
+          enum:
+          - PEOPLE
+          - PLACE
+          - VIRTUAL_LINE
+          description: "Type of the person, workspace or virtual line.\n * `PEOPLE` - Indicates that this object is a person.\n * `PLACE` - Indicates that this object is a workspace, formerly known as a place.\n * `VIRTUAL_LINE` - Indicates that this object is a virtual line.\n"
+        phoneNumber:
+          type: string
+          example: '+15558675309'
+          description: Agent's phone number. Minimum length is 1. Maximum length is 23. Either phoneNumber or extension is mandatory.
+        extension:
+          type: string
+          example: '7781'
+          description: Agent's extension. Minimum length is 2. Maximum length is 10. Either phoneNumber or extension is mandatory.
+        routingPrefix:
+          type: string
+          example: '1234'
+          description: Routing prefix of location.
+        esn:
+          type: string
+          example: '12347781'
+          description: Routing prefix + extension of a person or workspace.
+    DirectLineCallerIdNameObjectForPut:
+      type: object
+      properties:
+        selection:
+          $ref: '#/components/schemas/SelectionObject'
+          description: The selection of the direct line caller ID name.
+        customName:
+          type: string
+          example: Hakim Smith
+          description: Sets or clears the custom direct line caller ID name.  To clear the `customName`, the attribute must be set to null or empty string. Required if `selection` is set to `CUSTOM_NAME`.
+      description: Settings for the direct line caller ID name to be shown for this workspace.
+    SelectionObject:
+      type: string
+      enum:
+      - CUSTOM_NAME
+      - DISPLAY_NAME
+      description: " * `DISPLAY_NAME` - When this option is selected, `displayName` is to be shown for this workspace.\n * `CUSTOM_NAME` - When this option is selected, `customName` is to be shown for this workspace."
     PagingGroupPrimaryAvailableNumberObject:
       type: object
       required:
@@ -691,23 +745,50 @@ components:
           type: boolean
           example: true
           description: If `true`, the phone number is a service number; otherwise, it is a standard number. Service numbers are high-utilization or high-concurrency PSTN phone numbers that are neither mobile nor toll-free.
-    DirectLineCallerIdNameObjectForPut:
+    ListPagingGroupObject:
       type: object
+      required:
+      - id
+      - name
+      - locationName
+      - locationId
+      - tollFreeNumber
       properties:
-        selection:
-          $ref: '#/components/schemas/SelectionObject'
-          description: The selection of the direct line caller ID name.
-        customName:
+        id:
           type: string
-          example: Hakim Smith
-          description: Sets or clears the custom direct line caller ID name.  To clear the `customName`, the attribute must be set to null or empty string. Required if `selection` is set to `CUSTOM_NAME`.
-      description: Settings for the direct line caller ID name to be shown for this workspace.
-    SelectionObject:
-      type: string
-      enum:
-      - CUSTOM_NAME
-      - DISPLAY_NAME
-      description: " * `DISPLAY_NAME` - When this option is selected, `displayName` is to be shown for this workspace.\n * `CUSTOM_NAME` - When this option is selected, `customName` is to be shown for this workspace."
+          example: Y2lzY29zcGFyazovL3VzL1BBR0lOR19HUk9VUC9hSFpoWlROMk1HOHliMEEyTkRrME1USTVOeTVwYm5ReE1DNWlZMnhrTG5kbFltVjRMbU52YlE
+          description: A unique identifier for the paging group.
+        name:
+          type: string
+          example: PagingGroup-1
+          description: Unique name for the paging group. Minimum length is 1. Maximum length is 30.
+        phoneNumber:
+          type: string
+          example: '+15558675309'
+          description: Paging group phone number. Minimum length is 1. Maximum length is 23. Either `phoneNumber` or `extension` is mandatory.
+        extension:
+          type: string
+          example: '7781'
+          description: Paging group extension. Minimum length is 2. Maximum length is 10. Either `phoneNumber` or `extension` is mandatory.
+        routingPrefix:
+          type: string
+          example: '1234'
+          description: Routing prefix of location.
+        esn:
+          type: string
+          example: '12347781'
+          description: Routing prefix + extension of a person or workspace.
+        locationName:
+          type: string
+          example: Alaska
+          description: Name of location for paging group.
+        locationId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzEyMzQ1
+          description: Id of location for paging group.
+        tollFreeNumber:
+          type: boolean
+          description: Flag to indicate toll free number.
     GetPagingGroupObject:
       type: object
       required:
@@ -841,6 +922,13 @@ components:
           type: string
           example: Hakim Smith
           description: Sets or clears the name to be used for dial by name functions. To clear the `dialByName`, the attribute must be set to null or empty string. Characters of `%`,  `+`, `\`, `"` and Unicode characters are not allowed.
+    TelephonyType:
+      type: string
+      enum:
+      - PSTN_NUMBER
+      description: ' * `PSTN_NUMBER` - The object is a PSTN number.
+
+        '
     PostPagingGroupObject:
       type: object
       required:
@@ -891,104 +979,6 @@ components:
           type: string
           example: Hakim Smith
           description: The name to be used for dial by name functions.  Characters of `%`,  `+`, `\`, `"` and Unicode characters are not allowed.
-    GetPagingGroupAgentObject:
-      type: object
-      required:
-      - id
-      - type
-      properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS80YTc2ZmVmNC1mZjlmLTExZWItYWYwZC00M2YwZjY1NTdjYWI
-          description: Agents ID.
-        firstName:
-          type: string
-          example: John
-          description: Agent's first name. Minimum length is 1. Maximum length is 64.
-        lastName:
-          type: string
-          example: Doe
-          description: Agent's last name. Minimum length is 1. Maximum length is 64.
-        type:
-          type: string
-          enum:
-          - PEOPLE
-          - PLACE
-          - VIRTUAL_LINE
-          description: "Type of the person, workspace or virtual line.\n * `PEOPLE` - Indicates that this object is a person.\n * `PLACE` - Indicates that this object is a workspace, formerly known as a place.\n * `VIRTUAL_LINE` - Indicates that this object is a virtual line.\n"
-        phoneNumber:
-          type: string
-          example: '+15558675309'
-          description: Agent's phone number. Minimum length is 1. Maximum length is 23. Either phoneNumber or extension is mandatory.
-        extension:
-          type: string
-          example: '7781'
-          description: Agent's extension. Minimum length is 2. Maximum length is 10. Either phoneNumber or extension is mandatory.
-        routingPrefix:
-          type: string
-          example: '1234'
-          description: Routing prefix of location.
-        esn:
-          type: string
-          example: '12347781'
-          description: Routing prefix + extension of a person or workspace.
-    STATE:
-      type: string
-      enum:
-      - ACTIVE
-      - INACTIVE
-      description: " * `ACTIVE` - Phone number is in the active state.\n * `INACTIVE` - Phone number is in the inactive state.\n"
-    ListPagingGroupObject:
-      type: object
-      required:
-      - id
-      - name
-      - locationName
-      - locationId
-      - tollFreeNumber
-      properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1BBR0lOR19HUk9VUC9hSFpoWlROMk1HOHliMEEyTkRrME1USTVOeTVwYm5ReE1DNWlZMnhrTG5kbFltVjRMbU52YlE
-          description: A unique identifier for the paging group.
-        name:
-          type: string
-          example: PagingGroup-1
-          description: Unique name for the paging group. Minimum length is 1. Maximum length is 30.
-        phoneNumber:
-          type: string
-          example: '+15558675309'
-          description: Paging group phone number. Minimum length is 1. Maximum length is 23. Either `phoneNumber` or `extension` is mandatory.
-        extension:
-          type: string
-          example: '7781'
-          description: Paging group extension. Minimum length is 2. Maximum length is 10. Either `phoneNumber` or `extension` is mandatory.
-        routingPrefix:
-          type: string
-          example: '1234'
-          description: Routing prefix of location.
-        esn:
-          type: string
-          example: '12347781'
-          description: Routing prefix + extension of a person or workspace.
-        locationName:
-          type: string
-          example: Alaska
-          description: Name of location for paging group.
-        locationId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzEyMzQ1
-          description: Id of location for paging group.
-        tollFreeNumber:
-          type: boolean
-          description: Flag to indicate toll free number.
-    TelephonyType:
-      type: string
-      enum:
-      - PSTN_NUMBER
-      description: ' * `PSTN_NUMBER` - The object is a PSTN number.
-
-        '
   securitySchemes:
     oauth2:
       flows:
@@ -1007,3 +997,6 @@ components:
       description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
       scheme: bearer
       bearerFormat: JWT
+x-refined-from:
+- webex-cloud-calling-openapi.json
+- webex-cloud-calling-openapi.yml

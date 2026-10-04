@@ -850,25 +850,6 @@ paths:
       x-operation-id-original: Bulk Delete Contacts
 components:
   schemas:
-    SearchResponse:
-      type: object
-      properties:
-        result:
-          type: array
-          items:
-            $ref: '#/components/schemas/ContactResponse'
-          description: An array of contact objects.
-        start:
-          type: number
-          description: Start at the zero-based offset in the list of matching contacts.
-        limit:
-          type: number
-          example: 1000
-          description: Limit the number of contacts returned to this maximum count.
-        total:
-          type: number
-          example: 1
-          description: Total number of contacts returned in search results.
     BulkCreate:
       type: object
       required:
@@ -1033,7 +1014,48 @@ components:
                       description: A Boolean value indicating the IMS account status.
                 description: Instant messaging addresses for the user.
           description: Contains a list of contacts to be created/updated.
-    Contact:
+    BulkCreateResponse:
+      type: object
+      properties:
+        contacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContactResponse'
+          description: Array of contact successfully created.
+        failedContacts:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                example: '2'
+                description: Bulk ID of the contact object that failed creation.
+              errorCode:
+                type: number
+                example: 403
+                description: HTTP Response code for the contact creation failure.
+              errorMessage:
+                type: string
+                example: Source null is not supported by organization, only sources [CH] are allowed
+                description: Error message for the contact creation failure.
+          description: Array of contacts that failed creation.
+        orgId:
+          type: string
+          example: 36818b6f-ef07-43d1-b76f-ced79ab2e3e7
+          description: Organization ID in which the contacts were created.
+    Meta:
+      type: object
+      properties:
+        created:
+          type: string
+          example: '2022-04-29T13:06:26.831Z'
+          description: The date and time the contact was created.
+        lastModified:
+          type: string
+          example: '2022-05-29T13:06:26.831Z'
+          description: The date and time the contact was last changed.
+    UpdateContact:
       type: object
       required:
       - schemas
@@ -1084,7 +1106,7 @@ components:
           enum:
           - CH
           - Webex4Broadworks
-          description: Data source.
+          description: Where the data come from.
         emails:
           type: array
           items:
@@ -1130,6 +1152,10 @@ components:
                 type: boolean
                 example: true
                 description: A Boolean value indicating the phone number's primary status.
+              operation:
+                type: string
+                example: delete
+                description: '- A String value on the operation, only `delete` is supported now.'
           description: A list of user's phone numbers with an indicator of primary to specify the user's main number.
         sipAddresses:
           type: array
@@ -1141,19 +1167,19 @@ components:
               value:
                 type: string
                 example: sipAddress value1
-                description: The SIP address.
+                description: The sipAddress value.
               type:
                 type: string
                 enum:
                 - enterprise
                 - cloud-calling
                 - personal-room
-                description: SIP address type.
+                description: The type of the sipAddress.
               primary:
                 type: boolean
                 example: true
                 description: Designate the primary sipAddress.
-          description: The SIP addresses for the user.
+          description: The sipAddress values for the user.
         ims:
           type: array
           items:
@@ -1380,47 +1406,6 @@ components:
             type: string
             example: 9ac175bf-0249-4287-8fb3-e320e525fcf6
           description: Groups associated with the contact.
-    BulkCreateResponse:
-      type: object
-      properties:
-        contacts:
-          type: array
-          items:
-            $ref: '#/components/schemas/ContactResponse'
-          description: Array of contact successfully created.
-        failedContacts:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: string
-                example: '2'
-                description: Bulk ID of the contact object that failed creation.
-              errorCode:
-                type: number
-                example: 403
-                description: HTTP Response code for the contact creation failure.
-              errorMessage:
-                type: string
-                example: Source null is not supported by organization, only sources [CH] are allowed
-                description: Error message for the contact creation failure.
-          description: Array of contacts that failed creation.
-        orgId:
-          type: string
-          example: 36818b6f-ef07-43d1-b76f-ced79ab2e3e7
-          description: Organization ID in which the contacts were created.
-    Meta:
-      type: object
-      properties:
-        created:
-          type: string
-          example: '2022-04-29T13:06:26.831Z'
-          description: The date and time the contact was created.
-        lastModified:
-          type: string
-          example: '2022-05-29T13:06:26.831Z'
-          description: The date and time the contact was last changed.
     BulkDelete:
       type: object
       required:
@@ -1437,7 +1422,7 @@ components:
             type: string
             example: 8a5fac49-2c5f-4773-aec7-02db0e3a9d72
           description: List of UUIDs for the contacts.
-    UpdateContact:
+    Contact:
       type: object
       required:
       - schemas
@@ -1488,7 +1473,7 @@ components:
           enum:
           - CH
           - Webex4Broadworks
-          description: Where the data come from.
+          description: Data source.
         emails:
           type: array
           items:
@@ -1534,10 +1519,6 @@ components:
                 type: boolean
                 example: true
                 description: A Boolean value indicating the phone number's primary status.
-              operation:
-                type: string
-                example: delete
-                description: '- A String value on the operation, only `delete` is supported now.'
           description: A list of user's phone numbers with an indicator of primary to specify the user's main number.
         sipAddresses:
           type: array
@@ -1549,19 +1530,19 @@ components:
               value:
                 type: string
                 example: sipAddress value1
-                description: The sipAddress value.
+                description: The SIP address.
               type:
                 type: string
                 enum:
                 - enterprise
                 - cloud-calling
                 - personal-room
-                description: The type of the sipAddress.
+                description: SIP address type.
               primary:
                 type: boolean
                 example: true
                 description: Designate the primary sipAddress.
-          description: The sipAddress values for the user.
+          description: The SIP addresses for the user.
         ims:
           type: array
           items:
@@ -1599,6 +1580,25 @@ components:
             type: string
             example: 9ac175bf-0249-4287-8fb3-e320e525fcf6
           description: Groups associated with the contact.
+    SearchResponse:
+      type: object
+      properties:
+        result:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContactResponse'
+          description: An array of contact objects.
+        start:
+          type: number
+          description: Start at the zero-based offset in the list of matching contacts.
+        limit:
+          type: number
+          example: 1000
+          description: Limit the number of contacts returned to this maximum count.
+        total:
+          type: number
+          example: 1
+          description: Total number of contacts returned in search results.
   securitySchemes:
     oauth2:
       flows:

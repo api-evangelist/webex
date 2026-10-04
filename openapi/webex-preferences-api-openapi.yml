@@ -1465,79 +1465,19 @@ paths:
       x-operation-id-original: Batch Refresh Personal Meeting Room ID
 components:
   schemas:
-    SitesObject:
-      type: object
-      required:
-      - sites
-      properties:
-        sites:
-          type: array
-          items:
-            type: object
-            required:
-            - siteUrl
-            - default
-            properties:
-              siteUrl:
-                type: string
-                example: site1-example.webex.com
-                description: 'Access URL for the site. ***Note***: This is a read-only attribute. The value can be assigned as user''s default site with the [Update Default Site](/docs/api/v1/meeting-preferences/update-default-site) API.'
-              default:
-                type: boolean
-                description: Flag identifying the site as the default site. Users can list meetings and recordings, and create meetings on the default site.
-          description: Array of sites for the user. Users can have one site or multiple sites. This concept is specific to Webex Meetings. Any `siteUrl` in the site list can be assigned as user's default site with the [Update Default Site](/docs/api/v1/meeting-preferences/update-default-site) API.
-    DefaultSiteObject:
+    SiteObject:
       type: object
       required:
       - siteUrl
+      - default
       properties:
         siteUrl:
           type: string
           example: site1-example.webex.com
-          description: Access URL for the site.
-    SchedulingOptionsObject:
-      type: object
-      required:
-      - enabledJoinBeforeHost
-      - joinBeforeHostMinutes
-      - enabledAutoShareRecording
-      properties:
-        enabledJoinBeforeHost:
+          description: 'Access URL for the site. ***Note***: This is a read-only attribute. The value can be assigned as user''s default site with the [Update Default Site](/docs/api/v1/meeting-preferences/update-default-site) API.'
+        default:
           type: boolean
-          description: 'Flag to enable/disable ***Join Before Host***. The period during which invitees can join before the start time is defined by `autoLockMinutes`. This attribute can be modified with the [Update Scheduling Options](/docs/api/v1/meeting-preferences/update-scheduling-options) API. ***Note***: This feature is only effective if the site supports the ***Join Before Host*** feature. This attribute can be modified with the [Update Scheduling Options](/docs/api/v1/meeting-preferences/update-scheduling-options) API.'
-        joinBeforeHostMinutes:
-          type: number
-          description: Number of minutes before the start time that an invitee can join a meeting if `enabledJoinBeforeHost` is true. Valid options are 0, 5, 10 and 15. This attribute can be modified with the [Update Scheduling Options](/docs/api/v1/meeting-preferences/update-scheduling-options) API.
-        enabledAutoShareRecording:
-          type: boolean
-          description: Flag to enable/disable the automatic sharing of the meeting recording with invitees when it is available. This attribute can be modified with the [Update Scheduling Options](/docs/api/v1/meeting-preferences/update-scheduling-options) API.
-        enabledWebexAssistantByDefault:
-          type: boolean
-          description: Flag to automatically enable Webex Assistant whenever you start a meeting. This attribute can be modified with the [Update Scheduling Options](/docs/api/v1/meeting-preferences/update-scheduling-options) API.
-        delegateEmails:
-          type: array
-          items:
-            type: string
-            example: marcus.hoffmann@example.com, brenda.song@example.com
-          description: You can allow other hosts to schedule meetings on your behalf by entering their email addresses here. This attribute can be modified with the [Update Scheduling Options](/docs/api/v1/meeting-preferences/update-scheduling-options), [Insert Delegate Emails](/docs/api/v1/meeting-preferences/insert-delegate-emails), and [Update Scheduling Options](/docs/api/v1/meeting-preferences/delete-delegate-emails) APIs.
-    PMRIDObject:
-      type: object
-      properties:
-        email:
-          type: string
-          example: john.andersen@example.com
-          description: Email address of the meeting host whose personal room ID will be refreshed.
-        personId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8yNWJiZjgzMS01YmU5LTRjMjUtYjRiMC05YjU5MmM4YTA4NmI
-          description: Unique identifier for the meeting host whose personal room ID will be refreshed.
-        systemGenerated:
-          type: boolean
-          description: Whether or not to automatically refresh the personal room ID by the site's settings. Refresh the personal room ID by the site's settings automatically if `systemGenerated` is true; otherwise, replace the existing personal room ID with the specified value if `systemGenerated` is false or not specified.
-        personalMeetingRoomId:
-          type: string
-          example: prABCD23670651
-          description: New personal room ID specified by the admin user.
+          description: Flag identifying the site as the default site. Users can list meetings and recordings, and create meetings on the default site.
     GetVideoObject:
       type: object
       required:
@@ -1565,113 +1505,6 @@ components:
                 example: true
                 description: Flag identifying the device as the default video device. If user's video device list is not empty, one and only one device must be set as default. This attribute can be modified with the [Update Video Options](/docs/api/v1/meeting-preferences/update-video-options) API.
           description: Array of video devices. This attribute can be modified with the [Update Video Options](/docs/api/v1/meeting-preferences/update-video-options) API.
-    SiteObject:
-      type: object
-      required:
-      - siteUrl
-      - default
-      properties:
-        siteUrl:
-          type: string
-          example: site1-example.webex.com
-          description: 'Access URL for the site. ***Note***: This is a read-only attribute. The value can be assigned as user''s default site with the [Update Default Site](/docs/api/v1/meeting-preferences/update-default-site) API.'
-        default:
-          type: boolean
-          description: Flag identifying the site as the default site. Users can list meetings and recordings, and create meetings on the default site.
-    UpdatePMRObject:
-      type: object
-      required:
-      - topic
-      - hostPin
-      - enabledAutoLock
-      - autoLockMinutes
-      - enabledNotifyHost
-      - supportCoHost
-      - coHosts
-      properties:
-        topic:
-          type: string
-          example: John's PMR
-          description: Personal Meeting Room topic to be updated.
-        hostPin:
-          type: string
-          example: '4325'
-          description: Updated PIN for joining the room as host. The host PIN must be digits of a predefined length, e.g. 4 digits. It cannot contain sequential digits, such as 1234 or 4321, or repeated digits of the predefined length, such as 1111. The predefined length for host PIN can be viewed in user's `My Personal Room` page and it can only be changed by site administrator.
-        enabledAutoLock:
-          type: boolean
-          description: Update for option to automatically lock the Personal Room a number of minutes after a meeting starts. When a room is locked, invitees cannot enter until the owner admits them. The period after which the meeting is locked is defined by `autoLockMinutes`.
-        autoLockMinutes:
-          type: number
-          description: Updated number of minutes after which the Personal Room is locked if `enabledAutoLock` is enabled. Valid options are 0, 5, 10, 15 and 20.
-        enabledNotifyHost:
-          type: boolean
-          example: true
-          description: Update for flag to enable notifying the owner of a Personal Room when someone enters the Personal Room lobby while the owner is not in the room.
-        supportCoHost:
-          type: boolean
-          example: true
-          description: Update for flag allowing other invitees to host a meetingCoHost in the Personal Room without the owner.
-        supportAnyoneAsCoHost:
-          type: boolean
-          description: Whether or not to allow any attendee with a host account on the target site to become a cohost when joining the Personal Room. The target site is user's preferred site.
-        allowFirstUserToBeCoHost:
-          type: boolean
-          description: Whether or not to allow the first attendee with a host account on the target site to become a cohost when joining the Personal Room. The target site is user's preferred site.
-        allowAuthenticatedDevices:
-          type: boolean
-          description: Whether or not to allow authenticated video devices in the user's organization to start or join the meeting without a prompt.
-        coHosts:
-          type: array
-          items:
-            type: object
-            required:
-            - email
-            - displayName
-            properties:
-              email:
-                type: string
-                example: john.andersen@example.com
-                description: Email address for cohost. This attribute can be modified with the [Update Personal Meeting Room Options](/docs/api/v1/meeting-preferences/update-personal-meeting-room-options) API.
-              displayName:
-                type: string
-                example: John Andersen
-                description: Display name for cohost. This attribute can be modified with the [Update Personal Meeting Room Options](/docs/api/v1/meeting-preferences/update-personal-meeting-room-options) API.
-          description: Updated array defining cohosts for the room if both `supportAnyoneAsCoHost` and `allowFirstUserToBeCoHost` are `false`
-    SchedulingOptionsDelegateEmailsObject:
-      type: object
-      properties:
-        emails:
-          type: array
-          items:
-            type: string
-            example: marcus.hoffmann@example.com, brenda.song@example.com
-          description: You can allow other hosts to schedule meetings on your behalf by entering their email addresses here. This attribute can be modified with the [Update Scheduling Options](/docs/api/v1/meeting-preferences/update-scheduling-options), [Insert Delegate Emails](/docs/api/v1/meeting-preferences/insert-delegate-emails), and [Update Scheduling Options](/docs/api/v1/meeting-preferences/delete-delegate-emails) APIs.
-    BatchRefreshPMRIDObject:
-      type: object
-      required:
-      - siteUrl
-      properties:
-        siteUrl:
-          type: string
-          example: example.webex.com
-          description: Site URL to refresh the personal room IDs.
-        personalMeetingRoomIds:
-          type: array
-          items:
-            $ref: '#/components/schemas/PMRIDObject'
-          description: Information of whose personal room IDs are to be refreshed and how to refresh. The maximum size of `items` is 100.
-    BatchRefreshPMRIDResponseObject:
-      type: object
-      properties:
-        siteUrl:
-          type: string
-          example: example.webex.com
-          description: URL of the Webex site.
-        personalMeetingRoomIds:
-          type: array
-          items:
-            $ref: '#/components/schemas/PMRIDResponseObject'
-          description: Information for the refreshed personal room IDs.
     MeetingPreferenceObject:
       type: object
       required:
@@ -1931,21 +1764,66 @@ components:
                 type: boolean
                 description: Flag identifying the site as the default site. Users can list meetings and recordings, and create meetings on the default site.
           description: List of user's Webex meeting sites including default site.
-    PMRIDResponseObject:
+    SchedulingOptionsDelegateEmailsObject:
+      type: object
+      properties:
+        emails:
+          type: array
+          items:
+            type: string
+            example: marcus.hoffmann@example.com, brenda.song@example.com
+          description: You can allow other hosts to schedule meetings on your behalf by entering their email addresses here. This attribute can be modified with the [Update Scheduling Options](/docs/api/v1/meeting-preferences/update-scheduling-options), [Insert Delegate Emails](/docs/api/v1/meeting-preferences/insert-delegate-emails), and [Update Scheduling Options](/docs/api/v1/meeting-preferences/delete-delegate-emails) APIs.
+    PMRIDObject:
       type: object
       properties:
         email:
           type: string
           example: john.andersen@example.com
-          description: Email address for the meeting host whose personal room ID has been refreshed.
+          description: Email address of the meeting host whose personal room ID will be refreshed.
         personId:
           type: string
           example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8yNWJiZjgzMS01YmU5LTRjMjUtYjRiMC05YjU5MmM4YTA4NmI
-          description: Unique identifier for the meeting host whose personal room ID has been refreshed.
+          description: Unique identifier for the meeting host whose personal room ID will be refreshed.
+        systemGenerated:
+          type: boolean
+          description: Whether or not to automatically refresh the personal room ID by the site's settings. Refresh the personal room ID by the site's settings automatically if `systemGenerated` is true; otherwise, replace the existing personal room ID with the specified value if `systemGenerated` is false or not specified.
         personalMeetingRoomId:
           type: string
           example: prABCD23670651
-          description: Refreshed personal room ID.
+          description: New personal room ID specified by the admin user.
+    BatchRefreshPMRIDResponseObject:
+      type: object
+      properties:
+        siteUrl:
+          type: string
+          example: example.webex.com
+          description: URL of the Webex site.
+        personalMeetingRoomIds:
+          type: array
+          items:
+            $ref: '#/components/schemas/PMRIDResponseObject'
+          description: Information for the refreshed personal room IDs.
+    SitesObject:
+      type: object
+      required:
+      - sites
+      properties:
+        sites:
+          type: array
+          items:
+            type: object
+            required:
+            - siteUrl
+            - default
+            properties:
+              siteUrl:
+                type: string
+                example: site1-example.webex.com
+                description: 'Access URL for the site. ***Note***: This is a read-only attribute. The value can be assigned as user''s default site with the [Update Default Site](/docs/api/v1/meeting-preferences/update-default-site) API.'
+              default:
+                type: boolean
+                description: Flag identifying the site as the default site. Users can list meetings and recordings, and create meetings on the default site.
+          description: Array of sites for the user. Users can have one site or multiple sites. This concept is specific to Webex Meetings. Any `siteUrl` in the site list can be assigned as user's default site with the [Update Default Site](/docs/api/v1/meeting-preferences/update-default-site) API.
     UpdateVideoObject:
       type: object
       required:
@@ -1973,6 +1851,204 @@ components:
                 example: true
                 description: Flag identifying the device as the default video device. If user's video device list is not empty, one and only one device must be set as default. This attribute can be modified with the [Update Video Options](/docs/api/v1/meeting-preferences/update-video-options) API.
           description: Array of video devices. If the array is not empty, one device and no more than one devices must be set as default device.
+    UpdatePMRObject:
+      type: object
+      required:
+      - topic
+      - hostPin
+      - enabledAutoLock
+      - autoLockMinutes
+      - enabledNotifyHost
+      - supportCoHost
+      - coHosts
+      properties:
+        topic:
+          type: string
+          example: John's PMR
+          description: Personal Meeting Room topic to be updated.
+        hostPin:
+          type: string
+          example: '4325'
+          description: Updated PIN for joining the room as host. The host PIN must be digits of a predefined length, e.g. 4 digits. It cannot contain sequential digits, such as 1234 or 4321, or repeated digits of the predefined length, such as 1111. The predefined length for host PIN can be viewed in user's `My Personal Room` page and it can only be changed by site administrator.
+        enabledAutoLock:
+          type: boolean
+          description: Update for option to automatically lock the Personal Room a number of minutes after a meeting starts. When a room is locked, invitees cannot enter until the owner admits them. The period after which the meeting is locked is defined by `autoLockMinutes`.
+        autoLockMinutes:
+          type: number
+          description: Updated number of minutes after which the Personal Room is locked if `enabledAutoLock` is enabled. Valid options are 0, 5, 10, 15 and 20.
+        enabledNotifyHost:
+          type: boolean
+          example: true
+          description: Update for flag to enable notifying the owner of a Personal Room when someone enters the Personal Room lobby while the owner is not in the room.
+        supportCoHost:
+          type: boolean
+          example: true
+          description: Update for flag allowing other invitees to host a meetingCoHost in the Personal Room without the owner.
+        supportAnyoneAsCoHost:
+          type: boolean
+          description: Whether or not to allow any attendee with a host account on the target site to become a cohost when joining the Personal Room. The target site is user's preferred site.
+        allowFirstUserToBeCoHost:
+          type: boolean
+          description: Whether or not to allow the first attendee with a host account on the target site to become a cohost when joining the Personal Room. The target site is user's preferred site.
+        allowAuthenticatedDevices:
+          type: boolean
+          description: Whether or not to allow authenticated video devices in the user's organization to start or join the meeting without a prompt.
+        coHosts:
+          type: array
+          items:
+            type: object
+            required:
+            - email
+            - displayName
+            properties:
+              email:
+                type: string
+                example: john.andersen@example.com
+                description: Email address for cohost. This attribute can be modified with the [Update Personal Meeting Room Options](/docs/api/v1/meeting-preferences/update-personal-meeting-room-options) API.
+              displayName:
+                type: string
+                example: John Andersen
+                description: Display name for cohost. This attribute can be modified with the [Update Personal Meeting Room Options](/docs/api/v1/meeting-preferences/update-personal-meeting-room-options) API.
+          description: Updated array defining cohosts for the room if both `supportAnyoneAsCoHost` and `allowFirstUserToBeCoHost` are `false`
+    AudioObject:
+      type: object
+      required:
+      - defaultAudioType
+      - otherTeleconferenceDescription
+      - enabledGlobalCallIn
+      - enabledTollFree
+      - enabledAutoConnection
+      - officeNumber
+      - mobileNumber
+      properties:
+        defaultAudioType:
+          type: string
+          enum:
+          - webexAudio
+          - voipOnly
+          - otherTeleconferenceService
+          - none
+          description: "Default audio type. This attribute can be modified with the with the [Update Audio Options](/docs/api/v1/meeting-preferences/update-audio-options) API.\n * `webexAudio` - Webex audio. This supports telephony and VoIP.\n * `voipOnly` - Support only VoIP.\n * `otherTeleconferenceService` - Other teleconference service. Details are defined in the `otherTeleconferenceDescription` parameter.\n * `none` - No audio.\n"
+        otherTeleconferenceDescription:
+          type: string
+          description: Phone number and other information for the teleconference provider to be used, along with instructions for invitees. This attribute can be modified with the with the [Update Audio Options](/docs/api/v1/meeting-preferences/update-audio-options) API.
+        enabledGlobalCallIn:
+          type: boolean
+          description: 'Flag to enable/disable global call ins. ***Note***: If the site does not support global call-ins, you cannot set this option. This attribute can be modified with the with the [Update Audio Options](/docs/api/v1/meeting-preferences/update-audio-options) API.'
+        enabledTollFree:
+          type: boolean
+          description: 'Flag to enable/disable call-ins from toll-free numbers.  ***Note***: If the site does not support calls from toll-free numbers, you cannot set this option. This attribute can be modified with the with the [Update Audio Options](/docs/api/v1/meeting-preferences/update-audio-options) API.'
+        enabledAutoConnection:
+          type: boolean
+          description: Flag to enable/disable automatically connecting to audio using a computer. The meeting host can enable/disable this option. When this option is set to `true`, the user is automatically connected to audio via a computer when they start or join a Webex Meetings meeting on a desktop. This attribute can be modified with the with the [Update Audio Options](/docs/api/v1/meeting-preferences/update-audio-options) API.
+        audioPin:
+          type: string
+          description: PIN to provide a secondary level of authentication for calls where the host is using the phone and may need to invite additional invitees. It must be exactly 4 digits. It cannot contain sequential digits, such as 1234 or 4321, or repeat a digit 4 times, such as 1111. This attribute can be modified with the with the [Update Audio Options](/docs/api/v1/meeting-preferences/update-audio-options) API.
+        officeNumber:
+          type: object
+          required:
+          - countryCode
+          - number
+          - enabledCallInAuthentication
+          - enabledCallMe
+          properties:
+            countryCode:
+              type: string
+              description: Country code for the phone number. This attribute can be modified with the with the [Update Audio Options](/docs/api/v1/meeting-preferences/update-audio-options) API.
+            number:
+              type: string
+              description: Phone number. It cannot be longer than 30 characters. This attribute can be modified with the with the [Update Audio Options](/docs/api/v1/meeting-preferences/update-audio-options) API.
+            enabledCallInAuthentication:
+              type: boolean
+              description: Flag identifying the phone number as the one that will be used to dial into a teleconference. This attribute can be modified with the with the [Update Audio Options](/docs/api/v1/meeting-preferences/update-audio-options) API.
+            enabledCallMe:
+              type: boolean
+              description: 'Flag to enable/disable Call Me number display on the meeting client. This attribute can be modified with the with the [Update Audio Options](/docs/api/v1/meeting-preferences/update-audio-options) API. ***Note***: This feature is only effective if the site supports the ***Call Me*** feature.'
+          description: Office phone number. We recommend that phone numbers be specified to facilitate connecting via audio. This attribute can be modified with the with the [Update Audio Options](/docs/api/v1/meeting-preferences/update-audio-options) API.
+        mobileNumber:
+          type: object
+          required:
+          - countryCode
+          - number
+          - enabledCallInAuthentication
+          - enabledCallMe
+          properties:
+            countryCode:
+              type: string
+              description: Country code for the phone number. This attribute can be modified with the with the [Update Audio Options](/docs/api/v1/meeting-preferences/update-audio-options) API.
+            number:
+              type: string
+              description: Phone number. It cannot be longer than 30 characters. This attribute can be modified with the with the [Update Audio Options](/docs/api/v1/meeting-preferences/update-audio-options) API.
+            enabledCallInAuthentication:
+              type: boolean
+              description: Flag identifying the phone number as the one that will be used to dial into a teleconference. This attribute can be modified with the with the [Update Audio Options](/docs/api/v1/meeting-preferences/update-audio-options) API.
+            enabledCallMe:
+              type: boolean
+              description: 'Flag to enable/disable Call Me number display on the meeting client. This attribute can be modified with the with the [Update Audio Options](/docs/api/v1/meeting-preferences/update-audio-options) API. ***Note***: This feature is only effective if the site supports the ***Call Me*** feature.'
+          description: Mobile phone number. We recommend that phone numbers be specified to facilitate connecting via audio. This attribute can be modified with the with the [Update Audio Options](/docs/api/v1/meeting-preferences/update-audio-options) API.
+    SchedulingOptionsObject:
+      type: object
+      required:
+      - enabledJoinBeforeHost
+      - joinBeforeHostMinutes
+      - enabledAutoShareRecording
+      properties:
+        enabledJoinBeforeHost:
+          type: boolean
+          description: 'Flag to enable/disable ***Join Before Host***. The period during which invitees can join before the start time is defined by `autoLockMinutes`. This attribute can be modified with the [Update Scheduling Options](/docs/api/v1/meeting-preferences/update-scheduling-options) API. ***Note***: This feature is only effective if the site supports the ***Join Before Host*** feature. This attribute can be modified with the [Update Scheduling Options](/docs/api/v1/meeting-preferences/update-scheduling-options) API.'
+        joinBeforeHostMinutes:
+          type: number
+          description: Number of minutes before the start time that an invitee can join a meeting if `enabledJoinBeforeHost` is true. Valid options are 0, 5, 10 and 15. This attribute can be modified with the [Update Scheduling Options](/docs/api/v1/meeting-preferences/update-scheduling-options) API.
+        enabledAutoShareRecording:
+          type: boolean
+          description: Flag to enable/disable the automatic sharing of the meeting recording with invitees when it is available. This attribute can be modified with the [Update Scheduling Options](/docs/api/v1/meeting-preferences/update-scheduling-options) API.
+        enabledWebexAssistantByDefault:
+          type: boolean
+          description: Flag to automatically enable Webex Assistant whenever you start a meeting. This attribute can be modified with the [Update Scheduling Options](/docs/api/v1/meeting-preferences/update-scheduling-options) API.
+        delegateEmails:
+          type: array
+          items:
+            type: string
+            example: marcus.hoffmann@example.com, brenda.song@example.com
+          description: You can allow other hosts to schedule meetings on your behalf by entering their email addresses here. This attribute can be modified with the [Update Scheduling Options](/docs/api/v1/meeting-preferences/update-scheduling-options), [Insert Delegate Emails](/docs/api/v1/meeting-preferences/insert-delegate-emails), and [Update Scheduling Options](/docs/api/v1/meeting-preferences/delete-delegate-emails) APIs.
+    BatchRefreshPMRIDObject:
+      type: object
+      required:
+      - siteUrl
+      properties:
+        siteUrl:
+          type: string
+          example: example.webex.com
+          description: Site URL to refresh the personal room IDs.
+        personalMeetingRoomIds:
+          type: array
+          items:
+            $ref: '#/components/schemas/PMRIDObject'
+          description: Information of whose personal room IDs are to be refreshed and how to refresh. The maximum size of `items` is 100.
+    DefaultSiteObject:
+      type: object
+      required:
+      - siteUrl
+      properties:
+        siteUrl:
+          type: string
+          example: site1-example.webex.com
+          description: Access URL for the site.
+    PMRIDResponseObject:
+      type: object
+      properties:
+        email:
+          type: string
+          example: john.andersen@example.com
+          description: Email address for the meeting host whose personal room ID has been refreshed.
+        personId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8yNWJiZjgzMS01YmU5LTRjMjUtYjRiMC05YjU5MmM4YTA4NmI
+          description: Unique identifier for the meeting host whose personal room ID has been refreshed.
+        personalMeetingRoomId:
+          type: string
+          example: prABCD23670651
+          description: Refreshed personal room ID.
     PMRObject:
       type: object
       required:
@@ -2099,82 +2175,6 @@ components:
                   description: Target resource method (conforming with [RFC5998](https://tools.ietf.org/html/rfc5988)).
               description: '[HATEOAS](https://en.wikipedia.org/wiki/HATEOAS) information of global call-in numbers for joining teleconference from a phone.'
           description: Information for callbacks from meeting to phone or for joining a teleconference using a phone.
-    AudioObject:
-      type: object
-      required:
-      - defaultAudioType
-      - otherTeleconferenceDescription
-      - enabledGlobalCallIn
-      - enabledTollFree
-      - enabledAutoConnection
-      - officeNumber
-      - mobileNumber
-      properties:
-        defaultAudioType:
-          type: string
-          enum:
-          - webexAudio
-          - voipOnly
-          - otherTeleconferenceService
-          - none
-          description: "Default audio type. This attribute can be modified with the with the [Update Audio Options](/docs/api/v1/meeting-preferences/update-audio-options) API.\n * `webexAudio` - Webex audio. This supports telephony and VoIP.\n * `voipOnly` - Support only VoIP.\n * `otherTeleconferenceService` - Other teleconference service. Details are defined in the `otherTeleconferenceDescription` parameter.\n * `none` - No audio.\n"
-        otherTeleconferenceDescription:
-          type: string
-          description: Phone number and other information for the teleconference provider to be used, along with instructions for invitees. This attribute can be modified with the with the [Update Audio Options](/docs/api/v1/meeting-preferences/update-audio-options) API.
-        enabledGlobalCallIn:
-          type: boolean
-          description: 'Flag to enable/disable global call ins. ***Note***: If the site does not support global call-ins, you cannot set this option. This attribute can be modified with the with the [Update Audio Options](/docs/api/v1/meeting-preferences/update-audio-options) API.'
-        enabledTollFree:
-          type: boolean
-          description: 'Flag to enable/disable call-ins from toll-free numbers.  ***Note***: If the site does not support calls from toll-free numbers, you cannot set this option. This attribute can be modified with the with the [Update Audio Options](/docs/api/v1/meeting-preferences/update-audio-options) API.'
-        enabledAutoConnection:
-          type: boolean
-          description: Flag to enable/disable automatically connecting to audio using a computer. The meeting host can enable/disable this option. When this option is set to `true`, the user is automatically connected to audio via a computer when they start or join a Webex Meetings meeting on a desktop. This attribute can be modified with the with the [Update Audio Options](/docs/api/v1/meeting-preferences/update-audio-options) API.
-        audioPin:
-          type: string
-          description: PIN to provide a secondary level of authentication for calls where the host is using the phone and may need to invite additional invitees. It must be exactly 4 digits. It cannot contain sequential digits, such as 1234 or 4321, or repeat a digit 4 times, such as 1111. This attribute can be modified with the with the [Update Audio Options](/docs/api/v1/meeting-preferences/update-audio-options) API.
-        officeNumber:
-          type: object
-          required:
-          - countryCode
-          - number
-          - enabledCallInAuthentication
-          - enabledCallMe
-          properties:
-            countryCode:
-              type: string
-              description: Country code for the phone number. This attribute can be modified with the with the [Update Audio Options](/docs/api/v1/meeting-preferences/update-audio-options) API.
-            number:
-              type: string
-              description: Phone number. It cannot be longer than 30 characters. This attribute can be modified with the with the [Update Audio Options](/docs/api/v1/meeting-preferences/update-audio-options) API.
-            enabledCallInAuthentication:
-              type: boolean
-              description: Flag identifying the phone number as the one that will be used to dial into a teleconference. This attribute can be modified with the with the [Update Audio Options](/docs/api/v1/meeting-preferences/update-audio-options) API.
-            enabledCallMe:
-              type: boolean
-              description: 'Flag to enable/disable Call Me number display on the meeting client. This attribute can be modified with the with the [Update Audio Options](/docs/api/v1/meeting-preferences/update-audio-options) API. ***Note***: This feature is only effective if the site supports the ***Call Me*** feature.'
-          description: Office phone number. We recommend that phone numbers be specified to facilitate connecting via audio. This attribute can be modified with the with the [Update Audio Options](/docs/api/v1/meeting-preferences/update-audio-options) API.
-        mobileNumber:
-          type: object
-          required:
-          - countryCode
-          - number
-          - enabledCallInAuthentication
-          - enabledCallMe
-          properties:
-            countryCode:
-              type: string
-              description: Country code for the phone number. This attribute can be modified with the with the [Update Audio Options](/docs/api/v1/meeting-preferences/update-audio-options) API.
-            number:
-              type: string
-              description: Phone number. It cannot be longer than 30 characters. This attribute can be modified with the with the [Update Audio Options](/docs/api/v1/meeting-preferences/update-audio-options) API.
-            enabledCallInAuthentication:
-              type: boolean
-              description: Flag identifying the phone number as the one that will be used to dial into a teleconference. This attribute can be modified with the with the [Update Audio Options](/docs/api/v1/meeting-preferences/update-audio-options) API.
-            enabledCallMe:
-              type: boolean
-              description: 'Flag to enable/disable Call Me number display on the meeting client. This attribute can be modified with the with the [Update Audio Options](/docs/api/v1/meeting-preferences/update-audio-options) API. ***Note***: This feature is only effective if the site supports the ***Call Me*** feature.'
-          description: Mobile phone number. We recommend that phone numbers be specified to facilitate connecting via audio. This attribute can be modified with the with the [Update Audio Options](/docs/api/v1/meeting-preferences/update-audio-options) API.
   securitySchemes:
     oauth2:
       flows:

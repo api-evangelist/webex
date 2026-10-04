@@ -138,22 +138,17 @@ paths:
             application/json: {}
 components:
   schemas:
-    SearchRequest:
+    ApiErrorResponse:
+      description: Response body for an API error.
       type: object
       properties:
-        variables:
-          type: object
-          description: "The variables definition are the part that looks like task(from: $startTime, to: $endTime) in the query. \n It works just like the argument definitions for a function in a typed language. These variables are applicable only for persisted queries that has these variables. An example of persisted query with variables - {\n  task (from: $startTime, to: $endTime, filter: {\n    and : [\n      {channelType : {equals: telephony}}\n     ]\n  } , pagination: {cursor:\"0\"}) {\n      tasks {\n        id\n        channelType\n      }\n  }\n}"
-          example:
-            startTime: 1629369769066
-            endTime: 1629458280000
-        query:
+        trackingId:
           type: string
-          description: 'A graphQL query specifying the task attributes needed in the response for the specified time window. from: Start time for the query (in epoch milliseconds) and it cannot be older than 36 months from the current time. to: End time for the query (in epoch milliseconds) and it cannot be greater than the current time. The duration between to and from must not be more than 365 days.
-
-            '
-          example: 'query($startTime: Long!,$endTime: Long!) { task (from: $startTime, to: $endTime, filter: { and : [ {channelType : {equals: telephony}} {status: {equals: "created"}} {owner: {equals: {id: "owner-id"}}} {customer: {equals: {name: "customer-name"}}} ]} , pagination: {cursor:"0"}) { tasks { id channelType}}}'
-      example: null
+          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
+          example: c1a4fcef-aee2-4dea-8977-29f594760552
+        error:
+          description: An object containing details about the error.
+          $ref: '#/components/schemas/ErrorDetails'
     ErrorDetails:
       description: Details of an error.
       type: object
@@ -175,17 +170,22 @@ components:
           type: string
           description: A human readable explanation for the occurrence of an error.
           example: Incorrect Credentials.
-    ApiErrorResponse:
-      description: Response body for an API error.
+    SearchRequest:
       type: object
       properties:
-        trackingId:
+        variables:
+          type: object
+          description: "The variables definition are the part that looks like task(from: $startTime, to: $endTime) in the query. \n It works just like the argument definitions for a function in a typed language. These variables are applicable only for persisted queries that has these variables. An example of persisted query with variables - {\n  task (from: $startTime, to: $endTime, filter: {\n    and : [\n      {channelType : {equals: telephony}}\n     ]\n  } , pagination: {cursor:\"0\"}) {\n      tasks {\n        id\n        channelType\n      }\n  }\n}"
+          example:
+            startTime: 1629369769066
+            endTime: 1629458280000
+        query:
           type: string
-          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
-          example: c1a4fcef-aee2-4dea-8977-29f594760552
-        error:
-          description: An object containing details about the error.
-          $ref: '#/components/schemas/ErrorDetails'
+          description: 'A graphQL query specifying the task attributes needed in the response for the specified time window. from: Start time for the query (in epoch milliseconds) and it cannot be older than 36 months from the current time. to: End time for the query (in epoch milliseconds) and it cannot be greater than the current time. The duration between to and from must not be more than 365 days.
+
+            '
+          example: 'query($startTime: Long!,$endTime: Long!) { task (from: $startTime, to: $endTime, filter: { and : [ {channelType : {equals: telephony}} {status: {equals: "created"}} {owner: {equals: {id: "owner-id"}}} {customer: {equals: {name: "customer-name"}}} ]} , pagination: {cursor:"0"}) { tasks { id channelType}}}'
+      example: null
   securitySchemes:
     oauth2:
       flows:

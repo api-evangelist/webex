@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/webex/main/json-schema/webex-sequential-ring-settings-get-schema.json",
+  "title": "SequentialRingSettingsGet",
+  "x-generated": "2026-10-04",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/webex-call-settings-for-me-with-userhub-phase3-api-openapi.yml#/components/schemas/SequentialRingSettingsGet",
+  "type": "object",
+  "required": [
+    "enabled"
+  ],
+  "properties": {
+    "enabled": {
+      "type": "boolean",
+      "description": "`true` if the sequential ring feature is enabled."
+    },
+    "ringBaseLocationFirstEnabled": {
+      "type": "boolean",
+      "description": "When `true`, the user's own devices ring before sequential ring numbers."
+    },
+    "baseLocationNumberOfRings": {
+      "type": "integer",
+      "description": "Number of rings for the user's own devices. Minimum: 2, Maximum: 20."
+    },
+    "continueIfBaseLocationIsBusyEnabled": {
+      "type": "boolean",
+      "description": "When `true`, sequential ring continues even when the user is unavailable. It controls if we allow trying the sequential ring numbers when either a service for the user such as Do Not Disturb or Call Waiting sends the call to busy processing, or ringBaseLocationFirstEnabled is true but all the user's devices are unreachable."
+    },
+    "callsToVoicemailEnabled": {
+      "type": "boolean",
+      "description": "When `true`, the caller is provided the option to press the # key to end the sequential ring service and send the call to no answer handling such as voicemail."
+    },
+    "phoneNumbers": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/SequentialRingNumber"
+      },
+      "description": "List of phone numbers to ring sequentially."
+    },
+    "criteria": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/SequentialRingCriteriaSummary"
+      },
+      "description": "List of criteria specifying conditions when sequential ring is in effect."
+    }
+  },
+  "$defs": {
+    "SequentialRingCriteriaSummary": {
+      "type": "object",
+      "required": [
+        "id",
+        "scheduleName",
+        "source",
+        "ringEnabled"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for criteria."
+        },
+        "scheduleName": {
+          "type": "string",
+          "description": "Name of the schedule which determines when sequential ring is in effect."
+        },
+        "source": {
+          "type": "string",
+          "enum": [
+            "ALL_NUMBERS",
+            "SPECIFIC_NUMBERS"
+          ],
+          "description": "Type of the source.\n * `ALL_NUMBERS` - sequential ring applies to calls from any phone number.\n * `SPECIFIC_NUMBERS` - sequential ring applies to calls from specific phone numbers.\n"
+        },
+        "ringEnabled": {
+          "type": "boolean",
+          "description": "Determines whether sequential ring is applied for calls matching this criteria. If `true`, sequential ring is applied. If `false`, this criteria acts as a 'Don't Ring' rule. Criteria with ringEnabled set to false have precedence over criteria with ringEnabled set to true."
+        }
+      }
+    },
+    "SequentialRingNumber": {
+      "type": "object",
+      "required": [
+        "answerConfirmationRequiredEnabled",
+        "numberOfRings"
+      ],
+      "properties": {
+        "phoneNumber": {
+          "type": "string",
+          "description": "Phone number set as the sequential number."
+        },
+        "answerConfirmationRequiredEnabled": {
+          "type": "boolean",
+          "description": "When set to `true` the called party is required to press 1 on the keypad to receive the call."
+        },
+        "numberOfRings": {
+          "type": "number",
+          "description": "The number of rings to the specified phone number before the call advances to the subsequent number in the sequence or goes to voicemail."
+        }
+      }
+    }
+  }
+}

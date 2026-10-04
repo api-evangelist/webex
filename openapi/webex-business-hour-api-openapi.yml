@@ -1181,23 +1181,6 @@ paths:
       deprecated: true
 components:
   schemas:
-    BulkResponseDTO:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/BulkResponseItemDTO'
-    BulkRequestDTOBusinessHoursDTO:
-      type: object
-      description: Bulk Request Business Hours schema.
-      properties:
-        items:
-          type: array
-          description: List of items in the bulk request.
-          items:
-            $ref: '#/components/schemas/BulkRequestItemDTOBusinessHoursDTO'
-            description: Item.
     ErrorDetails:
       description: Details of an error.
       type: object
@@ -1211,87 +1194,6 @@ components:
           description: A message providing details about the error.
           items:
             $ref: '#/components/schemas/OperationError'
-    ApiErrorResponse:
-      description: Response body for an API error.
-      type: object
-      properties:
-        trackingId:
-          type: string
-          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
-          example: c1a4fcef-aee2-4dea-8977-29f594760552
-        error:
-          description: An object containing details about the error.
-          $ref: '#/components/schemas/ErrorDetails'
-    BulkRequestItemDTOBusinessHoursDTO:
-      type: object
-      description: List of items in the bulk request.
-      properties:
-        itemIdentifier:
-          type: integer
-          format: int32
-          description: Unique item identifier for a bulk operation.
-          example: 10
-        item:
-          $ref: '#/components/schemas/BusinessHoursDTO'
-          description: Item.
-        requestAction:
-          type: string
-          description: Identifier for action type. Possible values are `SAVE` and `DELETE`.
-          example: SAVE
-    MetaDataReferencesPagingInfo:
-      title: MetaDataReferencesPagingInfo
-      type: object
-      properties:
-        orgid:
-          maxLength: 36
-          minLength: 32
-          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
-          type: string
-          description: Org ID
-          format: uuid
-          example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
-        page:
-          type: integer
-          description: Current page number
-          format: int32
-          example: 1
-        pageSize:
-          type: integer
-          description: Page size for current data set
-          format: int32
-          example: 100
-        totalPages:
-          type: integer
-          description: Number of pages
-          format: int32
-          example: 1
-        totalRecords:
-          type: integer
-          description: Total number of items
-          format: int32
-          example: 1000
-        links:
-          type: object
-          description: Map of pagination links with self, next, prev, last and first
-          example:
-            next: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=2&pageSize=10
-            last: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=3&pageSize=10
-            prev: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=0&pageSize=10
-            self: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=1&pageSize=10
-            first: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=0&pageSize=10
-        referencedEntities:
-          type: array
-          description: List of referenced entities
-          example:
-          - agent-profile
-          - entrypoint
-          items:
-            type: string
-        currentEntity:
-          type: string
-          description: Name of current entity
-          example: entity_name
-      description: Metadata of response for references with paging information
     BulkResponseItemDTO:
       type: object
       properties:
@@ -1336,6 +1238,151 @@ components:
         itemIdentifier: 10
         operationType: CREATE
         status: 400
+    EntityInfo:
+      type: object
+      properties:
+        id:
+          type: string
+          description: id
+          example: id.
+        name:
+          type: string
+          description: name
+          example: name.
+        additionalAttributes:
+          type: object
+          additionalProperties:
+            type: string
+            description: A map containing additional attributes of entity where both the key and value are Strings.
+            example: '{"key1":"value1","key2":"value2"}'
+          description: A map containing additional attributes of entity where both the key and value are Strings.
+          example:
+            key1: value1
+            key2: value2
+        createdDate:
+          type: string
+        lastModifiedDate:
+          type: string
+        version:
+          type: integer
+          format: int32
+    BulkRequestItemDTOBusinessHoursDTO:
+      type: object
+      description: List of items in the bulk request.
+      properties:
+        itemIdentifier:
+          type: integer
+          format: int32
+          description: Unique item identifier for a bulk operation.
+          example: 10
+        item:
+          $ref: '#/components/schemas/BusinessHoursDTO'
+          description: Item.
+        requestAction:
+          type: string
+          description: Identifier for action type. Possible values are `SAVE` and `DELETE`.
+          example: SAVE
+    ApiErrorResponse:
+      description: Response body for an API error.
+      type: object
+      properties:
+        trackingId:
+          type: string
+          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
+          example: c1a4fcef-aee2-4dea-8977-29f594760552
+        error:
+          description: An object containing details about the error.
+          $ref: '#/components/schemas/ErrorDetails'
+    OperationError:
+      description: An error message providing details about the operation failure.
+      type: object
+      properties:
+        description:
+          type: string
+          description: A human readable explanation for the occurrence of an error.
+          example: Incorrect Credentials.
+    EntityReferenceInfoDTO:
+      type: object
+      properties:
+        description:
+          type: string
+          description: Description about reference info.
+          example: list of referenced entities
+        meta:
+          $ref: '#/components/schemas/MetaDataReferencesPagingInfo'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityInfo'
+    BulkRequestDTOBusinessHoursDTO:
+      type: object
+      description: Bulk Request Business Hours schema.
+      properties:
+        items:
+          type: array
+          description: List of items in the bulk request.
+          items:
+            $ref: '#/components/schemas/BulkRequestItemDTOBusinessHoursDTO'
+            description: Item.
+    BusinessHoursDTOList:
+      type: object
+      description: Business Hours schema.
+      properties:
+        organizationId:
+          type: string
+          format: uuid
+          description: ID of the contact center organization. This field is required for all bulk save operations.
+          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+          maxLength: 36
+          minLength: 32
+          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
+        id:
+          type: string
+          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
+          example: 93912f11-6017-404b-bf14-5331890b1797
+        version:
+          type: integer
+          format: int32
+          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
+          example: 1
+        name:
+          type: string
+          description: Enter a name for the agent profile.
+          example: New Business Hour
+          maxLength: 80
+          minLength: 1
+          pattern: ^[a-zA-Z0-9_-]+(\s?[a-zA-Z0-9_-]+)*$
+        description:
+          type: string
+          description: (Optional) Enter a description of the profile.
+          example: This business hour can be set for happy hours
+          maxLength: 255
+          minLength: 0
+        timezone:
+          type: string
+          description: The time zone that you provision for your business hour.
+          example: America/New_York
+          minLength: 1
+        holidaysId:
+          type: string
+          description: Holidays Id.
+        overridesId:
+          type: string
+          description: Overrides Id.
+        workingHoursCount:
+          type: integer
+          format: int64
+          description: Working Hours Count.
+        createdTime:
+          type: integer
+          format: int64
+          description: This is the created time of the entity.
+          example: 123456789
+        lastUpdatedTime:
+          type: integer
+          format: int64
+          description: This is the updated time of the entity.
+          example: 123456789
     BusinessHoursDTO:
       type: object
       description: Business Hours schema.
@@ -1428,106 +1475,6 @@ components:
       - name
       - timezone
       - workingHours
-    EntityReferenceInfoDTO:
-      type: object
-      properties:
-        description:
-          type: string
-          description: Description about reference info.
-          example: list of referenced entities
-        meta:
-          $ref: '#/components/schemas/MetaDataReferencesPagingInfo'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/EntityInfo'
-    EntityInfo:
-      type: object
-      properties:
-        id:
-          type: string
-          description: id
-          example: id.
-        name:
-          type: string
-          description: name
-          example: name.
-        additionalAttributes:
-          type: object
-          additionalProperties:
-            type: string
-            description: A map containing additional attributes of entity where both the key and value are Strings.
-            example: '{"key1":"value1","key2":"value2"}'
-          description: A map containing additional attributes of entity where both the key and value are Strings.
-          example:
-            key1: value1
-            key2: value2
-        createdDate:
-          type: string
-        lastModifiedDate:
-          type: string
-        version:
-          type: integer
-          format: int32
-    BusinessHoursDTOList:
-      type: object
-      description: Business Hours schema.
-      properties:
-        organizationId:
-          type: string
-          format: uuid
-          description: ID of the contact center organization. This field is required for all bulk save operations.
-          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
-          maxLength: 36
-          minLength: 32
-          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
-        id:
-          type: string
-          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
-          example: 93912f11-6017-404b-bf14-5331890b1797
-        version:
-          type: integer
-          format: int32
-          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
-          example: 1
-        name:
-          type: string
-          description: Enter a name for the agent profile.
-          example: New Business Hour
-          maxLength: 80
-          minLength: 1
-          pattern: ^[a-zA-Z0-9_-]+(\s?[a-zA-Z0-9_-]+)*$
-        description:
-          type: string
-          description: (Optional) Enter a description of the profile.
-          example: This business hour can be set for happy hours
-          maxLength: 255
-          minLength: 0
-        timezone:
-          type: string
-          description: The time zone that you provision for your business hour.
-          example: America/New_York
-          minLength: 1
-        holidaysId:
-          type: string
-          description: Holidays Id.
-        overridesId:
-          type: string
-          description: Overrides Id.
-        workingHoursCount:
-          type: integer
-          format: int64
-          description: Working Hours Count.
-        createdTime:
-          type: integer
-          format: int64
-          description: This is the created time of the entity.
-          example: 123456789
-        lastUpdatedTime:
-          type: integer
-          format: int64
-          description: This is the updated time of the entity.
-          example: 123456789
     ResponseEnvelopeBusinessHoursDTO:
       type: object
       description: Response Envelope Business Hours schema.
@@ -1543,6 +1490,67 @@ components:
           items:
             $ref: '#/components/schemas/BusinessHoursDTO'
             description: Data item.
+    BulkResponseDTO:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BulkResponseItemDTO'
+    MetaDataReferencesPagingInfo:
+      title: MetaDataReferencesPagingInfo
+      type: object
+      properties:
+        orgid:
+          maxLength: 36
+          minLength: 32
+          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
+          type: string
+          description: Org ID
+          format: uuid
+          example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+        page:
+          type: integer
+          description: Current page number
+          format: int32
+          example: 1
+        pageSize:
+          type: integer
+          description: Page size for current data set
+          format: int32
+          example: 100
+        totalPages:
+          type: integer
+          description: Number of pages
+          format: int32
+          example: 1
+        totalRecords:
+          type: integer
+          description: Total number of items
+          format: int32
+          example: 1000
+        links:
+          type: object
+          description: Map of pagination links with self, next, prev, last and first
+          example:
+            next: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=2&pageSize=10
+            last: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=3&pageSize=10
+            prev: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=0&pageSize=10
+            self: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=1&pageSize=10
+            first: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/cad-variable?page=0&pageSize=10
+        referencedEntities:
+          type: array
+          description: List of referenced entities
+          example:
+          - agent-profile
+          - entrypoint
+          items:
+            type: string
+        currentEntity:
+          type: string
+          description: Name of current entity
+          example: entity_name
+      description: Metadata of response for references with paging information
     WorkingHoursDTO:
       type: object
       description: Working hours
@@ -1598,14 +1606,42 @@ components:
       required:
       - days
       - name
-    OperationError:
-      description: An error message providing details about the operation failure.
+    WorkingHoursBulkExportDTO:
       type: object
       properties:
+        workingHourName:
+          type: string
+          description: Name of the working hour shift.
+        startTime:
+          type: string
+          description: Start time of the working hour shift.
+        endTime:
+          type: string
+          description: End time of the working hour shift.
+        days:
+          type: array
+          description: List of days for which this working hour shift is applicable.
+          items:
+            type: string
+            description: Day of the week.
+    BusinessHoursBulkExportDTO:
+      type: object
+      properties:
+        name:
+          type: string
         description:
           type: string
-          description: A human readable explanation for the occurrence of an error.
-          example: Incorrect Credentials.
+        timezone:
+          type: string
+        holidayName:
+          type: string
+        overrideName:
+          type: string
+        workingHours:
+          uniqueItems: true
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkingHoursBulkExportDTO'
     BulkExportDTOBusinessHoursBulkExportDTO:
       type: object
       properties:
@@ -1632,42 +1668,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/BusinessHoursBulkExportDTO'
-    BusinessHoursBulkExportDTO:
-      type: object
-      properties:
-        name:
-          type: string
-        description:
-          type: string
-        timezone:
-          type: string
-        holidayName:
-          type: string
-        overrideName:
-          type: string
-        workingHours:
-          uniqueItems: true
-          type: array
-          items:
-            $ref: '#/components/schemas/WorkingHoursBulkExportDTO'
-    WorkingHoursBulkExportDTO:
-      type: object
-      properties:
-        workingHourName:
-          type: string
-          description: Name of the working hour shift.
-        startTime:
-          type: string
-          description: Start time of the working hour shift.
-        endTime:
-          type: string
-          description: End time of the working hour shift.
-        days:
-          type: array
-          description: List of days for which this working hour shift is applicable.
-          items:
-            type: string
-            description: Day of the week.
   securitySchemes:
     oauth2:
       flows:

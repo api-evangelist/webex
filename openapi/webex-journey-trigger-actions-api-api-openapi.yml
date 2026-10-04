@@ -428,38 +428,41 @@ paths:
       - bearerAuth: []
 components:
   schemas:
-    JourneyActionConfigurationUpsertRequestModel:
-      required:
-      - name
-      - rules
+    RulesDocument:
       type: object
       properties:
-        name:
+        type:
           type: string
-          description: Name
-          example: sample-action
-        cooldownPeriodInMinutes:
-          type: integer
-          description: Cooldown Period In Minutes
-          format: int32
-          example: 10
-        rules:
-          $ref: '#/components/schemas/Rules'
-        actionTriggers:
-          type: array
-          example:
-          - type: Webhook
-            webhookURL: https://hooks.us.webexconnect.io/events/6M347NJ6
-            attributes:
-              httpverb: post
-              requestbody: '{"SMS":"12263762551","callID":"","MessageToSend":"Hello there!"}'
-          items:
-            $ref: '#/components/schemas/JourneyActionTriggerConfig'
-        isActive:
-          type: boolean
-          description: Is Journey Action Configuration Active
-          example: true
-      description: Create a new, or Update and existing Journey Action
+          description: type
+          example: nested
+        childrenRules:
+          type: object
+          properties:
+            type:
+              type: string
+              description: type
+              example: nested
+          description: childrenRules
+          discriminator:
+            propertyName: type
+      description: Configuration details of the Rules based on which the Action will be triggered
+      example:
+        logic: OR
+        args:
+        - item buy,price,integer,Sum GT 100
+        - item buy,sku,integer,Count GT 5
+      discriminator:
+        propertyName: type
+    BaseMetaResponseEnvelope:
+      type: object
+      properties:
+        organizationId:
+          type: string
+          description: Organization ID
+          example: 1eb65fdf-9643-417f-9974-ad72cae0e10f
+      description: Meta information of the response
+      example:
+        organizationId: 1eb65fdf-9643-417f-9974-ad72cae0e10f
     ApiError400:
       required:
       - trackingId
@@ -559,41 +562,38 @@ components:
           type: string
           description: Unique ID by which a request can be debugged. Please provide if opening a support case.
           example: 76cd71d0e678a8bb
-    RulesDocument:
+    JourneyActionConfigurationUpsertRequestModel:
+      required:
+      - name
+      - rules
       type: object
       properties:
-        type:
+        name:
           type: string
-          description: type
-          example: nested
-        childrenRules:
-          type: object
-          properties:
-            type:
-              type: string
-              description: type
-              example: nested
-          description: childrenRules
-          discriminator:
-            propertyName: type
-      description: Configuration details of the Rules based on which the Action will be triggered
-      example:
-        logic: OR
-        args:
-        - item buy,price,integer,Sum GT 100
-        - item buy,sku,integer,Count GT 5
-      discriminator:
-        propertyName: type
-    BaseMetaResponseEnvelope:
-      type: object
-      properties:
-        organizationId:
-          type: string
-          description: Organization ID
-          example: 1eb65fdf-9643-417f-9974-ad72cae0e10f
-      description: Meta information of the response
-      example:
-        organizationId: 1eb65fdf-9643-417f-9974-ad72cae0e10f
+          description: Name
+          example: sample-action
+        cooldownPeriodInMinutes:
+          type: integer
+          description: Cooldown Period In Minutes
+          format: int32
+          example: 10
+        rules:
+          $ref: '#/components/schemas/Rules'
+        actionTriggers:
+          type: array
+          example:
+          - type: Webhook
+            webhookURL: https://hooks.us.webexconnect.io/events/6M347NJ6
+            attributes:
+              httpverb: post
+              requestbody: '{"SMS":"12263762551","callID":"","MessageToSend":"Hello there!"}'
+          items:
+            $ref: '#/components/schemas/JourneyActionTriggerConfig'
+        isActive:
+          type: boolean
+          description: Is Journey Action Configuration Active
+          example: true
+      description: Create a new, or Update and existing Journey Action
     JourneyActionGetResponse:
       type: object
       properties:
@@ -604,15 +604,22 @@ components:
           description: Data part of the response
           items:
             $ref: '#/components/schemas/JourneyActionConfigResponseModel'
-    JourneyActionTriggerConfig:
-      required:
-      - type
+    Rules:
       type: object
+      description: Configuration details of the Rules
       properties:
-        type:
+        logic:
           type: string
-          description: Type
-          example: Webhook
+          description: logic
+          example: OR
+        args:
+          type: array
+          description: Arguments
+          example:
+          - item buy,price,integer,Sum GT 100
+          - item buy,sku,integer,Count GT 5
+          items:
+            type: string
     JourneyActionConfigResponseModel:
       type: object
       properties:
@@ -780,22 +787,15 @@ components:
           type: string
           description: Unique ID by which a request can be debugged. Please provide if opening a support case.
           example: 76cd71d0e678a8bb
-    Rules:
+    JourneyActionTriggerConfig:
+      required:
+      - type
       type: object
-      description: Configuration details of the Rules
       properties:
-        logic:
+        type:
           type: string
-          description: logic
-          example: OR
-        args:
-          type: array
-          description: Arguments
-          example:
-          - item buy,price,integer,Sum GT 100
-          - item buy,sku,integer,Count GT 5
-          items:
-            type: string
+          description: Type
+          example: Webhook
   securitySchemes:
     oauth2:
       flows:

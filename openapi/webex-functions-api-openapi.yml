@@ -651,6 +651,171 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
+    ErrorResponse:
+      type: object
+      description: Error response
+      properties:
+        code:
+          type: string
+          description: Error code
+        message:
+          type: string
+          description: Error description
+      example:
+        code: InvalidRequest
+        message: The campaign ID is missing
+    FnCreateReq:
+      title: FnCreateReq
+      type: object
+      description: Source code and metadata of a custom function. `language` defaults to `js`. `selectedRuntime` defaults to the highest supported runtime for the chosen language. The `outputs` field is a stringified (escaped) JSON of output variable names mapped to sample values.
+      additionalProperties: true
+      properties:
+        name:
+          type: string
+          description: Function name. Must be unique within the organization.
+          example: validateZipCode
+        description:
+          type: string
+          description: Human-readable description of the function.
+          example: Returns true if the supplied US zip code is in a valid 5-digit format.
+        language:
+          type: string
+          description: Programming language. Defaults to `js`.
+          enum:
+          - js
+          - py
+          default: js
+          example: js
+        selectedRuntime:
+          type: string
+          description: Runtime identifier (case-sensitive). For example, `nodejs22.x` or `python3.13`. Defaults to the highest supported runtime for the chosen language.
+          example: nodejs22.x
+        timeoutInSec:
+          type: integer
+          format: int32
+          description: Maximum execution time for the function, in seconds.
+          example: 3
+        sourceCode:
+          type: string
+          description: Function source code as an escaped string. The handler must be an exported async function `export const handle = async (request, response) => { ... }`. Read inputs from `request.inputs.*`, set the result via `response.data = { ... }`, and `return response`.
+          example: "export const handle = async (request, response) => {\n  response.data = { areaCode: String(request.inputs.ani || '').slice(-10).slice(0, 3) };\n  return response;\n}\n"
+        inputs:
+          type: array
+          description: Declared inputs of the function.
+          items:
+            $ref: '#/components/schemas/FnInputDef'
+        outputs:
+          type: string
+          description: Stringified JSON of output variable names mapped to sample values.
+          example: '{"isValid":true}'
+      example:
+        name: validateZipCode
+        description: Returns true if the supplied US zip code is in a valid 5-digit format.
+        language: js
+        selectedRuntime: nodejs22.x
+        timeoutInSec: 3
+        sourceCode: "export const handle = async (request, response) => {\n  response.data = { areaCode: String(request.inputs.ani || '').slice(-10).slice(0, 3) };\n  return response;\n}\n"
+        inputs:
+        - name: zip
+          dataType: string
+          value: '94043'
+        outputs: '{"isValid":true}'
+    FnPublishReq:
+      title: FnPublishReq
+      type: object
+      description: Tags and comments for a publish operation. Tags are case-sensitive.
+      additionalProperties: true
+      properties:
+        tags:
+          type: array
+          description: Publish tags to apply to this version.
+          items:
+            type: string
+            enum:
+            - Dev
+            - Test
+            - Latest
+            - Live
+          example:
+          - Dev
+          - Latest
+        comment:
+          type: string
+          description: Optional publish comment.
+          example: Initial release.
+    FnInputDef:
+      title: FnInputDef
+      type: object
+      description: A declared input variable of a custom function.
+      additionalProperties: true
+      properties:
+        name:
+          type: string
+          description: Input variable name.
+          example: zip
+        dataType:
+          type: string
+          description: Input data type.
+          enum:
+          - boolean
+          - datetime
+          - decimal
+          - integer
+          - json
+          - string
+          example: string
+        value:
+          description: Default or sample value for the input.
+          example: '94043'
+    FnStatusResponse:
+      title: FnStatusResponse
+      type: string
+      description: Acknowledgement returned by lock/unlock operations. Returns the literal JSON string "OK" on success.
+      example: OK
+    FnExport:
+      title: FnExport
+      type: object
+      description: Exported function definition, suitable for re-importing via the import API as an uploaded JSON file.
+      additionalProperties: true
+      properties:
+        name:
+          type: string
+          description: Function name.
+          example: validateZipCode
+        language:
+          type: string
+          description: Source language of the function (for example, `js`, `py`).
+          example: js
+        runtime:
+          type: string
+          description: Runtime the function executes on.
+          example: nodejs22.x
+        description:
+          type: string
+          description: Human-readable description of the function.
+          example: Validates and normalizes a US ZIP code.
+        sourceCode:
+          type: string
+          description: Full function source code.
+          example: export const handle = (request, response) => { /* ... */ };
+        inputs:
+          type: array
+          description: Declared function inputs.
+          items:
+            type: object
+            additionalProperties: true
+        outputs:
+          type: string
+          description: Declared function outputs as a JSON-encoded string.
+          example: '{"myOutputVar1": 7, "myOutputVar2": "String data"}'
+      example:
+        name: validateZipCode
+        language: js
+        runtime: nodejs22.x
+        description: Validates and normalizes a US ZIP code.
+        sourceCode: export const handle = (request, response) => { /* ... */ };
+        inputs: []
+        outputs: '{"myOutputVar1": 7, "myOutputVar2": "String data"}'
     FnConflictResponse:
       title: FnConflictResponse
       type: object
@@ -681,6 +846,37 @@ components:
         errors:
         - description: '409 CONFLICT "Function with name: validateZipCode already exists in org: 8eb7da9a-c81c-4d13-b08b-38fdeb7330d8. Please choose a different name."'
           type: Conflict
+    FnDataResp:
+      title: FnDataResp
+      type: object
+      description: A single custom function. The source code is returned under `fnCode`, and all lifecycle metadata under `fnMetadata`.
+      additionalProperties: true
+      properties:
+        fnCode:
+          type: string
+          description: Function source code as an escaped string. The handler is an exported async function `export const handle = async (request, response) => { ... }`.
+          example: "export const handle = async (request, response) => {\n  response.data = { areaCode: String(request.inputs.ani || '').slice(-10).slice(0, 3) };\n  return response;\n}\n"
+        fnMetadata:
+          $ref: '#/components/schemas/FnMetadata'
+      example:
+        fnCode: "export const handle = async (request, response) => {\n  response.data = { areaCode: String(request.inputs.ani || '').slice(-10).slice(0, 3) };\n  return response;\n}\n"
+        fnMetadata:
+          id: 64f1b2c3d4e5f6a7b8c9d0e1
+          orgId: 8eb7da9a-c81c-4d13-b08b-38fdeb7330d8
+          name: validateZipCode
+          description: Returns true if the supplied US zip code is in a valid 5-digit format.
+          language: js
+          selectedRuntime: nodejs22.x
+          status: Published
+          timeoutInSec: 3
+          tagVersionMap:
+            Dev: '1'
+            Latest: '1'
+          lockedBy: ''
+          createdBy: user@example.com
+          createdDate: '2026-05-28T14:23:01Z'
+          lastModifiedBy: user@example.com
+          lastModifiedDate: '2026-05-28T14:23:01Z'
     FnListResponse:
       title: FnListResponse
       type: object
@@ -716,37 +912,6 @@ components:
           pageSize: 100
           totalPages: 1
           totalRecords: 1
-    PageInfo:
-      title: PageInfo
-      type: object
-      description: Pagination details for a paged list response.
-      additionalProperties: true
-      properties:
-        currentPage:
-          type: integer
-          format: int32
-          description: Zero-based index of the returned page.
-          example: 0
-        pageSize:
-          type: integer
-          format: int32
-          description: Page size used by the query.
-          example: 100
-        totalPages:
-          type: integer
-          format: int32
-          description: Total number of pages.
-          example: 1
-        totalRecords:
-          type: integer
-          format: int64
-          description: Total number of records matching the query, across all pages.
-          example: 42
-      example:
-        currentPage: 0
-        pageSize: 100
-        totalPages: 1
-        totalRecords: 42
     FnMetadata:
       title: FnMetadata
       type: object
@@ -838,202 +1003,37 @@ components:
         createdDate: '2026-05-28T14:23:01Z'
         lastModifiedBy: user@example.com
         lastModifiedDate: '2026-05-28T14:23:01Z'
-    FnExport:
-      title: FnExport
+    PageInfo:
+      title: PageInfo
       type: object
-      description: Exported function definition, suitable for re-importing via the import API as an uploaded JSON file.
+      description: Pagination details for a paged list response.
       additionalProperties: true
       properties:
-        name:
-          type: string
-          description: Function name.
-          example: validateZipCode
-        language:
-          type: string
-          description: Source language of the function (for example, `js`, `py`).
-          example: js
-        runtime:
-          type: string
-          description: Runtime the function executes on.
-          example: nodejs22.x
-        description:
-          type: string
-          description: Human-readable description of the function.
-          example: Validates and normalizes a US ZIP code.
-        sourceCode:
-          type: string
-          description: Full function source code.
-          example: export const handle = (request, response) => { /* ... */ };
-        inputs:
-          type: array
-          description: Declared function inputs.
-          items:
-            type: object
-            additionalProperties: true
-        outputs:
-          type: string
-          description: Declared function outputs as a JSON-encoded string.
-          example: '{"myOutputVar1": 7, "myOutputVar2": "String data"}'
-      example:
-        name: validateZipCode
-        language: js
-        runtime: nodejs22.x
-        description: Validates and normalizes a US ZIP code.
-        sourceCode: export const handle = (request, response) => { /* ... */ };
-        inputs: []
-        outputs: '{"myOutputVar1": 7, "myOutputVar2": "String data"}'
-    FnInputDef:
-      title: FnInputDef
-      type: object
-      description: A declared input variable of a custom function.
-      additionalProperties: true
-      properties:
-        name:
-          type: string
-          description: Input variable name.
-          example: zip
-        dataType:
-          type: string
-          description: Input data type.
-          enum:
-          - boolean
-          - datetime
-          - decimal
-          - integer
-          - json
-          - string
-          example: string
-        value:
-          description: Default or sample value for the input.
-          example: '94043'
-    ErrorResponse:
-      type: object
-      description: Error response
-      properties:
-        code:
-          type: string
-          description: Error code
-        message:
-          type: string
-          description: Error description
-      example:
-        code: InvalidRequest
-        message: The campaign ID is missing
-    FnCreateReq:
-      title: FnCreateReq
-      type: object
-      description: Source code and metadata of a custom function. `language` defaults to `js`. `selectedRuntime` defaults to the highest supported runtime for the chosen language. The `outputs` field is a stringified (escaped) JSON of output variable names mapped to sample values.
-      additionalProperties: true
-      properties:
-        name:
-          type: string
-          description: Function name. Must be unique within the organization.
-          example: validateZipCode
-        description:
-          type: string
-          description: Human-readable description of the function.
-          example: Returns true if the supplied US zip code is in a valid 5-digit format.
-        language:
-          type: string
-          description: Programming language. Defaults to `js`.
-          enum:
-          - js
-          - py
-          default: js
-          example: js
-        selectedRuntime:
-          type: string
-          description: Runtime identifier (case-sensitive). For example, `nodejs22.x` or `python3.13`. Defaults to the highest supported runtime for the chosen language.
-          example: nodejs22.x
-        timeoutInSec:
+        currentPage:
           type: integer
           format: int32
-          description: Maximum execution time for the function, in seconds.
-          example: 3
-        sourceCode:
-          type: string
-          description: Function source code as an escaped string. The handler must be an exported async function `export const handle = async (request, response) => { ... }`. Read inputs from `request.inputs.*`, set the result via `response.data = { ... }`, and `return response`.
-          example: "export const handle = async (request, response) => {\n  response.data = { areaCode: String(request.inputs.ani || '').slice(-10).slice(0, 3) };\n  return response;\n}\n"
-        inputs:
-          type: array
-          description: Declared inputs of the function.
-          items:
-            $ref: '#/components/schemas/FnInputDef'
-        outputs:
-          type: string
-          description: Stringified JSON of output variable names mapped to sample values.
-          example: '{"isValid":true}'
+          description: Zero-based index of the returned page.
+          example: 0
+        pageSize:
+          type: integer
+          format: int32
+          description: Page size used by the query.
+          example: 100
+        totalPages:
+          type: integer
+          format: int32
+          description: Total number of pages.
+          example: 1
+        totalRecords:
+          type: integer
+          format: int64
+          description: Total number of records matching the query, across all pages.
+          example: 42
       example:
-        name: validateZipCode
-        description: Returns true if the supplied US zip code is in a valid 5-digit format.
-        language: js
-        selectedRuntime: nodejs22.x
-        timeoutInSec: 3
-        sourceCode: "export const handle = async (request, response) => {\n  response.data = { areaCode: String(request.inputs.ani || '').slice(-10).slice(0, 3) };\n  return response;\n}\n"
-        inputs:
-        - name: zip
-          dataType: string
-          value: '94043'
-        outputs: '{"isValid":true}'
-    FnStatusResponse:
-      title: FnStatusResponse
-      type: string
-      description: Acknowledgement returned by lock/unlock operations. Returns the literal JSON string "OK" on success.
-      example: OK
-    FnDataResp:
-      title: FnDataResp
-      type: object
-      description: A single custom function. The source code is returned under `fnCode`, and all lifecycle metadata under `fnMetadata`.
-      additionalProperties: true
-      properties:
-        fnCode:
-          type: string
-          description: Function source code as an escaped string. The handler is an exported async function `export const handle = async (request, response) => { ... }`.
-          example: "export const handle = async (request, response) => {\n  response.data = { areaCode: String(request.inputs.ani || '').slice(-10).slice(0, 3) };\n  return response;\n}\n"
-        fnMetadata:
-          $ref: '#/components/schemas/FnMetadata'
-      example:
-        fnCode: "export const handle = async (request, response) => {\n  response.data = { areaCode: String(request.inputs.ani || '').slice(-10).slice(0, 3) };\n  return response;\n}\n"
-        fnMetadata:
-          id: 64f1b2c3d4e5f6a7b8c9d0e1
-          orgId: 8eb7da9a-c81c-4d13-b08b-38fdeb7330d8
-          name: validateZipCode
-          description: Returns true if the supplied US zip code is in a valid 5-digit format.
-          language: js
-          selectedRuntime: nodejs22.x
-          status: Published
-          timeoutInSec: 3
-          tagVersionMap:
-            Dev: '1'
-            Latest: '1'
-          lockedBy: ''
-          createdBy: user@example.com
-          createdDate: '2026-05-28T14:23:01Z'
-          lastModifiedBy: user@example.com
-          lastModifiedDate: '2026-05-28T14:23:01Z'
-    FnPublishReq:
-      title: FnPublishReq
-      type: object
-      description: Tags and comments for a publish operation. Tags are case-sensitive.
-      additionalProperties: true
-      properties:
-        tags:
-          type: array
-          description: Publish tags to apply to this version.
-          items:
-            type: string
-            enum:
-            - Dev
-            - Test
-            - Latest
-            - Live
-          example:
-          - Dev
-          - Latest
-        comment:
-          type: string
-          description: Optional publish comment.
-          example: Initial release.
+        currentPage: 0
+        pageSize: 100
+        totalPages: 1
+        totalRecords: 42
   securitySchemes:
     oauth2:
       flows:

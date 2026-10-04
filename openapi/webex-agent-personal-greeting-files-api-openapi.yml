@@ -1869,22 +1869,45 @@ paths:
                     references: []
 components:
   schemas:
-    FieldRequestBody:
+    AgentPersonalGreetingPatchDTO_AgentPersonalGreetingsWithGreetingPurpose:
       type: object
-      description: Request payload identifying the entity references that should be removed from contact service queues. The `references` map contains key/value pairs where the key is the referenced entity type (for example, `team`, `site`, `agent`, `skillProfile`) and the value is the unique identifier of that entity. All matching references will be detached from any contact service queue in the target organization.
-      example:
-        references:
-          team: 76cf35bc-12df-49ef-88e1-c86226d8a645
-          skillProfile: af9eecc5-0472-4549-9a83-2afdae0d4ba0
+      description: Agent Personal Greeting Patch Agent Personal Greetings With Greeting Purpose schema.
       properties:
-        references:
+        attributeTag:
+          type: string
+          description: This is used to identify the purpose of a greeting.
+          example: ENVIP
+        greetingPurposeId:
+          type: string
+          description: Id of the greeting purpose
+          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+    ErrorDetails:
+      description: Details of an error.
+      type: object
+      properties:
+        key:
+          type: string
+          description: An application defined error code.
+          example: '401'
+        message:
+          type: array
+          description: A message providing details about the error.
+          items:
+            $ref: '#/components/schemas/OperationError'
+    Response:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        details:
           type: object
           additionalProperties:
-            type: string
-            description: References additional property.
-          description: Map of entity type to entity identifier whose references must be removed from contact service queues. The key is the referenced entity type (e.g. `team`, `site`, `agent`, `skillProfile`) and the value is its UUID.
-          example:
-            team: 76cf35bc-12df-49ef-88e1-c86226d8a645
+            type: object
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'
     Link:
       type: object
       properties:
@@ -1916,27 +1939,6 @@ components:
           type: string
           description: Id of the greeting purpose
           example: f53c8b54-46ca-43f6-ba05-08426a46e23d
-    ErrorDetails:
-      description: Details of an error.
-      type: object
-      properties:
-        key:
-          type: string
-          description: An application defined error code.
-          example: '401'
-        message:
-          type: array
-          description: A message providing details about the error.
-          items:
-            $ref: '#/components/schemas/OperationError'
-    OperationError:
-      description: An error message providing details about the operation failure.
-      type: object
-      properties:
-        description:
-          type: string
-          description: A human readable explanation for the occurrence of an error.
-          example: Incorrect Credentials.
     ApiErrorResponse:
       description: Response body for an API error.
       type: object
@@ -1948,157 +1950,14 @@ components:
         error:
           description: An object containing details about the error.
           $ref: '#/components/schemas/ErrorDetails'
-    AgentPersonalGreetingPatchDTO_AgentPersonalGreetingsWithGreetingPurpose:
+    OperationError:
+      description: An error message providing details about the operation failure.
       type: object
-      description: Agent Personal Greeting Patch Agent Personal Greetings With Greeting Purpose schema.
       properties:
-        attributeTag:
+        description:
           type: string
-          description: This is used to identify the purpose of a greeting.
-          example: ENVIP
-        greetingPurposeId:
-          type: string
-          description: Id of the greeting purpose
-          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
-    MetaDataWithPagingInfo:
-      type: object
-      description: Metadata of response with paging information
-      properties:
-        orgid:
-          type: string
-          format: uuid
-          description: Organization ID.
-          example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
-          maxLength: 36
-          minLength: 32
-          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
-        page:
-          type: integer
-          format: int32
-          description: Current page number.
-          example: 1
-        pageSize:
-          type: integer
-          format: int32
-          description: Page size for current data set.
-          example: 100
-        totalPages:
-          type: integer
-          format: int32
-          description: Number of pages.
-          example: 1
-        totalRecords:
-          type: integer
-          format: int32
-          description: Total number of items.
-          example: 1000
-        links:
-          type: object
-          description: Map of pagination links with `self`, `next`, `prev`, `last`, and `first`.
-          example:
-            next: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=2&pageSize=10
-            last: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=3&pageSize=10
-            prev: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=0&pageSize=10
-            self: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=1&pageSize=10
-            first: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=0&pageSize=10
-      title: MetaDataWithPagingInfo
-    AgentPersonalGreetingDTO_AgentPersonalGreetingsWithAttributeTag:
-      type: object
-      description: Agent Personal Greeting Agent Personal Greetings With Attribute Tag schema.
-      properties:
-        organizationId:
-          type: string
-          format: uuid
-          description: ID of the contact center organization. This field is required for all bulk save operations.
-          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
-          maxLength: 36
-          minLength: 32
-          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
-        id:
-          type: string
-          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
-          example: 93912f11-6017-404b-bf14-5331890b1797
-        version:
-          type: integer
-          format: int32
-          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
-          example: 1
-        name:
-          type: string
-          description: 'A name for the Agent''s personal greeting file. It should have valid extension i.e. .wav '
-          example: WelcomeMessage.wav
-          maxLength: 80
-          minLength: 0
-          pattern: ^[a-zA-Z0-9._\-\s]*$
-        contentType:
-          type: string
-          description: 'Indicates Content-Type of the Audio file. It can take one of these values: AUDIO_WAV, AUDIO_X_WAV'
-          enum:
-          - AUDIO_WAV
-          - TEXT_HTML
-          - TEXT_PHP
-          - AUDIO_X_WAV
-          - APPLICATION_OCTET_STREAM
-          example: AUDIO_WAV
-        blobId:
-          type: string
-          description: Identifier for the audio file.
-          example: audio-file_a7c700d5-2fac-4a6c-9a16-eb2f2b42d7a8
-        url:
-          type: string
-          format: url
-          description: Audio file download url.
-          example: https://cjp-ccone-devus1-ivr-media.s3.amazonaws.com/bde75a64-f4d5-4ffc-a239-feb607c17ef8/
-        agentId:
-          type: string
-          description: Agent Id with which this greeting file is to be associated with.
-          example: 955fe2b9-ba25-4de9-92b0-6cb055d5b432
-          minLength: 1
-        attributeTag:
-          type: string
-          description: This is used to identify the purpose of a greeting.
-          example: ENVIP
-          maxLength: 80
-          minLength: 0
-          pattern: ^[a-zA-Z0-9_-]*$
-        firstName:
-          type: string
-          description: First Name of the Agent with whom this greeting file is to be associated with.
-          example: John
-        lastName:
-          type: string
-          description: Last Name of the Agent with whom this greeting file is to be associated with.
-          example: Doe
-        email:
-          type: string
-          description: Email of the Agent with whom this greeting file is to be associated with.
-          example: JohnDoe@example.com
-        agentActive:
-          type: boolean
-          description: Indicates whether the Agent with whom this greeting file is to be associated with is active or not active
-          example: true
-        ciUserId:
-          type: string
-          description: Id of the Agent in common identity with whom this greeting file is to be associated with.
-          example: c71876ae-ddfa-4049-9a1b-298535152578
-        audioFile:
-          type: string
-          format: binary
-          description: Audio File.
-        createdTime:
-          type: integer
-          format: int64
-          description: This is the created time of the entity.
-          example: 123456789
-        lastUpdatedTime:
-          type: integer
-          format: int64
-          description: This is the updated time of the entity.
-          example: 123456789
-      required:
-      - agentId
-      - contentType
-      - name
+          description: A human readable explanation for the occurrence of an error.
+          example: Incorrect Credentials.
     AgentPersonalGreetingDTO_AgentPersonalGreetingsWithGreetingPurpose:
       type: object
       description: Agent Personal Greeting Agent Personal Greetings With Greeting Purpose schema.
@@ -2197,20 +2056,161 @@ components:
       - agentId
       - contentType
       - name
-    Response:
+    AgentPersonalGreetingDTO_AgentPersonalGreetingsWithAttributeTag:
       type: object
+      description: Agent Personal Greeting Agent Personal Greetings With Attribute Tag schema.
       properties:
-        code:
+        organizationId:
+          type: string
+          format: uuid
+          description: ID of the contact center organization. This field is required for all bulk save operations.
+          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+          maxLength: 36
+          minLength: 32
+          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
+        id:
+          type: string
+          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
+          example: 93912f11-6017-404b-bf14-5331890b1797
+        version:
           type: integer
           format: int32
-        details:
+          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
+          example: 1
+        name:
+          type: string
+          description: 'A name for the Agent''s personal greeting file. It should have valid extension i.e. .wav '
+          example: WelcomeMessage.wav
+          maxLength: 80
+          minLength: 0
+          pattern: ^[a-zA-Z0-9._\-\s]*$
+        contentType:
+          type: string
+          description: 'Indicates Content-Type of the Audio file. It can take one of these values: AUDIO_WAV, AUDIO_X_WAV'
+          enum:
+          - AUDIO_WAV
+          - TEXT_HTML
+          - TEXT_PHP
+          - AUDIO_X_WAV
+          - APPLICATION_OCTET_STREAM
+          example: AUDIO_WAV
+        blobId:
+          type: string
+          description: Identifier for the audio file.
+          example: audio-file_a7c700d5-2fac-4a6c-9a16-eb2f2b42d7a8
+        url:
+          type: string
+          format: url
+          description: Audio file download url.
+          example: https://cjp-ccone-devus1-ivr-media.s3.amazonaws.com/bde75a64-f4d5-4ffc-a239-feb607c17ef8/
+        agentId:
+          type: string
+          description: Agent Id with which this greeting file is to be associated with.
+          example: 955fe2b9-ba25-4de9-92b0-6cb055d5b432
+          minLength: 1
+        attributeTag:
+          type: string
+          description: This is used to identify the purpose of a greeting.
+          example: ENVIP
+          maxLength: 80
+          minLength: 0
+          pattern: ^[a-zA-Z0-9_-]*$
+        firstName:
+          type: string
+          description: First Name of the Agent with whom this greeting file is to be associated with.
+          example: John
+        lastName:
+          type: string
+          description: Last Name of the Agent with whom this greeting file is to be associated with.
+          example: Doe
+        email:
+          type: string
+          description: Email of the Agent with whom this greeting file is to be associated with.
+          example: JohnDoe@example.com
+        agentActive:
+          type: boolean
+          description: Indicates whether the Agent with whom this greeting file is to be associated with is active or not active
+          example: true
+        ciUserId:
+          type: string
+          description: Id of the Agent in common identity with whom this greeting file is to be associated with.
+          example: c71876ae-ddfa-4049-9a1b-298535152578
+        audioFile:
+          type: string
+          format: binary
+          description: Audio File.
+        createdTime:
+          type: integer
+          format: int64
+          description: This is the created time of the entity.
+          example: 123456789
+        lastUpdatedTime:
+          type: integer
+          format: int64
+          description: This is the updated time of the entity.
+          example: 123456789
+      required:
+      - agentId
+      - contentType
+      - name
+    MetaDataWithPagingInfo:
+      type: object
+      description: Metadata of response with paging information
+      properties:
+        orgid:
+          type: string
+          format: uuid
+          description: Organization ID.
+          example: 2f9eecc5-0472-4549-9a83-2afdae0d4ba1
+          maxLength: 36
+          minLength: 32
+          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
+        page:
+          type: integer
+          format: int32
+          description: Current page number.
+          example: 1
+        pageSize:
+          type: integer
+          format: int32
+          description: Page size for current data set.
+          example: 100
+        totalPages:
+          type: integer
+          format: int32
+          description: Number of pages.
+          example: 1
+        totalRecords:
+          type: integer
+          format: int32
+          description: Total number of items.
+          example: 1000
+        links:
+          type: object
+          description: Map of pagination links with `self`, `next`, `prev`, `last`, and `first`.
+          example:
+            next: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=2&pageSize=10
+            last: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=3&pageSize=10
+            prev: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=0&pageSize=10
+            self: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=1&pageSize=10
+            first: /organization/bde75a64-f4d5-4ffc-a239-feb607c17ef8/entity-name?page=0&pageSize=10
+      title: MetaDataWithPagingInfo
+    FieldRequestBody:
+      type: object
+      description: Request payload identifying the entity references that should be removed from contact service queues. The `references` map contains key/value pairs where the key is the referenced entity type (for example, `team`, `site`, `agent`, `skillProfile`) and the value is the unique identifier of that entity. All matching references will be detached from any contact service queue in the target organization.
+      example:
+        references:
+          team: 76cf35bc-12df-49ef-88e1-c86226d8a645
+          skillProfile: af9eecc5-0472-4549-9a83-2afdae0d4ba0
+      properties:
+        references:
           type: object
           additionalProperties:
-            type: object
-        links:
-          type: array
-          items:
-            $ref: '#/components/schemas/Link'
+            type: string
+            description: References additional property.
+          description: Map of entity type to entity identifier whose references must be removed from contact service queues. The key is the referenced entity type (e.g. `team`, `site`, `agent`, `skillProfile`) and the value is its UUID.
+          example:
+            team: 76cf35bc-12df-49ef-88e1-c86226d8a645
   securitySchemes:
     oauth2:
       flows:

@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/webex/main/json-schema/webex-summary-list-response-schema.json",
+  "title": "SummaryListResponse",
+  "x-generated": "2026-10-04",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/webex-agent-summaries-api-openapi.yml#/components/schemas/SummaryListResponse",
+  "type": "object",
+  "properties": {
+    "orgId": {
+      "type": "string",
+      "description": "The unique identifier of the organization to which the summarized interactions belong."
+    },
+    "agentCiUserId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "The CI (Common Identity) user ID of the agent associated with the summaries. Present when searchType is AGENT; otherwise null."
+    },
+    "interactionId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "The unique identifier of a specific interaction. Present when searchType is INTERACTION; otherwise null."
+    },
+    "queueId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "The queue ID (reserved for future use)."
+    },
+    "searchType": {
+      "$ref": "#/$defs/SearchType"
+    },
+    "summaries": {
+      "type": "object",
+      "description": "Map of summaries keyed by feature type (POST_CALL, MID_CALL). Each feature maps summary identifiers to their summary fields.",
+      "properties": {
+        "POST_CALL": {
+          "type": "object",
+          "description": "Post-call summaries keyed by summary identifier.",
+          "additionalProperties": {
+            "$ref": "#/$defs/PostCallSummary"
+          }
+        },
+        "MID_CALL": {
+          "type": "object",
+          "description": "Mid-call summaries keyed by summary identifier.",
+          "additionalProperties": {
+            "$ref": "#/$defs/MidCallSummary"
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "MidCallSummary": {
+      "type": "object",
+      "properties": {
+        "reasonForTransferOrConsult": {
+          "type": "string",
+          "description": "The specific reason the interaction is being transferred or consulted."
+        },
+        "additionalContext": {
+          "type": "string",
+          "description": "Important information already gathered that the next agent needs to continue smoothly."
+        },
+        "keyActionsTaken": {
+          "type": "string",
+          "description": "Steps completed so far in the interaction before the transfer or consult occurred."
+        }
+      }
+    },
+    "PostCallSummary": {
+      "type": "object",
+      "properties": {
+        "initialContactReason": {
+          "type": "string",
+          "description": "The primary issue or request the customer contacted you about at the start of the interaction."
+        },
+        "additionalContext": {
+          "type": "string",
+          "description": "Relevant background details shared during the conversation that help explain the situation."
+        },
+        "additionalContactReasons": {
+          "type": "string",
+          "description": "Any new or secondary issues raised after the initial reason for contact."
+        },
+        "keyActionsTaken": {
+          "type": "string",
+          "description": "The main steps the agent took to investigate, resolve, or address the customer's request."
+        },
+        "nextSteps": {
+          "type": "string",
+          "description": "Clear follow-up actions and expected outcomes agreed upon before ending the interaction."
+        },
+        "chosenWrapUpCode": {
+          "type": "string",
+          "description": "The wrap-up reason code that was ultimately selected by the agent at the end of the interaction."
+        },
+        "proposedWrapUpCodes": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "description": "A list of wrap-up reasons suggested by the AI based on the interaction content. Each object contains a name field. Can return null, 1, or 2 objects.",
+          "items": {
+            "$ref": "#/$defs/ProposedWrapUpCode"
+          }
+        }
+      }
+    },
+    "ProposedWrapUpCode": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name of the proposed wrap-up reason."
+        }
+      }
+    },
+    "SearchType": {
+      "type": "string",
+      "description": "The type of search to be performed.",
+      "enum": [
+        "ORGANIZATION",
+        "INTERACTION",
+        "AGENT"
+      ]
+    }
+  }
+}

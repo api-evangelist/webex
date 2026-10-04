@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/webex/main/json-schema/webex-voicemail-rules-schema.json",
+  "title": "VoicemailRules",
+  "description": "Person's voicemail passcode rules and restrictions.",
+  "x-generated": "2026-10-04",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/webex-call-settings-for-me-phase-5-api-openapi.yml#/components/schemas/VoicemailRules",
+  "type": "object",
+  "required": [
+    "blockRepeatedPatternsEnabled",
+    "blockUserNumberEnabled",
+    "blockReversedUserNumberEnabled",
+    "blockPreviousPasscodes",
+    "blockReversedOldPasscodeEnabled",
+    "blockRepeatedDigits",
+    "blockContiguousSequences",
+    "length"
+  ],
+  "properties": {
+    "blockRepeatedPatternsEnabled": {
+      "type": "boolean",
+      "description": "If enabled, the passcode cannot contain repeated patterns. For example, 121212 and 123123."
+    },
+    "blockUserNumberEnabled": {
+      "type": "boolean",
+      "description": "If enabled, the passcode must not match the user's own phone number."
+    },
+    "blockReversedUserNumberEnabled": {
+      "type": "boolean",
+      "description": "If enabled, the passcode must not match the user's phone number in reverse."
+    },
+    "blockPreviousPasscodes": {
+      "$ref": "#/$defs/BlockPreviousPasscodes"
+    },
+    "blockReversedOldPasscodeEnabled": {
+      "type": "boolean",
+      "description": "If enabled, the passcode must not match the user's old passcodes in reverse."
+    },
+    "blockRepeatedDigits": {
+      "$ref": "#/$defs/BlockRepeatedDigits"
+    },
+    "blockContiguousSequences": {
+      "$ref": "#/$defs/BlockContiguousSequences"
+    },
+    "length": {
+      "$ref": "#/$defs/PasscodeLength"
+    }
+  },
+  "$defs": {
+    "BlockContiguousSequences": {
+      "type": "object",
+      "required": [
+        "enabled",
+        "numberOfAscendingDigits",
+        "numberOfDescendingDigits"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "If enabled, passcode should not contain a numerical sequence."
+        },
+        "numberOfAscendingDigits": {
+          "type": "integer",
+          "minimum": 2,
+          "maximum": 5,
+          "description": "Specifies the maximum length of an ascending numerical sequence allowed. The minimum value is 2. The maximum value is 5. Example: If this value is set to 3, then 123856 is allowed, but 123485 is not allowed (since the ascending sequence 1234 exceeds 3 digits)."
+        },
+        "numberOfDescendingDigits": {
+          "type": "integer",
+          "minimum": 2,
+          "maximum": 5,
+          "description": "Specifies the maximum length of a descending numerical sequence allowed. The minimum value is 2. The maximum value is 5. Example: If this value is set to 3, then 321856 is allowed, but 432185 is not allowed (since the descending sequence 4321 exceeds 3 digits)."
+        }
+      },
+      "description": "Settings for not allowing numerical sequence in passcode (for example, 012345 or 987654)."
+    },
+    "BlockPreviousPasscodes": {
+      "type": "object",
+      "required": [
+        "enabled",
+        "numberOfPasscodes"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "If enabled, set how many of the previous passcodes are not allowed to be re-used."
+        },
+        "numberOfPasscodes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10,
+          "description": "Number of previous passcodes. The minimum value is 1. The maximum value is 10."
+        }
+      },
+      "description": "Settings for previous passcode usage."
+    },
+    "BlockRepeatedDigits": {
+      "type": "object",
+      "required": [
+        "enabled",
+        "max"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "If enabled, checks for sequence of the same digit being repeated."
+        },
+        "max": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 6,
+          "description": "Maximum number of repeated digit sequence allowed. The minimum value is 1. The maximum value is 6."
+        }
+      },
+      "description": "Settings to prevent single digits from being repeated in the passcode. For example, with a maximum value of 3, 111222 is allowed but 112222 is not allowed since it contains a repeated digit sequence longer than 3."
+    },
+    "PasscodeLength": {
+      "type": "object",
+      "required": [
+        "min",
+        "max"
+      ],
+      "properties": {
+        "min": {
+          "type": "integer",
+          "minimum": 2,
+          "maximum": 15,
+          "description": "The minimum value is 2. The maximum value is 15."
+        },
+        "max": {
+          "type": "integer",
+          "minimum": 3,
+          "maximum": 30,
+          "description": "The minimum value is 3. The maximum value is 30."
+        }
+      },
+      "description": "Length of the passcode."
+    }
+  }
+}

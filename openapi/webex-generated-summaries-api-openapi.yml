@@ -412,6 +412,76 @@ paths:
       deprecated: true
 components:
   schemas:
+    ErrorDetails:
+      description: Details of an error.
+      type: object
+      properties:
+        key:
+          type: string
+          description: An application defined error code.
+          example: '401'
+        message:
+          type: array
+          description: A message providing details about the error.
+          items:
+            $ref: '#/components/schemas/OperationError'
+    MetaDataPagedInfo:
+      type: object
+      description: Pagination metadata for paged API responses
+      properties:
+        orgid:
+          type: string
+          description: ID of the contact center organization. This field is required for all bulk save operations.
+          example: af9eecc5-0472-4549-9a83-2afdae0d4ba0
+        page:
+          type: integer
+          format: int32
+          description: Current page number.
+          example: 1
+        pageSize:
+          type: integer
+          format: int32
+          description: Page size for current data set.
+          example: 20
+        totalPages:
+          type: integer
+          format: int32
+          description: Number of pages.
+          example: 5
+        totalRecords:
+          type: integer
+          format: int64
+          description: Total number of items.
+          example: 100
+        links:
+          type: object
+          $ref: '#/components/schemas/PaginationLinks'
+          additionalProperties:
+            type: string
+            description: Links additional property.
+          description: Pagination links for navigating between result pages.
+    ApiErrorResponse:
+      description: Response body for an API error.
+      type: object
+      properties:
+        trackingId:
+          type: string
+          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
+          example: c1a4fcef-aee2-4dea-8977-29f594760552
+        error:
+          description: An object containing details about the error.
+          $ref: '#/components/schemas/ErrorDetails'
+    ResponseMetaEnvelopeGeneratedSummariesDTOMetaDataPagedInfo:
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/MetaDataPagedInfo'
+          description: Metadata about response.
+        data:
+          type: array
+          description: List of items matching the entity type.
+          items:
+            $ref: '#/components/schemas/GeneratedSummariesDTO'
     GeneratedSummariesDTO:
       type: object
       properties:
@@ -461,30 +531,14 @@ components:
           format: int64
           description: This is the updated time of the entity.
           example: 123456789
-    ErrorDetails:
-      description: Details of an error.
+    OperationError:
+      description: An error message providing details about the operation failure.
       type: object
       properties:
-        key:
+        description:
           type: string
-          description: An application defined error code.
-          example: '401'
-        message:
-          type: array
-          description: A message providing details about the error.
-          items:
-            $ref: '#/components/schemas/OperationError'
-    ApiErrorResponse:
-      description: Response body for an API error.
-      type: object
-      properties:
-        trackingId:
-          type: string
-          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
-          example: c1a4fcef-aee2-4dea-8977-29f594760552
-        error:
-          description: An object containing details about the error.
-          $ref: '#/components/schemas/ErrorDetails'
+          description: A human readable explanation for the occurrence of an error.
+          example: Incorrect Credentials.
     PaginationLinks:
       type: object
       properties:
@@ -510,60 +564,6 @@ components:
           example: /v1/callbacks/organization/${orgId}/scheduled-callback?page=0&pageSize=10
       required:
       - self
-    MetaDataPagedInfo:
-      type: object
-      description: Pagination metadata for paged API responses
-      properties:
-        orgid:
-          type: string
-          description: ID of the contact center organization. This field is required for all bulk save operations.
-          example: af9eecc5-0472-4549-9a83-2afdae0d4ba0
-        page:
-          type: integer
-          format: int32
-          description: Current page number.
-          example: 1
-        pageSize:
-          type: integer
-          format: int32
-          description: Page size for current data set.
-          example: 20
-        totalPages:
-          type: integer
-          format: int32
-          description: Number of pages.
-          example: 5
-        totalRecords:
-          type: integer
-          format: int64
-          description: Total number of items.
-          example: 100
-        links:
-          type: object
-          $ref: '#/components/schemas/PaginationLinks'
-          additionalProperties:
-            type: string
-            description: Links additional property.
-          description: Pagination links for navigating between result pages.
-    ResponseMetaEnvelopeGeneratedSummariesDTOMetaDataPagedInfo:
-      type: object
-      properties:
-        meta:
-          $ref: '#/components/schemas/MetaDataPagedInfo'
-          description: Metadata about response.
-        data:
-          type: array
-          description: List of items matching the entity type.
-          items:
-            $ref: '#/components/schemas/GeneratedSummariesDTO'
-    OperationError:
-      description: An error message providing details about the operation failure.
-      type: object
-      properties:
-        description:
-          type: string
-          description: A human readable explanation for the occurrence of an error.
-          example: Incorrect Credentials.
   securitySchemes:
     oauth2:
       flows:

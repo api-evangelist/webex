@@ -508,6 +508,50 @@ paths:
       x-operation-id-original: Generate OTP
 components:
   schemas:
+    PasswordPolicyResponse:
+      type: object
+      example:
+        minimumNumeric: '1'
+        minimumCapAlpha: '1'
+        minimumLowAlpha: '1'
+        minimumSpecial: '1'
+        minimumLength: '8'
+        historyCount: '3'
+        maxPasswordAge: '1825'
+        notAcceptableStrings: password,passwd,pass,webex,cisco,xebew,ocsic
+      properties:
+        minimumNumeric:
+          type: string
+          example: '8'
+          description: Minimum number of numeric characters in password.
+        minimumCapAlpha:
+          type: string
+          example: '1'
+          description: Minimum number of uppercase alphabetic character letters in a password.
+        minimumLowAlpha:
+          type: string
+          example: '1'
+          description: Minimum number of lowercase alphabetic character letters in a password.
+        minimumSpecial:
+          type: string
+          example: '1'
+          description: Minimum number of special character included "~!@#$%^&*()-_=+[]{}|;:,.<>/?" in a password.
+        minimumLength:
+          type: string
+          example: '8'
+          description: Minimum length of password. Must be between 8 and 256, inclusive.
+        historyCount:
+          type: string
+          example: '3'
+          description: The number of former password in history, the new password can't be any one of them. Must be between 1 and 5, inclusive.
+        maxPasswordAge:
+          type: string
+          example: '90'
+          description: 'The password expired time, unit: day, that means user need to change password every "X" days. Must be between 90 and 1825, inclusive.'
+        notAcceptableStrings:
+          type: string
+          example: password,passwd,pass,webex,cisco,xebew,ocsic
+          description: The password can not be any one in this string list.
     metaObject:
       type: object
       required:
@@ -527,90 +571,6 @@ components:
           type: string
           example: W/\"67863103533\"
           description: The version information of the organization.
-    GenerateOtp:
-      type: object
-      required:
-      - oneTimePassword
-      - expiresIn
-      properties:
-        oneTimePassword:
-          type: string
-          example: '283489'
-          description: The One-Time Password generated for the user.
-        expiresIn:
-          type: number
-          example: 604800
-          description: 'The expiration time for the OTP in seconds (default: 7 days).'
-    AuthenticationConfigResponse:
-      type: object
-      example:
-        schemas:
-        - urn:cisco:codev:identity:idbroker:authnconfig:schemas:1.0
-        LockoutDuration: 1
-        LockoutDurationMultiplier: 1
-        LockoutFailureCount: 5
-        LockoutFailureDuration: 5
-        RememberMyLoginId: false
-        RememberMyLoginIdDuration: 30
-        mfaEnabled: true
-      properties:
-        schemas:
-          type: array
-          items:
-            type: string
-            example: urn:cisco:codev:identity:idbroker:authnconfig:schemas:1.0
-          description: Output JSON schemas.
-        LockoutDuration:
-          type: number
-          example: 1
-          description: The number of minutes that an account will be locked out.
-        LockoutDurationMultiplier:
-          type: number
-          example: 1
-          description: The multiplier of the LockoutDuration. Each subsequent lockout will be multiplied by this value.
-        LockoutFailureCount:
-          type: number
-          example: 5
-          description: Number of failed login attempts that will trigger account lockout.
-        LockoutFailureDuration:
-          type: number
-          example: 5
-          description: Number of minutes that a login failure will be recorded.
-        RememberMyLoginId:
-          type: boolean
-          example: true
-          description: True to remember the user's Login Id.
-        mfaEnabled:
-          type: boolean
-          example: true
-          description: True, if multi factor authentication is enabled on an organization.
-        RememberMyLoginIdDuration:
-          type: number
-          example: 30
-          description: Specifies the number of days the user's login ID is remembered. Must be between 1 and 120 (inclusive).
-    AuthenticationConfigPatchObject:
-      type: object
-      required:
-      - schemas
-      properties:
-        schemas:
-          type: array
-          items:
-            type: string
-            example: urn:cisco:codev:identity:idbroker:authnconfig:schemas:1.0
-          description: "Input JSON schemas. It should contain the following schema: \n urn:cisco:codev:identity:idbroker:authnconfig:schemas:1.0"
-        RememberMyLoginId:
-          type: boolean
-          example: true
-          description: Login Id set to true if it should be remembered.
-        RememberMyLoginIdDuration:
-          type: number
-          example: 30
-          description: Specifies the number of days the user's login ID is remembered. Must be between 1 and 120 (inclusive).
-        mfaEnabled:
-          type: boolean
-          example: true
-          description: Enable/ Disable multi-factor authentication on an organization.
     updateOrgObject:
       type: object
       required:
@@ -659,6 +619,76 @@ components:
         meta:
           $ref: '#/components/schemas/metaObject'
           description: Meta data information of organization.
+    AuthenticationConfigPatchObject:
+      type: object
+      required:
+      - schemas
+      properties:
+        schemas:
+          type: array
+          items:
+            type: string
+            example: urn:cisco:codev:identity:idbroker:authnconfig:schemas:1.0
+          description: "Input JSON schemas. It should contain the following schema: \n urn:cisco:codev:identity:idbroker:authnconfig:schemas:1.0"
+        RememberMyLoginId:
+          type: boolean
+          example: true
+          description: Login Id set to true if it should be remembered.
+        RememberMyLoginIdDuration:
+          type: number
+          example: 30
+          description: Specifies the number of days the user's login ID is remembered. Must be between 1 and 120 (inclusive).
+        mfaEnabled:
+          type: boolean
+          example: true
+          description: Enable/ Disable multi-factor authentication on an organization.
+    AuthenticationConfigResponse:
+      type: object
+      example:
+        schemas:
+        - urn:cisco:codev:identity:idbroker:authnconfig:schemas:1.0
+        LockoutDuration: 1
+        LockoutDurationMultiplier: 1
+        LockoutFailureCount: 5
+        LockoutFailureDuration: 5
+        RememberMyLoginId: false
+        RememberMyLoginIdDuration: 30
+        mfaEnabled: true
+      properties:
+        schemas:
+          type: array
+          items:
+            type: string
+            example: urn:cisco:codev:identity:idbroker:authnconfig:schemas:1.0
+          description: Output JSON schemas.
+        LockoutDuration:
+          type: number
+          example: 1
+          description: The number of minutes that an account will be locked out.
+        LockoutDurationMultiplier:
+          type: number
+          example: 1
+          description: The multiplier of the LockoutDuration. Each subsequent lockout will be multiplied by this value.
+        LockoutFailureCount:
+          type: number
+          example: 5
+          description: Number of failed login attempts that will trigger account lockout.
+        LockoutFailureDuration:
+          type: number
+          example: 5
+          description: Number of minutes that a login failure will be recorded.
+        RememberMyLoginId:
+          type: boolean
+          example: true
+          description: True to remember the user's Login Id.
+        mfaEnabled:
+          type: boolean
+          example: true
+          description: True, if multi factor authentication is enabled on an organization.
+        RememberMyLoginIdDuration:
+          type: number
+          example: 30
+          description: Specifies the number of days the user's login ID is remembered. Must be between 1 and 120 (inclusive).
     PasswordPolicyObject:
       type: object
       required:
@@ -709,50 +739,20 @@ components:
           type: string
           example: ''
           description: The password can not be any one in this string list.
-    PasswordPolicyResponse:
+    GenerateOtp:
       type: object
-      example:
-        minimumNumeric: '1'
-        minimumCapAlpha: '1'
-        minimumLowAlpha: '1'
-        minimumSpecial: '1'
-        minimumLength: '8'
-        historyCount: '3'
-        maxPasswordAge: '1825'
-        notAcceptableStrings: password,passwd,pass,webex,cisco,xebew,ocsic
+      required:
+      - oneTimePassword
+      - expiresIn
       properties:
-        minimumNumeric:
+        oneTimePassword:
           type: string
-          example: '8'
-          description: Minimum number of numeric characters in password.
-        minimumCapAlpha:
-          type: string
-          example: '1'
-          description: Minimum number of uppercase alphabetic character letters in a password.
-        minimumLowAlpha:
-          type: string
-          example: '1'
-          description: Minimum number of lowercase alphabetic character letters in a password.
-        minimumSpecial:
-          type: string
-          example: '1'
-          description: Minimum number of special character included "~!@#$%^&*()-_=+[]{}|;:,.<>/?" in a password.
-        minimumLength:
-          type: string
-          example: '8'
-          description: Minimum length of password. Must be between 8 and 256, inclusive.
-        historyCount:
-          type: string
-          example: '3'
-          description: The number of former password in history, the new password can't be any one of them. Must be between 1 and 5, inclusive.
-        maxPasswordAge:
-          type: string
-          example: '90'
-          description: 'The password expired time, unit: day, that means user need to change password every "X" days. Must be between 90 and 1825, inclusive.'
-        notAcceptableStrings:
-          type: string
-          example: password,passwd,pass,webex,cisco,xebew,ocsic
-          description: The password can not be any one in this string list.
+          example: '283489'
+          description: The One-Time Password generated for the user.
+        expiresIn:
+          type: number
+          example: 604800
+          description: 'The expiration time for the OTP in seconds (default: 7 days).'
   securitySchemes:
     oauth2:
       flows:

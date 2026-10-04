@@ -1,21 +1,11 @@
 openapi: 3.2.0
 info:
-  title: Webex Cloud Calling User Call Settings (3/3) API
+  title: Webex User Call Settings (3/3) API
   version: 1.0.0
-  description: The Webex Cloud Calling APIs enable comprehensive management of cloud-based calling services, including user provisioning, device assignment, call routing, feature configuration, and number management.
-  x-provenance:
-    method: harvested
-    authored_by: Cisco Webex
-    harvested_by: API Evangelist
-    harvested_on: '2026-08-19'
-    first_party: true
-    note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
-    provider_published: true
-  x-evidence:
-  - type: source
-    url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-cloud-calling.json
-  - type: raw
-    url: https://raw.githubusercontent.com/webex/webex-openapi-specs/main/public-spec/webex-cloud-calling.json
+  x-refined-note:
+  - x-evidence differs across the merged source definitions and was not carried
+  - x-provenance differs across the merged source definitions and was not carried
+  description: 'Operations tagged User Call Settings (3/3) across 2 of this provider''s published API definitions: webex-cloud-calling-openapi.json, webex-cloud-calling-openapi.yml. Each path carries the servers of the definition it was published in.'
 tags:
 - name: User Call Settings (3/3)
 paths:
@@ -1063,28 +1053,351 @@ paths:
       - $ref: '#/components/parameters/orgId'
       requestBody:
         $ref: '#/components/requestBodies/OutboundBillingPlanRequest'
+  /telephony/voiceMessages/memberships:
+    get:
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - memberOf
+                properties:
+                  memberOf:
+                    type: array
+                    description: Array of shared voicemail membership entries.
+                    items:
+                      type: object
+                      required:
+                      - id
+                      - type
+                      properties:
+                        id:
+                          type: string
+                          example: Y2lzY29zcGFyazovL3VzL0hVTlRfR1JPVVAvNmU1NTVjZDAtNjM0MS00MmI4LWEyMWMtZTc1ZjIxNDQ4Mjc1
+                          description: Unique identifier for the membership.
+                        type:
+                          type: string
+                          enum:
+                          - CALL_QUEUE
+                          - HUNT_GROUP
+                          - AUTO_ATTENDANT
+                          example: CALL_QUEUE
+                          description: Type of the membership. One of CALL_QUEUE, HUNT_GROUP, or AUTO_ATTENDANT.
+                        name:
+                          type: string
+                          example: Engineering Call Center
+                          description: Display name of the call queue, hunt group, or auto attendant.
+                        phoneNumber:
+                          type: string
+                          example: '+14085550101'
+                          description: Phone number in E.164 format. Omitted when the service has no phone number.
+                        extension:
+                          type: string
+                          example: '1001'
+                          description: Extension number. Omitted when the service has no extension.
+                        routingPrefix:
+                          type: string
+                          example: '8888'
+                          description: Location dialing code (routing prefix). Omitted when not set.
+                        esn:
+                          type: string
+                          example: '88881001'
+                          description: Enterprise Significant Number, the concatenation of routingPrefix and extension. Omitted when not set.
+              example:
+                memberOf:
+                - id: Y2lzY29zcGFyazovL3VzL0NBTExfUVVFVUUvYm1kMmVIcHNabTgwWVVBMk5EazBNVEk1Tnk1cGJuUXhNQzVpWTJ4a0xuZGxZbVY0TG1OdmJRPT0
+                  type: CALL_QUEUE
+                  name: Engineering Call Center
+                  phoneNumber: '+14085550101'
+                  extension: '1001'
+                  routingPrefix: '8888'
+                  esn: '88881001'
+                - id: Y2lzY29zcGFyazovL3VzL0hVTlRfR1JPVVAvNmU1NTVjZDAtNjM0MS00MmI4LWEyMWMtZTc1ZjIxNDQ4Mjc1
+                  type: HUNT_GROUP
+                  name: Sales Hunt Group
+                  phoneNumber: '+14085550102'
+                - id: Y2lzY29zcGFyazovL3VzL0FVVE9fQVRURU5EQU5ULzA1NTJmNjdiLTU5YTktNDFiYi04NzM2LTFiMDQxZDFkZGQ1ZQ
+                  type: AUTO_ATTENDANT
+                  name: Support Auto Attendant
+                  extension: '3003'
+                  routingPrefix: '9999'
+                  esn: '99993003'
+        '204':
+          description: No Content - Returned when there are no memberships.
+          headers: {}
+          content: {}
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+      summary: List Voice Message Memberships
+      operationId: listVoiceMessageMemberships
+      description: 'Retrieves the list of shared voicemail memberships for the authenticated user. Each membership represents a group calling feature (Call Queue, Hunt Group, or Auto Attendant) whose shared voicemail box the user has access to.
+
+
+        A service may have a phoneNumber, an extension, both, or neither, so any of these optional fields may be absent from a given entry. These can be used as values for the `lineOwnerId` parameter in other voicemail APIs.
+
+
+        This API requires a full, user, or read-only administrator auth token with a scope of `spark-admin:people_read` or a user auth token with `spark:people_read` scope.'
+      tags:
+      - User Call Settings (3/3)
+      parameters: []
+  /telephony/config/people/{personId}/answerSettings:
+    get:
+      summary: Get Answer Settings for a Person
+      operationId: getPersonAnswerSettings
+      description: 'Get the answer settings for a specific person.
+
+
+        Answer settings allow administrators to configure automatic call answering behavior for a person, including preferred answer endpoint and whether auto answer is enabled.
+
+
+        This API requires a full administrator, read-only administrator, delegated full administrator, user administrator, or location administrator auth token with the `spark-admin:telephony_config_read` scope.'
+      tags:
+      - User Call Settings (3/3)
+      parameters:
+      - name: personId
+        in: path
+        description: The unique identifier for the person.
+        required: true
+        example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9kMzg2MjhiYy0zYjk4LTRjMjMtODEwMy0wMzRhMjI0ZmRiNjE
+        schema:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9kMzg2MjhiYy0zYjk4LTRjMjMtODEwMy0wMzRhMjI0ZmRiNjE
+      - name: orgId
+        in: query
+        description: Optional target organization identifier. Defaults to token's organization if not provided.
+        example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE
+        schema:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetPersonAnswerSettingsObject'
+              example:
+                preferredAnswerEndpointId: Y2lzY29zcGFyazovL3VybjpURUFNOnVzLWVhc3QtMV9pbnQxMy9DQUxMSU5HX0RFVklDRS82NjY2Nzc3Ny04ODg4LTRhOTQtOGZiZC0wMzM2NzhmMDU5ZjM=
+                preferredAnswerEndpointType: PRIMARY_DEVICE
+                preferredAnswerEndpointIdType: CALLING_DEVICE
+                preferredAnswerEndpointRequired: true
+                autoAnswerEnabled: true
+                isPreferredEndpointClearableByPerson: false
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+    put:
+      summary: Update Answer Settings for a Person
+      operationId: updatePersonAnswerSettings
+      description: 'Modify the answer settings for a specific person.
+
+
+        Answer settings allow administrators to configure automatic call answering behavior for a person, including preferred answer endpoint and whether auto answer is enabled. To clear the preferred answer endpoint, the `preferredAnswerEndpointId` must be set to null.
+
+
+        This API requires a full administrator, delegated full administrator, user administrator, or location administrator auth token with the `spark-admin:telephony_config_write` scope.'
+      tags:
+      - User Call Settings (3/3)
+      parameters:
+      - name: personId
+        in: path
+        description: The unique identifier for the person.
+        required: true
+        example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9kMzg2MjhiYy0zYjk4LTRjMjMtODEwMy0wMzRhMjI0ZmRiNjE
+        schema:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9kMzg2MjhiYy0zYjk4LTRjMjMtODEwMy0wMzRhMjI0ZmRiNjE
+      - name: orgId
+        in: query
+        description: Optional target organization identifier. Defaults to token's organization if not provided.
+        example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE
+        schema:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModifyPersonAnswerSettingsObject'
+            example:
+              preferredAnswerEndpointId: Y2lzY29zcGFyazovL3VybjpURUFNOnVzLWVhc3QtMV9pbnQxMy9DQUxMSU5HX0RFVklDRS82NjY2Nzc3Ny04ODg4LTRhOTQtOGZiZC0wMzM2NzhmMDU5ZjM=
+              autoAnswerEnabled: true
+              isPreferredEndpointClearableByPerson: false
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+  /telephony/config/people/{personId}/availablePreferredAnswerEndpoints:
+    get:
+      summary: Get Available Preferred Answer Endpoints for a Person
+      operationId: getPersonAvailablePreferredAnswerEndpoints
+      description: 'Get the list of available preferred answer endpoints for a specific person. This API returns all available endpoints in a single response.
+
+
+        A Webex Calling person may be associated with multiple endpoints such as Webex App (desktop or mobile), Cisco desk IP phone, Webex Calling-supported analog devices, or third-party endpoints. Preferred answering endpoints allow administrators to specify which of these devices should be prioritized for answering calls, particularly when a person''s extension (or a virtual line assigned to them) rings on multiple devices. This helps ensure that calls are answered on the most convenient or appropriate device for the person.
+
+
+        This API requires a full administrator, read-only administrator, delegated full administrator, user administrator, or location administrator auth token with the `spark-admin:telephony_config_read` scope.'
+      tags:
+      - User Call Settings (3/3)
+      parameters:
+      - name: personId
+        in: path
+        description: The unique identifier for the person.
+        required: true
+        example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9kMzg2MjhiYy0zYjk4LTRjMjMtODEwMy0wMzRhMjI0ZmRiNjE
+        schema:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9kMzg2MjhiYy0zYjk4LTRjMjMtODEwMy0wMzRhMjI0ZmRiNjE
+      - name: orgId
+        in: query
+        description: Optional target organization identifier. Defaults to token's organization if not provided.
+        example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE
+        schema:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonPreferredAnswerEndpointListObject'
+              example:
+                endpoints:
+                - id: Y2lzY29zcGFyazovL3VybjpURUFNOnVzLWVhc3QtMV9pbnQxMy9DQUxMSU5HX0RFVklDRS82NjY2Nzc3Ny04ODg4LTRhOTQtOGZiZC0wMzM2NzhmMDU5ZjM=
+                  type: CALLING_DEVICE
+                  name: Cisco 8865
+                  isPreferredAnswerEndpoint: true
+                - id: Y2lzY29zcGFyazovL3VzL0FQUExJQ0FUSU9OL2UxNjI5MGQ2LWRkZGYtNDBlNy04MTUxLTNlY2UwMjc1N2RhMA
+                  type: APPLICATION
+                  name: Webex Desktop Application
+                  isPreferredAnswerEndpoint: false
+        '400':
+          description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+        '404':
+          description: 'Not Found: The URI requested is invalid or the resource requested does not exist. Also returned when the requested format is not supported by the requested method.'
+        '405':
+          description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+        '409':
+          description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
+        '410':
+          description: 'Gone: The requested resource is no longer available.'
+        '415':
+          description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+        '423':
+          description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
+        '428':
+          description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
+        '429':
+          description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+        '500':
+          description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+        '502':
+          description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+        '503':
+          description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
+        '504':
+          description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
 components:
   responses:
-    GatewayTimeout:
-      description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
-    Conflict:
-      description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
-    Locked:
-      description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
-    TooManyRequests:
-      description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
-    ServiceUnavailable:
-      description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
-    MethodNotAllowed:
-      description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
-    NoContent:
-      description: No Content
-    Forbidden:
-      description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
-    Gone:
-      description: 'Gone: The requested resource is no longer available.'
     NotFound:
       description: 'Not Found: The URI requested is invalid or the resource requested, such as a user, does not exist. Also returned when the requested format is not supported by the requested method.'
+    Locked:
+      description: 'Locked: The requested resource is temporarily unavailable. A Retry-After header may be present that specifies how many seconds you need to wait before attempting the request again.'
     OutboundBillingPlanResponse:
       description: OK
       content:
@@ -1093,115 +1406,35 @@ components:
             $ref: '#/components/schemas/OutboundBillingPlan'
           example:
             enabled: true
-    BadRequest:
-      description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+    ServiceUnavailable:
+      description: 'Service Unavailable: Server is overloaded with requests. Try again later.'
     PreconditionRequired:
       description: 'Precondition Required: File(s) cannot be scanned for malware and need to be force downloaded.'
-    InternalServerError:
-      description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
-    BadGateway:
-      description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
-    UnsupportedMediaType:
-      description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+    BadRequest:
+      description: 'Bad Request: The request was invalid or cannot be otherwise served. An accompanying error message will explain further.'
+    TooManyRequests:
+      description: 'Too Many Requests: Too many requests have been sent in a given amount of time and the request has been rate limited. A Retry-After header should be present that specifies how many seconds you need to wait before a successful request can be made.'
+    Forbidden:
+      description: 'Forbidden: The request is understood, but it has been refused or access is not allowed.'
+    Conflict:
+      description: 'Conflict: The request could not be processed because it conflicts with some established rule of the system. For example, a person may not be added to a room more than once.'
     Unauthorized:
       description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+    InternalServerError:
+      description: 'Internal Server Error: Something went wrong on the server. If the issue persists, feel free to contact the [Webex Developer Support team](/explore/support).'
+    Gone:
+      description: 'Gone: The requested resource is no longer available.'
+    MethodNotAllowed:
+      description: 'Method Not Allowed: The request was made to a resource using an HTTP request method that is not supported.'
+    BadGateway:
+      description: 'Bad Gateway: The server received an invalid response from an upstream server while processing the request. Try again later.'
+    GatewayTimeout:
+      description: 'Gateway Timeout: An upstream server failed to respond on time. If your query uses max parameter, please try to reduce it.'
+    UnsupportedMediaType:
+      description: 'Unsupported Media Type: The request was made to a resource without specifying a media type or used a media type that is not supported.'
+    NoContent:
+      description: No Content
   schemas:
-    PersonSimultaneousRingCriteriaPut:
-      type: object
-      properties:
-        scheduleName:
-          type: string
-          example: Business_1
-          description: Name of the schedule which determines when the simultaneous ring is in effect.
-        scheduleType:
-          $ref: '#/components/schemas/PersonScheduleType'
-        scheduleLevel:
-          $ref: '#/components/schemas/PersonScheduleLevel'
-        callsFrom:
-          $ref: '#/components/schemas/PersonCallsFromType'
-        anonymousCallersEnabled:
-          type: boolean
-          example: true
-          description: When `true`, the criteria applies to calls from anonymous callers. Value for this attribute is required if `callsFrom` is `SELECT_PHONE_NUMBERS`.
-        unavailableCallersEnabled:
-          type: boolean
-          example: true
-          description: When `true`, the criteria applies to calls from unavailable callers. Value for this attribute is required if `callsFrom` is `SELECT_PHONE_NUMBERS`.
-        phoneNumbers:
-          type: array
-          items:
-            type: string
-            example: '+19064441748'
-          description: The list of phone numbers that will be checked against incoming calls for a match. Value for this attribute is required if `callsFrom` is `SELECT_PHONE_NUMBERS`.
-        ringEnabled:
-          type: boolean
-          example: true
-          description: When set to `true` simultaneous ringing is enabled for calls that meet this criteria. Criteria with `ringEnabled` set to `false` take priority.
-    PersonSimultaneousRingCriteriaSummary:
-      type: object
-      required:
-      - id
-      - scheduleName
-      - source
-      - ringEnabled
-      properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0NSSVRFUklBLzg2NTAxZDFlLTg1MWMtNDgwYi1hZmE2LTA5MTU4NzQ3NzdmZQ
-          description: Unique identifier for criteria.
-        scheduleName:
-          type: string
-          example: Business Vacation
-          description: Name of the schedule which determines when the simultaneous ring is in effect.
-        source:
-          $ref: '#/components/schemas/PersonSimultaneousRingSource'
-        ringEnabled:
-          type: boolean
-          example: true
-          description: When set to `true` simultaneous ringing is enabled for calls that meet this criteria. Criteria with `ringEnabled` set to `false` take priority.
-    HotDeskingLineType:
-      type: string
-      description: "Line type for the hot desking guest profile member.\n * `HOTDESKING_GUEST` - Primary hot desking guest profile line.\n * `SHARED_CALL_APPEARANCE` - Shared line assigned to the hot desking guest profile.\n * `PRIMARY` - Primary line.\n * `MOBILITY` - Mobility line."
-      enum:
-      - HOTDESKING_GUEST
-      - SHARED_CALL_APPEARANCE
-      - PRIMARY
-      - MOBILITY
-      example: HOTDESKING_GUEST
-    PersonSimultaneousRingCriteriaPost:
-      type: object
-      required:
-      - callsFrom
-      - ringEnabled
-      properties:
-        scheduleName:
-          type: string
-          example: Business Vacation
-          description: Name of the schedule which determines when the simultaneous ring is in effect.
-        scheduleType:
-          $ref: '#/components/schemas/PersonScheduleType'
-        scheduleLevel:
-          $ref: '#/components/schemas/PersonScheduleLevel'
-        callsFrom:
-          $ref: '#/components/schemas/PersonCallsFromType'
-        anonymousCallersEnabled:
-          type: boolean
-          example: true
-          description: When `true`, the criteria applies to calls from anonymous callers. Value for this attribute is required if `callsFrom` is `SELECT_PHONE_NUMBERS`.
-        unavailableCallersEnabled:
-          type: boolean
-          example: true
-          description: When `true`, the criteria applies to calls from unavailable callers. Value for this attribute is required if `callsFrom` is `SELECT_PHONE_NUMBERS`.
-        phoneNumbers:
-          type: array
-          items:
-            type: string
-            example: '+19064441748'
-          description: The list of phone numbers that will be checked against incoming calls for a match. Value for this attribute is required if `callsFrom` is `SELECT_PHONE_NUMBERS`.
-        ringEnabled:
-          type: boolean
-          example: true
-          description: When set to `true` simultaneous ringing is enabled for calls that meet this criteria. Criteria with `ringEnabled` set to `false` take priority.
     HotDeskingAvailableMember:
       type: object
       required:
@@ -1243,133 +1476,77 @@ components:
           $ref: '#/components/schemas/HotDeskingResponseMemberType'
         location:
           $ref: '#/components/schemas/Location'
-    PersonSimultaneousRingNumberPut:
-      type: object
-      required:
-      - phoneNumber
-      - answerConfirmationEnabled
-      properties:
-        phoneNumber:
-          type: string
-          example: '+12324556740'
-          description: Phone number set for simultaneous ring.
-        answerConfirmationEnabled:
-          type: boolean
-          example: false
-          description: When set to `true`, the called party is required to press 1 on the keypad to confirm answer for the call.
-    HotDeskingMembers:
-      type: object
-      description: Response containing the primary and shared-line members assigned to a person's hot desking guest profile.
-      required:
-      - members
-      properties:
-        model:
-          type: string
-          description: Name of the hot desking guest profile endpoint.
-          example: Business Communicator - PC
-        members:
-          type: array
-          description: List of primary and shared-line members assigned to the person's hot desking guest profile.
-          items:
-            $ref: '#/components/schemas/HotDeskingMember'
-          example:
-          - id: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8wZTQ5NjAzNC1lNTQ1LTRmMmEtODI4ZC03MjhjYjJlNjNlMWQ
-            firstName: Alice
-            lastName: Gomez
-            phoneNumber: '+12055552220'
-            extension: '2220'
-            primaryOwner: true
-            port: 1
-            lineType: HOTDESKING_GUEST
-            lineWeight: 1
-            allowCallDeclineEnabled: true
-            memberType: PEOPLE
-        maxLineCount:
-          type: integer
-          description: Maximum number of lines that can be configured on the hot desking guest profile endpoint.
-          example: 10
-      example:
-        model: Business Communicator - PC
-        members:
-        - id: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8wZTQ5NjAzNC1lNTQ1LTRmMmEtODI4ZC03MjhjYjJlNjNlMWQ
-          firstName: Alice
-          lastName: Gomez
-          phoneNumber: '+12055552220'
-          extension: '2220'
-          primaryOwner: true
-          port: 1
-          lineType: HOTDESKING_GUEST
-          lineWeight: 1
-          allowCallDeclineEnabled: true
-          memberType: PEOPLE
-        maxLineCount: 10
-    OutboundBillingPlan:
+    PersonSimultaneousRingGet:
       type: object
       example:
         enabled: true
+        doNotRingIfOnCallEnabled: true
+        criteriasEnabled: true
+        phoneNumbers:
+        - phoneNumber: '+19075552859'
+          answerConfirmationEnabled: true
+        criteria:
+        - id: Y2lzY29zcGFyazovL3VzL0NSSVRFUklBLzg2NTAxZDFlLTg1MWMtNDgwYi1hZmE2LTA5MTU4NzQ3NzdmZQ
+          scheduleName: Business Vacation
+          source: ALL_NUMBERS
+          ringEnabled: true
       required:
       - enabled
+      - doNotRingIfOnCallEnabled
+      - criteriasEnabled
       properties:
         enabled:
           type: boolean
-          description: Set to `true` when Cisco Calling Plan outbound billing is enabled for the workspace.
           example: true
-      description: Cisco Calling Plan outbound billing setting for the workspace.
-    PersonSimultaneousRingNumber:
-      type: object
-      required:
-      - phoneNumber
-      - answerConfirmationEnabled
-      properties:
-        phoneNumber:
-          type: string
-          example: '+19075552859'
-          description: Phone number set for simultaneous ring.
-        answerConfirmationEnabled:
+          description: When set to `true`, simultaneous ring is enabled for this person.
+        doNotRingIfOnCallEnabled:
           type: boolean
           example: true
-          description: When set to `true`, the called party is required to press 1 on the keypad to confirm answer for the call.
-    PersonSimultaneousRingCriteriaCreated:
+          description: When set to `true`, the configured phone numbers won't ring when you are on a call.
+        criteriasEnabled:
+          type: boolean
+          example: true
+          description: When `true`, enables the selected schedule for simultaneous ring.
+        phoneNumbers:
+          type: array
+          items:
+            $ref: '#/components/schemas/PersonSimultaneousRingNumber'
+          description: Enter up to 10 phone numbers to ring simultaneously when you receive an incoming call.
+        criteria:
+          type: array
+          items:
+            $ref: '#/components/schemas/PersonSimultaneousRingCriteriaSummary'
+          description: A list of criteria specifying conditions when simultaneous ring is in effect.
+    HotDeskingMembersPut:
       type: object
-      example:
-        id: Y2lzY29zcGFyazovL3VzL0NSSVRFUklBLzg2NTAxZDFlLTg1MWMtNDgwYi1hZmE2LTA5MTU4NzQ3NzdmZQ
+      description: Request body used to update the members assigned to a person's hot desking guest profile.
       required:
-      - id
+      - members
       properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0NSSVRFUklBLzg2NTAxZDFlLTg1MWMtNDgwYi1hZmE2LTA5MTU4NzQ3NzdmZQ
-          description: Unique identifier for the newly created criteria.
-    HotDeskingResponseMemberType:
-      type: string
-      description: "Type of assigned or available member.\n * `PEOPLE` - The member is a person.\n * `PLACE` - The member is a workspace.\n * `VIRTUAL_LINE` - The member is a virtual line."
-      enum:
-      - PEOPLE
-      - PLACE
-      - VIRTUAL_LINE
-      example: PEOPLE
-    PersonScheduleLevel:
-      type: string
-      enum:
-      - LOCATION
-      - PEOPLE
-      description: " * `LOCATION` - Indicates the schedule is configured at the location level.\n * `PEOPLE` - Indicates the schedule is configured at the person level.\n"
-      example: LOCATION
-    HotDeskingPutMemberType:
-      type: string
-      description: "Type of member in the update request. Include this field when the member ID needs an explicit resource type for decoding.\n * `USER` - The member is a person.\n * `PLACE` - The member is a workspace.\n * `VIRTUAL_PROFILE` - The member is a virtual line."
-      enum:
-      - USER
-      - PLACE
-      - VIRTUAL_PROFILE
-      example: USER
-    PersonCallsFromType:
-      type: string
-      enum:
-      - ANY_PHONE_NUMBER
-      - SELECT_PHONE_NUMBERS
-      description: " * `ANY_PHONE_NUMBER` - The Schedule applies to any phone number.\n * `SELECT_PHONE_NUMBERS` - Indicates the schedule applies to select phone number defined in the `phoneNumbers` property.\n"
-      example: ANY_PHONE_NUMBER
+        members:
+          type: array
+          description: Members to assign to the person's hot desking guest profile.
+          items:
+            $ref: '#/components/schemas/HotDeskingPutMember'
+          example:
+          - id: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8wZTQ5NjAzNC1lNTQ1LTRmMmEtODI4ZC03MjhjYjJlNjNlMWQ
+            port: 1
+            primaryOwner: true
+            lineType: HOTDESKING_GUEST
+            lineWeight: 1
+            hotlineEnabled: false
+            allowCallDeclineEnabled: true
+            memberType: USER
+      example:
+        members:
+        - id: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8wZTQ5NjAzNC1lNTQ1LTRmMmEtODI4ZC03MjhjYjJlNjNlMWQ
+          port: 1
+          primaryOwner: true
+          lineType: HOTDESKING_GUEST
+          lineWeight: 1
+          hotlineEnabled: false
+          allowCallDeclineEnabled: true
+          memberType: USER
     PersonAnonymousCallRejectGet:
       type: object
       example:
@@ -1381,69 +1558,24 @@ components:
           type: boolean
           example: true
           description: Indicates whether Anonymous Call Rejection is enabled. When true, incoming calls from callers who have blocked their caller ID will be automatically rejected.
-    Location:
+    PersonSimultaneousRingSource:
+      type: string
+      enum:
+      - ALL_NUMBERS
+      - SPECIFIC_NUMBERS
+      description: " * `ALL_NUMBERS` - Criteria applies to all incoming numbers.\n * `SPECIFIC_NUMBERS` - Criteria applies only for specific incoming numbers.\n"
+      example: ALL_NUMBERS
+    PersonSimultaneousRingCriteriaCreated:
       type: object
-      description: Location associated with the hot desking member.
-      required:
-      - id
-      - name
-      properties:
-        id:
-          type: string
-          description: Unique identifier for the location.
-          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzJiNDkyZmZkLTRjNGItNGVmNS04YzAzLWE1MDYyYzM4NDA5Mw
-        name:
-          type: string
-          description: Name of the location.
-          example: Main Office
       example:
-        id: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzJiNDkyZmZkLTRjNGItNGVmNS04YzAzLWE1MDYyYzM4NDA5Mw
-        name: Main Office
-    HotDeskingPutMember:
-      type: object
+        id: Y2lzY29zcGFyazovL3VzL0NSSVRFUklBLzg2NTAxZDFlLTg1MWMtNDgwYi1hZmE2LTA5MTU4NzQ3NzdmZQ
       required:
       - id
-      - port
-      - primaryOwner
-      - lineType
-      - lineWeight
       properties:
         id:
           type: string
-          description: Unique identifier for the member.
-          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8wZTQ5NjAzNC1lNTQ1LTRmMmEtODI4ZC03MjhjYjJlNjNlMWQ
-        port:
-          type: integer
-          description: Port to assign to the member.
-          example: 1
-        primaryOwner:
-          type: boolean
-          description: Indicates whether this member is the hot desking guest profile owner.
-          example: true
-        lineType:
-          $ref: '#/components/schemas/HotDeskingLineType'
-        lineWeight:
-          type: integer
-          description: Number of lines to configure for the member on the hot desking guest profile endpoint.
-          example: 1
-        t38FaxCompressionEnabled:
-          type: boolean
-          description: T.38 fax compression setting for the member line.
-          example: false
-        hotlineEnabled:
-          type: boolean
-          description: Whether this line automatically calls a predefined number when taken off-hook.
-          example: false
-        hotlineDestination:
-          type: string
-          description: Preconfigured number for the hotline. Required when `hotlineEnabled` is `true`.
-          example: '2222'
-        allowCallDeclineEnabled:
-          type: boolean
-          description: When enabled, a call decline request is extended to all endpoints on the line. When disabled, the call is declined only at the current endpoint.
-          example: true
-        memberType:
-          $ref: '#/components/schemas/HotDeskingPutMemberType'
+          example: Y2lzY29zcGFyazovL3VzL0NSSVRFUklBLzg2NTAxZDFlLTg1MWMtNDgwYi1hZmE2LTA5MTU4NzQ3NzdmZQ
+          description: Unique identifier for the newly created criteria.
     PersonSimultaneousRingCriteriaGet:
       type: object
       example:
@@ -1496,146 +1628,89 @@ components:
           type: boolean
           example: false
           description: When set to `true` simultaneous ringing is enabled for calls that meet this criteria. Criteria with `ringEnabled` set to `false` take priority.
-    PersonSimultaneousRingGet:
+    PersonScheduleLevel:
+      type: string
+      enum:
+      - LOCATION
+      - PEOPLE
+      description: " * `LOCATION` - Indicates the schedule is configured at the location level.\n * `PEOPLE` - Indicates the schedule is configured at the person level.\n"
+      example: LOCATION
+    PersonSimultaneousRingCriteriaPut:
       type: object
-      example:
-        enabled: true
-        doNotRingIfOnCallEnabled: true
-        criteriasEnabled: true
+      properties:
+        scheduleName:
+          type: string
+          example: Business_1
+          description: Name of the schedule which determines when the simultaneous ring is in effect.
+        scheduleType:
+          $ref: '#/components/schemas/PersonScheduleType'
+        scheduleLevel:
+          $ref: '#/components/schemas/PersonScheduleLevel'
+        callsFrom:
+          $ref: '#/components/schemas/PersonCallsFromType'
+        anonymousCallersEnabled:
+          type: boolean
+          example: true
+          description: When `true`, the criteria applies to calls from anonymous callers. Value for this attribute is required if `callsFrom` is `SELECT_PHONE_NUMBERS`.
+        unavailableCallersEnabled:
+          type: boolean
+          example: true
+          description: When `true`, the criteria applies to calls from unavailable callers. Value for this attribute is required if `callsFrom` is `SELECT_PHONE_NUMBERS`.
         phoneNumbers:
-        - phoneNumber: '+19075552859'
-          answerConfirmationEnabled: true
-        criteria:
-        - id: Y2lzY29zcGFyazovL3VzL0NSSVRFUklBLzg2NTAxZDFlLTg1MWMtNDgwYi1hZmE2LTA5MTU4NzQ3NzdmZQ
-          scheduleName: Business Vacation
-          source: ALL_NUMBERS
-          ringEnabled: true
+          type: array
+          items:
+            type: string
+            example: '+19064441748'
+          description: The list of phone numbers that will be checked against incoming calls for a match. Value for this attribute is required if `callsFrom` is `SELECT_PHONE_NUMBERS`.
+        ringEnabled:
+          type: boolean
+          example: true
+          description: When set to `true` simultaneous ringing is enabled for calls that meet this criteria. Criteria with `ringEnabled` set to `false` take priority.
+    PersonSimultaneousRingNumberPut:
+      type: object
+      required:
+      - phoneNumber
+      - answerConfirmationEnabled
+      properties:
+        phoneNumber:
+          type: string
+          example: '+12324556740'
+          description: Phone number set for simultaneous ring.
+        answerConfirmationEnabled:
+          type: boolean
+          example: false
+          description: When set to `true`, the called party is required to press 1 on the keypad to confirm answer for the call.
+    PersonAnonymousCallRejectPut:
+      type: object
       required:
       - enabled
-      - doNotRingIfOnCallEnabled
-      - criteriasEnabled
       properties:
         enabled:
           type: boolean
           example: true
-          description: When set to `true`, simultaneous ring is enabled for this person.
-        doNotRingIfOnCallEnabled:
+          description: Enable or disable Anonymous Call Rejection. When set to true, incoming calls from callers who have blocked their caller ID will be automatically rejected.
+    PersonSimultaneousRingCriteriaSummary:
+      type: object
+      required:
+      - id
+      - scheduleName
+      - source
+      - ringEnabled
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0NSSVRFUklBLzg2NTAxZDFlLTg1MWMtNDgwYi1hZmE2LTA5MTU4NzQ3NzdmZQ
+          description: Unique identifier for criteria.
+        scheduleName:
+          type: string
+          example: Business Vacation
+          description: Name of the schedule which determines when the simultaneous ring is in effect.
+        source:
+          $ref: '#/components/schemas/PersonSimultaneousRingSource'
+        ringEnabled:
           type: boolean
           example: true
-          description: When set to `true`, the configured phone numbers won't ring when you are on a call.
-        criteriasEnabled:
-          type: boolean
-          example: true
-          description: When `true`, enables the selected schedule for simultaneous ring.
-        phoneNumbers:
-          type: array
-          items:
-            $ref: '#/components/schemas/PersonSimultaneousRingNumber'
-          description: Enter up to 10 phone numbers to ring simultaneously when you receive an incoming call.
-        criteria:
-          type: array
-          items:
-            $ref: '#/components/schemas/PersonSimultaneousRingCriteriaSummary'
-          description: A list of criteria specifying conditions when simultaneous ring is in effect.
-    PersonSimultaneousRingSource:
-      type: string
-      enum:
-      - ALL_NUMBERS
-      - SPECIFIC_NUMBERS
-      description: " * `ALL_NUMBERS` - Criteria applies to all incoming numbers.\n * `SPECIFIC_NUMBERS` - Criteria applies only for specific incoming numbers.\n"
-      example: ALL_NUMBERS
-    PersonScheduleType:
-      type: string
-      enum:
-      - businessHours
-      - holidays
-      description: " * `businessHours` - The Schedule type that specifies the business or working hours during the day.\n * `holidays` - The Schedule type that specifies the day when your organization is not open.\n"
-      example: businessHours
-    HotDeskingMembersPut:
-      type: object
-      description: Request body used to update the members assigned to a person's hot desking guest profile.
-      required:
-      - members
-      properties:
-        members:
-          type: array
-          description: Members to assign to the person's hot desking guest profile.
-          items:
-            $ref: '#/components/schemas/HotDeskingPutMember'
-          example:
-          - id: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8wZTQ5NjAzNC1lNTQ1LTRmMmEtODI4ZC03MjhjYjJlNjNlMWQ
-            port: 1
-            primaryOwner: true
-            lineType: HOTDESKING_GUEST
-            lineWeight: 1
-            hotlineEnabled: false
-            allowCallDeclineEnabled: true
-            memberType: USER
-      example:
-        members:
-        - id: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8wZTQ5NjAzNC1lNTQ1LTRmMmEtODI4ZC03MjhjYjJlNjNlMWQ
-          port: 1
-          primaryOwner: true
-          lineType: HOTDESKING_GUEST
-          lineWeight: 1
-          hotlineEnabled: false
-          allowCallDeclineEnabled: true
-          memberType: USER
-    PersonServicesGet:
-      type: object
-      example:
-        services:
-        - Anonymous Call Rejection
-        - Call Forwarding Always
-      required:
-      - services
-      properties:
-        services:
-          type: array
-          items:
-            type: string
-          description: Represents a list of services that are assigned to a person.
-          example:
-          - Anonymous Call Rejection
-          - Call Forwarding Always
-    HotDeskingAvailableMembers:
-      type: object
-      description: Response containing members that can be assigned to a person's hot desking guest profile.
-      required:
-      - members
-      properties:
-        members:
-          type: array
-          description: List of members that can be assigned to the person's hot desking guest profile.
-          items:
-            $ref: '#/components/schemas/HotDeskingAvailableMember'
-          example:
-          - id: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9jODhiZGIwNC1jZjU5LTRjMjMtODQ4OC00NTNhOTE3ZDFlMjk
-            firstName: John
-            lastName: Smith
-            phoneNumber: '+12055552221'
-            extension: '2221'
-            routingPrefix: '1234'
-            esn: '12342221'
-            lineType: SHARED_CALL_APPEARANCE
-            memberType: PEOPLE
-            location:
-              id: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzJiNDkyZmZkLTRjNGItNGVmNS04YzAzLWE1MDYyYzM4NDA5Mw
-              name: Main Office
-      example:
-        members:
-        - id: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9jODhiZGIwNC1jZjU5LTRjMjMtODQ4OC00NTNhOTE3ZDFlMjk
-          firstName: John
-          lastName: Smith
-          phoneNumber: '+12055552221'
-          extension: '2221'
-          routingPrefix: '1234'
-          esn: '12342221'
-          lineType: SHARED_CALL_APPEARANCE
-          memberType: PEOPLE
-          location:
-            id: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzJiNDkyZmZkLTRjNGItNGVmNS04YzAzLWE1MDYyYzM4NDA5Mw
-            name: Main Office
+          description: When set to `true` simultaneous ringing is enabled for calls that meet this criteria. Criteria with `ringEnabled` set to `false` take priority.
     PersonSimultaneousRingPut:
       type: object
       properties:
@@ -1656,15 +1731,79 @@ components:
           items:
             $ref: '#/components/schemas/PersonSimultaneousRingNumberPut'
           description: Enter up to 10 phone numbers to ring simultaneously when you receive an incoming call.
-    PersonAnonymousCallRejectPut:
+    PersonSimultaneousRingNumber:
       type: object
       required:
-      - enabled
+      - phoneNumber
+      - answerConfirmationEnabled
       properties:
-        enabled:
+        phoneNumber:
+          type: string
+          example: '+19075552859'
+          description: Phone number set for simultaneous ring.
+        answerConfirmationEnabled:
           type: boolean
           example: true
-          description: Enable or disable Anonymous Call Rejection. When set to true, incoming calls from callers who have blocked their caller ID will be automatically rejected.
+          description: When set to `true`, the called party is required to press 1 on the keypad to confirm answer for the call.
+    PersonScheduleType:
+      type: string
+      enum:
+      - businessHours
+      - holidays
+      description: " * `businessHours` - The Schedule type that specifies the business or working hours during the day.\n * `holidays` - The Schedule type that specifies the day when your organization is not open.\n"
+      example: businessHours
+    Location:
+      type: object
+      description: Location associated with the hot desking member.
+      required:
+      - id
+      - name
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the location.
+          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzJiNDkyZmZkLTRjNGItNGVmNS04YzAzLWE1MDYyYzM4NDA5Mw
+        name:
+          type: string
+          description: Name of the location.
+          example: Main Office
+      example:
+        id: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzJiNDkyZmZkLTRjNGItNGVmNS04YzAzLWE1MDYyYzM4NDA5Mw
+        name: Main Office
+    PersonSimultaneousRingCriteriaPost:
+      type: object
+      required:
+      - callsFrom
+      - ringEnabled
+      properties:
+        scheduleName:
+          type: string
+          example: Business Vacation
+          description: Name of the schedule which determines when the simultaneous ring is in effect.
+        scheduleType:
+          $ref: '#/components/schemas/PersonScheduleType'
+        scheduleLevel:
+          $ref: '#/components/schemas/PersonScheduleLevel'
+        callsFrom:
+          $ref: '#/components/schemas/PersonCallsFromType'
+        anonymousCallersEnabled:
+          type: boolean
+          example: true
+          description: When `true`, the criteria applies to calls from anonymous callers. Value for this attribute is required if `callsFrom` is `SELECT_PHONE_NUMBERS`.
+        unavailableCallersEnabled:
+          type: boolean
+          example: true
+          description: When `true`, the criteria applies to calls from unavailable callers. Value for this attribute is required if `callsFrom` is `SELECT_PHONE_NUMBERS`.
+        phoneNumbers:
+          type: array
+          items:
+            type: string
+            example: '+19064441748'
+          description: The list of phone numbers that will be checked against incoming calls for a match. Value for this attribute is required if `callsFrom` is `SELECT_PHONE_NUMBERS`.
+        ringEnabled:
+          type: boolean
+          example: true
+          description: When set to `true` simultaneous ringing is enabled for calls that meet this criteria. Criteria with `ringEnabled` set to `false` take priority.
     HotDeskingMember:
       type: object
       required:
@@ -1745,38 +1884,315 @@ components:
           $ref: '#/components/schemas/HotDeskingResponseMemberType'
         location:
           $ref: '#/components/schemas/Location'
+    HotDeskingPutMember:
+      type: object
+      required:
+      - id
+      - port
+      - primaryOwner
+      - lineType
+      - lineWeight
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the member.
+          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8wZTQ5NjAzNC1lNTQ1LTRmMmEtODI4ZC03MjhjYjJlNjNlMWQ
+        port:
+          type: integer
+          description: Port to assign to the member.
+          example: 1
+        primaryOwner:
+          type: boolean
+          description: Indicates whether this member is the hot desking guest profile owner.
+          example: true
+        lineType:
+          $ref: '#/components/schemas/HotDeskingLineType'
+        lineWeight:
+          type: integer
+          description: Number of lines to configure for the member on the hot desking guest profile endpoint.
+          example: 1
+        t38FaxCompressionEnabled:
+          type: boolean
+          description: T.38 fax compression setting for the member line.
+          example: false
+        hotlineEnabled:
+          type: boolean
+          description: Whether this line automatically calls a predefined number when taken off-hook.
+          example: false
+        hotlineDestination:
+          type: string
+          description: Preconfigured number for the hotline. Required when `hotlineEnabled` is `true`.
+          example: '2222'
+        allowCallDeclineEnabled:
+          type: boolean
+          description: When enabled, a call decline request is extended to all endpoints on the line. When disabled, the call is declined only at the current endpoint.
+          example: true
+        memberType:
+          $ref: '#/components/schemas/HotDeskingPutMemberType'
+    HotDeskingResponseMemberType:
+      type: string
+      description: "Type of assigned or available member.\n * `PEOPLE` - The member is a person.\n * `PLACE` - The member is a workspace.\n * `VIRTUAL_LINE` - The member is a virtual line."
+      enum:
+      - PEOPLE
+      - PLACE
+      - VIRTUAL_LINE
+      example: PEOPLE
+    OutboundBillingPlan:
+      type: object
+      example:
+        enabled: true
+      required:
+      - enabled
+      properties:
+        enabled:
+          type: boolean
+          description: Set to `true` when Cisco Calling Plan outbound billing is enabled for the workspace.
+          example: true
+      description: Cisco Calling Plan outbound billing setting for the workspace.
+    PersonCallsFromType:
+      type: string
+      enum:
+      - ANY_PHONE_NUMBER
+      - SELECT_PHONE_NUMBERS
+      description: " * `ANY_PHONE_NUMBER` - The Schedule applies to any phone number.\n * `SELECT_PHONE_NUMBERS` - Indicates the schedule applies to select phone number defined in the `phoneNumbers` property.\n"
+      example: ANY_PHONE_NUMBER
+    HotDeskingPutMemberType:
+      type: string
+      description: "Type of member in the update request. Include this field when the member ID needs an explicit resource type for decoding.\n * `USER` - The member is a person.\n * `PLACE` - The member is a workspace.\n * `VIRTUAL_PROFILE` - The member is a virtual line."
+      enum:
+      - USER
+      - PLACE
+      - VIRTUAL_PROFILE
+      example: USER
+    PersonServicesGet:
+      type: object
+      example:
+        services:
+        - Anonymous Call Rejection
+        - Call Forwarding Always
+      required:
+      - services
+      properties:
+        services:
+          type: array
+          items:
+            type: string
+          description: Represents a list of services that are assigned to a person.
+          example:
+          - Anonymous Call Rejection
+          - Call Forwarding Always
+    HotDeskingAvailableMembers:
+      type: object
+      description: Response containing members that can be assigned to a person's hot desking guest profile.
+      required:
+      - members
+      properties:
+        members:
+          type: array
+          description: List of members that can be assigned to the person's hot desking guest profile.
+          items:
+            $ref: '#/components/schemas/HotDeskingAvailableMember'
+          example:
+          - id: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9jODhiZGIwNC1jZjU5LTRjMjMtODQ4OC00NTNhOTE3ZDFlMjk
+            firstName: John
+            lastName: Smith
+            phoneNumber: '+12055552221'
+            extension: '2221'
+            routingPrefix: '1234'
+            esn: '12342221'
+            lineType: SHARED_CALL_APPEARANCE
+            memberType: PEOPLE
+            location:
+              id: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzJiNDkyZmZkLTRjNGItNGVmNS04YzAzLWE1MDYyYzM4NDA5Mw
+              name: Main Office
+      example:
+        members:
+        - id: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9jODhiZGIwNC1jZjU5LTRjMjMtODQ4OC00NTNhOTE3ZDFlMjk
+          firstName: John
+          lastName: Smith
+          phoneNumber: '+12055552221'
+          extension: '2221'
+          routingPrefix: '1234'
+          esn: '12342221'
+          lineType: SHARED_CALL_APPEARANCE
+          memberType: PEOPLE
+          location:
+            id: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzJiNDkyZmZkLTRjNGItNGVmNS04YzAzLWE1MDYyYzM4NDA5Mw
+            name: Main Office
+    HotDeskingMembers:
+      type: object
+      description: Response containing the primary and shared-line members assigned to a person's hot desking guest profile.
+      required:
+      - members
+      properties:
+        model:
+          type: string
+          description: Name of the hot desking guest profile endpoint.
+          example: Business Communicator - PC
+        members:
+          type: array
+          description: List of primary and shared-line members assigned to the person's hot desking guest profile.
+          items:
+            $ref: '#/components/schemas/HotDeskingMember'
+          example:
+          - id: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8wZTQ5NjAzNC1lNTQ1LTRmMmEtODI4ZC03MjhjYjJlNjNlMWQ
+            firstName: Alice
+            lastName: Gomez
+            phoneNumber: '+12055552220'
+            extension: '2220'
+            primaryOwner: true
+            port: 1
+            lineType: HOTDESKING_GUEST
+            lineWeight: 1
+            allowCallDeclineEnabled: true
+            memberType: PEOPLE
+        maxLineCount:
+          type: integer
+          description: Maximum number of lines that can be configured on the hot desking guest profile endpoint.
+          example: 10
+      example:
+        model: Business Communicator - PC
+        members:
+        - id: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8wZTQ5NjAzNC1lNTQ1LTRmMmEtODI4ZC03MjhjYjJlNjNlMWQ
+          firstName: Alice
+          lastName: Gomez
+          phoneNumber: '+12055552220'
+          extension: '2220'
+          primaryOwner: true
+          port: 1
+          lineType: HOTDESKING_GUEST
+          lineWeight: 1
+          allowCallDeclineEnabled: true
+          memberType: PEOPLE
+        maxLineCount: 10
+    HotDeskingLineType:
+      type: string
+      description: "Line type for the hot desking guest profile member.\n * `HOTDESKING_GUEST` - Primary hot desking guest profile line.\n * `SHARED_CALL_APPEARANCE` - Shared line assigned to the hot desking guest profile.\n * `PRIMARY` - Primary line.\n * `MOBILITY` - Mobility line."
+      enum:
+      - HOTDESKING_GUEST
+      - SHARED_CALL_APPEARANCE
+      - PRIMARY
+      - MOBILITY
+      example: HOTDESKING_GUEST
+    GetPersonAnswerSettingsObject:
+      type: object
+      example:
+        preferredAnswerEndpointId: Y2lzY29zcGFyazovL3VybjpURUFNOnVzLWVhc3QtMV9pbnQxMy9DQUxMSU5HX0RFVklDRS82NjY2Nzc3Ny04ODg4LTRhOTQtOGZiZC0wMzM2NzhmMDU5ZjM=
+        preferredAnswerEndpointType: PRIMARY_DEVICE
+        preferredAnswerEndpointIdType: CALLING_DEVICE
+        preferredAnswerEndpointRequired: true
+        autoAnswerEnabled: true
+        isPreferredEndpointClearableByPerson: false
+      required:
+      - preferredAnswerEndpointRequired
+      - autoAnswerEnabled
+      - isPreferredEndpointClearableByPerson
+      properties:
+        preferredAnswerEndpointId:
+          type: string
+          description: The unique identifier for the preferred answer endpoint. The companion `preferredAnswerEndpointIdType` identifies the encoded resource type as `APPLICATION`, `CALLING_DEVICE`, or `HOTDESKING_GUEST`.
+          example: Y2lzY29zcGFyazovL3VybjpURUFNOnVzLWVhc3QtMV9pbnQxMy9DQUxMSU5HX0RFVklDRS82NjY2Nzc3Ny04ODg4LTRhOTQtOGZiZC0wMzM2NzhmMDU5ZjM=
+        preferredAnswerEndpointType:
+          type: string
+          enum:
+          - WEBEX_APP_DESKTOP
+          - PRIMARY_DEVICE
+          - NON_PRIMARY_DEVICE
+          - HOTDESK_DEVICE
+          - NONE
+          description: "The preferred endpoint's behavior category.\n\n * `WEBEX_APP_DESKTOP` - The Webex desktop application answers the call.\n * `PRIMARY_DEVICE` - The person's primary physical device answers the call.\n * `NON_PRIMARY_DEVICE` - A physical device other than the person's primary device answers the call.\n * `HOTDESK_DEVICE` - The device on which the person is signed in as a hot desking guest answers the call.\n * `NONE` - No preferred answer endpoint is selected.\n"
+          example: PRIMARY_DEVICE
+        preferredAnswerEndpointIdType:
+          type: string
+          enum:
+          - APPLICATION
+          - CALLING_DEVICE
+          - HOTDESKING_GUEST
+          description: "The resource type encoded by `preferredAnswerEndpointId`.\n\n * `APPLICATION` - The identifier represents a Webex application.\n * `CALLING_DEVICE` - The identifier represents a Webex Calling device.\n * `HOTDESKING_GUEST` - The identifier represents a hot desking guest session.\n"
+          example: CALLING_DEVICE
+        preferredAnswerEndpointRequired:
+          type: boolean
+          description: Indicates whether the person must have a preferred answer endpoint selected in order for a call to be auto-answered.
+          example: true
+        autoAnswerEnabled:
+          type: boolean
+          description: Indicates whether auto answer is enabled for the person.
+          example: true
+        isPreferredEndpointClearableByPerson:
+          type: boolean
+          description: Indicates whether the person can clear the preferred endpoint setting.
+          example: false
+    PersonEndpointType:
+      type: string
+      enum:
+      - CALLING_DEVICE
+      - APPLICATION
+      - HOTDESKING_GUEST
+      description: "Endpoint resource type returned by the API.\n\n * `CALLING_DEVICE` - A physical Webex Calling device registered to the person.\n * `APPLICATION` - A software application such as Webex App registered to the person.\n * `HOTDESKING_GUEST` - A hot desking guest endpoint for the person.\n"
+    PersonPreferredAnswerEndpointListObject:
+      type: object
+      example:
+        endpoints: []
+      description: Response object for the preferred answer endpoint information.
+      required:
+      - endpoints
+      properties:
+        endpoints:
+          type: array
+          items:
+            $ref: '#/components/schemas/PersonEndpointObject'
+          description: Array of endpoints available to the person. All available endpoints are returned in a single response.
+    ModifyPersonAnswerSettingsObject:
+      type: object
+      properties:
+        preferredAnswerEndpointId:
+          type:
+          - string
+          - 'null'
+          description: The unique identifier for the preferred answer endpoint. This may be a device, application, or hot desking guest endpoint. Set to null to clear the preferred answer endpoint; omit to leave unchanged.
+          example: Y2lzY29zcGFyazovL3VybjpURUFNOnVzLWVhc3QtMV9pbnQxMy9DQUxMSU5HX0RFVklDRS82NjY2Nzc3Ny04ODg4LTRhOTQtOGZiZC0wMzM2NzhmMDU5ZjM=
+        autoAnswerEnabled:
+          type: boolean
+          description: Indicates whether auto answer is enabled for the person.
+          example: true
+        isPreferredEndpointClearableByPerson:
+          type: boolean
+          description: Indicates whether the person can clear the preferred endpoint setting.
+          example: false
+    PersonEndpointObject:
+      type: object
+      description: Details of an endpoint available to the person.
+      required:
+      - id
+      - type
+      - name
+      - isPreferredAnswerEndpoint
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VybjpURUFNOnVzLWVhc3QtMV9pbnQxMy9DQUxMSU5HX0RFVklDRS82NjY2Nzc3Ny04ODg4LTRhOTQtOGZiZC0wMzM2NzhmMDU5ZjM=
+          description: Unique identifier for the endpoint. The companion `type` identifies the endpoint category; the opaque identifier represents a `CALLING_DEVICE`, `APPLICATION`, or `HOTDESKING_GUEST` resource.
+        type:
+          $ref: '#/components/schemas/PersonEndpointType'
+        name:
+          type: string
+          example: Cisco 8865 (Phone in reception area)
+          description: Name of the endpoint. For a device endpoint, the name can include the value of a configured `name=<value>` device tag.
+        isPreferredAnswerEndpoint:
+          type: boolean
+          example: true
+          description: Indicates whether this endpoint is currently selected as the preferred answer endpoint.
   parameters:
-    locationId:
-      name: locationId
+    orgId:
+      name: orgId
       in: query
-      description: Return only available members in this location.
+      description: ID of the organization in which the person resides. Only admin users of another organization, such as partners, may use this parameter. If not specified, the organization from the OAuth token is used.
       required: false
-      example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzJiNDkyZmZkLTRjNGItNGVmNS04YzAzLWE1MDYyYzM4NDA5Mw
+      example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE
       schema:
         type: string
         minLength: 1
         maxLength: 1024
-    max:
-      name: max
-      in: query
-      description: Maximum number of records to return.
-      required: false
-      example: 100
-      schema:
-        type: integer
-        default: 2000
-        minimum: 1
-        maximum: 2000
-    phoneNumber:
-      name: phoneNumber
-      in: query
-      description: Search for available members by phone number.
-      required: false
-      example: '+12055552221'
-      schema:
-        type: string
-        minLength: 1
-        maxLength: 50
     extension:
       name: extension
       in: query
@@ -1797,6 +2213,36 @@ components:
         type: string
         minLength: 1
         maxLength: 1024
+    phoneNumber:
+      name: phoneNumber
+      in: query
+      description: Search for available members by phone number.
+      required: false
+      example: '+12055552221'
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 50
+    memberName:
+      name: memberName
+      in: query
+      description: Search for available members by name.
+      required: false
+      example: John
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 128
+    locationId:
+      name: locationId
+      in: query
+      description: Return only available members in this location.
+      required: false
+      example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzJiNDkyZmZkLTRjNGItNGVmNS04YzAzLWE1MDYyYzM4NDA5Mw
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 1024
     order:
       name: order
       in: query
@@ -1813,26 +2259,6 @@ components:
           minLength: 1
           maxLength: 64
           example: lastName-asc
-    memberName:
-      name: memberName
-      in: query
-      description: Search for available members by name.
-      required: false
-      example: John
-      schema:
-        type: string
-        minLength: 1
-        maxLength: 128
-    orgId:
-      name: orgId
-      in: query
-      description: ID of the organization in which the person resides. Only admin users of another organization, such as partners, may use this parameter. If not specified, the organization from the OAuth token is used.
-      required: false
-      example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE
-      schema:
-        type: string
-        minLength: 1
-        maxLength: 1024
     start:
       name: start
       in: query
@@ -1844,6 +2270,17 @@ components:
         default: 0
         minimum: 0
         maximum: 100000
+    max:
+      name: max
+      in: query
+      description: Maximum number of records to return.
+      required: false
+      example: 100
+      schema:
+        type: integer
+        default: 2000
+        minimum: 1
+        maximum: 2000
   requestBodies:
     OutboundBillingPlanRequest:
       required: true
@@ -1872,3 +2309,6 @@ components:
       description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
       scheme: bearer
       bearerFormat: JWT
+x-refined-from:
+- webex-cloud-calling-openapi.json
+- webex-cloud-calling-openapi.yml

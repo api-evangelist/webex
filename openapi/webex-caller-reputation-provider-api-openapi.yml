@@ -1,21 +1,11 @@
 openapi: 3.2.0
 info:
-  title: Webex Cloud Calling Caller Reputation Provider API
+  title: Webex Caller Reputation Provider API
   version: 1.0.0
-  description: The Webex Cloud Calling APIs enable comprehensive management of cloud-based calling services, including user provisioning, device assignment, call routing, feature configuration, and number management.
-  x-provenance:
-    method: harvested
-    authored_by: Cisco Webex
-    harvested_by: API Evangelist
-    harvested_on: '2026-08-19'
-    first_party: true
-    note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
-    provider_published: true
-  x-evidence:
-  - type: source
-    url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-cloud-calling.json
-  - type: raw
-    url: https://raw.githubusercontent.com/webex/webex-openapi-specs/main/public-spec/webex-cloud-calling.json
+  x-refined-note:
+  - x-evidence differs across the merged source definitions and was not carried
+  - x-provenance differs across the merged source definitions and was not carried
+  description: 'Operations tagged Caller Reputation Provider across 2 of this provider''s published API definitions: webex-cloud-calling-openapi.json, webex-cloud-calling-openapi.yml. Each path carries the servers of the definition it was published in.'
 tags:
 - name: Caller Reputation Provider
 paths:
@@ -312,54 +302,6 @@ paths:
           type: string
 components:
   schemas:
-    CallerReputationProviderRegion:
-      type: object
-      properties:
-        id:
-          type: string
-          description: Unique identifier for the region.
-          example: region-1
-        name:
-          type: string
-          description: Name of the region.
-          example: US East
-        type:
-          type: string
-          description: Type of the region (e.g., primary, secondary).
-          example: primary
-        visible:
-          type: boolean
-          description: Indicates if the region is visible.
-          example: true
-        environmentType:
-          type: string
-          description: Environment type of the region (e.g., production, staging).
-          example: production
-      example:
-        id: region-1
-        name: US East
-        type: primary
-        visible: true
-        environmentType: production
-    CallerReputationProviderProvidersResponse:
-      type: object
-      properties:
-        providers:
-          type: array
-          items:
-            $ref: '#/components/schemas/CallerReputationProviderProvider'
-          description: List of caller reputation providers.
-      example:
-        providers:
-        - id: provider-123
-          enabled: true
-          name: Acme Reputation Provider
-          regions:
-          - id: region-1
-            name: US East
-            type: primary
-            visible: true
-            environmentType: production
     CallerReputationProviderSettings:
       type: object
       properties:
@@ -394,6 +336,17 @@ components:
         enabled: true
         callBlockScoreThreshold: '0.7'
         callAllowScoreThreshold: '0.3'
+    CallerReputationProviderUnlockRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the reputation provider.
+          example: provider-123
+      required:
+      - id
+      example:
+        id: provider-123
     CallerReputationProviderProvider:
       type: object
       properties:
@@ -424,29 +377,6 @@ components:
           type: primary
           visible: true
           environmentType: production
-    CallerReputationProviderUnlockRequest:
-      type: object
-      properties:
-        id:
-          type: string
-          description: Unique identifier for the reputation provider.
-          example: provider-123
-      required:
-      - id
-      example:
-        id: provider-123
-    CallerReputationProviderStatusEnum:
-      type: string
-      enum:
-      - NOT_CONNECTED
-      - CONNECTING
-      - CONNECTED
-      - ACTIVE
-      - EXPIRED
-      - AUTH_FAILED
-      - PROVIDER_DISABLED
-      description: "Status of the caller reputation provider integration.\n\n * `NOT_CONNECTED` - Provider is not connected.\n * `CONNECTING` - Provider is in the process of connecting.\n * `CONNECTED` - Provider is connected.\n * `ACTIVE` - Provider is active and operational.\n * `EXPIRED` - Provider's session or token has expired.\n * `AUTH_FAILED` - Authentication with the provider failed.\n * `PROVIDER_DISABLED` - Provider is disabled.\n"
-      example: CONNECTED
     CallerReputationProviderStatus:
       type: object
       properties:
@@ -501,6 +431,66 @@ components:
         clientSecret: secret-789
         callBlockScoreThreshold: '0.7'
         callAllowScoreThreshold: '0.3'
+    CallerReputationProviderRegion:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the region.
+          example: region-1
+        name:
+          type: string
+          description: Name of the region.
+          example: US East
+        type:
+          type: string
+          description: Type of the region (e.g., primary, secondary).
+          example: primary
+        visible:
+          type: boolean
+          description: Indicates if the region is visible.
+          example: true
+        environmentType:
+          type: string
+          description: Environment type of the region (e.g., production, staging).
+          example: production
+      example:
+        id: region-1
+        name: US East
+        type: primary
+        visible: true
+        environmentType: production
+    CallerReputationProviderProvidersResponse:
+      type: object
+      properties:
+        providers:
+          type: array
+          items:
+            $ref: '#/components/schemas/CallerReputationProviderProvider'
+          description: List of caller reputation providers.
+      example:
+        providers:
+        - id: provider-123
+          enabled: true
+          name: Acme Reputation Provider
+          regions:
+          - id: region-1
+            name: US East
+            type: primary
+            visible: true
+            environmentType: production
+    CallerReputationProviderStatusEnum:
+      type: string
+      enum:
+      - NOT_CONNECTED
+      - CONNECTING
+      - CONNECTED
+      - ACTIVE
+      - EXPIRED
+      - AUTH_FAILED
+      - PROVIDER_DISABLED
+      description: "Status of the caller reputation provider integration.\n\n * `NOT_CONNECTED` - Provider is not connected.\n * `CONNECTING` - Provider is in the process of connecting.\n * `CONNECTED` - Provider is connected.\n * `ACTIVE` - Provider is active and operational.\n * `EXPIRED` - Provider's session or token has expired.\n * `AUTH_FAILED` - Authentication with the provider failed.\n * `PROVIDER_DISABLED` - Provider is disabled.\n"
+      example: CONNECTED
   securitySchemes:
     oauth2:
       flows:
@@ -519,3 +509,6 @@ components:
       description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
       scheme: bearer
       bearerFormat: JWT
+x-refined-from:
+- webex-cloud-calling-openapi.json
+- webex-cloud-calling-openapi.yml

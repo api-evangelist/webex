@@ -1,21 +1,11 @@
 openapi: 3.2.0
 info:
-  title: Webex Cloud Calling Call Settings For Me Phase 4 API
+  title: Webex Call Settings For Me Phase 4 API
   version: 1.0.0
-  description: The Webex Cloud Calling APIs enable comprehensive management of cloud-based calling services, including user provisioning, device assignment, call routing, feature configuration, and number management.
-  x-provenance:
-    method: harvested
-    authored_by: Cisco Webex
-    harvested_by: API Evangelist
-    harvested_on: '2026-08-19'
-    first_party: true
-    note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
-    provider_published: true
-  x-evidence:
-  - type: source
-    url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-cloud-calling.json
-  - type: raw
-    url: https://raw.githubusercontent.com/webex/webex-openapi-specs/main/public-spec/webex-cloud-calling.json
+  x-refined-note:
+  - x-evidence differs across the merged source definitions and was not carried
+  - x-provenance differs across the merged source definitions and was not carried
+  description: 'Operations tagged Call Settings For Me Phase 4 across 2 of this provider''s published API definitions: webex-cloud-calling-openapi.json, webex-cloud-calling-openapi.yml. Each path carries the servers of the definition it was published in.'
 tags:
 - name: Call Settings For Me Phase 4
 paths:
@@ -598,75 +588,12 @@ paths:
       parameters: []
 components:
   schemas:
-    GuestCallingNumbersGet:
-      type: object
-      required:
-      - phoneNumbers
-      example:
-        phoneNumbers:
-        - phoneNumber: '+12065551212'
-          state: ACTIVE
-          isMainNumber: false
-        - phoneNumber: '+12065551213'
-          state: INACTIVE
-          isMainNumber: true
-      properties:
-        phoneNumbers:
-          type: array
-          items:
-            $ref: '#/components/schemas/GuestCallingNumber'
-          description: List of phone numbers available for guest calling.
-          example:
-          - phoneNumber: '+12065551212'
-            state: ACTIVE
-            isMainNumber: false
-    ScheduleType:
+    CallsFromType:
       type: string
       enum:
-      - businessHours
-      - holidays
-      description: " * `businessHours` - The schedule type that specifies the business or working hours during the day.\n * `holidays` - The schedule type that specifies the day when your organization is not open.\n"
-    SimultaneousRingGet:
-      type: object
-      required:
-      - enabled
-      - doNotRingIfOnCallEnabled
-      - criteriasEnabled
-      properties:
-        enabled:
-          type: boolean
-          example: true
-          description: Simultaneous Ring is enabled or not.
-        doNotRingIfOnCallEnabled:
-          type: boolean
-          example: true
-          description: When set to `true`, the configured phone numbers won't ring when on a call.
-        phoneNumbers:
-          type: array
-          items:
-            $ref: '#/components/schemas/SimultaneousRingNumberGet'
-          description: Enter up to 10 phone numbers to ring simultaneously when a workspace phone receives an incoming call.
-        criteria:
-          type: array
-          items:
-            $ref: '#/components/schemas/SimultaneousRingCriteria'
-          description: A list of criteria specifying conditions when simultaneous ring is in effect.
-        criteriasEnabled:
-          type: boolean
-          example: true
-          description: When `true`, enables the selected schedule for simultaneous ring.
-    Source:
-      type: string
-      enum:
-      - ALL_NUMBERS
-      - SPECIFIC_NUMBERS
-      description: " * `ALL_NUMBERS` - Criteria applies to all incoming numbers.\n * `SPECIFIC_NUMBERS` - Criteria applies only for specific incoming numbers.\n"
-    ScheduleLevel:
-      type: string
-      enum:
-      - PEOPLE
-      - GROUP
-      description: " * `PEOPLE` - The schedule level that specifies that criteria is of People level.\n * `GROUP` - The schedule level that specifies that criteria is of Group level.\n"
+      - ANY_PHONE_NUMBER
+      - SELECT_PHONE_NUMBERS
+      description: " * `ANY_PHONE_NUMBER` - The Schedule applies to any phone number.\n * `SELECT_PHONE_NUMBERS` - Indicates the schedule applies to select phone number defined in the `phoneNumbers` property.\n"
     GuestCallingNumber:
       type: object
       required:
@@ -689,68 +616,48 @@ components:
           type: boolean
           example: false
           description: Indicates whether this is the location's main number.
-    CallsFromType:
+    Source:
       type: string
       enum:
-      - ANY_PHONE_NUMBER
-      - SELECT_PHONE_NUMBERS
-      description: " * `ANY_PHONE_NUMBER` - The Schedule applies to any phone number.\n * `SELECT_PHONE_NUMBERS` - Indicates the schedule applies to select phone number defined in the `phoneNumbers` property.\n"
-    SimultaneousRingCriteriaPut:
+      - ALL_NUMBERS
+      - SPECIFIC_NUMBERS
+      description: " * `ALL_NUMBERS` - Criteria applies to all incoming numbers.\n * `SPECIFIC_NUMBERS` - Criteria applies only for specific incoming numbers.\n"
+    SimultaneousRingCriteria:
       type: object
+      required:
+      - id
+      - source
+      - ringEnabled
       properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0NSSVRFUklBLzg2NTAxZDFlLTg1MWMtNDgwYi1hZmE2LTA5MTU4NzQ3NzdmZQ
+          description: Unique identifier for criteria.
         scheduleName:
           type: string
           example: Business Vacation
-          description: Name of the schedule which determines when the simultaneous ring is in effect.
-        scheduleType:
-          $ref: '#/components/schemas/ScheduleType'
-        scheduleLevel:
-          $ref: '#/components/schemas/ScheduleLevel'
-        callsFrom:
-          $ref: '#/components/schemas/CallsFromType'
-        anonymousCallersEnabled:
-          type: boolean
-          example: true
-          description: When `true`, the criteria applies to calls from anonymous callers. Value for this attribute is required if `callsFrom` is `SELECT_PHONE_NUMBERS`.
-        unavailableCallersEnabled:
-          type: boolean
-          example: true
-          description: When `true`, the criteria applies to calls from unavailable callers. Value for this attribute is required if `callsFrom` is `SELECT_PHONE_NUMBERS`.
-        phoneNumbers:
-          type: array
-          items:
-            type: string
-            example: '+19064441748'
-          description: The list of phone numbers that will checked against incoming calls for a match. Value for this attribute is required if `callsFrom` is `SELECT_PHONE_NUMBERS`.
-          example:
-          - '+19064441748'
+          description: Name of the location's schedule which determines when the simultaneous ring is in effect.
+        source:
+          $ref: '#/components/schemas/Source'
+          description: If criteria are applicable for calls from any phone number or specific phone number.
         ringEnabled:
           type: boolean
           example: true
-          description: When set to `true` simultaneous ringing is enabled for calls that meet this criteria. Criteria with `ringEnabled` set to `false` take priority.
-    SimultaneousRingPut:
+          description: When set to `true` simultaneous ringing is enabled for calls that meet the current criteria. Criteria with `ringEnabled` set to `false` take priority.
+    SimultaneousRingNumberGet:
       type: object
+      required:
+      - phoneNumber
+      - answerConfirmationRequiredEnabled
       properties:
-        enabled:
+        phoneNumber:
+          type: string
+          example: '+19075552859'
+          description: Phone number set as the sequential number.
+        answerConfirmationRequiredEnabled:
           type: boolean
           example: true
-          description: Simultaneous Ring is enabled or not.
-        doNotRingIfOnCallEnabled:
-          type: boolean
-          example: true
-          description: When set to `true`, the configured phone numbers won't ring when you are on a call.
-        phoneNumbers:
-          type: array
-          items:
-            $ref: '#/components/schemas/SimultaneousRingNumberPut'
-          description: Enter up to 10 phone numbers to ring simultaneously when you receive an incoming call.
-          example:
-          - phoneNumber: '+19075552859'
-            answerConfirmationEnabled: true
-        criteriasEnabled:
-          type: boolean
-          example: true
-          description: Controls whether the criteria for simultaneous ring are enabled.
+          description: When set to `true` the called party is required to press 1 on the keypad to receive the call.
     SimultaneousRingCriteriaPost:
       type: object
       required:
@@ -790,6 +697,92 @@ components:
           type: boolean
           example: true
           description: When set to `true` simultaneous ringing is enabled for calls that meet this criteria. Criteria with `ringEnabled` set to `false` take priority.
+    ScheduleLevel:
+      type: string
+      enum:
+      - PEOPLE
+      - GROUP
+      description: " * `PEOPLE` - The schedule level that specifies that criteria is of People level.\n * `GROUP` - The schedule level that specifies that criteria is of Group level.\n"
+    GuestCallingNumbersGet:
+      type: object
+      required:
+      - phoneNumbers
+      example:
+        phoneNumbers:
+        - phoneNumber: '+12065551212'
+          state: ACTIVE
+          isMainNumber: false
+        - phoneNumber: '+12065551213'
+          state: INACTIVE
+          isMainNumber: true
+      properties:
+        phoneNumbers:
+          type: array
+          items:
+            $ref: '#/components/schemas/GuestCallingNumber'
+          description: List of phone numbers available for guest calling.
+          example:
+          - phoneNumber: '+12065551212'
+            state: ACTIVE
+            isMainNumber: false
+    ScheduleType:
+      type: string
+      enum:
+      - businessHours
+      - holidays
+      description: " * `businessHours` - The schedule type that specifies the business or working hours during the day.\n * `holidays` - The schedule type that specifies the day when your organization is not open.\n"
+    SimultaneousRingPut:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          example: true
+          description: Simultaneous Ring is enabled or not.
+        doNotRingIfOnCallEnabled:
+          type: boolean
+          example: true
+          description: When set to `true`, the configured phone numbers won't ring when you are on a call.
+        phoneNumbers:
+          type: array
+          items:
+            $ref: '#/components/schemas/SimultaneousRingNumberPut'
+          description: Enter up to 10 phone numbers to ring simultaneously when you receive an incoming call.
+          example:
+          - phoneNumber: '+19075552859'
+            answerConfirmationEnabled: true
+        criteriasEnabled:
+          type: boolean
+          example: true
+          description: Controls whether the criteria for simultaneous ring are enabled.
+    SimultaneousRingGet:
+      type: object
+      required:
+      - enabled
+      - doNotRingIfOnCallEnabled
+      - criteriasEnabled
+      properties:
+        enabled:
+          type: boolean
+          example: true
+          description: Simultaneous Ring is enabled or not.
+        doNotRingIfOnCallEnabled:
+          type: boolean
+          example: true
+          description: When set to `true`, the configured phone numbers won't ring when on a call.
+        phoneNumbers:
+          type: array
+          items:
+            $ref: '#/components/schemas/SimultaneousRingNumberGet'
+          description: Enter up to 10 phone numbers to ring simultaneously when a workspace phone receives an incoming call.
+        criteria:
+          type: array
+          items:
+            $ref: '#/components/schemas/SimultaneousRingCriteria'
+          description: A list of criteria specifying conditions when simultaneous ring is in effect.
+        criteriasEnabled:
+          type: boolean
+          example: true
+          description: When `true`, enables the selected schedule for simultaneous ring.
     SimultaneousRingNumberPut:
       type: object
       properties:
@@ -801,28 +794,39 @@ components:
           type: boolean
           example: true
           description: When set to `true`, the called party is required to press 1 on the keypad to confirm answer for the call.
-    SimultaneousRingCriteria:
+    SimultaneousRingCriteriaPut:
       type: object
-      required:
-      - id
-      - source
-      - ringEnabled
       properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0NSSVRFUklBLzg2NTAxZDFlLTg1MWMtNDgwYi1hZmE2LTA5MTU4NzQ3NzdmZQ
-          description: Unique identifier for criteria.
         scheduleName:
           type: string
           example: Business Vacation
-          description: Name of the location's schedule which determines when the simultaneous ring is in effect.
-        source:
-          $ref: '#/components/schemas/Source'
-          description: If criteria are applicable for calls from any phone number or specific phone number.
+          description: Name of the schedule which determines when the simultaneous ring is in effect.
+        scheduleType:
+          $ref: '#/components/schemas/ScheduleType'
+        scheduleLevel:
+          $ref: '#/components/schemas/ScheduleLevel'
+        callsFrom:
+          $ref: '#/components/schemas/CallsFromType'
+        anonymousCallersEnabled:
+          type: boolean
+          example: true
+          description: When `true`, the criteria applies to calls from anonymous callers. Value for this attribute is required if `callsFrom` is `SELECT_PHONE_NUMBERS`.
+        unavailableCallersEnabled:
+          type: boolean
+          example: true
+          description: When `true`, the criteria applies to calls from unavailable callers. Value for this attribute is required if `callsFrom` is `SELECT_PHONE_NUMBERS`.
+        phoneNumbers:
+          type: array
+          items:
+            type: string
+            example: '+19064441748'
+          description: The list of phone numbers that will checked against incoming calls for a match. Value for this attribute is required if `callsFrom` is `SELECT_PHONE_NUMBERS`.
+          example:
+          - '+19064441748'
         ringEnabled:
           type: boolean
           example: true
-          description: When set to `true` simultaneous ringing is enabled for calls that meet the current criteria. Criteria with `ringEnabled` set to `false` take priority.
+          description: When set to `true` simultaneous ringing is enabled for calls that meet this criteria. Criteria with `ringEnabled` set to `false` take priority.
     SimultaneousRingCriteriaGet:
       type: object
       required:
@@ -879,20 +883,6 @@ components:
           type: boolean
           example: true
           description: When set to `true` simultaneous ringing is enabled for calls that meet this criteria. Criteria with `ringEnabled` set to `false` take priority.
-    SimultaneousRingNumberGet:
-      type: object
-      required:
-      - phoneNumber
-      - answerConfirmationRequiredEnabled
-      properties:
-        phoneNumber:
-          type: string
-          example: '+19075552859'
-          description: Phone number set as the sequential number.
-        answerConfirmationRequiredEnabled:
-          type: boolean
-          example: true
-          description: When set to `true` the called party is required to press 1 on the keypad to receive the call.
   securitySchemes:
     oauth2:
       flows:
@@ -911,3 +901,6 @@ components:
       description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
       scheme: bearer
       bearerFormat: JWT
+x-refined-from:
+- webex-cloud-calling-openapi.json
+- webex-cloud-calling-openapi.yml

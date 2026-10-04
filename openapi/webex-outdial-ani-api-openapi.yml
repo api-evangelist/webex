@@ -2180,13 +2180,6 @@ paths:
       deprecated: true
 components:
   schemas:
-    BulkResponseDTO:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/BulkResponseItemDTO'
     ErrorDetails:
       description: Details of an error.
       type: object
@@ -2200,6 +2193,78 @@ components:
           description: A message providing details about the error.
           items:
             $ref: '#/components/schemas/OperationError'
+    BulkResponseItemDTO:
+      type: object
+      properties:
+        itemIdentifier:
+          type: integer
+          description: Unique item identifier for a bulk operation.
+          format: int32
+          example: 10
+        status:
+          type: integer
+          description: Indicates the error status code.
+          format: int32
+          example: 400
+        operationType:
+          type: string
+          description: The kind of operation desired of an entity.
+          example: CREATE
+          enum:
+          - CREATE
+          - UPDATE
+          - DELETE
+          - GET
+        href:
+          type: string
+          description: The resource URI of an entity.
+          example: /api/organization/6705c69d-4585-42ad-bfc3-79cc485dfb15/team/7b26d174-0016-4682-9858-65918e05f85
+        apiError:
+          $ref: '#/components/schemas/ApiErrorResponse'
+      example:
+        apiError:
+          error:
+            key: '400'
+            message:
+            - description: 'siteId: not found for given orgId.'
+              entity: string
+              references:
+              - id: string
+                name: string
+            reason: dependency exists
+          trackingId: ccconfig_c1a4fcef-aee2-4dea-8977-29f594760552
+        href: /api/organization/6705c69d-4585-42ad-bfc3-79cc485dfb15/team/7b26d174-0016-4682-9858-65918e05f85
+        itemIdentifier: 10
+        operationType: CREATE
+        status: 400
+    EntityInfo:
+      type: object
+      properties:
+        id:
+          type: string
+          description: id
+          example: id.
+        name:
+          type: string
+          description: name
+          example: name.
+        additionalAttributes:
+          type: object
+          additionalProperties:
+            type: string
+            description: A map containing additional attributes of entity where both the key and value are Strings.
+            example: '{"key1":"value1","key2":"value2"}'
+          description: A map containing additional attributes of entity where both the key and value are Strings.
+          example:
+            key1: value1
+            key2: value2
+        createdDate:
+          type: string
+        lastModifiedDate:
+          type: string
+        version:
+          type: integer
+          format: int32
     OutdialANIDTO:
       type: object
       description: Outdial ANI schema.
@@ -2253,17 +2318,50 @@ components:
           example: 123456789
       required:
       - name
-    ApiErrorResponse:
-      description: Response body for an API error.
+    OutdialANIDTOList:
       type: object
+      description: Outdial ANI schema.
       properties:
-        trackingId:
+        organizationId:
           type: string
-          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
-          example: c1a4fcef-aee2-4dea-8977-29f594760552
-        error:
-          description: An object containing details about the error.
-          $ref: '#/components/schemas/ErrorDetails'
+          format: uuid
+          description: ID of the contact center organization. This field is required for all bulk save operations.
+          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
+          maxLength: 36
+          minLength: 32
+          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
+        id:
+          type: string
+          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
+          example: 93912f11-6017-404b-bf14-5331890b1797
+        version:
+          type: integer
+          format: int32
+          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
+          example: 1
+        name:
+          type: string
+          description: Enter a name for the outdial ANI.
+          example: outdial-ANI1
+          maxLength: 80
+          minLength: 0
+          pattern: ^[a-zA-Z0-9._\-\s]*$
+        description:
+          type: string
+          description: (Optional) Enter a description for the outdial ANI.
+          example: This profile allows agent to select a phone number as the caller ID for an outdial call.
+          maxLength: 255
+          minLength: 0
+        createdTime:
+          type: integer
+          format: int64
+          description: This is the created time of the entity.
+          example: 123456789
+        lastUpdatedTime:
+          type: integer
+          format: int64
+          description: This is the updated time of the entity.
+          example: 123456789
     ResponseEnvelopeOutdialANIEntryDTO:
       type: object
       description: Response Envelope Outdial ANIEntry schema.
@@ -2279,6 +2377,49 @@ components:
           items:
             $ref: '#/components/schemas/OutdialANIEntryDTO'
             description: Data item.
+    ApiErrorResponse:
+      description: Response body for an API error.
+      type: object
+      properties:
+        trackingId:
+          type: string
+          description: "An opaque identifier for mapping protocol failures to service internal codes. \n\nWhen specified in a request, it can be used for co-relating events across services"
+          example: c1a4fcef-aee2-4dea-8977-29f594760552
+        error:
+          description: An object containing details about the error.
+          $ref: '#/components/schemas/ErrorDetails'
+    BulkRequestItemDTOOutdialANIDTO:
+      type: object
+      description: List of items in the bulk request.
+      properties:
+        itemIdentifier:
+          type: integer
+          format: int32
+          description: Unique item identifier for a bulk operation.
+          example: 10
+        item:
+          $ref: '#/components/schemas/OutdialANIDTO'
+          description: Item.
+        requestAction:
+          type: string
+          description: Identifier for action type. Possible values are `SAVE` and `DELETE`.
+          example: SAVE
+    BulkRequestItemDTOOutdialANIEntryDTO:
+      type: object
+      description: List of items in the bulk request.
+      properties:
+        itemIdentifier:
+          type: integer
+          format: int32
+          description: Unique item identifier for a bulk operation.
+          example: 10
+        item:
+          $ref: '#/components/schemas/OutdialANIEntryDTO'
+          description: Item.
+        requestAction:
+          type: string
+          description: Identifier for action type. Possible values are `SAVE` and `DELETE`.
+          example: SAVE
     OutdialANIEntryDTO:
       type: object
       description: Outdial ANIEntry schema.
@@ -2328,6 +2469,69 @@ components:
       required:
       - name
       - number
+    OperationError:
+      description: An error message providing details about the operation failure.
+      type: object
+      properties:
+        description:
+          type: string
+          description: A human readable explanation for the occurrence of an error.
+          example: Incorrect Credentials.
+    EntityReferenceInfoDTO:
+      type: object
+      properties:
+        description:
+          type: string
+          description: Description about reference info.
+          example: list of referenced entities
+        meta:
+          $ref: '#/components/schemas/MetaDataReferencesPagingInfo'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityInfo'
+    BulkRequestDTOOutdialANIDTO:
+      type: object
+      description: Bulk Request Outdial ANI schema.
+      properties:
+        items:
+          type: array
+          description: List of items in the bulk request.
+          items:
+            $ref: '#/components/schemas/BulkRequestItemDTOOutdialANIDTO'
+            description: Item.
+    ResponseEnvelopeOutdialANIDTO:
+      type: object
+      description: Response Envelope Outdial ANI schema.
+      properties:
+        meta:
+          type: object
+          additionalProperties:
+            description: Meta additional property.
+          description: Additional properties for Meta.
+        data:
+          type: array
+          description: List of Data.
+          items:
+            $ref: '#/components/schemas/OutdialANIDTO'
+            description: Data item.
+    BulkResponseDTO:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BulkResponseItemDTO'
+    BulkRequestDTOOutdialANIEntryDTO:
+      type: object
+      description: Bulk Request Outdial ANIEntry schema.
+      properties:
+        items:
+          type: array
+          description: List of items in the bulk request.
+          items:
+            $ref: '#/components/schemas/BulkRequestItemDTOOutdialANIEntryDTO'
+            description: Item.
     MetaDataReferencesPagingInfo:
       title: MetaDataReferencesPagingInfo
       type: object
@@ -2382,210 +2586,30 @@ components:
           description: Name of current entity
           example: entity_name
       description: Metadata of response for references with paging information
-    BulkRequestDTOOutdialANIDTO:
-      type: object
-      description: Bulk Request Outdial ANI schema.
-      properties:
-        items:
-          type: array
-          description: List of items in the bulk request.
-          items:
-            $ref: '#/components/schemas/BulkRequestItemDTOOutdialANIDTO'
-            description: Item.
-    EntityReferenceInfoDTO:
+    OutdialANIBulkExportDTO:
       type: object
       properties:
-        description:
-          type: string
-          description: Description about reference info.
-          example: list of referenced entities
-        meta:
-          $ref: '#/components/schemas/MetaDataReferencesPagingInfo'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/EntityInfo'
-    EntityInfo:
-      type: object
-      properties:
-        id:
-          type: string
-          description: id
-          example: id.
         name:
           type: string
-          description: name
-          example: name.
-        additionalAttributes:
-          type: object
-          additionalProperties:
-            type: string
-            description: A map containing additional attributes of entity where both the key and value are Strings.
-            example: '{"key1":"value1","key2":"value2"}'
-          description: A map containing additional attributes of entity where both the key and value are Strings.
-          example:
-            key1: value1
-            key2: value2
-        createdDate:
-          type: string
-        lastModifiedDate:
-          type: string
-        version:
-          type: integer
-          format: int32
-    BulkRequestItemDTOOutdialANIDTO:
-      type: object
-      description: List of items in the bulk request.
-      properties:
-        itemIdentifier:
-          type: integer
-          format: int32
-          description: Unique item identifier for a bulk operation.
-          example: 10
-        item:
-          $ref: '#/components/schemas/OutdialANIDTO'
-          description: Item.
-        requestAction:
-          type: string
-          description: Identifier for action type. Possible values are `SAVE` and `DELETE`.
-          example: SAVE
-    BulkResponseItemDTO:
-      type: object
-      properties:
-        itemIdentifier:
-          type: integer
-          description: Unique item identifier for a bulk operation.
-          format: int32
-          example: 10
-        status:
-          type: integer
-          description: Indicates the error status code.
-          format: int32
-          example: 400
-        operationType:
-          type: string
-          description: The kind of operation desired of an entity.
-          example: CREATE
-          enum:
-          - CREATE
-          - UPDATE
-          - DELETE
-          - GET
-        href:
-          type: string
-          description: The resource URI of an entity.
-          example: /api/organization/6705c69d-4585-42ad-bfc3-79cc485dfb15/team/7b26d174-0016-4682-9858-65918e05f85
-        apiError:
-          $ref: '#/components/schemas/ApiErrorResponse'
-      example:
-        apiError:
-          error:
-            key: '400'
-            message:
-            - description: 'siteId: not found for given orgId.'
-              entity: string
-              references:
-              - id: string
-                name: string
-            reason: dependency exists
-          trackingId: ccconfig_c1a4fcef-aee2-4dea-8977-29f594760552
-        href: /api/organization/6705c69d-4585-42ad-bfc3-79cc485dfb15/team/7b26d174-0016-4682-9858-65918e05f85
-        itemIdentifier: 10
-        operationType: CREATE
-        status: 400
-    BulkRequestDTOOutdialANIEntryDTO:
-      type: object
-      description: Bulk Request Outdial ANIEntry schema.
-      properties:
-        items:
-          type: array
-          description: List of items in the bulk request.
-          items:
-            $ref: '#/components/schemas/BulkRequestItemDTOOutdialANIEntryDTO'
-            description: Item.
-    OutdialANIDTOList:
-      type: object
-      description: Outdial ANI schema.
-      properties:
-        organizationId:
-          type: string
-          format: uuid
-          description: ID of the contact center organization. This field is required for all bulk save operations.
-          example: f53c8b54-46ca-43f6-ba05-08426a46e23d
-          maxLength: 36
-          minLength: 32
-          pattern: ^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$
-        id:
-          type: string
-          description: ID of this contact center resource. It should not be specified when creating a new resource. However, it is mandatory when updating a resource.
-          example: 93912f11-6017-404b-bf14-5331890b1797
-        version:
-          type: integer
-          format: int32
-          description: The version of this resource. For a newly created resource, it will be 0 unless specified otherwise.
-          example: 1
-        name:
-          type: string
-          description: Enter a name for the outdial ANI.
-          example: outdial-ANI1
-          maxLength: 80
-          minLength: 0
-          pattern: ^[a-zA-Z0-9._\-\s]*$
+          description: Name of the Outdial ANI.
         description:
           type: string
-          description: (Optional) Enter a description for the outdial ANI.
-          example: This profile allows agent to select a phone number as the caller ID for an outdial call.
-          maxLength: 255
-          minLength: 0
-        createdTime:
-          type: integer
-          format: int64
-          description: This is the created time of the entity.
-          example: 123456789
-        lastUpdatedTime:
-          type: integer
-          format: int64
-          description: This is the updated time of the entity.
-          example: 123456789
-    ResponseEnvelopeOutdialANIDTO:
-      type: object
-      description: Response Envelope Outdial ANI schema.
-      properties:
-        meta:
-          type: object
-          additionalProperties:
-            description: Meta additional property.
-          description: Additional properties for Meta.
-        data:
+          description: Description of the Outdial ANI.
+        entryDetails:
           type: array
-          description: List of Data.
+          description: List of Outdial ANI entry details.
           items:
-            $ref: '#/components/schemas/OutdialANIDTO'
-            description: Data item.
-    BulkRequestItemDTOOutdialANIEntryDTO:
-      type: object
-      description: List of items in the bulk request.
-      properties:
-        itemIdentifier:
-          type: integer
-          format: int32
-          description: Unique item identifier for a bulk operation.
-          example: 10
-        item:
-          $ref: '#/components/schemas/OutdialANIEntryDTO'
-          description: Item.
-        requestAction:
-          type: string
-          description: Identifier for action type. Possible values are `SAVE` and `DELETE`.
-          example: SAVE
-    OperationError:
-      description: An error message providing details about the operation failure.
+            $ref: '#/components/schemas/OutdialANIEntryDetailsDTO'
+          uniqueItems: true
+    OutdialANIEntryDetailsDTO:
       type: object
       properties:
-        description:
+        entryName:
           type: string
-          description: A human readable explanation for the occurrence of an error.
-          example: Incorrect Credentials.
+          description: Name of the Outdial ANI entry.
+        entryNumber:
+          type: string
+          description: Phone number or SIP URI of the Outdial ANI entry.
     BulkExportDTOOutdialANIBulkExportDTO:
       type: object
       description: Bulk export Dto
@@ -2620,30 +2644,6 @@ components:
           description: Indicate the page resources
           items:
             $ref: '#/components/schemas/OutdialANIBulkExportDTO'
-    OutdialANIEntryDetailsDTO:
-      type: object
-      properties:
-        entryName:
-          type: string
-          description: Name of the Outdial ANI entry.
-        entryNumber:
-          type: string
-          description: Phone number or SIP URI of the Outdial ANI entry.
-    OutdialANIBulkExportDTO:
-      type: object
-      properties:
-        name:
-          type: string
-          description: Name of the Outdial ANI.
-        description:
-          type: string
-          description: Description of the Outdial ANI.
-        entryDetails:
-          type: array
-          description: List of Outdial ANI entry details.
-          items:
-            $ref: '#/components/schemas/OutdialANIEntryDetailsDTO'
-          uniqueItems: true
   securitySchemes:
     oauth2:
       flows:

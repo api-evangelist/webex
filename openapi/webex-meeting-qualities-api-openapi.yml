@@ -197,6 +197,141 @@ paths:
           type: number
 components:
   schemas:
+    AudioIn:
+      type: object
+      properties:
+        samplingInterval:
+          type: number
+          example: 60
+          description: The sampling interval, in seconds, of the downstream audio quality data.
+        startTime:
+          type: string
+          example: '2020-04-10T17:00:00.000Z'
+          description: The date and time when this audio session started.
+        endTime:
+          type: string
+          example: '2020-04-10T18:00:00.000Z'
+          description: The date and time when this audio session ended.
+        packetLoss:
+          type: array
+          items:
+            type: number
+          description: The percentage of audio packet loss, as a float between 0.0 and 100.0, during each sampling interval.
+        latency:
+          type: array
+          items:
+            type: number
+          description: The average latency, in milliseconds, during each sampling interval.
+        resolutionHeight:
+          type: array
+          items:
+            type: number
+          description: Not applicable to audio.
+        frameRate:
+          type: array
+          items:
+            type: number
+            example: 25.940001
+          description: Not applicable to audio.
+        mediaBitRate:
+          type: array
+          items:
+            type: number
+          description: The bitrate of the incoming audio.
+        codec:
+          type: string
+          example: Opus
+          description: The codec of the incoming audio.
+        jitter:
+          type: array
+          items:
+            type: number
+          description: The incoming audio jitter.
+        transportType:
+          type: string
+          enum:
+          - UDP
+          - TCP
+          description: The network protocol used for video transmission.
+    VideoOut:
+      type: object
+      properties:
+        samplingInterval:
+          type: number
+          example: 60
+          description: The sampling interval, in seconds, of the upstream video quality data.
+        startTime:
+          type: string
+          example: '2020-04-10T17:00:00.000Z'
+          description: The date and time when this video session started.
+        endTime:
+          type: string
+          example: '2020-04-10T18:00:00.000Z'
+          description: The date and time when this video session ended.
+        packetLoss:
+          type: array
+          items:
+            type: number
+          description: The percentage of video packet loss, in float between 0.0 and 100.0, during each sampling interval.
+        latency:
+          type: array
+          items:
+            type: number
+          description: The average latency, in milliseconds, during each sampling interval.
+        resolutionHeight:
+          type: array
+          items:
+            type: number
+          description: The pixel height of the outgoing video.
+        frameRate:
+          type: array
+          items:
+            type: number
+            example: 25.940001
+          description: The frames per second of the outgoing video.
+        mediaBitRate:
+          type: array
+          items:
+            type: number
+          description: The bit rate of the outgoing video.
+        codec:
+          type: string
+          example: H.264 BP
+          description: The outgoing video codec.
+        jitter:
+          type: array
+          items:
+            type: number
+          description: The outgoing video jitter.
+        transportType:
+          type: string
+          enum:
+          - UDP
+          - TCP
+          description: The network protocol used for video transmission.
+    Resources:
+      type: object
+      properties:
+        processAverageCPU:
+          type: array
+          items:
+            type: number
+          description: The average percent CPU for the process.
+        processMaxCPU:
+          type: array
+          items:
+            type: number
+          description: The max percent CPU for the process.
+        systemAverageCPU:
+          type: array
+          items:
+            type: number
+          description: The average percent CPU for the system.
+        systemMaxCPU:
+          type: array
+          items:
+            type: number
+          description: The max percent CPU for the system.
     ShareIn:
       type: object
       properties:
@@ -253,29 +388,69 @@ components:
           - UDP
           - TCP
           description: The network protocol used for video transmission.
-    Resources:
+    MeetingQualitiesResponse:
       type: object
       properties:
-        processAverageCPU:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/MediaSessionQuality'
+    ShareOut:
+      type: object
+      properties:
+        samplingInterval:
+          type: number
+          example: 60
+          description: The sampling interval, in seconds, of the upstream content sharing data.
+        startTime:
+          type: string
+          example: '2020-04-10T17:00:00.000Z'
+          description: The date and time when this content sharing session started.
+        endTime:
+          type: string
+          example: '2020-04-10T18:00:00.000Z'
+          description: The date and time when this content sharing session ended.
+        packetLoss:
           type: array
           items:
             type: number
-          description: The average percent CPU for the process.
-        processMaxCPU:
+          description: The percentage of content sharing packet loss, in float between 0.0 and 100.0, during each sampling interval.
+        latency:
           type: array
           items:
             type: number
-          description: The max percent CPU for the process.
-        systemAverageCPU:
+          description: The average latency, in milliseconds, during each sampling interval.
+        resolutionHeight:
           type: array
           items:
             type: number
-          description: The average percent CPU for the system.
-        systemMaxCPU:
+          description: The height in pixels of the outgoing share video.
+        frameRate:
           type: array
           items:
             type: number
-          description: The max percent CPU for the system.
+            example: 25.940001
+          description: The frame rate of the outgoing share video.
+        mediaBitRate:
+          type: array
+          items:
+            type: number
+          description: The bit rate of the outgoing share video.
+        codec:
+          type: string
+          example: H.264 BP
+          description: The codec of the outgoing share video.
+        jitter:
+          type: array
+          items:
+            type: number
+          description: The jitter for the outgoing share video.
+        transportType:
+          type: string
+          enum:
+          - UDP
+          - TCP
+          description: The network protocol used for video transmission.
     VideoIn:
       type: object
       properties:
@@ -389,125 +564,6 @@ components:
           - UDP
           - TCP
           description: The network protocol used for video transmission.
-    AudioIn:
-      type: object
-      properties:
-        samplingInterval:
-          type: number
-          example: 60
-          description: The sampling interval, in seconds, of the downstream audio quality data.
-        startTime:
-          type: string
-          example: '2020-04-10T17:00:00.000Z'
-          description: The date and time when this audio session started.
-        endTime:
-          type: string
-          example: '2020-04-10T18:00:00.000Z'
-          description: The date and time when this audio session ended.
-        packetLoss:
-          type: array
-          items:
-            type: number
-          description: The percentage of audio packet loss, as a float between 0.0 and 100.0, during each sampling interval.
-        latency:
-          type: array
-          items:
-            type: number
-          description: The average latency, in milliseconds, during each sampling interval.
-        resolutionHeight:
-          type: array
-          items:
-            type: number
-          description: Not applicable to audio.
-        frameRate:
-          type: array
-          items:
-            type: number
-            example: 25.940001
-          description: Not applicable to audio.
-        mediaBitRate:
-          type: array
-          items:
-            type: number
-          description: The bitrate of the incoming audio.
-        codec:
-          type: string
-          example: Opus
-          description: The codec of the incoming audio.
-        jitter:
-          type: array
-          items:
-            type: number
-          description: The incoming audio jitter.
-        transportType:
-          type: string
-          enum:
-          - UDP
-          - TCP
-          description: The network protocol used for video transmission.
-    VideoOut:
-      type: object
-      properties:
-        samplingInterval:
-          type: number
-          example: 60
-          description: The sampling interval, in seconds, of the upstream video quality data.
-        startTime:
-          type: string
-          example: '2020-04-10T17:00:00.000Z'
-          description: The date and time when this video session started.
-        endTime:
-          type: string
-          example: '2020-04-10T18:00:00.000Z'
-          description: The date and time when this video session ended.
-        packetLoss:
-          type: array
-          items:
-            type: number
-          description: The percentage of video packet loss, in float between 0.0 and 100.0, during each sampling interval.
-        latency:
-          type: array
-          items:
-            type: number
-          description: The average latency, in milliseconds, during each sampling interval.
-        resolutionHeight:
-          type: array
-          items:
-            type: number
-          description: The pixel height of the outgoing video.
-        frameRate:
-          type: array
-          items:
-            type: number
-            example: 25.940001
-          description: The frames per second of the outgoing video.
-        mediaBitRate:
-          type: array
-          items:
-            type: number
-          description: The bit rate of the outgoing video.
-        codec:
-          type: string
-          example: H.264 BP
-          description: The outgoing video codec.
-        jitter:
-          type: array
-          items:
-            type: number
-          description: The outgoing video jitter.
-        transportType:
-          type: string
-          enum:
-          - UDP
-          - TCP
-          description: The network protocol used for video transmission.
-    MeetingQualitiesResponse:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/MediaSessionQuality'
     MediaSessionQuality:
       type: object
       required:
@@ -648,62 +704,6 @@ components:
           items:
             $ref: '#/components/schemas/Resources'
           description: Device resources such as CPU and memory.
-    ShareOut:
-      type: object
-      properties:
-        samplingInterval:
-          type: number
-          example: 60
-          description: The sampling interval, in seconds, of the upstream content sharing data.
-        startTime:
-          type: string
-          example: '2020-04-10T17:00:00.000Z'
-          description: The date and time when this content sharing session started.
-        endTime:
-          type: string
-          example: '2020-04-10T18:00:00.000Z'
-          description: The date and time when this content sharing session ended.
-        packetLoss:
-          type: array
-          items:
-            type: number
-          description: The percentage of content sharing packet loss, in float between 0.0 and 100.0, during each sampling interval.
-        latency:
-          type: array
-          items:
-            type: number
-          description: The average latency, in milliseconds, during each sampling interval.
-        resolutionHeight:
-          type: array
-          items:
-            type: number
-          description: The height in pixels of the outgoing share video.
-        frameRate:
-          type: array
-          items:
-            type: number
-            example: 25.940001
-          description: The frame rate of the outgoing share video.
-        mediaBitRate:
-          type: array
-          items:
-            type: number
-          description: The bit rate of the outgoing share video.
-        codec:
-          type: string
-          example: H.264 BP
-          description: The codec of the outgoing share video.
-        jitter:
-          type: array
-          items:
-            type: number
-          description: The jitter for the outgoing share video.
-        transportType:
-          type: string
-          enum:
-          - UDP
-          - TCP
-          description: The network protocol used for video transmission.
   securitySchemes:
     oauth2:
       flows:

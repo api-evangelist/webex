@@ -1,21 +1,11 @@
 openapi: 3.2.0
 info:
-  title: Webex Cloud Calling PSTN API
+  title: Webex PSTN API
   version: 1.0.0
-  description: The Webex Cloud Calling APIs enable comprehensive management of cloud-based calling services, including user provisioning, device assignment, call routing, feature configuration, and number management.
-  x-provenance:
-    method: harvested
-    authored_by: Cisco Webex
-    harvested_by: API Evangelist
-    harvested_on: '2026-08-19'
-    first_party: true
-    note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
-    provider_published: true
-  x-evidence:
-  - type: source
-    url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-cloud-calling.json
-  - type: raw
-    url: https://raw.githubusercontent.com/webex/webex-openapi-specs/main/public-spec/webex-cloud-calling.json
+  x-refined-note:
+  - x-evidence differs across the merged source definitions and was not carried
+  - x-provenance differs across the merged source definitions and was not carried
+  description: 'Operations tagged PSTN across 2 of this provider''s published API definitions: webex-cloud-calling-openapi.json, webex-cloud-calling-openapi.yml. Each path carries the servers of the definition it was published in.'
 tags:
 - name: PSTN
 paths:
@@ -640,57 +630,156 @@ paths:
               country: US
             schema:
               $ref: '#/components/schemas/EmergencyAddressObject'
+  /telephony/pstn/locations/{locationId}/numbers/availableNumbers:
+    get:
+      summary: Get Modifiable Numbers
+      operationId: getModifiableNumbers
+      description: 'Retrieve modifiable numbers for a location based on action type.
+
+
+        The required `action` query parameter specifies the operation used to identify eligible numbers.
+
+
+        This endpoint does not support pagination. Up to a configurable server-side maximum of candidate numbers (default 2000) are retrieved and filtered for eligibility, and all eligible numbers within that candidate window are returned in a single response.
+
+
+        A phone number''s usage type determines how it is used within a Webex Calling location. `STANDARD` numbers support regular calling and can be assigned to people, workspaces, or features. `SERVICE` numbers support services such as Auto Attendant, Call Queue, Hunt Groups, and Webex Contact Center. `ELIN` (Emergency Location Identification Number) numbers provide emergency services with accurate caller information and support callbacks to the person or workspace that initiated the emergency call, including people with extension-only lines.
+
+
+        Viewing number availability requires an administrator auth token with a scope of `spark-admin:telephony_pstn_read`.'
+      tags:
+      - PSTN
+      parameters:
+      - name: locationId
+        in: path
+        required: true
+        description: Location identifier in Webex format.
+        example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzM2ZTFlM2Y1LWJhODEtNDRiNC05ZGQ1LWIyMmVlNGY1MDIyZA
+        schema:
+          type: string
+      - name: action
+        in: query
+        required: true
+        description: Action type for modifiable numbers.
+        schema:
+          $ref: '#/components/schemas/ModifyNumberAction'
+        example: modifyElin
+      - name: orgId
+        in: query
+        required: false
+        description: Organization ID. If not specified, uses the organization from the OAuth token.
+        example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModifyNumbersGetResponse'
+              example:
+                phoneNumbers:
+                - phoneNumber: '+14155551234'
+                  state: ACTIVE
+                  isServiceNumber: false
+                  tollFreeNumber: false
+                  mainNumber: false
+                  isELIN: true
+                  isReservedNumber: false
+                  telephonyType: PSTN_NUMBER
+        '400':
+          description: 'Bad Request: Invalid or missing action value.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but access is not allowed.'
+        '404':
+          description: 'Not Found: Location not found or feature not enabled.'
+        '429':
+          description: 'Too Many Requests: The request was rate-limited.'
+        '500':
+          description: 'Internal Server Error: Unexpected server-side failure.'
+  /telephony/pstn/locations/{locationId}/numbers:
+    post:
+      summary: Perform Numbers Action
+      operationId: performNumbersAction
+      description: 'Perform number usage action for the specified list of numbers. The required `action` query parameter specifies the operation to apply to the numbers in the request body. The API supports modifying number usage between STANDARD/SERVICE/ELIN.
+
+
+        A phone number''s usage type determines how it is used within a Webex Calling location. `STANDARD` numbers support regular calling and can be assigned to people, workspaces, or features. `SERVICE` numbers support services such as Auto Attendant, Call Queue, Hunt Groups, and Webex Contact Center. `ELIN` (Emergency Location Identification Number) numbers provide emergency services with accurate caller information and support callbacks to the person or workspace that initiated the emergency call, including people with extension-only lines.
+
+
+        Executing number actions requires an administrator auth token with a scope of `spark-admin:telephony_pstn_write`.'
+      tags:
+      - PSTN
+      parameters:
+      - name: locationId
+        in: path
+        required: true
+        description: Location identifier in Webex format.
+        example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzM2ZTFlM2Y1LWJhODEtNDRiNC05ZGQ1LWIyMmVlNGY1MDIyZA
+        schema:
+          type: string
+      - name: action
+        in: query
+        required: true
+        description: Action to execute.
+        schema:
+          $ref: '#/components/schemas/ModifyNumberAction'
+        example: modifyElin
+      - name: orgId
+        in: query
+        required: false
+        description: Organization ID. If not specified, uses the organization from the OAuth token.
+        example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85NmFiYzJhYS0zZGNjLTExZTUtYTE1Mi1mZTM0ODE5Y2RjOWE
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModifyNumbersActionRequest'
+            example:
+              numbers:
+              - '+14155551234'
+              - '+14155555678'
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModifyNumbersActionResponse'
+              example:
+                orders:
+                - orderId: Y2lzY29zcGFyazovL3VzL09SREVSL2E2NGM5OWM0LTk4MDItNGY0YS04ZWMwLTUzMjIwZDhmZWFiYw
+                  status: PROVISIONED
+                  numbers:
+                  - number: '+14155551234'
+                    status: SUCCESS
+                    usage: ELIN
+        '400':
+          description: 'Bad Request: Invalid action or invalid number payload.'
+        '401':
+          description: 'Unauthorized: Authentication credentials were missing or incorrect.'
+        '403':
+          description: 'Forbidden: The request is understood, but access is not allowed.'
+        '404':
+          description: 'Not Found: Location not found or feature not enabled.'
+        '429':
+          description: 'Too Many Requests: The request was rate-limited.'
+        '500':
+          description: 'Internal Server Error: Unexpected server-side failure.'
 components:
   schemas:
-    AddressLookupErrorObject:
-      type: object
-      description: Object containing details about an error encountered during address lookup.
-      properties:
-        code:
-          type: string
-          description: Error code.
-          example: PMP4004
-        title:
-          type: string
-          description: Error title.
-          example: INVALID_STREET_ADDRESS
-        detail:
-          type: string
-          description: Detailed error message.
-          example: The street address provided is invalid.
-    EmergencyAddressObject:
-      type: object
-      description: Object containing emergency address details.
-      properties:
-        address1:
-          type: string
-          example: 3487 Chase Ave
-          description: Primary street information for the emergency address.
-        address2:
-          type: string
-          example: Apt 112
-          description: Apartment number or any other secondary information for the emergency address.
-        city:
-          type: string
-          example: Miami Beach
-          description: City for the emergency address.
-        state:
-          type: string
-          example: FL
-          description: State or Province or Region for the emergency address.
-        postalCode:
-          type: string
-          example: '33140'
-          description: Postal code for the emergency address.
-        country:
-          type: string
-          example: US
-          description: Country for the emergency address.
-    ConnectionResponse:
+    ConnectionOptionsResponse:
       type: object
       required:
       - id
-      - pstnConnectionType
       properties:
         id:
           type: string
@@ -705,16 +794,25 @@ components:
           items:
             $ref: '#/components/schemas/PSTNServiceType'
           description: The PSTN services available for this connection.
-        pstnConnectionType:
-          $ref: '#/components/schemas/PSTNType'
-          description: The PSTN connection type set for the location.
-        routeType:
-          $ref: '#/components/schemas/PremiseRouteType'
-          description: Premise route type. This is required if connection type is LOCAL_GATEWAY.
-        routeId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1RSVU5LL2Y1YTU4MzAwLTVmZTYtNGNjMS1hODA3LTRlN2E5OTMzN2Q0ZA
-          description: Premise route ID. This refers to either a Trunk ID or a Route Group ID. This field is optional but required if the connection type is LOCAL_GATEWAY.
+    PSTNServiceType:
+      type: string
+      enum:
+      - GEOGRAPHIC_NUMBERS
+      - TOLLFREE_NUMBERS
+      - BUSINESS_TEXTING
+      - CONTACT_CENTER
+      - SERVICE_NUMBERS
+      - NON_GEOGRAPHIC_NUMBERS
+      - MOBILE_NUMBERS
+      description: " * `GEOGRAPHIC_NUMBERS` - PSTN service type for geographic numbers.\n * `TOLLFREE_NUMBERS` - PSTN service type for toll-free numbers.\n * `BUSINESS_TEXTING` - PSTN service type for business texting.\n * `CONTACT_CENTER` - PSTN service type for contact center services.\n * `SERVICE_NUMBERS` - PSTN service type for service numbers.\n * `NON_GEOGRAPHIC_NUMBERS` - PSTN service type for non-geographic numbers.\n * `MOBILE_NUMBERS` - PSTN service type for mobile numbers.\n"
+    ConnectionOptionsListResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConnectionOptionsResponse'
+          description: The list of PSTN connection options available for this location.
     SuggestedEmergencyAddressObject:
       type: object
       description: Object containing suggested address details.
@@ -766,12 +864,85 @@ components:
           - code: PMP4004
             title: INVALID_STREET_ADDRESS
             detail: The street address provided is invalid.
+    EmergencyAddressObject:
+      type: object
+      description: Object containing emergency address details.
+      properties:
+        address1:
+          type: string
+          example: 3487 Chase Ave
+          description: Primary street information for the emergency address.
+        address2:
+          type: string
+          example: Apt 112
+          description: Apartment number or any other secondary information for the emergency address.
+        city:
+          type: string
+          example: Miami Beach
+          description: City for the emergency address.
+        state:
+          type: string
+          example: FL
+          description: State or Province or Region for the emergency address.
+        postalCode:
+          type: string
+          example: '33140'
+          description: Postal code for the emergency address.
+        country:
+          type: string
+          example: US
+          description: Country for the emergency address.
     PremiseRouteType:
       type: string
       enum:
       - ROUTE_GROUP
       - TRUNK
       description: " * `ROUTE_GROUP` - A route group has been selected for premises-based PSTN.\n * `TRUNK` - A trunk group has been selected for premises-based PSTN.\n"
+    ConnectionResponse:
+      type: object
+      required:
+      - id
+      - pstnConnectionType
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0NBTExfUElDS1VQL1kyRnNiRkJwWTJ0MWNERT0
+          description: A unique identifier for the connection.
+        displayName:
+          type: string
+          example: Premises-based PSTN
+          description: The display name of the PSTN connection.
+        pstnServices:
+          type: array
+          items:
+            $ref: '#/components/schemas/PSTNServiceType'
+          description: The PSTN services available for this connection.
+        pstnConnectionType:
+          $ref: '#/components/schemas/PSTNType'
+          description: The PSTN connection type set for the location.
+        routeType:
+          $ref: '#/components/schemas/PremiseRouteType'
+          description: Premise route type. This is required if connection type is LOCAL_GATEWAY.
+        routeId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1RSVU5LL2Y1YTU4MzAwLTVmZTYtNGNjMS1hODA3LTRlN2E5OTMzN2Q0ZA
+          description: Premise route ID. This refers to either a Trunk ID or a Route Group ID. This field is optional but required if the connection type is LOCAL_GATEWAY.
+    AddressLookupErrorObject:
+      type: object
+      description: Object containing details about an error encountered during address lookup.
+      properties:
+        code:
+          type: string
+          description: Error code.
+          example: PMP4004
+        title:
+          type: string
+          description: Error title.
+          example: INVALID_STREET_ADDRESS
+        detail:
+          type: string
+          description: Detailed error message.
+          example: The street address provided is invalid.
     PSTNType:
       type: string
       enum:
@@ -780,6 +951,13 @@ components:
       - INTEGRATED_CCP
       - CISCO_PSTN
       description: " * `LOCAL_GATEWAY` - PSTN connection type for a premises-based connection.\n * `NON_INTEGRATED_CCP` - PSTN connection type for a Non-Integrated Cloud Connected PSTN connection.\n * `INTEGRATED_CCP` - PSTN connection type for an Integrated Cloud Connected PSTN connection. Updating the location with this connection type is currently not supported using the API.\n * `CISCO_PSTN` - PSTN connection type for a Cisco PSTN connection. Updating the location with this connection type is currently not supported using the API.\n"
+    AllowedServiceTypesFromHydra:
+      type: string
+      enum:
+      - MOBILE_NUMBERS
+      description: ' * `MOBILE_NUMBERS` - PSTN service type for mobile numbers.
+
+        '
     SetUpPSTNLocationConnectionObject:
       type: object
       properties:
@@ -795,50 +973,227 @@ components:
           type: string
           example: Y2lzY29zcGFyazovL3VzL1RSVU5LLzUxZGU0ODljLWFhNjAtNGMyNS05YWY2LWNjNGNiMTcxNzMxZg
           description: Premise route ID. This refers to either a Trunk ID or a Route Group ID and is required for the local gateway.
-    ConnectionOptionsResponse:
+    ModifiableNumber:
       type: object
       required:
-      - id
+      - phoneNumber
+      - isServiceNumber
+      - tollFreeNumber
+      - mainNumber
+      - isELIN
+      - isReservedNumber
+      - telephonyType
       properties:
-        id:
+        phoneNumber:
           type: string
-          example: Y2lzY29zcGFyazovL3VzL0NBTExfUElDS1VQL1kyRnNiRkJwWTJ0MWNERT0
-          description: A unique identifier for the connection.
-        displayName:
-          type: string
-          example: Premises-based PSTN
-          description: The display name of the PSTN connection.
-        pstnServices:
-          type: array
-          items:
-            $ref: '#/components/schemas/PSTNServiceType'
-          description: The PSTN services available for this connection.
-    ConnectionOptionsListResponse:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/ConnectionOptionsResponse'
-          description: The list of PSTN connection options available for this location.
-    AllowedServiceTypesFromHydra:
-      type: string
-      enum:
-      - MOBILE_NUMBERS
-      description: ' * `MOBILE_NUMBERS` - PSTN service type for mobile numbers.
+          description: Phone number in E.164 format.
+        state:
+          type:
+          - string
+          - 'null'
+          description: 'Phone number state.
 
-        '
-    PSTNServiceType:
+
+            - `ACTIVE` — The phone number is active.
+
+            - `INACTIVE` — The phone number is inactive.'
+          enum:
+          - ACTIVE
+          - INACTIVE
+        isServiceNumber:
+          type: boolean
+          description: Indicates whether this is a service number.
+        tollFreeNumber:
+          type: boolean
+          description: Indicates whether this is a toll-free number.
+        mainNumber:
+          type: boolean
+          description: Indicates whether this is the location main number.
+        isELIN:
+          type: boolean
+          description: Indicates whether this number is currently an ELIN.
+        isReservedNumber:
+          type: boolean
+          description: Indicates whether this is a reserved number.
+        telephonyType:
+          type: string
+          description: 'Telephony type.
+
+
+            - `PSTN_NUMBER` — A standard PSTN number.
+
+            - `MOBILE_NUMBER` — A mobile telephone number.'
+          enum:
+          - PSTN_NUMBER
+          - MOBILE_NUMBER
+    ModifyNumbersActionResponse:
+      type: object
+      required:
+      - orders
+      properties:
+        orders:
+          type: array
+          description: Number action orders created by the request.
+          items:
+            $ref: '#/components/schemas/ModifyNumbersActionOrder'
+      example:
+        orders:
+        - orderId: Y2lzY29zcGFyazovL3VzL09SREVSL2E2NGM5OWM0LTk4MDItNGY0YS04ZWMwLTUzMjIwZDhmZWFiYw
+          status: PROVISIONED
+          numbers:
+          - number: '+14155551234'
+            status: SUCCESS
+            usage: ELIN
+    ModifyNumbersActionOrder:
+      type: object
+      required:
+      - orderId
+      - status
+      - numbers
+      properties:
+        orderId:
+          type: string
+          description: Order identifier in Webex format.
+          example: Y2lzY29zcGFyazovL3VzL09SREVSL2E2NGM5OWM0LTk4MDItNGY0YS04ZWMwLTUzMjIwZDhmZWFiYw
+        status:
+          type: string
+          description: 'Order status.
+
+
+            - `PENDING` — The order is waiting to be processed.
+
+            - `PARTIAL` — The order completed with only some number actions succeeding.
+
+            - `COMPLETE` — The order completed successfully.
+
+            - `PROVISIONED` — The requested number changes were successfully provisioned.
+
+            - `ERROR` — The order failed.'
+          enum:
+          - PENDING
+          - PARTIAL
+          - COMPLETE
+          - PROVISIONED
+          - ERROR
+        numbers:
+          type: array
+          description: Results for the phone numbers included in the order.
+          items:
+            $ref: '#/components/schemas/ModifyNumbersActionOrderNumber'
+        errors:
+          type: array
+          description: Validation or provisioning errors associated with the order.
+          items:
+            $ref: '#/components/schemas/ModifyNumbersActionError'
+    ModifyNumbersActionError:
+      type: object
+      required:
+      - errorCode
+      properties:
+        number:
+          type: string
+          description: Phone number associated with the error.
+        errorType:
+          type: string
+          description: Category of the error, such as `VERIFICATION` or `FAILED`.
+        errorCode:
+          type: string
+          description: Stable machine-readable error code, such as `ERR.V.TRM.TMN60045`.
+        errorTitle:
+          type: string
+          description: Stable symbolic title associated with the error code, such as `NUMBER_HAS_BUSINESS_TEXTING`.
+        errorMessage:
+          type: string
+          description: Human-readable explanation of the error. Defaults to the message associated with `errorCode` and may contain more specific runtime detail.
+    ModifyNumberAction:
       type: string
       enum:
-      - GEOGRAPHIC_NUMBERS
-      - TOLLFREE_NUMBERS
-      - BUSINESS_TEXTING
-      - CONTACT_CENTER
-      - SERVICE_NUMBERS
-      - NON_GEOGRAPHIC_NUMBERS
-      - MOBILE_NUMBERS
-      description: " * `GEOGRAPHIC_NUMBERS` - PSTN service type for geographic numbers.\n * `TOLLFREE_NUMBERS` - PSTN service type for toll-free numbers.\n * `BUSINESS_TEXTING` - PSTN service type for business texting.\n * `CONTACT_CENTER` - PSTN service type for contact center services.\n * `SERVICE_NUMBERS` - PSTN service type for service numbers.\n * `NON_GEOGRAPHIC_NUMBERS` - PSTN service type for non-geographic numbers.\n * `MOBILE_NUMBERS` - PSTN service type for mobile numbers.\n"
+      - modifyElin
+      - modifyStandard
+      - modifyService
+      description: 'Supported number usage actions.
+
+
+        - `modifyElin` — Change the number usage to ELIN (Emergency Location Identification Number).
+
+        - `modifyStandard` — Change the number usage to standard, which supports regular calling.
+
+        - `modifyService` — Change the number usage to service, which is intended for calling features such as Auto Attendant, Call Queue, Hunt Groups, or Webex Contact Center.'
+    ModifyNumbersActionRequest:
+      type: object
+      required:
+      - numbers
+      properties:
+        numbers:
+          type: array
+          description: Phone numbers to process.
+          minItems: 1
+          items:
+            type: string
+            example: '+14155551234'
+    ModifyNumbersGetResponse:
+      type: object
+      required:
+      - phoneNumbers
+      properties:
+        phoneNumbers:
+          type: array
+          description: All eligible modifiable numbers within the server-side candidate window, returned in a single non-paginated response.
+          items:
+            $ref: '#/components/schemas/ModifiableNumber'
+      example:
+        phoneNumbers:
+        - phoneNumber: '+14155551234'
+          state: ACTIVE
+          isServiceNumber: false
+          tollFreeNumber: false
+          mainNumber: false
+          isELIN: true
+          isReservedNumber: false
+          telephonyType: PSTN_NUMBER
+    ModifyNumbersActionOrderNumber:
+      type: object
+      required:
+      - number
+      - status
+      - usage
+      properties:
+        number:
+          type: string
+          description: Phone number.
+        status:
+          type: string
+          description: 'Number-level action status.
+
+
+            - `SUCCESS` — The action completed successfully for the number.
+
+            - `FAILED` — The action failed for the number.
+
+            - `PENDING` — The action is still being processed for the number.'
+          enum:
+          - SUCCESS
+          - FAILED
+          - PENDING
+        usage:
+          type: string
+          description: 'Final number usage type.
+
+
+            - `NONE` — Standard number usage.
+
+            - `SERVICE` — Service number usage.
+
+            - `ELIN` — Emergency Location Identification Number usage.'
+          enum:
+          - NONE
+          - SERVICE
+          - ELIN
+        errors:
+          type: array
+          description: Validation or execution errors for this number.
+          items:
+            $ref: '#/components/schemas/ModifyNumbersActionError'
   securitySchemes:
     oauth2:
       flows:
@@ -857,3 +1212,6 @@ components:
       description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
       scheme: bearer
       bearerFormat: JWT
+x-refined-from:
+- webex-cloud-calling-openapi.json
+- webex-cloud-calling-openapi.yml

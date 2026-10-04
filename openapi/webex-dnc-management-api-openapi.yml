@@ -338,7 +338,7 @@ paths:
                 $ref: '#/components/schemas/GatewayTimeoutError'
 components:
   schemas:
-    ServiceUnavailableError:
+    TooManyRequestsError:
       type: object
       required:
       - code
@@ -347,176 +347,21 @@ components:
         code:
           type: integer
           enum:
-          - 503
-          description: HTTP status code for Service Unavailable.
-          example: 503
+          - 429
+          description: HTTP status code for Too Many Requests.
+          example: 429
         message:
           type: string
-          description: A detailed error message explaining the service unavailability.
-          example: Service is temporarily unavailable. Please try again later.
+          description: A detailed error message explaining the rate limit.
+          example: Too many requests. Rate limit exceeded.
         trackingId:
           type: string
           description: A unique identifier for this error that can be used for debugging purposes.
-          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f598
+          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f595
       example:
-        code: 503
-        message: Service is temporarily unavailable. Please try again later.
-        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f598
-    InternalServerError:
-      type: object
-      required:
-      - code
-      - message
-      properties:
-        code:
-          type: integer
-          description: Application error code for the internal server error.
-          example: 1006
-        message:
-          type: string
-          description: A detailed error message explaining the server error.
-          example: An unexpected error occurred while processing your request.
-        trackingId:
-          type: string
-          description: A unique identifier for this error that can be used for debugging purposes. Include this when contacting support.
-          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f596
-      example:
-        code: 1006
-        message: An unexpected error occurred while processing your request.
-        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f596
-    ConflictError:
-      type: object
-      required:
-      - code
-      - message
-      properties:
-        code:
-          type: integer
-          enum:
-          - 409
-          description: HTTP status code for Conflict.
-          example: 409
-        message:
-          type: string
-          description: A detailed error message explaining the conflict.
-          example: Phone number +1234567890 already exists in DNC list 'corporate-dnc-list'
-        trackingId:
-          type: string
-          description: A unique identifier for this error that can be used for debugging purposes.
-          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f594
-      example:
-        code: 409
-        message: Phone number +1234567890 already exists in DNC list 'corporate-dnc-list'
-        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f594
-    BadGatewayError:
-      type: object
-      required:
-      - code
-      - message
-      properties:
-        code:
-          type: integer
-          enum:
-          - 502
-          description: HTTP status code for Bad Gateway.
-          example: 502
-        message:
-          type: string
-          description: A detailed error message explaining the gateway error.
-          example: The server received an invalid response from an upstream server.
-        trackingId:
-          type: string
-          description: A unique identifier for this error that can be used for debugging purposes.
-          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f597
-      example:
-        code: 502
-        message: The server received an invalid response from an upstream server.
-        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f597
-    GatewayTimeoutError:
-      type: object
-      required:
-      - code
-      - message
-      properties:
-        code:
-          type: integer
-          enum:
-          - 504
-          description: HTTP status code for Gateway Timeout.
-          example: 504
-        message:
-          type: string
-          description: A detailed error message explaining the timeout.
-          example: The server did not receive a timely response from an upstream server.
-        trackingId:
-          type: string
-          description: A unique identifier for this error that can be used for debugging purposes.
-          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f599
-      example:
-        code: 504
-        message: The server did not receive a timely response from an upstream server.
-        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f599
-    UnauthorizedError:
-      type: object
-      required:
-      - code
-      - message
-      properties:
-        code:
-          type: integer
-          enum:
-          - 401
-          description: HTTP status code for Unauthorized.
-          example: 401
-        message:
-          type: string
-          description: A detailed error message explaining the authentication failure.
-          example: Invalid or expired access token.
-        trackingId:
-          type: string
-          description: A unique identifier for this error that can be used for debugging purposes.
-          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f591
-      example:
-        code: 401
-        message: Invalid or expired access token.
-        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f591
-    DncEntryResponse:
-      type: object
-      properties:
-        phoneNumber:
-          type: string
-          pattern: ^\+[1-9]\d{1,14}$
-          description: The phone number in the DNC list, in E.164 format.
-          example: '+1234567890'
-        source:
-          type: string
-          description: The source or origin of the DNC entry.
-          example: customer-request
-        addedDate:
-          type: string
-          format: date-time
-          description: The date and time when the phone number was added to the DNC list.
-          example: '2024-01-15T10:30:00Z'
-        addedBy:
-          type: string
-          description: The user or system that added the phone number to the DNC list.
-          example: admin@example.com
-        reason:
-          type: string
-          description: The reason for adding the phone number to the DNC list, if provided.
-          example: Customer opted out via phone
-        lastModified:
-          type: string
-          format: date-time
-          description: The date and time when the DNC entry was last modified.
-          example: '2024-01-15T10:30:00Z'
-      example:
-        phoneNumber: '+1234567890'
-        source: customer-request
-        addedDate: '2024-01-15T10:30:00Z'
-        addedBy: admin@example.com
-        reason: Customer opted out via phone
-        lastModified: '2024-01-15T10:30:00Z'
+        code: 429
+        message: Too many requests. Rate limit exceeded.
+        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f595
     NotFoundError:
       type: object
       required:
@@ -563,6 +408,78 @@ components:
         code: 403
         message: Feature is not enabled for this organization.
         trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f592
+    ConflictError:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: integer
+          enum:
+          - 409
+          description: HTTP status code for Conflict.
+          example: 409
+        message:
+          type: string
+          description: A detailed error message explaining the conflict.
+          example: Phone number +1234567890 already exists in DNC list 'corporate-dnc-list'
+        trackingId:
+          type: string
+          description: A unique identifier for this error that can be used for debugging purposes.
+          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f594
+      example:
+        code: 409
+        message: Phone number +1234567890 already exists in DNC list 'corporate-dnc-list'
+        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f594
+    ServiceUnavailableError:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: integer
+          enum:
+          - 503
+          description: HTTP status code for Service Unavailable.
+          example: 503
+        message:
+          type: string
+          description: A detailed error message explaining the service unavailability.
+          example: Service is temporarily unavailable. Please try again later.
+        trackingId:
+          type: string
+          description: A unique identifier for this error that can be used for debugging purposes.
+          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f598
+      example:
+        code: 503
+        message: Service is temporarily unavailable. Please try again later.
+        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f598
+    UnauthorizedError:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: integer
+          enum:
+          - 401
+          description: HTTP status code for Unauthorized.
+          example: 401
+        message:
+          type: string
+          description: A detailed error message explaining the authentication failure.
+          example: Invalid or expired access token.
+        trackingId:
+          type: string
+          description: A unique identifier for this error that can be used for debugging purposes.
+          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f591
+      example:
+        code: 401
+        message: Invalid or expired access token.
+        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f591
     BadRequestError:
       type: object
       required:
@@ -585,7 +502,7 @@ components:
         code: 1001
         message: Invalid pageSize. Allowed range is 1 to 100.
         trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f594b
-    TooManyRequestsError:
+    GatewayTimeoutError:
       type: object
       required:
       - code
@@ -594,21 +511,21 @@ components:
         code:
           type: integer
           enum:
-          - 429
-          description: HTTP status code for Too Many Requests.
-          example: 429
+          - 504
+          description: HTTP status code for Gateway Timeout.
+          example: 504
         message:
           type: string
-          description: A detailed error message explaining the rate limit.
-          example: Too many requests. Rate limit exceeded.
+          description: A detailed error message explaining the timeout.
+          example: The server did not receive a timely response from an upstream server.
         trackingId:
           type: string
           description: A unique identifier for this error that can be used for debugging purposes.
-          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f595
+          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f599
       example:
-        code: 429
-        message: Too many requests. Rate limit exceeded.
-        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f595
+        code: 504
+        message: The server did not receive a timely response from an upstream server.
+        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f599
     DncEntryRequest:
       type: object
       required:
@@ -635,6 +552,89 @@ components:
         phoneNumber: '+1234567890'
         source: customer-request
         reason: Customer opted out via email
+    InternalServerError:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: integer
+          description: Application error code for the internal server error.
+          example: 1006
+        message:
+          type: string
+          description: A detailed error message explaining the server error.
+          example: An unexpected error occurred while processing your request.
+        trackingId:
+          type: string
+          description: A unique identifier for this error that can be used for debugging purposes. Include this when contacting support.
+          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f596
+      example:
+        code: 1006
+        message: An unexpected error occurred while processing your request.
+        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f596
+    DncEntryResponse:
+      type: object
+      properties:
+        phoneNumber:
+          type: string
+          pattern: ^\+[1-9]\d{1,14}$
+          description: The phone number in the DNC list, in E.164 format.
+          example: '+1234567890'
+        source:
+          type: string
+          description: The source or origin of the DNC entry.
+          example: customer-request
+        addedDate:
+          type: string
+          format: date-time
+          description: The date and time when the phone number was added to the DNC list.
+          example: '2024-01-15T10:30:00Z'
+        addedBy:
+          type: string
+          description: The user or system that added the phone number to the DNC list.
+          example: admin@example.com
+        reason:
+          type: string
+          description: The reason for adding the phone number to the DNC list, if provided.
+          example: Customer opted out via phone
+        lastModified:
+          type: string
+          format: date-time
+          description: The date and time when the DNC entry was last modified.
+          example: '2024-01-15T10:30:00Z'
+      example:
+        phoneNumber: '+1234567890'
+        source: customer-request
+        addedDate: '2024-01-15T10:30:00Z'
+        addedBy: admin@example.com
+        reason: Customer opted out via phone
+        lastModified: '2024-01-15T10:30:00Z'
+    BadGatewayError:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: integer
+          enum:
+          - 502
+          description: HTTP status code for Bad Gateway.
+          example: 502
+        message:
+          type: string
+          description: A detailed error message explaining the gateway error.
+          example: The server received an invalid response from an upstream server.
+        trackingId:
+          type: string
+          description: A unique identifier for this error that can be used for debugging purposes.
+          example: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f597
+      example:
+        code: 502
+        message: The server received an invalid response from an upstream server.
+        trackingId: GTWY_e6763c9a-71b2-4515-ad5b-89260f7f597
   securitySchemes:
     oauth2:
       flows:

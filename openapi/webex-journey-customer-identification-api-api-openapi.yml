@@ -529,20 +529,23 @@ paths:
       - bearerAuth: []
 components:
   schemas:
-    PatchRequest:
-      type: array
-      items:
-        $ref: '#/components/schemas/PatchDocument'
-    PersonGetResponse:
+    MergePersonsRequest:
+      required:
+      - personIdsToMerge
       type: object
       properties:
-        meta:
-          $ref: '#/components/schemas/BaseMetaResponseEnvelope'
-        data:
+        personIdsToMerge:
+          maxItems: 2147483647
+          minItems: 1
           type: array
-          description: Data part of the response
+          description: List of Person Ids to merge
+          example:
+          - 6435e80153802b2a273bae3a
+          - 6435e80153802b2a273bae3b
+          - 6435e80153802b2a273bae3c
           items:
-            $ref: '#/components/schemas/PersonResponseModel'
+            type: string
+      description: Merge two or more persons
     ApiError400:
       required:
       - trackingId
@@ -642,39 +645,6 @@ components:
           type: string
           description: Unique ID by which a request can be debugged. Please provide if opening a support case.
           example: 76cd71d0e678a8bb
-    BaseMetaResponseEnvelope:
-      type: object
-      properties:
-        organizationId:
-          type: string
-          description: Organization ID
-          example: 1eb65fdf-9643-417f-9974-ad72cae0e10f
-      description: Meta information of the response
-      example:
-        organizationId: 1eb65fdf-9643-417f-9974-ad72cae0e10f
-    PatchDocument:
-      required:
-      - op
-      - path
-      type: object
-      properties:
-        op:
-          type: string
-          description: 'The operation to be performed '
-          example: update
-          enum:
-          - add
-          - update
-          - remove
-        path:
-          type: string
-          description: A JSON-Pointer
-          example: /name
-        value:
-          type: string
-          description: The value to be used within the operations.
-          example: test
-      description: A JSONPatch document as defined by RFC 6902
     PersonResponseModel:
       type: object
       properties:
@@ -728,6 +698,20 @@ components:
           items:
             type: string
       description: Person Response Model
+    BaseMetaResponseEnvelope:
+      type: object
+      properties:
+        organizationId:
+          type: string
+          description: Organization ID
+          example: 1eb65fdf-9643-417f-9974-ad72cae0e10f
+      description: Meta information of the response
+      example:
+        organizationId: 1eb65fdf-9643-417f-9974-ad72cae0e10f
+    PatchRequest:
+      type: array
+      items:
+        $ref: '#/components/schemas/PatchDocument'
     ApiError404:
       required:
       - trackingId
@@ -827,55 +811,6 @@ components:
           type: string
           description: Unique ID by which a request can be debugged. Please provide if opening a support case.
           example: 76cd71d0e678a8bb
-    MergePersonsRequest:
-      required:
-      - personIdsToMerge
-      type: object
-      properties:
-        personIdsToMerge:
-          maxItems: 2147483647
-          minItems: 1
-          type: array
-          description: List of Person Ids to merge
-          example:
-          - 6435e80153802b2a273bae3a
-          - 6435e80153802b2a273bae3b
-          - 6435e80153802b2a273bae3c
-          items:
-            type: string
-      description: Merge two or more persons
-    AddIdentitiesToPersonRequestModel:
-      type: object
-      properties:
-        phone:
-          type: array
-          description: Phone Number
-          example:
-          - '+12342342345'
-          items:
-            type: string
-        email:
-          type: array
-          description: Email
-          example:
-          - johndoe@gmail.com
-          items:
-            type: string
-        temporaryId:
-          type: array
-          description: Temporary Id
-          example:
-          - 2342s-sdsd-342345
-          items:
-            type: string
-        customerId:
-          type: array
-          description: Customer Id
-          example:
-          - '234'
-          items:
-            type: string
-      description: Add Identities to Person
     PersonResponse:
       type: object
       properties:
@@ -883,46 +818,39 @@ components:
           $ref: '#/components/schemas/BaseMetaResponseEnvelope'
         data:
           $ref: '#/components/schemas/PersonResponseModel'
-    CreateOrUpdatePersonRequestModel:
+    PersonGetResponse:
       type: object
       properties:
-        firstName:
+        meta:
+          $ref: '#/components/schemas/BaseMetaResponseEnvelope'
+        data:
+          type: array
+          description: Data part of the response
+          items:
+            $ref: '#/components/schemas/PersonResponseModel'
+    PatchDocument:
+      required:
+      - op
+      - path
+      type: object
+      properties:
+        op:
           type: string
-          description: firstName
-          example: John
-        lastName:
+          description: 'The operation to be performed '
+          example: update
+          enum:
+          - add
+          - update
+          - remove
+        path:
           type: string
-          description: lastName
-          example: Doe
-        phone:
-          type: array
-          description: Phone Number
-          example:
-          - '+12342342345'
-          items:
-            type: string
-        email:
-          type: array
-          description: Email
-          example:
-          - johndoe@gmail.com
-          items:
-            type: string
-        temporaryId:
-          type: array
-          description: Temporary Id
-          example:
-          - 2342s-sdsd-342345
-          items:
-            type: string
-        customerId:
-          type: array
-          description: Customer Id
-          example:
-          - '234'
-          items:
-            type: string
-      description: Create Or Update Person
+          description: A JSON-Pointer
+          example: /name
+        value:
+          type: string
+          description: The value to be used within the operations.
+          example: test
+      description: A JSONPatch document as defined by RFC 6902
     ApiError401:
       required:
       - trackingId
@@ -1022,6 +950,46 @@ components:
           type: string
           description: Unique ID by which a request can be debugged. Please provide if opening a support case.
           example: 76cd71d0e678a8bb
+    CreateOrUpdatePersonRequestModel:
+      type: object
+      properties:
+        firstName:
+          type: string
+          description: firstName
+          example: John
+        lastName:
+          type: string
+          description: lastName
+          example: Doe
+        phone:
+          type: array
+          description: Phone Number
+          example:
+          - '+12342342345'
+          items:
+            type: string
+        email:
+          type: array
+          description: Email
+          example:
+          - johndoe@gmail.com
+          items:
+            type: string
+        temporaryId:
+          type: array
+          description: Temporary Id
+          example:
+          - 2342s-sdsd-342345
+          items:
+            type: string
+        customerId:
+          type: array
+          description: Customer Id
+          example:
+          - '234'
+          items:
+            type: string
+      description: Create Or Update Person
     ApiError500:
       required:
       - trackingId
@@ -1177,6 +1145,38 @@ components:
           items:
             type: string
       description: Merge Person
+    AddIdentitiesToPersonRequestModel:
+      type: object
+      properties:
+        phone:
+          type: array
+          description: Phone Number
+          example:
+          - '+12342342345'
+          items:
+            type: string
+        email:
+          type: array
+          description: Email
+          example:
+          - johndoe@gmail.com
+          items:
+            type: string
+        temporaryId:
+          type: array
+          description: Temporary Id
+          example:
+          - 2342s-sdsd-342345
+          items:
+            type: string
+        customerId:
+          type: array
+          description: Customer Id
+          example:
+          - '234'
+          items:
+            type: string
+      description: Add Identities to Person
   securitySchemes:
     oauth2:
       flows:

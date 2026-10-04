@@ -1,21 +1,11 @@
 openapi: 3.2.0
 info:
-  title: Webex Cloud Calling Workspace Call Settings API
+  title: Webex Workspace Call Settings API
   version: 1.0.0
-  description: The Webex Cloud Calling APIs enable comprehensive management of cloud-based calling services, including user provisioning, device assignment, call routing, feature configuration, and number management.
-  x-provenance:
-    method: harvested
-    authored_by: Cisco Webex
-    harvested_by: API Evangelist
-    harvested_on: '2026-08-19'
-    first_party: true
-    note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
-    provider_published: true
-  x-evidence:
-  - type: source
-    url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-cloud-calling.json
-  - type: raw
-    url: https://raw.githubusercontent.com/webex/webex-openapi-specs/main/public-spec/webex-cloud-calling.json
+  x-refined-note:
+  - x-evidence differs across the merged source definitions and was not carried
+  - x-provenance differs across the merged source definitions and was not carried
+  description: 'Operations tagged Workspace Call Settings across 2 of this provider''s published API definitions: webex-cloud-calling-openapi.json, webex-cloud-calling-openapi.yml. Each path carries the servers of the definition it was published in.'
 tags:
 - name: Workspace Call Settings
 paths:
@@ -450,6 +440,205 @@ paths:
         example: 100
 components:
   schemas:
+    MonitoredElementUser:
+      type: object
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS80NDVkMzMzMC1mNjE3LTExZWItOWQyZS01NzViODE3ZGE2NmE
+          description: The identifier of the monitored person or workspace.
+        firstName:
+          type: string
+          example: John
+          description: The first name of the monitored person, place, or virtual line.
+        lastName:
+          type: string
+          example: Brown
+          description: The last name of the monitored person, place, or virtual line.
+        displayName:
+          type: string
+          example: John Brown
+          description: The display name of the monitored person, place, or virtual line.
+        type:
+          type: string
+          enum:
+          - PEOPLE
+          - PLACE
+          description: "The type of the monitored person, place, or virtual line.\n * `PEOPLE` - Object is a user.\n * `PLACE` - Object is a workspace.\n"
+        email:
+          type: string
+          example: john.brown@gmail.com
+          description: The email address of the monitored person, place, or virtual line.
+        numbers:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserNumberItem'
+          description: The list of phone numbers of the monitored person, place, or virtual line.
+        location:
+          type: string
+          example: Alaska
+          description: The location name where the line is.
+        locationId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzEyMzQ1
+          description: The ID for the location.
+        lineKeyLabel:
+          type: string
+          example: Member Label
+          description: Customizable line key label for monitored member.
+    MonitoredElementCallParkExtension:
+      type: object
+      required:
+      - id
+      - name
+      - extension
+      - location
+      - locationId
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS80NDVkMzMzMC1mNjE3LTExZWItOWQyZS01NzViODE3ZGE2NmE
+          description: ID of call park extension.
+        name:
+          type: string
+          example: CPE1
+          description: Name of call park extension.
+        extension:
+          type: string
+          example: '8080'
+          description: Extension of call park extension.
+        routingPrefix:
+          type: string
+          example: '1234'
+          description: Routing prefix of location.
+        esn:
+          type: string
+          example: '12348080'
+          description: Routing prefix + extension of a person or workspace.
+        location:
+          type: string
+          example: Alaska
+          description: Name of location for call park extension.
+        locationId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzEyMzQ1
+          description: ID of location for call park extension.
+        lineKeyLabel:
+          type: string
+          example: CPE Label
+          description: Customizable line key label for monitored call park extension.
+    MonitoredElementSpeedDial:
+      type: object
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS80NDVkMzMzMC1mNjE3LTExZWItOWQyZS01NzViODE3ZGE2NmE
+          description: The identifier of the speed dial.
+        displayName:
+          type: string
+          example: John Brown
+          description: The display name of the speed dial.
+        type:
+          type: string
+          enum:
+          - PEOPLE
+          - PLACE
+          - VIRTUAL_LINE
+          description: "The type of the speed dial.\n * `PEOPLE` - Object is a user.\n * `PLACE` - Object is a workspace.\n * `VIRTUAL_LINE` - Object is a virtual line.\n"
+        lineKeyLabel:
+          type: string
+          example: Manager
+          description: Customizable line key label for speed dial.
+        phoneNumber:
+          type: string
+          example: '+19075552859'
+          description: The phone number of the speed dial.
+        location:
+          type: string
+          example: Richardson
+          description: The location name where the speed dial is.
+        locationId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzEyMzQ1
+          description: The ID for the location.
+    MonitoredElementItem:
+      type: object
+      properties:
+        callparkextension:
+          $ref: '#/components/schemas/MonitoredElementCallParkExtension'
+          description: Monitored Call Park extension.
+        member:
+          $ref: '#/components/schemas/MonitoredElementUser'
+          description: Monitored member for this workspace.
+        speedDial:
+          $ref: '#/components/schemas/MonitoredElementSpeedDial'
+          description: Monitored Speed Dial.
+    GetAvailableMembersForMonitoringResponse:
+      type: object
+      properties:
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/AvailableMemberObject'
+          description: List of available members.
+    UserNumberItem:
+      type: object
+      required:
+      - primary
+      properties:
+        external:
+          type: string
+          example: '+19075552859'
+          description: Phone number of person or workspace. Either `phoneNumber` or `extension` is mandatory.
+        extension:
+          type: string
+          example: '8080'
+          description: Extension of person or workspace. Either `phoneNumber` or `extension` is mandatory.
+        routingPrefix:
+          type: string
+          example: '1234'
+          description: Routing prefix of location.
+        esn:
+          type: string
+          example: '12348080'
+          description: Routing prefix + extension of a person or workspace.
+        primary:
+          type: boolean
+          example: true
+          description: Flag to indicate primary phone.
+        tollFreeNumber:
+          type: boolean
+          example: true
+          description: Flag to indicate toll free number.
+    LocationObject:
+      type: object
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzEyMzQ1Njc4OTAxMjM0NTY3ODkw
+          description: The ID of the location.
+        name:
+          type: string
+          example: San Jose
+          description: The name of the location.
+    UserMonitoringGet:
+      type: object
+      required:
+      - callParkNotificationEnabled
+      properties:
+        callParkNotificationEnabled:
+          type: boolean
+          example: true
+          description: Call park notification enabled or disabled.
+        availableEntriesCount:
+          type: integer
+          example: 5
+          description: Number of available entries for monitoring.
+        monitoredElements:
+          type: array
+          items:
+            $ref: '#/components/schemas/MonitoredElementItem'
+          description: Monitored element items.
     WorkspaceMonitoringPatch:
       type: object
       properties:
@@ -500,59 +689,6 @@ components:
         location:
           $ref: '#/components/schemas/LocationObject'
           description: The location of the available member.
-    GetAvailableMembersForMonitoringResponse:
-      type: object
-      properties:
-        members:
-          type: array
-          items:
-            $ref: '#/components/schemas/AvailableMemberObject'
-          description: List of available members.
-    LocationObject:
-      type: object
-      properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzEyMzQ1Njc4OTAxMjM0NTY3ODkw
-          description: The ID of the location.
-        name:
-          type: string
-          example: San Jose
-          description: The name of the location.
-    MonitoredElementSpeedDial:
-      type: object
-      properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS80NDVkMzMzMC1mNjE3LTExZWItOWQyZS01NzViODE3ZGE2NmE
-          description: The identifier of the speed dial.
-        displayName:
-          type: string
-          example: John Brown
-          description: The display name of the speed dial.
-        type:
-          type: string
-          enum:
-          - PEOPLE
-          - PLACE
-          - VIRTUAL_LINE
-          description: "The type of the speed dial.\n * `PEOPLE` - Object is a user.\n * `PLACE` - Object is a workspace.\n * `VIRTUAL_LINE` - Object is a virtual line.\n"
-        lineKeyLabel:
-          type: string
-          example: Manager
-          description: Customizable line key label for speed dial.
-        phoneNumber:
-          type: string
-          example: '+19075552859'
-          description: The phone number of the speed dial.
-        location:
-          type: string
-          example: Richardson
-          description: The location name where the speed dial is.
-        locationId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzEyMzQ1
-          description: The ID for the location.
     MonitoredElementItemPatch:
       type: object
       properties:
@@ -575,152 +711,6 @@ components:
           type: string
           example: '+19075552859'
           description: Phone number for the speed dial.
-    MonitoredElementCallParkExtension:
-      type: object
-      required:
-      - id
-      - name
-      - extension
-      - location
-      - locationId
-      properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS80NDVkMzMzMC1mNjE3LTExZWItOWQyZS01NzViODE3ZGE2NmE
-          description: ID of call park extension.
-        name:
-          type: string
-          example: CPE1
-          description: Name of call park extension.
-        extension:
-          type: string
-          example: '8080'
-          description: Extension of call park extension.
-        routingPrefix:
-          type: string
-          example: '1234'
-          description: Routing prefix of location.
-        esn:
-          type: string
-          example: '12348080'
-          description: Routing prefix + extension of a person or workspace.
-        location:
-          type: string
-          example: Alaska
-          description: Name of location for call park extension.
-        locationId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzEyMzQ1
-          description: ID of location for call park extension.
-        lineKeyLabel:
-          type: string
-          example: CPE Label
-          description: Customizable line key label for monitored call park extension.
-    UserMonitoringGet:
-      type: object
-      required:
-      - callParkNotificationEnabled
-      properties:
-        callParkNotificationEnabled:
-          type: boolean
-          example: true
-          description: Call park notification enabled or disabled.
-        availableEntriesCount:
-          type: integer
-          example: 5
-          description: Number of available entries for monitoring.
-        monitoredElements:
-          type: array
-          items:
-            $ref: '#/components/schemas/MonitoredElementItem'
-          description: Monitored element items.
-    MonitoredElementItem:
-      type: object
-      properties:
-        callparkextension:
-          $ref: '#/components/schemas/MonitoredElementCallParkExtension'
-          description: Monitored Call Park extension.
-        member:
-          $ref: '#/components/schemas/MonitoredElementUser'
-          description: Monitored member for this workspace.
-        speedDial:
-          $ref: '#/components/schemas/MonitoredElementSpeedDial'
-          description: Monitored Speed Dial.
-    UserNumberItem:
-      type: object
-      required:
-      - primary
-      properties:
-        external:
-          type: string
-          example: '+19075552859'
-          description: Phone number of person or workspace. Either `phoneNumber` or `extension` is mandatory.
-        extension:
-          type: string
-          example: '8080'
-          description: Extension of person or workspace. Either `phoneNumber` or `extension` is mandatory.
-        routingPrefix:
-          type: string
-          example: '1234'
-          description: Routing prefix of location.
-        esn:
-          type: string
-          example: '12348080'
-          description: Routing prefix + extension of a person or workspace.
-        primary:
-          type: boolean
-          example: true
-          description: Flag to indicate primary phone.
-        tollFreeNumber:
-          type: boolean
-          example: true
-          description: Flag to indicate toll free number.
-    MonitoredElementUser:
-      type: object
-      properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS80NDVkMzMzMC1mNjE3LTExZWItOWQyZS01NzViODE3ZGE2NmE
-          description: The identifier of the monitored person or workspace.
-        firstName:
-          type: string
-          example: John
-          description: The first name of the monitored person, place, or virtual line.
-        lastName:
-          type: string
-          example: Brown
-          description: The last name of the monitored person, place, or virtual line.
-        displayName:
-          type: string
-          example: John Brown
-          description: The display name of the monitored person, place, or virtual line.
-        type:
-          type: string
-          enum:
-          - PEOPLE
-          - PLACE
-          description: "The type of the monitored person, place, or virtual line.\n * `PEOPLE` - Object is a user.\n * `PLACE` - Object is a workspace.\n"
-        email:
-          type: string
-          example: john.brown@gmail.com
-          description: The email address of the monitored person, place, or virtual line.
-        numbers:
-          type: array
-          items:
-            $ref: '#/components/schemas/UserNumberItem'
-          description: The list of phone numbers of the monitored person, place, or virtual line.
-        location:
-          type: string
-          example: Alaska
-          description: The location name where the line is.
-        locationId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzEyMzQ1
-          description: The ID for the location.
-        lineKeyLabel:
-          type: string
-          example: Member Label
-          description: Customizable line key label for monitored member.
   securitySchemes:
     oauth2:
       flows:
@@ -739,3 +729,6 @@ components:
       description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
       scheme: bearer
       bearerFormat: JWT
+x-refined-from:
+- webex-cloud-calling-openapi.json
+- webex-cloud-calling-openapi.yml

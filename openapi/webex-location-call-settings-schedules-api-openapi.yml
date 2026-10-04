@@ -1,21 +1,11 @@
 openapi: 3.2.0
 info:
-  title: 'Webex Cloud Calling Location Call Settings: Schedules API'
+  title: 'Webex Location Call Settings: Schedules API'
   version: 1.0.0
-  description: The Webex Cloud Calling APIs enable comprehensive management of cloud-based calling services, including user provisioning, device assignment, call routing, feature configuration, and number management.
-  x-provenance:
-    method: harvested
-    authored_by: Cisco Webex
-    harvested_by: API Evangelist
-    harvested_on: '2026-08-19'
-    first_party: true
-    note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
-    provider_published: true
-  x-evidence:
-  - type: source
-    url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-cloud-calling.json
-  - type: raw
-    url: https://raw.githubusercontent.com/webex/webex-openapi-specs/main/public-spec/webex-cloud-calling.json
+  x-refined-note:
+  - x-evidence differs across the merged source definitions and was not carried
+  - x-provenance differs across the merged source definitions and was not carried
+  description: 'Operations tagged Location Call Settings: Schedules across 2 of this provider''s published API definitions: webex-cloud-calling-openapi.json, webex-cloud-calling-openapi.yml. Each path carries the servers of the definition it was published in.'
 tags:
 - name: 'Location Call Settings:  Schedules'
 paths:
@@ -1076,6 +1066,266 @@ paths:
       x-operation-id-original: Create a Schedule Event
 components:
   schemas:
+    ListScheduleObject:
+      type: object
+      required:
+      - id
+      - name
+      - type
+      - locationName
+      - locationId
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1NDSEVEVUxFL1FWVlVUMEZVVkVWT1JFRk9WQzFDVlZOSlRrVlRVeTFJVDFWU1V3
+          description: A unique identifier for the schedule.
+        name:
+          type: string
+          example: AUTOATTENDANT-BUSINESS-HOURS
+          description: Unique name for the schedule.
+        type:
+          type: string
+          enum:
+          - businessHours
+          - holidays
+          description: "Type of the schedule.\n * `businessHours` - Business hours schedule type.\n * `holidays` - Holidays schedule type.\n"
+        locationName:
+          type: string
+          example: Alaska
+          description: Name of location for schedule.
+        locationId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzEyMzQ1
+          description: ID of the location for the schedule.
+    RecurrenceObject:
+      type: object
+      properties:
+        recurForEver:
+          type: boolean
+          description: Flag to indicate if event will recur forever.
+        recurEndDate:
+          type: string
+          example: '2021-11-30'
+          description: End date of recurrence.
+        recurWeekly:
+          $ref: '#/components/schemas/RecurWeeklyObject'
+          description: Weekly recurrence definition.
+        recurYearlyByDate:
+          $ref: '#/components/schemas/RecurYearlyByDateObject'
+          description: Recurrence definition yearly by date.
+        recurYearlyByDay:
+          $ref: '#/components/schemas/RecurYearlyByDayObject'
+          description: Recurrence definition yearly by day.
+    PostScheduleObject:
+      type: object
+      required:
+      - type
+      - name
+      properties:
+        type:
+          type: string
+          enum:
+          - businessHours
+          - holidays
+          description: "Type of the schedule.\n * `businessHours` - Business hours schedule type.\n * `holidays` - Holidays schedule type.\n"
+        name:
+          type: string
+          example: AUTOATTENDANT-BUSINESS-HOURS
+          description: Unique name for the schedule.
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScheduleEventObject'
+          description: List of schedule events.
+    ModifyScheduleEventListObject:
+      type: object
+      required:
+      - name
+      - newName
+      - startDate
+      - endDate
+      properties:
+        name:
+          type: string
+          example: Schedule
+          description: Current name for the event.
+        newName:
+          type: string
+          example: MondaySchedule
+          description: New name for the event.
+        startDate:
+          type: string
+          example: '2021-11-01'
+          description: Start date of event.
+        endDate:
+          type: string
+          example: '2021-11-30'
+          description: End date of event.
+        startTime:
+          type: string
+          example: '12:20'
+          description: Start time of event. Mandatory if the event is not all day.
+        endTime:
+          type: string
+          example: '14:20'
+          description: End time of event. Mandatory if the event is not all day.
+        allDayEnabled:
+          type: boolean
+          description: An indication of whether given event is an all-day event or not. Mandatory if the `startTime` and `endTime` are not defined.
+        recurrence:
+          $ref: '#/components/schemas/RecurrenceObject'
+          description: Recurrence definition.
+    ModifyScheduleEventObject:
+      type: object
+      required:
+      - name
+      - startDate
+      - endDate
+      properties:
+        name:
+          type: string
+          example: MondaySchedule
+          description: Name for the event.
+        startDate:
+          type: string
+          example: '2021-11-01'
+          description: Start date of event.
+        endDate:
+          type: string
+          example: '2021-11-30'
+          description: End date of event.
+        startTime:
+          type: string
+          example: '12:20'
+          description: Start time of event. Mandatory if the event is not all day.
+        endTime:
+          type: string
+          example: '14:20'
+          description: End time of event. Mandatory if the event is not all day.
+        allDayEnabled:
+          type: boolean
+          description: An indication of whether given event is an all-day event or not. Mandatory if the `startTime` and `endTime` are not defined.
+        recurrence:
+          $ref: '#/components/schemas/RecurrenceObject'
+          description: Recurrence definition.
+    ModifyScheduleObject:
+      type: object
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          example: AUTOATTENDANT-BUSINESS-HOURS
+          description: Unique name for the schedule.
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/ModifyScheduleEventListObject'
+          description: List of schedule events.
+    ScheduleEventObject:
+      type: object
+      required:
+      - name
+      - startDate
+      - endDate
+      properties:
+        name:
+          type: string
+          example: MondaySchedule
+          description: Name for the event.
+        startDate:
+          type: string
+          example: '2021-11-01'
+          description: Start date of event.
+        endDate:
+          type: string
+          example: '2021-11-30'
+          description: End date of event.
+        startTime:
+          type: string
+          example: '12:20'
+          description: Start time of event. Mandatory if the event is not all day.
+        endTime:
+          type: string
+          example: '14:20'
+          description: End time of event. Mandatory if the event is not all day.
+        allDayEnabled:
+          type: boolean
+          description: An indication of whether given event is an all-day event or not. Mandatory if the `startTime` and `endTime` are not defined.
+        recurrence:
+          $ref: '#/components/schemas/RecurrenceObject'
+          description: Recurrence definition.
+    RecurWeeklyObject:
+      type: object
+      required:
+      - sunday
+      properties:
+        sunday:
+          type: boolean
+          example: true
+          description: Frequency of occurrence in weeks and select the day - Sunday.
+        monday:
+          type: boolean
+          example: true
+          description: Frequency of occurrence in weeks and select the day - Monday.
+        tuesday:
+          type: boolean
+          example: true
+          description: Frequency of occurrence in weeks and select the day - Tuesday.
+        wednesday:
+          type: boolean
+          example: true
+          description: Frequency of occurrence in weeks and select the day - Wednesday.
+        thursday:
+          type: boolean
+          example: true
+          description: Frequency of occurrence in weeks and select the day - Thursday.
+        friday:
+          type: boolean
+          example: true
+          description: Frequency of occurrence in weeks and select the day - Friday.
+        saturday:
+          type: boolean
+          example: true
+          description: Frequency of occurrence in weeks and select the day - Saturday.
+    GetScheduleEventObject:
+      type: object
+      required:
+      - id
+      - name
+      - startDate
+      - endDate
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1NDSEVEVUxFX0VWRU5UL1RXOXVaR0Y1VTJOb1pXUjFiR1U
+          description: A unique identifier for the schedule event.
+        name:
+          type: string
+          example: MondaySchedule
+          description: Name for the event.
+        startDate:
+          type: string
+          example: '2021-11-01'
+          description: Start Date of Event.
+        endDate:
+          type: string
+          example: '2021-11-30'
+          description: End Date of Event.
+        startTime:
+          type: string
+          example: '12:20'
+          description: Start time of event.
+        endTime:
+          type: string
+          example: '14:20'
+          description: End time of event.
+        allDayEnabled:
+          type: boolean
+          description: An indication of whether given event is an all-day event or not.
+        recurrence:
+          $ref: '#/components/schemas/RecurrenceObject'
+          description: Recurrence definition.
     PostScheduleEventObject:
       type: object
       required:
@@ -1152,292 +1402,6 @@ components:
           - NOVEMBER
           - DECEMBER
           description: Schedule the event on a specific month.
-    RecurWeeklyObject:
-      type: object
-      required:
-      - sunday
-      properties:
-        sunday:
-          type: boolean
-          example: true
-          description: Frequency of occurrence in weeks and select the day - Sunday.
-        monday:
-          type: boolean
-          example: true
-          description: Frequency of occurrence in weeks and select the day - Monday.
-        tuesday:
-          type: boolean
-          example: true
-          description: Frequency of occurrence in weeks and select the day - Tuesday.
-        wednesday:
-          type: boolean
-          example: true
-          description: Frequency of occurrence in weeks and select the day - Wednesday.
-        thursday:
-          type: boolean
-          example: true
-          description: Frequency of occurrence in weeks and select the day - Thursday.
-        friday:
-          type: boolean
-          example: true
-          description: Frequency of occurrence in weeks and select the day - Friday.
-        saturday:
-          type: boolean
-          example: true
-          description: Frequency of occurrence in weeks and select the day - Saturday.
-    RecurrenceObject:
-      type: object
-      properties:
-        recurForEver:
-          type: boolean
-          description: Flag to indicate if event will recur forever.
-        recurEndDate:
-          type: string
-          example: '2021-11-30'
-          description: End date of recurrence.
-        recurWeekly:
-          $ref: '#/components/schemas/RecurWeeklyObject'
-          description: Weekly recurrence definition.
-        recurYearlyByDate:
-          $ref: '#/components/schemas/RecurYearlyByDateObject'
-          description: Recurrence definition yearly by date.
-        recurYearlyByDay:
-          $ref: '#/components/schemas/RecurYearlyByDayObject'
-          description: Recurrence definition yearly by day.
-    ModifyScheduleEventObject:
-      type: object
-      required:
-      - name
-      - startDate
-      - endDate
-      properties:
-        name:
-          type: string
-          example: MondaySchedule
-          description: Name for the event.
-        startDate:
-          type: string
-          example: '2021-11-01'
-          description: Start date of event.
-        endDate:
-          type: string
-          example: '2021-11-30'
-          description: End date of event.
-        startTime:
-          type: string
-          example: '12:20'
-          description: Start time of event. Mandatory if the event is not all day.
-        endTime:
-          type: string
-          example: '14:20'
-          description: End time of event. Mandatory if the event is not all day.
-        allDayEnabled:
-          type: boolean
-          description: An indication of whether given event is an all-day event or not. Mandatory if the `startTime` and `endTime` are not defined.
-        recurrence:
-          $ref: '#/components/schemas/RecurrenceObject'
-          description: Recurrence definition.
-    ScheduleEventObject:
-      type: object
-      required:
-      - name
-      - startDate
-      - endDate
-      properties:
-        name:
-          type: string
-          example: MondaySchedule
-          description: Name for the event.
-        startDate:
-          type: string
-          example: '2021-11-01'
-          description: Start date of event.
-        endDate:
-          type: string
-          example: '2021-11-30'
-          description: End date of event.
-        startTime:
-          type: string
-          example: '12:20'
-          description: Start time of event. Mandatory if the event is not all day.
-        endTime:
-          type: string
-          example: '14:20'
-          description: End time of event. Mandatory if the event is not all day.
-        allDayEnabled:
-          type: boolean
-          description: An indication of whether given event is an all-day event or not. Mandatory if the `startTime` and `endTime` are not defined.
-        recurrence:
-          $ref: '#/components/schemas/RecurrenceObject'
-          description: Recurrence definition.
-    ModifyScheduleObject:
-      type: object
-      required:
-      - name
-      properties:
-        name:
-          type: string
-          example: AUTOATTENDANT-BUSINESS-HOURS
-          description: Unique name for the schedule.
-        events:
-          type: array
-          items:
-            $ref: '#/components/schemas/ModifyScheduleEventListObject'
-          description: List of schedule events.
-    GetScheduleObject:
-      type: object
-      required:
-      - id
-      - name
-      - type
-      properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1NDSEVEVUxFL1FWVlVUMEZVVkVWT1JFRk9WQzFDVlZOSlRrVlRVeTFJVDFWU1V3
-          description: A unique identifier for the schedule.
-        name:
-          type: string
-          example: AUTOATTENDANT-BUSINESS-HOURS
-          description: Unique name for the schedule.
-        type:
-          type: string
-          enum:
-          - businessHours
-          - holidays
-          description: "Type of the schedule.\n * `businessHours` - Business hours schedule type.\n * `holidays` - Holidays schedule type.\n"
-        events:
-          type: array
-          items:
-            $ref: '#/components/schemas/GetScheduleEventObject'
-          description: List of schedule events.
-    PostScheduleObject:
-      type: object
-      required:
-      - type
-      - name
-      properties:
-        type:
-          type: string
-          enum:
-          - businessHours
-          - holidays
-          description: "Type of the schedule.\n * `businessHours` - Business hours schedule type.\n * `holidays` - Holidays schedule type.\n"
-        name:
-          type: string
-          example: AUTOATTENDANT-BUSINESS-HOURS
-          description: Unique name for the schedule.
-        events:
-          type: array
-          items:
-            $ref: '#/components/schemas/ScheduleEventObject'
-          description: List of schedule events.
-    GetScheduleEventObject:
-      type: object
-      required:
-      - id
-      - name
-      - startDate
-      - endDate
-      properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1NDSEVEVUxFX0VWRU5UL1RXOXVaR0Y1VTJOb1pXUjFiR1U
-          description: A unique identifier for the schedule event.
-        name:
-          type: string
-          example: MondaySchedule
-          description: Name for the event.
-        startDate:
-          type: string
-          example: '2021-11-01'
-          description: Start Date of Event.
-        endDate:
-          type: string
-          example: '2021-11-30'
-          description: End Date of Event.
-        startTime:
-          type: string
-          example: '12:20'
-          description: Start time of event.
-        endTime:
-          type: string
-          example: '14:20'
-          description: End time of event.
-        allDayEnabled:
-          type: boolean
-          description: An indication of whether given event is an all-day event or not.
-        recurrence:
-          $ref: '#/components/schemas/RecurrenceObject'
-          description: Recurrence definition.
-    ModifyScheduleEventListObject:
-      type: object
-      required:
-      - name
-      - newName
-      - startDate
-      - endDate
-      properties:
-        name:
-          type: string
-          example: Schedule
-          description: Current name for the event.
-        newName:
-          type: string
-          example: MondaySchedule
-          description: New name for the event.
-        startDate:
-          type: string
-          example: '2021-11-01'
-          description: Start date of event.
-        endDate:
-          type: string
-          example: '2021-11-30'
-          description: End date of event.
-        startTime:
-          type: string
-          example: '12:20'
-          description: Start time of event. Mandatory if the event is not all day.
-        endTime:
-          type: string
-          example: '14:20'
-          description: End time of event. Mandatory if the event is not all day.
-        allDayEnabled:
-          type: boolean
-          description: An indication of whether given event is an all-day event or not. Mandatory if the `startTime` and `endTime` are not defined.
-        recurrence:
-          $ref: '#/components/schemas/RecurrenceObject'
-          description: Recurrence definition.
-    ListScheduleObject:
-      type: object
-      required:
-      - id
-      - name
-      - type
-      - locationName
-      - locationId
-      properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1NDSEVEVUxFL1FWVlVUMEZVVkVWT1JFRk9WQzFDVlZOSlRrVlRVeTFJVDFWU1V3
-          description: A unique identifier for the schedule.
-        name:
-          type: string
-          example: AUTOATTENDANT-BUSINESS-HOURS
-          description: Unique name for the schedule.
-        type:
-          type: string
-          enum:
-          - businessHours
-          - holidays
-          description: "Type of the schedule.\n * `businessHours` - Business hours schedule type.\n * `holidays` - Holidays schedule type.\n"
-        locationName:
-          type: string
-          example: Alaska
-          description: Name of location for schedule.
-        locationId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzEyMzQ1
-          description: ID of the location for the schedule.
     RecurYearlyByDateObject:
       type: object
       required:
@@ -1464,6 +1428,32 @@ components:
           - NOVEMBER
           - DECEMBER
           description: Schedule the event on a specific month of the year.
+    GetScheduleObject:
+      type: object
+      required:
+      - id
+      - name
+      - type
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1NDSEVEVUxFL1FWVlVUMEZVVkVWT1JFRk9WQzFDVlZOSlRrVlRVeTFJVDFWU1V3
+          description: A unique identifier for the schedule.
+        name:
+          type: string
+          example: AUTOATTENDANT-BUSINESS-HOURS
+          description: Unique name for the schedule.
+        type:
+          type: string
+          enum:
+          - businessHours
+          - holidays
+          description: "Type of the schedule.\n * `businessHours` - Business hours schedule type.\n * `holidays` - Holidays schedule type.\n"
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/GetScheduleEventObject'
+          description: List of schedule events.
   securitySchemes:
     oauth2:
       flows:
@@ -1482,3 +1472,6 @@ components:
       description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
       scheme: bearer
       bearerFormat: JWT
+x-refined-from:
+- webex-cloud-calling-openapi.json
+- webex-cloud-calling-openapi.yml

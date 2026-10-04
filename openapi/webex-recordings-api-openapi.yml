@@ -1735,74 +1735,6 @@ paths:
         example: john.andersen@example.com
 components:
   schemas:
-    BulkRestoreRecordingObject:
-      type: object
-      properties:
-        restoreAll:
-          type: boolean
-          description: If not specified or `false`, restores the recordings specified by `recordingIds`. If `true`, restores all recordings from the recycle bin.
-        recordingIds:
-          type: array
-          items:
-            type: string
-          description: Recording IDs for recovering recordings from the recycle bin in batch. Note that all the recording IDs should belong to the site of `siteUrl` or the user's preferred site if `siteUrl` is not specified.
-        siteUrl:
-          type: string
-          example: example.webex.com
-          description: URL of the Webex site from which the API restores recordings. If not specified, the API restores recordings from a user's preferred site. All available Webex sites and preferred sites of a user can be retrieved by [Get Site List](/docs/api/v1/meeting-preferences/get-site-list) API.
-    ShareRecordingByLinkObject:
-      type: object
-      properties:
-        hostEmail:
-          type: string
-          example: john.andersen@example.com
-          description: Email address for the meeting host. This attribute should only be set if the user or application calling the API has the admin-level scopes. When used, the admin may specify the email of a user in a site they manage to be the meeting host. The field is not editable and is only used to share or unshare a recording link on behalf of the real meeting host.
-        webShareLink:
-          type: string
-          example: https://example.webex.com/recordingservice/sites/example/recording/playback/1234567890abcdef1234567890abcdef
-          description: The link for the recording to be shared or unshared.
-        addEmails:
-          type: array
-          items:
-            type: string
-          description: Email addresses of users to share the recording link with. The maximum size of the array is `100`.
-        removeEmails:
-          type: array
-          items:
-            type: string
-          description: Email addresses of users to unshare the recording link with. The maximum size of the array is `100`.
-        sendEmail:
-          type: boolean
-          description: Whether to send email notifications to the users being shared. The default is `true`.
-    BulkPurgeRecordingObject:
-      type: object
-      properties:
-        purgeAll:
-          type: boolean
-          description: If not specified or `false`, purges the recordings specified by `recordingIds`. If `true`, purges all recordings from the recycle bin.
-        recordingIds:
-          type: array
-          items:
-            type: string
-          description: Recording IDs for purging recordings from the recycle bin in batch. Note that all the recording IDs should belong to the site of `siteUrl` or the user's preferred site if `siteUrl` is not specified.
-        siteUrl:
-          type: string
-          example: example.webex.com
-          description: URL of the Webex site from which the API purges recordings. If not specified, the API purges recordings from user's preferred site. All available Webex sites and preferred sites of the user can be retrieved by [Get Site List](/docs/api/v1/meeting-preferences/get-site-list) API.
-    BulkSoftDeleteRecordingObject:
-      type: object
-      required:
-      - recordingIds
-      properties:
-        recordingIds:
-          type: array
-          items:
-            type: string
-          description: Recording IDs for removing recordings into the recycle bin in batch. Please note that all the recording IDs should belong to the site of `siteUrl` or the user's preferred site if `siteUrl` is not specified.
-        siteUrl:
-          type: string
-          example: example.webex.com
-          description: URL of the Webex site from which the API deletes recordings. If not specified, the API deletes recordings from the user's preferred site. All available Webex sites and preferred sites of a user can be retrieved by the [Get Site List](/docs/api/v1/meeting-preferences/get-site-list) API.
     RecordingObject:
       type: object
       required:
@@ -1904,6 +1836,21 @@ components:
           - deleted
           - purged
           description: " * `available` - Recording is available.\n * `deleted` - Recording has been moved into recycle bin.\n * `purged` - Recording has been purged from the recycle bin. Only applies if the user calling the API is a Compliance Officer and `meetingId` is specified.\n"
+    BulkPurgeRecordingObject:
+      type: object
+      properties:
+        purgeAll:
+          type: boolean
+          description: If not specified or `false`, purges the recordings specified by `recordingIds`. If `true`, purges all recordings from the recycle bin.
+        recordingIds:
+          type: array
+          items:
+            type: string
+          description: Recording IDs for purging recordings from the recycle bin in batch. Note that all the recording IDs should belong to the site of `siteUrl` or the user's preferred site if `siteUrl` is not specified.
+        siteUrl:
+          type: string
+          example: example.webex.com
+          description: URL of the Webex site from which the API purges recordings. If not specified, the API purges recordings from user's preferred site. All available Webex sites and preferred sites of the user can be retrieved by [Get Site List](/docs/api/v1/meeting-preferences/get-site-list) API.
     ShareRecordingByIdObject:
       type: object
       properties:
@@ -1924,6 +1871,17 @@ components:
         sendEmail:
           type: boolean
           description: Whether to send email notifications to the users being shared. The default is `true`.
+    DeleteRecordingObject:
+      type: object
+      properties:
+        reason:
+          type: string
+          example: audit
+          description: Reason for deleting a recording. Only required when a Compliance Officer is operating on another user's recording.
+        comment:
+          type: string
+          example: Maintain data privacy
+          description: Compliance Officer's explanation for deleting a recording. The comment can be a maximum of 255 characters long.
     RecordingObjectWithDirectDownloadLinks:
       type: object
       required:
@@ -2041,17 +1999,45 @@ components:
           - deleted
           - purged
           description: " * `available` - Recording is available.\n * `deleted` - Recording has been moved to the recycle bin.\n * `purged` - Recording has been purged from the recycle bin. Please note that only a compliance officer can access recordings with a `purged` status.\n"
-    DeleteRecordingObject:
+    ShareRecordingByLinkObject:
       type: object
       properties:
-        reason:
+        hostEmail:
           type: string
-          example: audit
-          description: Reason for deleting a recording. Only required when a Compliance Officer is operating on another user's recording.
-        comment:
+          example: john.andersen@example.com
+          description: Email address for the meeting host. This attribute should only be set if the user or application calling the API has the admin-level scopes. When used, the admin may specify the email of a user in a site they manage to be the meeting host. The field is not editable and is only used to share or unshare a recording link on behalf of the real meeting host.
+        webShareLink:
           type: string
-          example: Maintain data privacy
-          description: Compliance Officer's explanation for deleting a recording. The comment can be a maximum of 255 characters long.
+          example: https://example.webex.com/recordingservice/sites/example/recording/playback/1234567890abcdef1234567890abcdef
+          description: The link for the recording to be shared or unshared.
+        addEmails:
+          type: array
+          items:
+            type: string
+          description: Email addresses of users to share the recording link with. The maximum size of the array is `100`.
+        removeEmails:
+          type: array
+          items:
+            type: string
+          description: Email addresses of users to unshare the recording link with. The maximum size of the array is `100`.
+        sendEmail:
+          type: boolean
+          description: Whether to send email notifications to the users being shared. The default is `true`.
+    BulkRestoreRecordingObject:
+      type: object
+      properties:
+        restoreAll:
+          type: boolean
+          description: If not specified or `false`, restores the recordings specified by `recordingIds`. If `true`, restores all recordings from the recycle bin.
+        recordingIds:
+          type: array
+          items:
+            type: string
+          description: Recording IDs for recovering recordings from the recycle bin in batch. Note that all the recording IDs should belong to the site of `siteUrl` or the user's preferred site if `siteUrl` is not specified.
+        siteUrl:
+          type: string
+          example: example.webex.com
+          description: URL of the Webex site from which the API restores recordings. If not specified, the API restores recordings from a user's preferred site. All available Webex sites and preferred sites of a user can be retrieved by [Get Site List](/docs/api/v1/meeting-preferences/get-site-list) API.
     RecordingObjectForAdminAndCO:
       type: object
       required:
@@ -2154,6 +2140,20 @@ components:
           - deleted
           - purged
           description: " * `available` - Recording is available.\n * `deleted` - Recording has been moved into recycle bin.\n * `purged` - Recording has been purged from the recycle bin. Please note that only a compliance officer can access recordings with a `purged` status.\n"
+    BulkSoftDeleteRecordingObject:
+      type: object
+      required:
+      - recordingIds
+      properties:
+        recordingIds:
+          type: array
+          items:
+            type: string
+          description: Recording IDs for removing recordings into the recycle bin in batch. Please note that all the recording IDs should belong to the site of `siteUrl` or the user's preferred site if `siteUrl` is not specified.
+        siteUrl:
+          type: string
+          example: example.webex.com
+          description: URL of the Webex site from which the API deletes recordings. If not specified, the API deletes recordings from the user's preferred site. All available Webex sites and preferred sites of a user can be retrieved by the [Get Site List](/docs/api/v1/meeting-preferences/get-site-list) API.
   securitySchemes:
     oauth2:
       flows:

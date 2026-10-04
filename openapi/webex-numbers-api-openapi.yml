@@ -1,21 +1,11 @@
 openapi: 3.2.0
 info:
-  title: Webex Cloud Calling Numbers API
+  title: Webex Numbers API
   version: 1.0.0
-  description: The Webex Cloud Calling APIs enable comprehensive management of cloud-based calling services, including user provisioning, device assignment, call routing, feature configuration, and number management.
-  x-provenance:
-    method: harvested
-    authored_by: Cisco Webex
-    harvested_by: API Evangelist
-    harvested_on: '2026-08-19'
-    first_party: true
-    note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
-    provider_published: true
-  x-evidence:
-  - type: source
-    url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-cloud-calling.json
-  - type: raw
-    url: https://raw.githubusercontent.com/webex/webex-openapi-specs/main/public-spec/webex-cloud-calling.json
+  x-refined-note:
+  - x-evidence differs across the merged source definitions and was not carried
+  - x-provenance differs across the merged source definitions and was not carried
+  description: 'Operations tagged Numbers across 2 of this provider''s published API definitions: webex-cloud-calling-openapi.json, webex-cloud-calling-openapi.yml. Each path carries the servers of the definition it was published in.'
 tags:
 - name: Numbers
 paths:
@@ -1289,78 +1279,7 @@ paths:
       x-operation-id-original: List Manage Numbers Job errors
 components:
   schemas:
-    JobExecutionStatusObject1:
-      type: object
-      required:
-      - id
-      - lastUpdated
-      - statusMessage
-      - createdTime
-      - timeElapsed
-      properties:
-        id:
-          type: integer
-          example: 239748
-          description: Unique identifier that identifies each instance of the job.
-        lastUpdated:
-          type: string
-          example: '2022-08-24T06:18:38.825Z'
-          description: Last updated time (in UTC format) post one of the step execution completion.
-        statusMessage:
-          type: string
-          enum:
-          - STARTING
-          - STARTED
-          - COMPLETED
-          - FAILED
-          - UNKNOWN
-          - ABANDONED
-          description: "Displays status for overall steps that are part of the job.\n * `STARTING` - Job has started.\n * `STARTED` - Job is in progress.\n * `COMPLETED` - Job has completed.\n * `FAILED` - Job has failed.\n * `UNKNOWN` - Job status is unknown.\n * `ABANDONED` - Job has been abandoned (manually stopped).\n"
-        exitCode:
-          type: string
-          enum:
-          - UNKNOWN
-          - COMPLETED
-          - FAILED
-          - STOPPED
-          - COMPLETED_WITH_ERRORS
-          - COMPLETED_WITH_PENDING_ORDERS
-          description: "Exit Code for a job.\n * `UNKNOWN` - Job is in progress.\n * `COMPLETED` - Job has completed successfully.\n * `FAILED` - Job has failed.\n * `STOPPED` - Job has been stopped.\n * `COMPLETED_WITH_ERRORS` - Job has completed with errors.\n * `COMPLETED_WITH_PENDING_ORDERS` - Job has completed with pending number orders.\n"
-        createdTime:
-          type: string
-          example: '2022-08-24T06:18:31.070Z'
-          description: Job creation time in UTC format.
-        timeElapsed:
-          type: string
-          example: PT7.22S
-          description: Time lapsed since the job execution started.
-    ErrorMessageObject:
-      type: object
-      properties:
-        description:
-          type: string
-          description: Error message.
-        code:
-          type: string
-          description: Internal error code.
-        locationId:
-          type: string
-          description: Error messages describing the location ID in which the error occurs. For a move operation, this is the target location ID.
-    ItemObject:
-      type: object
-      properties:
-        item:
-          type: string
-          description: Phone number
-        itemNumber:
-          type: number
-          description: Index of error number.
-        trackingId:
-          type: string
-          description: Unique identifier to track the HTTP requests.
-        error:
-          $ref: '#/components/schemas/ErrorObject'
-    NumbersRequest:
+    NumbersDelete:
       type: object
       required:
       - phoneNumbers
@@ -1369,60 +1288,7 @@ components:
           type: array
           items:
             type: string
-          description: List of phone numbers whose activation state will be modified according to the specified action.
-        action:
-          type: string
-          enum:
-          - ACTIVATE
-          - DEACTIVATE
-          description: 'Specifies the action to execute on the provided phone numbers. If no action is specified, the default is set to ACTIVATE.
-
-            For DEACTIVATE action here are few limitations: 1) a maximum of 500 phone numbers can be processed, 2) the numbers must be unassigned, 3) the numbers cannot serve as ECBN (Emergency Callback Number), 4) the numbers must not be mobile numbers, and 5) this action is only applicable to non-integrated PSTN connection types, specifically Local Gateway (LGW) and Non-integrated CCP'
-          example: DEACTIVATE
-    ErrorObject:
-      type: object
-      properties:
-        key:
-          type: string
-          description: HTTP error code.
-        message:
-          type: array
-          items:
-            $ref: '#/components/schemas/ErrorMessageObject'
-          description: Message string with further error information.
-    NumberListGetObject:
-      type: object
-      required:
-      - phoneNumbers
-      properties:
-        phoneNumbers:
-          type: array
-          items:
-            $ref: '#/components/schemas/NumberObject'
-          description: Array of phone numbers.
-        count:
-          $ref: '#/components/schemas/NumberCount'
-          description: Count of phone numbers categorized by type or their states, such as assigned or unassigned.
-    NumberUsageTypeOptions:
-      type: string
-      enum:
-      - NONE
-      - SERVICE
-      description: " * `NONE` - Standard/user number usage (default).\n * `SERVICE` - The number will be used in high-volume service, for example, Contact Center.\n"
-    ValidateNumbersResponse:
-      type: object
-      required:
-      - status
-      - numbers
-      properties:
-        status:
-          $ref: '#/components/schemas/Status'
-          description: The status of the numbers.
-        numbers:
-          type: array
-          items:
-            $ref: '#/components/schemas/Number'
-          description: An array of number objects with number details.
+          description: List of phone numbers that need to be deleted. The maximum limit is 5.
     numberItem:
       type: object
       required:
@@ -1438,15 +1304,74 @@ components:
           items:
             type: string
           description: The numbers on which to execute the operation.
-    MoveNumberValidationError:
+    Number:
+      type: object
+      required:
+      - number
+      - state
+      - tollFreeNumber
+      properties:
+        number:
+          type: string
+          example: '+2145557901'
+          description: Phone numbers that need to be validated.
+        state:
+          $ref: '#/components/schemas/NumberState'
+          description: The state of the number.
+        tollFreeNumber:
+          type: boolean
+          description: If `true`, it's a toll-free number.
+        detail:
+          type: array
+          items:
+            type: string
+          description: Error details if the number is unavailable.
+    NumberCount:
       type: object
       properties:
-        trackingId:
-          type: string
-          description: Unique identifier to track the HTTP requests.
-        error:
-          $ref: '#/components/schemas/ErrorObject'
-    NumbersDelete:
+        assigned:
+          type: integer
+          example: 33
+          description: Count of phone numbers that are in the assigned state.
+        unAssigned:
+          type: integer
+          example: 114
+          description: Count of phone numbers which are in the un-assigned state.
+        inActive:
+          type: integer
+          example: 12
+          description: Count of phone numbers which are inactive.
+        extensionOnly:
+          type: integer
+          example: 692
+          description: Count of extensions only without phone number.
+        tollFreeNumbers:
+          type: integer
+          example: 1
+          description: Count of the toll free numbers.
+        total:
+          type: integer
+          example: 839
+          description: Total phone numbers and extensions available.
+        mobileNumber:
+          type: integer
+          example: 6
+          description: Count of phone numbers of type `MOBILE_NUMBER` only without `PSTN_NUMBER` and extension.
+        serviceNumber:
+          type: integer
+          example: 1
+          description: Count of phone numbers with `includedTelephonyTypes` as `PSTN_NUMBER` and `isServiceNumber` value as `true`.
+        reservedNumber:
+          type: integer
+          example: 1
+          description: Count of reserved phone numbers.
+    Status:
+      type: string
+      enum:
+      - OK
+      - ERRORS
+      description: " * `OK` - Everything is good.\n * `ERRORS` - Validation has failed with errors.\n"
+    NumberListGetObject:
       type: object
       required:
       - phoneNumbers
@@ -1454,15 +1379,75 @@ components:
         phoneNumbers:
           type: array
           items:
-            type: string
-          description: List of phone numbers that need to be deleted. The maximum limit is 5.
-    TelephonyType:
-      type: string
-      enum:
-      - PSTN_NUMBER
-      description: ' * `PSTN_NUMBER` - The object is a PSTN number.
-
-        '
+            $ref: '#/components/schemas/NumberObject'
+          description: Array of phone numbers.
+        count:
+          $ref: '#/components/schemas/NumberCount'
+          description: Count of phone numbers categorized by type or their states, such as assigned or unassigned.
+    stepExecutionStatusesObject:
+      type: object
+      required:
+      - id
+      - lastUpdated
+      - statusMessage
+      - name
+      - timeElapsed
+      properties:
+        id:
+          type: number
+          example: 3624681
+          description: Unique identifier that identifies each step in a job.
+        startTime:
+          type: string
+          example: '2023-05-30T13:04:00.469Z'
+          description: The date and time with seconds, the step execution has started in UTC format.
+        endTime:
+          type: string
+          example: '2023-05-30T13:04:03.245Z'
+          description: The date and time with seconds, the step execution has ended in UTC format.
+        lastUpdated:
+          type: string
+          example: '2023-05-30T13:04:03.574Z'
+          description: The date and time with seconds, the step has last updated in UTC format.
+        statusMessage:
+          type: string
+          enum:
+          - STARTING
+          - STARTED
+          - COMPLETED
+          - FAILED
+          - UNKNOWN
+          - ABANDONED
+          description: "Displays status for a step.\n * `STARTING` - Job has started.\n * `STARTED` - Job is in progress.\n * `COMPLETED` - Job has completed.\n * `FAILED` - Job has failed.\n * `UNKNOWN` - Job status is unknown.\n * `ABANDONED` - Job has been abandoned (manually stopped).\n"
+        exitCode:
+          type: string
+          enum:
+          - UNKNOWN
+          - COMPLETED
+          - FAILED
+          - STOPPED
+          - COMPLETED_WITH_ERRORS
+          - COMPLETED_WITH_PENDING_ORDERS
+          description: "Exit Code for a step.\n * `UNKNOWN` - Job is in progress.\n * `COMPLETED` - Job has completed successfully.\n * `FAILED` - Job has failed.\n * `STOPPED` - Job has been stopped.\n * `COMPLETED_WITH_ERRORS` - Job has completed with errors.\n * `COMPLETED_WITH_PENDING_ORDERS` - Job has completed with pending number orders.\n"
+        name:
+          type: string
+          example: moveusersvalidateAndMove
+          description: Step name.
+        timeElapsed:
+          type: string
+          example: PT2.752S
+          description: Time lapsed in seconds since the job execution started.
+    ErrorObject:
+      type: object
+      properties:
+        key:
+          type: string
+          description: HTTP error code.
+        message:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorMessageObject'
+          description: Message string with further error information.
     JobExecutionStatusObject:
       type: object
       required:
@@ -1521,38 +1506,61 @@ components:
           items:
             $ref: '#/components/schemas/stepExecutionStatusesObject'
           description: Status of each step within a job.
-    Status:
-      type: string
-      enum:
-      - OK
-      - ERRORS
-      description: " * `OK` - Everything is good.\n * `ERRORS` - Validation has failed with errors.\n"
-    stepExecutionStatusesObject:
+    StartJobResponse:
       type: object
       required:
-      - id
-      - lastUpdated
-      - statusMessage
       - name
-      - timeElapsed
+      - id
+      - jobType
+      - trackingId
+      - sourceUserId
+      - sourceCustomerId
+      - targetCustomerId
+      - instanceId
+      - latestExecutionStatus
+      - operationType
+      - sourceLocationId
+      - targetLocationId
+      - counts
       properties:
+        name:
+          type: string
+          example: managenumbers
+          description: Job name.
         id:
-          type: number
-          example: 3624681
-          description: Unique identifier that identifies each step in a job.
-        startTime:
           type: string
-          example: '2023-05-30T13:04:00.469Z'
-          description: The date and time with seconds, the step execution has started in UTC format.
-        endTime:
+          example: Y2lzY29zcGFyazovL3VzL0pPQl9JRC83ZWUyMjAzMS0xM2Q5LTRmYTctODQ0NS1lNDMzNjE3MmVjYmU
+          description: Unique identifier of the job.
+        jobType:
           type: string
-          example: '2023-05-30T13:04:03.245Z'
-          description: The date and time with seconds, the step execution has ended in UTC format.
-        lastUpdated:
+          example: managenumbers
+          description: Job type.
+        trackingId:
           type: string
-          example: '2023-05-30T13:04:03.574Z'
-          description: The date and time with seconds, the step has last updated in UTC format.
-        statusMessage:
+          example: ATLAS_06a92f81-244d-4fd2-b8db-121bc1eeb6c8_11
+          description: Unique identifier to track the flow of HTTP requests.
+        sourceUserId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8wNTUyZjY3Yi01OWE5LTQxYmItODczNi0xYjA0MWQxZGRkNWU
+          description: Unique identifier to identify which user has run the job.
+        sourceCustomerId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85MTE1NDM1Ny1iZWQxLTQ1ZDUtYWE4Zi00ZTUwYzBkZWNmMzM
+          description: Unique identifier of the organization that initiated the job.
+        targetCustomerId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85MTE1NDM1Ny1iZWQxLTQ1ZDUtYWE4Zi00ZTUwYzBkZWNmMzM
+          description: Unique identifier of the organization for which the job was run.
+        instanceId:
+          type: integer
+          example: 238972
+          description: Unique identifier to identify the instance of the job.
+        jobExecutionStatus:
+          type: array
+          items:
+            $ref: '#/components/schemas/JobExecutionStatusObject1'
+          description: Displays the most recent step's execution status. Contains execution statuses of all the steps involved in the execution of the job.
+        latestExecutionStatus:
           type: string
           enum:
           - STARTING
@@ -1561,8 +1569,8 @@ components:
           - FAILED
           - UNKNOWN
           - ABANDONED
-          description: "Displays status for a step.\n * `STARTING` - Job has started.\n * `STARTED` - Job is in progress.\n * `COMPLETED` - Job has completed.\n * `FAILED` - Job has failed.\n * `UNKNOWN` - Job status is unknown.\n * `ABANDONED` - Job has been abandoned (manually stopped).\n"
-        exitCode:
+          description: "Most recent status of the job at the time of invocation.\n * `STARTING` - Job has started.\n * `STARTED` - Job is in progress.\n * `COMPLETED` - Job has completed.\n * `FAILED` - Job has failed.\n * `UNKNOWN` - Job status is unknown.\n * `ABANDONED` - Job has been abandoned (manually stopped).\n"
+        latestExecutionExitCode:
           type: string
           enum:
           - UNKNOWN
@@ -1571,112 +1579,46 @@ components:
           - STOPPED
           - COMPLETED_WITH_ERRORS
           - COMPLETED_WITH_PENDING_ORDERS
-          description: "Exit Code for a step.\n * `UNKNOWN` - Job is in progress.\n * `COMPLETED` - Job has completed successfully.\n * `FAILED` - Job has failed.\n * `STOPPED` - Job has been stopped.\n * `COMPLETED_WITH_ERRORS` - Job has completed with errors.\n * `COMPLETED_WITH_PENDING_ORDERS` - Job has completed with pending number orders.\n"
-        name:
+          description: "Most recent exit code of the job at the time of invocation.\n * `UNKNOWN` - Job is in progress.\n * `COMPLETED` - Job has completed successfully.\n * `FAILED` - Job has failed.\n * `STOPPED` - Job has been stopped.\n * `COMPLETED_WITH_ERRORS` - Job has completed with errors.\n * `COMPLETED_WITH_PENDING_ORDERS` - Job has completed with pending number orders.\n"
+        operationType:
           type: string
-          example: moveusersvalidateAndMove
-          description: Step name.
-        timeElapsed:
+          example: MOVE
+          description: The operation type that was carried out.
+        sourceLocationId:
           type: string
-          example: PT2.752S
-          description: Time lapsed in seconds since the job execution started.
-    ErrorResponseObject:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/ItemObject'
-    CountObject:
+          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OL2E2MmRlOWRkLWRmODEtNDg3My04MGY5LTY2MmYyZmM3ZTI2NQ
+          description: Unique location identifier for which the job was run.
+        targetLocationId:
+          type: string
+          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzUyMjNiYmVkLTQyYzktNDU0ZC1hMWYzLTdmYWQ1Y2M3ZTZlMw
+          description: Unique location identifier for which the numbers have been moved.
+        counts:
+          $ref: '#/components/schemas/CountObject'
+          description: Job statistics.
+    ValidateNumbersPostRequest:
       type: object
       required:
-      - totalMoves
-      - moved
-      - failed
-      - pending
-      - skipped
+      - phoneNumbers
       properties:
-        totalMoves:
-          type: number
-          example: 100
-          description: Total number of user moves requested.
-        moved:
-          type: number
-          example: 50
-          description: Total number of user moves completed successfully.
-        failed:
-          type: number
-          example: 50
-          description: Total number of user moves that were completed with failures.
-        pending:
-          type: number
-          example: 50
-          description: Total number of user moves that were pending with number orders.
-        skipped:
-          type: number
-          example: 50
-          description: Total number of user moves that were skipped.
-    NumberCount:
-      type: object
-      properties:
-        assigned:
-          type: integer
-          example: 33
-          description: Count of phone numbers that are in the assigned state.
-        unAssigned:
-          type: integer
-          example: 114
-          description: Count of phone numbers which are in the un-assigned state.
-        inActive:
-          type: integer
-          example: 12
-          description: Count of phone numbers which are inactive.
-        extensionOnly:
-          type: integer
-          example: 692
-          description: Count of extensions only without phone number.
-        tollFreeNumbers:
-          type: integer
-          example: 1
-          description: Count of the toll free numbers.
-        total:
-          type: integer
-          example: 839
-          description: Total phone numbers and extensions available.
-        mobileNumber:
-          type: integer
-          example: 6
-          description: Count of phone numbers of type `MOBILE_NUMBER` only without `PSTN_NUMBER` and extension.
-        serviceNumber:
-          type: integer
-          example: 1
-          description: Count of phone numbers with `includedTelephonyTypes` as `PSTN_NUMBER` and `isServiceNumber` value as `true`.
-        reservedNumber:
-          type: integer
-          example: 1
-          description: Count of reserved phone numbers.
-    Number:
-      type: object
-      required:
-      - number
-      - state
-      - tollFreeNumber
-      properties:
-        number:
-          type: string
-          example: '+2145557901'
-          description: Phone numbers that need to be validated.
-        state:
-          $ref: '#/components/schemas/NumberState'
-          description: The state of the number.
-        tollFreeNumber:
-          type: boolean
-          description: If `true`, it's a toll-free number.
-        detail:
+        phoneNumbers:
           type: array
           items:
             type: string
-          description: Error details if the number is unavailable.
+          description: List of phone numbers that need to be added.
+    ItemObject:
+      type: object
+      properties:
+        item:
+          type: string
+          description: Phone number
+        itemNumber:
+          type: number
+          description: Index of error number.
+        trackingId:
+          type: string
+          description: Unique identifier to track the HTTP requests.
+        error:
+          $ref: '#/components/schemas/ErrorObject'
     NumberTypeOptions:
       type: string
       enum:
@@ -1783,24 +1725,66 @@ components:
               type: string
               example: Zand
               description: Last name of the phone number's owner.
-    NumberOwnerType:
+    JobExecutionStatusObject1:
+      type: object
+      required:
+      - id
+      - lastUpdated
+      - statusMessage
+      - createdTime
+      - timeElapsed
+      properties:
+        id:
+          type: integer
+          example: 239748
+          description: Unique identifier that identifies each instance of the job.
+        lastUpdated:
+          type: string
+          example: '2022-08-24T06:18:38.825Z'
+          description: Last updated time (in UTC format) post one of the step execution completion.
+        statusMessage:
+          type: string
+          enum:
+          - STARTING
+          - STARTED
+          - COMPLETED
+          - FAILED
+          - UNKNOWN
+          - ABANDONED
+          description: "Displays status for overall steps that are part of the job.\n * `STARTING` - Job has started.\n * `STARTED` - Job is in progress.\n * `COMPLETED` - Job has completed.\n * `FAILED` - Job has failed.\n * `UNKNOWN` - Job status is unknown.\n * `ABANDONED` - Job has been abandoned (manually stopped).\n"
+        exitCode:
+          type: string
+          enum:
+          - UNKNOWN
+          - COMPLETED
+          - FAILED
+          - STOPPED
+          - COMPLETED_WITH_ERRORS
+          - COMPLETED_WITH_PENDING_ORDERS
+          description: "Exit Code for a job.\n * `UNKNOWN` - Job is in progress.\n * `COMPLETED` - Job has completed successfully.\n * `FAILED` - Job has failed.\n * `STOPPED` - Job has been stopped.\n * `COMPLETED_WITH_ERRORS` - Job has completed with errors.\n * `COMPLETED_WITH_PENDING_ORDERS` - Job has completed with pending number orders.\n"
+        createdTime:
+          type: string
+          example: '2022-08-24T06:18:31.070Z'
+          description: Job creation time in UTC format.
+        timeElapsed:
+          type: string
+          example: PT7.22S
+          description: Time lapsed since the job execution started.
+    NumberState:
       type: string
       enum:
-      - PLACE
-      - PEOPLE
-      - VIRTUAL_LINE
-      - AUTO_ATTENDANT
-      - CALL_QUEUE
-      - GROUP_PAGING
-      - HUNT_GROUP
-      - VOICE_MESSAGING
-      - OFFICE_ANYWHERE
-      - CONTACT_CENTER_LINK
-      - CONTACT_CENTER_ADAPTER
-      - ROUTE_LIST
-      - VOICEMAIL_GROUP
-      - COLLABORATE_BRIDGE
-      description: " * `PLACE` - PSTN phone number's owner is a workspace.\n * `PEOPLE` - PSTN phone number's owner is a person.\n * `VIRTUAL_LINE` - PSTN phone number's owner is a Virtual Profile.\n * `AUTO_ATTENDANT` - PSTN phone number's owner is an auto-attendant.\n * `CALL_QUEUE` - PSTN phone number's owner is a call queue.\n * `GROUP_PAGING` - PSTN phone number's owner is a group paging.\n * `HUNT_GROUP` - PSTN phone number's owner is a hunt group.\n * `VOICE_MESSAGING` - PSTN phone number's owner is a voice messaging.\n * `OFFICE_ANYWHERE` - PSTN phone number's owner is a Single Number Reach.\n * `CONTACT_CENTER_LINK` - PSTN phone number's owner is a Contact Center link.\n * `CONTACT_CENTER_ADAPTER` - PSTN phone number's owner is a Contact Center adapter.\n * `ROUTE_LIST` - PSTN phone number's owner is a route list.\n * `VOICEMAIL_GROUP` - PSTN phone number's owner is a voicemail group.\n * `COLLABORATE_BRIDGE` - PSTN phone number's owner is a collaborate bridge.\n"
+      - Available
+      - Duplicate
+      - Duplicate In List
+      - Invalid
+      - Unavailable
+      description: " * `Available` - The phone number is available.\n * `Duplicate` - Duplicate phone number.\n * `Duplicate In List` - Duplicate phone number in the list.\n * `Invalid` - The phone number is invalid.\n * `Unavailable` - The phone number is unavailable and cannot be used.\n"
+    NumberStateOptions:
+      type: string
+      enum:
+      - ACTIVE
+      - INACTIVE
+      description: " * `ACTIVE` - The number is activated and has calling capability.\n * `INACTIVE` - A number is not yet activated and has no calling capability.\n"
     JobListResponse:
       type: object
       required:
@@ -1811,51 +1795,6 @@ components:
           items:
             $ref: '#/components/schemas/JobDetailsResponse'
           description: Lists all jobs for the customer in order of most recent one to oldest one irrespective of its status.
-    NumberState:
-      type: string
-      enum:
-      - Available
-      - Duplicate
-      - Duplicate In List
-      - Invalid
-      - Unavailable
-      description: " * `Available` - The phone number is available.\n * `Duplicate` - Duplicate phone number.\n * `Duplicate In List` - Duplicate phone number in the list.\n * `Invalid` - The phone number is invalid.\n * `Unavailable` - The phone number is unavailable and cannot be used.\n"
-    ValidateNumbersPostRequest:
-      type: object
-      required:
-      - phoneNumbers
-      properties:
-        phoneNumbers:
-          type: array
-          items:
-            type: string
-          description: List of phone numbers that need to be added.
-    NumbersPost:
-      type: object
-      required:
-      - phoneNumbers
-      properties:
-        phoneNumbers:
-          type: array
-          items:
-            type: string
-          description: List of phone numbers that need to be added.
-        numberType:
-          $ref: '#/components/schemas/NumberTypeOptions'
-          description: The type of the number. Required for `MOBILE` number type.
-        numberUsageType:
-          $ref: '#/components/schemas/NumberUsageTypeOptions'
-          description: The type of usage expected for the number.
-        state:
-          $ref: '#/components/schemas/NumberStateOptions'
-          description: The state of the number. By default, the state of a number is set to `ACTIVE` for DID and toll-free numbers only. Mobile numbers will be activated upon assignment to a user.
-        subscriptionId:
-          type: string
-          description: The `subscriptionId` to be used for the mobile number order.
-        carrierId:
-          type: string
-          format: uuid
-          description: The `carrierId` to be used for the mobile number order.
     JobDetailsResponse:
       type: object
       required:
@@ -1932,35 +1871,6 @@ components:
           type: string
           example: text/csv
           description: Format of the file generated.
-    AdminBatchStartJobObject:
-      type: object
-      required:
-      - operation
-      - numberList
-      properties:
-        operation:
-          type: string
-          example: MOVE|NUMBER_USAGE_CHANGE
-          description: The kind of operation to be carried out.
-        targetLocationId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OL2E4Mjg5NzIyLTFiODAtNDFiNy05Njc4LTBlNzdhZThjMTA5OA
-          description: Mandatory for a `MOVE` operation. The target location within organization where the unassigned numbers will be moved from the source location.
-        numberUsageType:
-          type: string
-          example: NONE|SERVICE
-          description: The number usage type. Mandatory for `NUMBER_USAGE_CHANGE` operation.
-        numberList:
-          type: array
-          items:
-            $ref: '#/components/schemas/numberItem'
-          description: Numbers on which to execute the operation.
-    NumberStateOptions:
-      type: string
-      enum:
-      - ACTIVE
-      - INACTIVE
-      description: " * `ACTIVE` - The number is activated and has calling capability.\n * `INACTIVE` - A number is not yet activated and has no calling capability.\n"
     jobIdResponseObject:
       type: object
       required:
@@ -2050,95 +1960,326 @@ components:
         counts:
           $ref: '#/components/schemas/CountObject'
           description: Job statistics.
-    StartJobResponse:
+    NumbersRequest:
       type: object
       required:
-      - name
-      - id
-      - jobType
-      - trackingId
-      - sourceUserId
-      - sourceCustomerId
-      - targetCustomerId
-      - instanceId
-      - latestExecutionStatus
-      - operationType
-      - sourceLocationId
-      - targetLocationId
-      - counts
+      - phoneNumbers
       properties:
-        name:
-          type: string
-          example: managenumbers
-          description: Job name.
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL0pPQl9JRC83ZWUyMjAzMS0xM2Q5LTRmYTctODQ0NS1lNDMzNjE3MmVjYmU
-          description: Unique identifier of the job.
-        jobType:
-          type: string
-          example: managenumbers
-          description: Job type.
-        trackingId:
-          type: string
-          example: ATLAS_06a92f81-244d-4fd2-b8db-121bc1eeb6c8_11
-          description: Unique identifier to track the flow of HTTP requests.
-        sourceUserId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS8wNTUyZjY3Yi01OWE5LTQxYmItODczNi0xYjA0MWQxZGRkNWU
-          description: Unique identifier to identify which user has run the job.
-        sourceCustomerId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85MTE1NDM1Ny1iZWQxLTQ1ZDUtYWE4Zi00ZTUwYzBkZWNmMzM
-          description: Unique identifier of the organization that initiated the job.
-        targetCustomerId:
-          type: string
-          example: Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi85MTE1NDM1Ny1iZWQxLTQ1ZDUtYWE4Zi00ZTUwYzBkZWNmMzM
-          description: Unique identifier of the organization for which the job was run.
-        instanceId:
-          type: integer
-          example: 238972
-          description: Unique identifier to identify the instance of the job.
-        jobExecutionStatus:
+        phoneNumbers:
           type: array
           items:
-            $ref: '#/components/schemas/JobExecutionStatusObject1'
-          description: Displays the most recent step's execution status. Contains execution statuses of all the steps involved in the execution of the job.
-        latestExecutionStatus:
+            type: string
+          description: List of phone numbers whose activation state will be modified according to the specified action.
+        action:
           type: string
           enum:
-          - STARTING
-          - STARTED
-          - COMPLETED
-          - FAILED
-          - UNKNOWN
-          - ABANDONED
-          description: "Most recent status of the job at the time of invocation.\n * `STARTING` - Job has started.\n * `STARTED` - Job is in progress.\n * `COMPLETED` - Job has completed.\n * `FAILED` - Job has failed.\n * `UNKNOWN` - Job status is unknown.\n * `ABANDONED` - Job has been abandoned (manually stopped).\n"
-        latestExecutionExitCode:
+          - ACTIVATE
+          - DEACTIVATE
+          description: 'Specifies the action to execute on the provided phone numbers. If no action is specified, the default is set to ACTIVATE.
+
+            For DEACTIVATE action here are few limitations: 1) a maximum of 500 phone numbers can be processed, 2) the numbers must be unassigned, 3) the numbers cannot serve as ECBN (Emergency Callback Number), 4) the numbers must not be mobile numbers, and 5) this action is only applicable to non-integrated PSTN connection types, specifically Local Gateway (LGW) and Non-integrated CCP'
+          example: DEACTIVATE
+    NumbersPost:
+      type: object
+      required:
+      - phoneNumbers
+      properties:
+        phoneNumbers:
+          type: array
+          items:
+            type: string
+          description: List of phone numbers that need to be added.
+        numberType:
+          $ref: '#/components/schemas/NumberTypeOptions'
+          description: The type of the number. Required for `MOBILE` number type.
+        numberUsageType:
+          $ref: '#/components/schemas/NumberUsageTypeOptions'
+          description: The type of usage expected for the number.
+        state:
+          $ref: '#/components/schemas/NumberStateOptions'
+          description: The state of the number. By default, the state of a number is set to `ACTIVE` for DID and toll-free numbers only. Mobile numbers will be activated upon assignment to a user.
+        subscriptionId:
           type: string
-          enum:
-          - UNKNOWN
-          - COMPLETED
-          - FAILED
-          - STOPPED
-          - COMPLETED_WITH_ERRORS
-          - COMPLETED_WITH_PENDING_ORDERS
-          description: "Most recent exit code of the job at the time of invocation.\n * `UNKNOWN` - Job is in progress.\n * `COMPLETED` - Job has completed successfully.\n * `FAILED` - Job has failed.\n * `STOPPED` - Job has been stopped.\n * `COMPLETED_WITH_ERRORS` - Job has completed with errors.\n * `COMPLETED_WITH_PENDING_ORDERS` - Job has completed with pending number orders.\n"
-        operationType:
+          description: The `subscriptionId` to be used for the mobile number order.
+        carrierId:
           type: string
-          example: MOVE
-          description: The operation type that was carried out.
-        sourceLocationId:
+          format: uuid
+          description: The `carrierId` to be used for the mobile number order.
+    NumberUsageTypeOptions:
+      type: string
+      enum:
+      - NONE
+      - SERVICE
+      description: " * `NONE` - Standard/user number usage (default).\n * `SERVICE` - The number will be used in high-volume service, for example, Contact Center.\n"
+    NumberOwnerType:
+      type: string
+      enum:
+      - PLACE
+      - PEOPLE
+      - VIRTUAL_LINE
+      - AUTO_ATTENDANT
+      - CALL_QUEUE
+      - GROUP_PAGING
+      - HUNT_GROUP
+      - VOICE_MESSAGING
+      - OFFICE_ANYWHERE
+      - CONTACT_CENTER_LINK
+      - CONTACT_CENTER_ADAPTER
+      - ROUTE_LIST
+      - VOICEMAIL_GROUP
+      - COLLABORATE_BRIDGE
+      description: " * `PLACE` - PSTN phone number's owner is a workspace.\n * `PEOPLE` - PSTN phone number's owner is a person.\n * `VIRTUAL_LINE` - PSTN phone number's owner is a Virtual Profile.\n * `AUTO_ATTENDANT` - PSTN phone number's owner is an auto-attendant.\n * `CALL_QUEUE` - PSTN phone number's owner is a call queue.\n * `GROUP_PAGING` - PSTN phone number's owner is a group paging.\n * `HUNT_GROUP` - PSTN phone number's owner is a hunt group.\n * `VOICE_MESSAGING` - PSTN phone number's owner is a voice messaging.\n * `OFFICE_ANYWHERE` - PSTN phone number's owner is a Single Number Reach.\n * `CONTACT_CENTER_LINK` - PSTN phone number's owner is a Contact Center link.\n * `CONTACT_CENTER_ADAPTER` - PSTN phone number's owner is a Contact Center adapter.\n * `ROUTE_LIST` - PSTN phone number's owner is a route list.\n * `VOICEMAIL_GROUP` - PSTN phone number's owner is a voicemail group.\n * `COLLABORATE_BRIDGE` - PSTN phone number's owner is a collaborate bridge.\n"
+    MoveNumberValidationError:
+      type: object
+      properties:
+        trackingId:
           type: string
-          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OL2E2MmRlOWRkLWRmODEtNDg3My04MGY5LTY2MmYyZmM3ZTI2NQ
-          description: Unique location identifier for which the job was run.
+          description: Unique identifier to track the HTTP requests.
+        error:
+          $ref: '#/components/schemas/ErrorObject'
+    ErrorMessageObject:
+      type: object
+      properties:
+        description:
+          type: string
+          description: Error message.
+        code:
+          type: string
+          description: Internal error code.
+        locationId:
+          type: string
+          description: Error messages describing the location ID in which the error occurs. For a move operation, this is the target location ID.
+    ValidateNumbersResponse:
+      type: object
+      required:
+      - status
+      - numbers
+      properties:
+        status:
+          $ref: '#/components/schemas/Status'
+          description: The status of the numbers.
+        numbers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Number'
+          description: An array of number objects with number details.
+    ErrorResponseObject:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemObject'
+    TelephonyType:
+      type: string
+      enum:
+      - PSTN_NUMBER
+      description: ' * `PSTN_NUMBER` - The object is a PSTN number.
+
+        '
+    AdminBatchStartJobObject:
+      type: object
+      required:
+      - operation
+      - numberList
+      properties:
+        operation:
+          type: string
+          example: MOVE|NUMBER_USAGE_CHANGE
+          description: The kind of operation to be carried out.
         targetLocationId:
           type: string
-          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzUyMjNiYmVkLTQyYzktNDU0ZC1hMWYzLTdmYWQ1Y2M3ZTZlMw
-          description: Unique location identifier for which the numbers have been moved.
-        counts:
-          $ref: '#/components/schemas/CountObject'
-          description: Job statistics.
+          example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OL2E4Mjg5NzIyLTFiODAtNDFiNy05Njc4LTBlNzdhZThjMTA5OA
+          description: Mandatory for a `MOVE` operation. The target location within organization where the unassigned numbers will be moved from the source location.
+        numberUsageType:
+          type: string
+          example: NONE|SERVICE
+          description: The number usage type. Mandatory for `NUMBER_USAGE_CHANGE` operation.
+        numberList:
+          type: array
+          items:
+            $ref: '#/components/schemas/numberItem'
+          description: Numbers on which to execute the operation.
+    CountObject:
+      type: object
+      required:
+      - totalMoves
+      - moved
+      - failed
+      - pending
+      - skipped
+      properties:
+        totalMoves:
+          type: number
+          example: 100
+          description: Total number of user moves requested.
+        moved:
+          type: number
+          example: 50
+          description: Total number of user moves completed successfully.
+        failed:
+          type: number
+          example: 50
+          description: Total number of user moves that were completed with failures.
+        pending:
+          type: number
+          example: 50
+          description: Total number of user moves that were pending with number orders.
+        skipped:
+          type: number
+          example: 50
+          description: Total number of user moves that were skipped.
+    NumberCount_2:
+      type: object
+      properties:
+        assigned:
+          type: integer
+          example: 33
+          description: Count of phone numbers that are in the assigned state.
+        unAssigned:
+          type: integer
+          example: 114
+          description: Count of phone numbers which are in the un-assigned state.
+        inActive:
+          type: integer
+          example: 12
+          description: Count of phone numbers which are inactive.
+        extensionOnly:
+          type: integer
+          example: 692
+          description: Count of extensions only without phone number.
+        tollFreeNumbers:
+          type: integer
+          example: 1
+          description: Count of the toll free numbers.
+        total:
+          type: integer
+          example: 839
+          description: Total phone numbers and extensions available.
+        mobileNumber:
+          type: integer
+          example: 6
+          description: Count of phone numbers of type `MOBILE_NUMBER` only without `PSTN_NUMBER` and extension.
+        serviceNumber:
+          type: integer
+          example: 1
+          description: Count of phone numbers with `includedTelephonyTypes` as `PSTN_NUMBER` and `isServiceNumber` value as `true`.
+        elin:
+          type: integer
+          example: 5
+          description: Count of phone numbers that are used as Emergency Location Identification Number (ELIN). ELINs are used for callback purposes when an emergency call is made.
+        reservedNumber:
+          type: integer
+          example: 1
+          description: Count of reserved phone numbers.
+    NumberObject_2:
+      type: object
+      required:
+      - state
+      - phoneNumberType
+      - mainNumber
+      - includedTelephonyTypes
+      - tollFreeNumber
+      - isServiceNumber
+      - elinEnabled
+      - isReservedNumber
+      properties:
+        phoneNumber:
+          type: string
+          example: '+12056350001'
+          description: A unique identifier for the phone number.
+        extension:
+          type: string
+          example: '000'
+          description: Extension for a phone number.
+        routingPrefix:
+          type: string
+          example: '1234'
+          description: Routing prefix of location.
+        esn:
+          type: string
+          example: '1234000'
+          description: Routing prefix + extension of a person or workspace.
+        state:
+          type: string
+          example: ACTIVE
+          description: Phone number's state.
+        phoneNumberType:
+          type: string
+          enum:
+          - PRIMARY
+          - ALTERNATE
+          - FAX
+          - DNIS
+          - Default
+          description: "Returns the filtered list of phone numbers of the given `phoneNumberType`. Response excludes any extensions without numbers. Possible input values:\n * `PRIMARY` - Filter the results to include only primary phone numbers.\n * `ALTERNATE` - Filter the results to include only alternate phone numbers.\n * `FAX` - Filter the results to include only FAX phone numbers.\n * `DNIS` - Filter the results to include only Dialed Number Identification Service (DNIS) phone numbers.\n * `Default` - Filter the results to include all numbers.\n"
+        mainNumber:
+          type: boolean
+          example: true
+          description: If `true`, the phone number is used as location CLID.
+        includedTelephonyTypes:
+          $ref: '#/components/schemas/TelephonyType'
+          description: The telephony type for the number.
+        mobileNetwork:
+          type: string
+          example: mobileNetwork
+          description: Mobile Network for the number if the number is MOBILE_NUMBER.
+        routingProfile:
+          type: string
+          example: AttRtPf
+          description: Routing Profile for the number if the number is MOBILE_NUMBER.
+        tollFreeNumber:
+          type: boolean
+          example: true
+          description: If `true`, the phone number is a toll-free number.
+        isServiceNumber:
+          type: boolean
+          example: true
+          description: If `true`, the phone number is a service number; otherwise, it is a standard number.
+        elinEnabled:
+          type: boolean
+          example: true
+          description: If `true`, the phone number is used as an Emergency Location Identification Number (ELIN) for callback purposes when an emergency call is made.
+        isReservedNumber:
+          type: boolean
+          example: true
+          description: Flag to indicate if the number is a reserved number. Reserved numbers cannot be assigned to people, features, or services.
+        location:
+          type: object
+          required:
+          - id
+          - name
+          properties:
+            id:
+              type: string
+              example: Y2lzY29zcGFyazovL3VzL0xPQ0FUSU9OLzEyMzQ1
+              description: ID of location in which phone number exists.
+            name:
+              type: string
+              example: Banglore
+              description: Name of the location for phone number.
+        owner:
+          type: object
+          properties:
+            id:
+              type: string
+              example: Y2lzY29zcGFyazovL3VzL1BFT1BMRS9jODhiZGIwNC1jZjU5LTRjMjMtODQ4OC00NTNhOTE3ZDFlMjk
+              description: ID of the owner to which phone number is assigned.
+            type:
+              $ref: '#/components/schemas/NumberOwnerType'
+              description: Type of the phone number's owner.
+            firstName:
+              type: string
+              example: Mark
+              description: First name of the phone number's owner.
+            lastName:
+              type: string
+              example: Zand
+              description: Last name of the phone number's owner.
+            elinExpiryTime:
+              type: string
+              example: '2025-12-31T23:59:59.000Z'
+              description: UTC Timestamp indicating the date and time of expiration of the temporary Emergency Location Identification Number (ELIN) assignment set to this owner when an emergency call is made.
   securitySchemes:
     oauth2:
       flows:
@@ -2157,3 +2298,6 @@ components:
       description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
       scheme: bearer
       bearerFormat: JWT
+x-refined-from:
+- webex-cloud-calling-openapi.json
+- webex-cloud-calling-openapi.yml

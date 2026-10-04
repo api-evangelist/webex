@@ -1,21 +1,11 @@
 openapi: 3.2.0
 info:
-  title: Webex Cloud Calling Telephony API
+  title: Webex Telephony API
   version: 1.0.0
-  description: The Webex Cloud Calling APIs enable comprehensive management of cloud-based calling services, including user provisioning, device assignment, call routing, feature configuration, and number management.
-  x-provenance:
-    method: harvested
-    authored_by: Cisco Webex
-    harvested_by: API Evangelist
-    harvested_on: '2026-08-19'
-    first_party: true
-    note: Published by Cisco. Retrieved unmodified except for this x-provenance block.
-    provider_published: true
-  x-evidence:
-  - type: source
-    url: https://github.com/webex/webex-openapi-specs/blob/main/public-spec/webex-cloud-calling.json
-  - type: raw
-    url: https://raw.githubusercontent.com/webex/webex-openapi-specs/main/public-spec/webex-cloud-calling.json
+  x-refined-note:
+  - x-evidence differs across the merged source definitions and was not carried
+  - x-provenance differs across the merged source definitions and was not carried
+  description: 'Operations tagged Telephony across 2 of this provider''s published API definitions: webex-cloud-calling-openapi.json, webex-cloud-calling-openapi.yml. Each path carries the servers of the definition it was published in.'
 tags:
 - name: Telephony
 paths:
@@ -103,26 +93,12 @@ paths:
       x-operation-id-original: Read the Contact Center Extensions
 components:
   schemas:
-    UserEndpointType:
-      type: object
-      required:
-      - id
-      - type
-      properties:
-        id:
-          type: string
-          example: Y2lzY29zcGFyazovL3VybjpURUFNOnVzLWVhc3QtMV9pbnQxMy9DQUxMSU5HX0RFVklDRS85MGQyMmM0Yy0wMGI3LTQ4YzAtYjUwNi0yM2UwY2E2MTlkYmM
-          description: Unique identifier of the endpoint.
-        type:
-          $ref: '#/components/schemas/EndpointType'
-          description: Type of the endpoint.
-    EndpointType:
+    ExtensionType:
       type: string
       enum:
-      - CALLING_DEVICE
-      - APPLICATION
-      - HOTDESKING_GUEST
-      description: " * `CALLING_DEVICE` - Endpoint is a calling device.\n * `APPLICATION` - Endpoint is an application.\n * `HOTDESKING_GUEST` - Endpoint is a hotdesking guest.\n"
+      - PRIMARY
+      - SECONDARY
+      description: " * `PRIMARY` - Indicates that the extension is owned by the user.\n * `SECONDARY` - Indicates that the extension is not owned by the user and is a secondary line on one of the users devices.\n"
     UserEndpoints:
       type: object
       required:
@@ -145,19 +121,6 @@ components:
         status:
           $ref: '#/components/schemas/EndpointStatus'
           description: SIP Registration status of the device.
-    LineOwnerType:
-      type: string
-      enum:
-      - PEOPLE
-      - PLACE
-      - VIRTUAL_LINE
-      description: " * `PEOPLE` - The line is owned by a person.\n * `PLACE` - The line is owned by a workspace.\n * `VIRTUAL_LINE` - The line is owned by a virtual line.\n"
-    EndpointStatus:
-      type: string
-      enum:
-      - CONNECTED
-      - NOT_CONNECTED
-      description: " * `CONNECTED` - Device is connected.\n * `NOT_CONNECTED` - Device is not connected.\n"
     ContactCenterExtensionsGetObject:
       type: object
       required:
@@ -174,12 +137,39 @@ components:
           items:
             $ref: '#/components/schemas/UserEndpoints'
           description: List of user endpoints details.
-    ExtensionType:
+    UserEndpointType:
+      type: object
+      required:
+      - id
+      - type
+      properties:
+        id:
+          type: string
+          example: Y2lzY29zcGFyazovL3VybjpURUFNOnVzLWVhc3QtMV9pbnQxMy9DQUxMSU5HX0RFVklDRS85MGQyMmM0Yy0wMGI3LTQ4YzAtYjUwNi0yM2UwY2E2MTlkYmM
+          description: Unique identifier of the endpoint.
+        type:
+          $ref: '#/components/schemas/EndpointType'
+          description: Type of the endpoint.
+    EndpointType:
       type: string
       enum:
-      - PRIMARY
-      - SECONDARY
-      description: " * `PRIMARY` - Indicates that the extension is owned by the user.\n * `SECONDARY` - Indicates that the extension is not owned by the user and is a secondary line on one of the users devices.\n"
+      - CALLING_DEVICE
+      - APPLICATION
+      - HOTDESKING_GUEST
+      description: " * `CALLING_DEVICE` - Endpoint is a calling device.\n * `APPLICATION` - Endpoint is an application.\n * `HOTDESKING_GUEST` - Endpoint is a hotdesking guest.\n"
+    LineOwnerType:
+      type: string
+      enum:
+      - PEOPLE
+      - PLACE
+      - VIRTUAL_LINE
+      description: " * `PEOPLE` - The line is owned by a person.\n * `PLACE` - The line is owned by a workspace.\n * `VIRTUAL_LINE` - The line is owned by a virtual line.\n"
+    EndpointStatus:
+      type: string
+      enum:
+      - CONNECTED
+      - NOT_CONNECTED
+      description: " * `CONNECTED` - Device is connected.\n * `NOT_CONNECTED` - Device is not connected.\n"
     UserExtensions:
       type: object
       required:
@@ -238,3 +228,6 @@ components:
       description: e.g. Bearer YOUR_AUTHORIZATION_TOKEN
       scheme: bearer
       bearerFormat: JWT
+x-refined-from:
+- webex-cloud-calling-openapi.json
+- webex-cloud-calling-openapi.yml
